@@ -9,13 +9,19 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Administrator
+ *
+ *         a class that would allow the db interaction (insert and retrieve) of
+ *         MatchObj
+ */
 public class MatchHandler {
 
 	List<MatchObj> mlist = new ArrayList<>();
 
 	public void insertMatches(Connection conn, List<MatchObj> mlist)
 			throws SQLException {
-		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		String insert = "insert into matches values(null,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.prepareStatement(insert);
 
 		for (MatchObj mobj : mlist) {

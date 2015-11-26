@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Conn {
-	Connection conn = null;
+	private Connection conn = null;
 
 	public boolean open() {
 		boolean flag = false;
