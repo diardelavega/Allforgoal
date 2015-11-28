@@ -1,4 +1,4 @@
-package extra;
+package basicStruct;
 
 public class CompIdLinkSoccerPlunter {
 

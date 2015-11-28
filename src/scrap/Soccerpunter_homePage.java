@@ -1,4 +1,4 @@
-package srap;
+package scrap;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,13 +11,22 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import basicStruct.CompIdLinkSoccerPlunter;
+import basicStruct.CountryCompObj;
+
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Commons;
 
-import structures.CountryCompObj;
 import structures.CountryCompetition;
-import extra.CompIdLinkSoccerPlunter;
 import extra.NameCleaner;
 
+/**
+ * @author Administrator
+ *
+ *         this class grabs data from the soccerprunter web page and initialises
+ *         the countries, competitions, competition ids and competition links.
+ *         It is intended to work only once in the beginning of the grabbing
+ *         (ideally) 
+ */
 public class Soccerpunter_homePage {
 
 	private String link = "http://www.soccerpunter.com";
@@ -39,7 +48,6 @@ public class Soccerpunter_homePage {
 		String s, txt;
 		CountryCompObj ccobj;// =new CountryCompObj();
 		CompIdLinkSoccerPlunter cid;// =new CompIdLinkSoccerPlunter ();
-		CountryCompetition cc = new CountryCompetition();
 
 		for (Element o : opts) {
 			// System.out.println(o.attr("value"));
@@ -66,20 +74,21 @@ public class Soccerpunter_homePage {
 				ccobj = new CountryCompObj();
 				cid = new CompIdLinkSoccerPlunter();
 				i++;
-				ccobj.setId(i);
-				ccobj.setCountry(temp[2]);
-				ccobj.setCompetition(ret);
+				// ccobj.setId(i);
+				// ccobj.setCountry(temp[2]);
+				// ccobj.setCompetition(ret);
 
 				cid.setCompId(i);
 				cid.setCompLink(s);
-				cc.getCompList().add(ccobj);
-				cc.getCompLinkList().add(cid);
+				// CountryCompetition.getCompList().add(ccobj);
+				CountryCompetition.compLinkList.add(cid);
 
 				// System.out.println(i + " " + s);
 			}
 		}
 		try {
-			cc.storeCountryComp();
+			CountryCompetition cc = new CountryCompetition();
+			// cc.storeCountryComp();
 			cc.storeCompIdLink();
 		} catch (SQLException e) {
 			e.printStackTrace();

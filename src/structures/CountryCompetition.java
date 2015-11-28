@@ -1,35 +1,34 @@
 package structures;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import basicStruct.CompIdLinkSoccerPlunter;
+import basicStruct.CountryCompObj;
 import dbtry.Conn;
-import extra.CompIdLinkSoccerPlunter;
 
 /**
  * @author Administrator
  * 
  *         a data structure intended to store a combination of countries and
- *         their competitions
+ *         their competitions. It is also used to load the date into java
+ *         structures whenever is requested.
  */
 
 public class CountryCompetition {
 
 	public static final String baseUrl = "http://www.soccerpunter.com";
-	private static List<CountryCompObj> compList;
-	private static List<CompIdLinkSoccerPlunter> compLinkList;
+	public static List<CountryCompObj> compList = new ArrayList<>();
+	public static List<CompIdLinkSoccerPlunter> compLinkList = new ArrayList<>();
 
-	public void readContryComp() throws SQLException {
+	public void readContryComp(Connection conn) throws SQLException {
 		// read from db and insert to list;
-		Conn conn = new Conn();
-		conn.open();
-		Statement st = conn.getConn().createStatement();
+		Statement st = conn.createStatement();
 		// TODO possible necesity of some ordering
 		ResultSet rs = st.executeQuery("SELECT * FROM countrycomp ;");
 		CountryCompObj ccobj;
@@ -40,9 +39,7 @@ public class CountryCompetition {
 			ccobj.setCompetition(rs.getString("competition"));
 			compList.add(ccobj);
 		}
-
 		try {
-			conn.close();
 			st.close();
 			rs.close();
 		} catch (Exception e) {
@@ -69,8 +66,23 @@ public class CountryCompetition {
 
 	}
 
-	public void readCompIdLink() {
-		// TODO get data from db
+	public void readCompIdLink(Connection conn) throws SQLException {
+		Statement st = conn.createStatement();
+		// TODO possible necesity of some ordering
+		ResultSet rs = st.executeQuery("SELECT * FROM compidlink ;");
+		CompIdLinkSoccerPlunter cid;
+		while (rs.next()) {
+			cid = new CompIdLinkSoccerPlunter();
+			cid.setCompId(rs.getInt(1));
+			cid.setCompLink(baseUrl + rs.getString(2));
+			compLinkList.add(cid);
+		}
+		try {
+			st.close();
+			rs.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void storeCompIdLink() throws SQLException {
@@ -88,23 +100,6 @@ public class CountryCompetition {
 		ps.executeBatch();
 		ps.close();
 		conn.close();
-	}
-
-	public static List<CountryCompObj> getCompList() {
-		return compList;
-	}
-
-	public static void setCompList(List<CountryCompObj> compList) {
-		CountryCompetition.compList = compList;
-	}
-
-	public static List<CompIdLinkSoccerPlunter> getCompLinkList() {
-		return compLinkList;
-	}
-
-	public static void setCompLinkList(
-			List<CompIdLinkSoccerPlunter> compLinkList) {
-		CountryCompetition.compLinkList = compLinkList;
 	}
 
 }

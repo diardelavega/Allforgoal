@@ -1,4 +1,4 @@
-package dbtry;
+package test;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import dbhandler.MatchHandler;
 import dbhandler.MatchObj;
+import dbtry.Conn;
 
 public class MatchQueries {
 
