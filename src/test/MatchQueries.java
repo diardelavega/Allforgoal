@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import basicStruct.MatchObj;
 import dbhandler.MatchHandler;
-import dbhandler.MatchObj;
 import dbtry.Conn;
 
 public class MatchQueries {
 
 public void init() throws SQLException{	
-	Timestamp tst = new Timestamp(new Date().getTime());
+	java.sql.Date tst = new java.sql.Date(new Date().getTime());
 	MatchObj mobj = new MatchObj (0,1,"Juventus F.C.","Manchester City F.C.",1,0,1,0,2.10,3.20,3.0,2.0,1.7,tst);
 	MatchObj mobj2 = new MatchObj (0,1,"Shaktar Doneck F.C.","Real Madrid F.C.",3,4,0,1,2.10,3.20,1.8,1.6,1.7,tst);
 	List<MatchObj> mlist = new ArrayList<>();

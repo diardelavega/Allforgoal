@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import basicStruct.MatchObj;
+
 /**
  * @author Administrator
  *
@@ -37,7 +39,7 @@ public class MatchHandler {
 			ps.setDouble(10, mobj.get_2());
 			ps.setDouble(11, mobj.get_o());
 			ps.setDouble(12, mobj.get_u());
-			ps.setTimestamp(13, mobj.getDat());
+			ps.setDate(13, mobj.getDat());
 			ps.addBatch();
 		}
 		ps.executeBatch();
@@ -113,7 +115,7 @@ public class MatchHandler {
 			mobj.set_2(rs.getFloat(11));
 			mobj.set_o(rs.getFloat(12));
 			mobj.set_u(rs.getFloat(13));
-			mobj.setDat(rs.getTimestamp(14));
+			mobj.setDat(rs.getDate(14));
 			mlist.add(mobj);
 		}
 	}

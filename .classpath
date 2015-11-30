@@ -17,5 +17,8 @@
 	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/Jsoup/jsoup-1.8.3-javadoc.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/Jsoup/jsoup-1.8.3-sources.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/mysql-connector-java-5.1.37/mysql-connector-java-5.1.37-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/google-gson-2.2.4/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/google-gson-2.2.4/gson-2.2.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/google-gson-2.2.4/gson-2.2.4-sources.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

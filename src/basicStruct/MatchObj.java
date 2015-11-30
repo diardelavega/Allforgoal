@@ -1,5 +1,6 @@
-package dbhandler;
+package basicStruct;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class MatchObj {
@@ -18,11 +19,11 @@ public class MatchObj {
 
 	private double _o;
 	private double _u;
-	private Timestamp dat;
+	private Date dat;
 
 	public MatchObj(long mId, int comId, String t1, String t2, int ft1,
 			int ft2, int ht1, int ht2, double _1, double _2, double _x,
-			double _o, double _u, Timestamp dat) {
+			double _o, double _u, Date dat) {
 		super();
 		this.mId = mId;
 		this.comId = comId;
@@ -147,11 +148,11 @@ public class MatchObj {
 		this._u = _u;
 	}
 
-	public Timestamp getDat() {
+	public Date getDat() {
 		return dat;
 	}
 
-	public void setDat(Timestamp dat) {
+	public void setDat(Date dat) {
 		this.dat = dat;
 	}
 

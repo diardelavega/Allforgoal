@@ -3,11 +3,14 @@ package demo;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 
 import dbtry.Conn;
+import scrap.AjaxGrabber;
 import scrap.Soccerpunter_homePage;
 import structures.CountryCompetition;
 import test.MatchQueries;
+import test.Timestamps;
 
 public class Demo {
 
@@ -17,11 +20,18 @@ public class Demo {
 		// sp.goGetCompetitions();
 		// sp.r
 
-		initStructs();
+//		initStructs();
+		
+//		Timestamps ts = new Timestamps ();
+		//			ts.ts("12/01/1990");
+//		ts.spliter("http://www.soccerpunter.com/soccer-statistics/Spain/Primera-División-2015-2016/livesoccerodds?match_id=2086384&home=Getafe+Club+de+Fútbol&away=Villarreal+Club+de+Fútbol&date=2015-11-29+11%3A00%3A00");
 
+		AjaxGrabber ag = new AjaxGrabber();
+//		ag.headResults("http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&typeId=69");
+		ag.m2("http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&typeId=47");
 		// foo(); // test db function
-		// MatchQueries mq = new MatchQueries ();
-		// mq.init();
+//		 MatchQueries mq = new MatchQueries ();
+//		 mq.init();
 	}
 
 	public static void initStructs() throws SQLException {
