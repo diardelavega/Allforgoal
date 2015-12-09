@@ -11,6 +11,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import basicStruct.MatchObj;
 import structures.CountryCompetition;
@@ -31,12 +33,20 @@ import structures.CountryCompetition;
 public class SoccerPrunterMAtches {
 
 	// CountryCompetition.readCompIdLink
+	private static final Logger logger = LoggerFactory
+			.getLogger(SoccerPrunterMAtches.class);
+
+	public String errorStatus = "OK";
 
 	public void matchGraber() {
 		String matchResultUrl;
 		for (int i = 0; i < CountryCompetition.compLinkList.size(); i++) {
 			matchResultUrl = CountryCompetition.compLinkList.get(i)
-					+ "/results";
+					.getCompLink() + "/results";
+
+			
+			logger.info("link : {}",matchResultUrl);
+			
 			// TODO links that end with 2015 are finished competitions. (avoid!)
 			// get page
 			// get matches with results
@@ -51,11 +61,22 @@ public class SoccerPrunterMAtches {
 	}
 
 	public void competitionResultsGrabbers(String url) throws IOException {
-		Document doc = Jsoup.connect(url).get();
+		Document doc = null;
+		try {
+			doc = Jsoup.connect(url).get();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("---------:Connection not possible");
+			errorStatus = "Faulty Connection";
+		}
 		// get table with class= competitionRanking roundsResultDisplay
 		Element resultTable = doc.getElementsByClass(
 				"competitionRanking roundsResultDisplay").get(0);
 		Elements trs = resultTable.getElementsByTag("tr");
+		if (resultTable == null) {
+			logger.warn("---------:Element not found");
+			errorStatus = "Unfound Element";
+		}
 		for (Element tr : trs) {
 			if (tr.getElementsByClass("scoreW").get(0) != null) {
 				Elements tds = tr.getElementsByTag("td");
@@ -67,7 +88,7 @@ public class SoccerPrunterMAtches {
 	}
 
 	private void adapt(String week, String date, String t1, String ft,
-			String t2, String ht, String oddUrl) {
+			String t2, String ht, String oddUrl) throws IOException {
 		// TODO Auto-generated method stub
 		MatchObj match = new MatchObj();
 		match.setT1(t1);
@@ -82,7 +103,16 @@ public class SoccerPrunterMAtches {
 			match.setHt1(Integer.parseInt(temp[0]));
 			match.setHt2(Integer.parseInt(temp[1]));
 		}
-		headAvgodds(oddUrl);
+		String matchId = oddUrl.split("_id=|&home")[1];
+		AjaxGrabber ag = new AjaxGrabber();
+		ag.f47(matchId);
+		ag.f69(matchId);
+		match.set_1(ag.get_1());
+		match.set_2(ag.get_2());
+		match.set_x(ag.get_x());
+		match.set_o(ag.getOver());
+		match.set_u(ag.getUnder());
+		errorStatus = ag.errorStatus;
 	}
 
 	public Date ts(String date) {
@@ -93,13 +123,6 @@ public class SoccerPrunterMAtches {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public void headAvgodds(String url) {
-		String matchId = url.split("_id=|&home")[1];
-		String oddlink = "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id="
-				+ matchId + "&typeId=69";
-		
 	}
 
 }

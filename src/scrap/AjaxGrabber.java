@@ -6,10 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -25,116 +28,176 @@ import com.google.gson.stream.JsonReader;
 
 public class AjaxGrabber {
 
-	public void m2(String ajax) throws IOException {
+	static final Logger logger = LoggerFactory.getLogger(AjaxGrabber.class);
+	private float over = 0;
+	private float under = 0;
+	private float _1 = 0;
+	private float _2 = 0;
+	private float _x = 0;
+	private boolean flag = true;
+	public String errorStatus = "OK";
+
+	private final String ajaxUrl = "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=";
+
+	// 2086384&typeId=47";
+
+	public boolean f47(String mid) throws IOException {
+
 		// JsonReader reader = new JsonReader(
 		// new InputStreamReader(new FileInputStream(
 		// "C:/Users/Administrator/Desktop/tjson.json")));
-
-		URL url = new URL(ajax);
+		// "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&typeId=47
+		URL url = new URL(ajaxUrl + mid + "&typeId=47");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Accept", "application/json");
-
 		if (conn.getResponseCode() != 200) {
+			errorStatus = "Faulty connection 47";
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ conn.getResponseCode());
 		}
 
 		JsonParser jp = new JsonParser();
-
+		// traverse json until 2.5 object
 		JsonObject jobj = (JsonObject) jp
 				.parse(new InputStreamReader(conn.getInputStream(), "UTF-8"))
-//		System.out.println(jobj);
 				.getAsJsonObject().get("rows").getAsJsonObject().get("2.5")
 				.getAsJsonObject().get("bm").getAsJsonObject();
 
-		float over = jobj.get("1").getAsJsonObject().get("Over")
-				.getAsJsonObject().get("odds").getAsFloat();
-		float under = jobj.get("1").getAsJsonObject().get("Under")
-				.getAsJsonObject().get("odds").getAsFloat();
-
-		System.out.println(over + " " + under);
-
-//		reader.close();
-	}
-
-	public void headResults(String ajaxUrl) throws IOException {
-		// URL url = new URL(ajaxUrl);
-		// HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		// conn.setRequestMethod("GET");
-		// conn.setRequestProperty("Accept", "application/json");
-		//
-		// if (conn.getResponseCode() != 200) {
-		// throw new RuntimeException("Failed : HTTP error code : "
-		// + conn.getResponseCode());
-		// }
-
-		// JsonReader reader = new JsonReader(new InputStreamReader(
-		// conn.getInputStream(), "UTF-8"));
-
-		JsonReader reader = new JsonReader(
-				new InputStreamReader(new FileInputStream(
-						"C:/Users/Administrator/Desktop/tjson.json")));
-		JsonParser jp = new JsonParser();
-
-		JsonElement jobj = jp.parse(reader);
-
-		reader.beginObject();
-		String token;
-		while (reader.hasNext()) {
-			if (reader.nextName().equals("type")) {
-				System.out.println("i know its 47 so ...  " + reader.nextInt());
-			}
-			if (reader.nextName().equals("rows")) {
-				reader.beginObject();
-				while (reader.hasNext())
-
-					System.out.println("AAAAAAA " + reader.peek());
-				// while (reader.hasNext()) {
-				// // reader.beginObject();
-				// if (reader.nextName().equals("2.5")) {
-				// reader.beginObject();
-				// if (reader.nextName().equals("bm")) {
-				// reader.beginObject();
-				// while (reader.hasNext()) {
-				// if (reader.nextName().equals("1")) {
-				// System.out.println("--  "
-				// + reader.nextName());
-				// } else if (reader.nextName().equals("2")) {
-				// System.out.println("--  "
-				// + reader.nextName());
-				// } else if (reader.nextName().equals("3")) {
-				// System.out.println("--  "
-				// + reader.nextName());
-				// }
-				// }//
-				// reader.endObject();
-				// }// if bm
-				// reader.endObject();
-				// }// if 2.5
-				// }// while
-				reader.endObject();
-			}// if
-				// }// else
+		if (jobj == null) {
+			// some matches don't have odds and they lack the json attributes
+			logger.info("No odds for this match");
+			errorStatus = "Not Found Json Object";
+			flag = false;
+			return flag;
 		}
-		reader.endObject();
 
-		// BufferedReader br = new BufferedReader(isr);
+		try {
+			int i = 0;
+			if (jobj.has("1")) {
+				over += jobj.get("1").getAsJsonObject().get("Over")
+						.getAsJsonObject().get("odds").getAsFloat();
+				under += jobj.get("1").getAsJsonObject().get("Under")
+						.getAsJsonObject().get("odds").getAsFloat();
+				i++;
+			}
+			if (jobj.has("2")) {
+				over += jobj.get("2").getAsJsonObject().get("Over")
+						.getAsJsonObject().get("odds").getAsFloat();
+				under += jobj.get("2").getAsJsonObject().get("Under")
+						.getAsJsonObject().get("odds").getAsFloat();
+				i++;
+			}
+			if (jobj.has("3")) {
+				over += jobj.get("3").getAsJsonObject().get("Over")
+						.getAsJsonObject().get("odds").getAsFloat();
+				under += jobj.get("3").getAsJsonObject().get("Under")
+						.getAsJsonObject().get("odds").getAsFloat();
+				i++;
+				over /= i;
+				under /= i;
+			}
+		} catch (Exception e) {
+			logger.info("No odds for this match");
+			flag = false;
+			errorStatus = "unconsistent odds";
+			return flag;
+		}
 
-		// String inputLine;
-		// while ((inputLine = br.readLine()) != null)
-		// System.out.println(inputLine);
-		// br.close();
-		// isr.close();
+		logger.info("under is ={},  over is ={}", under, over);
 
-		// TypeToken<List<MyJsonClass>> token = new
-		// TypeToken<List<MyJsonClass>>(){};
-		// List<MyJsonClass> list = new Gson().fromJson(isr, token.getType());
-
-		// for (MyJsonClass mjc : list)
-		// {
-		// System.out.println(mjc.symbol + " : " + mjc.latest_trade);
-		// }
-		// System.out.println(jdoc);
+		return flag;
 	}
+
+	public boolean f69(String mid) throws IOException {
+		URL url = new URL(ajaxUrl + mid + "&typeId=69");
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.setRequestProperty("Accept", "application/json");
+		if (conn.getResponseCode() != 200) {
+			errorStatus = "Faulty connection 69";
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ conn.getResponseCode());
+		}
+
+		JsonParser jp = new JsonParser();
+		// traverse json until 1x2 results object
+		JsonObject jobj = (JsonObject) jp
+				.parse(new InputStreamReader(conn.getInputStream(), "UTF-8"))
+				.getAsJsonObject().get("rows").getAsJsonObject().get("0")
+				.getAsJsonObject().get("bm").getAsJsonObject();
+		if (jobj == null) {
+			// some matches don't have odds and they lack the json attributes
+			logger.info("No odds for this match");
+			flag = false;
+			errorStatus = "Not found Json Object";
+			return flag;
+		}
+
+		try {
+			int i = 0;
+
+			if (jobj.has("1")) {
+				_1 = jobj.get("1").getAsJsonObject().get("1").getAsJsonObject()
+						.get("odds").getAsFloat();
+				_2 = jobj.get("1").getAsJsonObject().get("2").getAsJsonObject()
+						.get("odds").getAsFloat();
+				_x = jobj.get("1").getAsJsonObject().get("X").getAsJsonObject()
+						.get("odds").getAsFloat();
+				i++;
+			}
+			if (jobj.has("2")) {
+				_1 += jobj.get("2").getAsJsonObject().get("1")
+						.getAsJsonObject().get("odds").getAsFloat();
+				_2 += jobj.get("2").getAsJsonObject().get("2")
+						.getAsJsonObject().get("odds").getAsFloat();
+				_x += jobj.get("2").getAsJsonObject().get("X")
+						.getAsJsonObject().get("odds").getAsFloat();
+				i++;
+			}
+			if (jobj.has("3")) {
+				_1 += jobj.get("3").getAsJsonObject().get("1")
+						.getAsJsonObject().get("odds").getAsFloat();
+				_2 += jobj.get("3").getAsJsonObject().get("2")
+						.getAsJsonObject().get("odds").getAsFloat();
+				_x += jobj.get("3").getAsJsonObject().get("X")
+						.getAsJsonObject().get("odds").getAsFloat();
+				i++;
+			}
+			_1 /= i;
+			_x /= i;
+			_2 /= i;
+
+			logger.info("1 is = {}, x is ={}, 2 is ={} ", _1, _x, _2);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("No odds for this match");
+			flag = false;
+			errorStatus = "unconsistent odds";
+			return flag;
+		}
+
+		return false;
+	}
+
+	public float getOver() {
+		return over;
+	}
+
+	public float getUnder() {
+		return under;
+	}
+
+	public float get_1() {
+		return _1;
+	}
+
+	public float get_2() {
+		return _2;
+	}
+
+	public float get_x() {
+		return _x;
+	}
+
 }

@@ -25,7 +25,7 @@ import extra.NameCleaner;
  *         this class grabs data from the soccerprunter web page and initialises
  *         the countries, competitions, competition ids and competition links.
  *         It is intended to work only once in the beginning of the grabbing
- *         (ideally) 
+ *         (ideally)
  */
 public class Soccerpunter_homePage {
 
@@ -60,7 +60,7 @@ public class Soccerpunter_homePage {
 					|| s.contains("off") || s.contains("Coupe")
 					|| s.contains("World") || s.contains("Africa")
 					|| s.contains("America") || s.contains("Europe")
-					|| s.contains("Asia")) {
+					|| s.contains("Asia") || s.endsWith("2015")) {
 				continue;
 			} else {
 				String[] temp = s.split("/");
@@ -74,13 +74,13 @@ public class Soccerpunter_homePage {
 				ccobj = new CountryCompObj();
 				cid = new CompIdLinkSoccerPlunter();
 				i++;
-				// ccobj.setId(i);
-				// ccobj.setCountry(temp[2]);
-				// ccobj.setCompetition(ret);
+				ccobj.setId(i);
+				ccobj.setCountry(temp[2]);
+				ccobj.setCompetition(ret);
 
 				cid.setCompId(i);
 				cid.setCompLink(s);
-				// CountryCompetition.getCompList().add(ccobj);
+				CountryCompetition.compList.add(ccobj);
 				CountryCompetition.compLinkList.add(cid);
 
 				// System.out.println(i + " " + s);
@@ -88,7 +88,7 @@ public class Soccerpunter_homePage {
 		}
 		try {
 			CountryCompetition cc = new CountryCompetition();
-			// cc.storeCountryComp();
+			 cc.storeCountryComp();
 			cc.storeCompIdLink();
 		} catch (SQLException e) {
 			e.printStackTrace();

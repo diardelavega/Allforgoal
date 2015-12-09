@@ -20,5 +20,9 @@
 	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/google-gson-2.2.4/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/google-gson-2.2.4/gson-2.2.4-javadoc.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/google-gson-2.2.4/gson-2.2.4-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/slf4j-1.7.13/slf4j-api-1.7.13.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/slf4j-1.7.13/slf4j-api-1.7.13-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/slf4j-1.7.13/slf4j-simple-1.7.13.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/slf4j-1.7.13/slf4j-simple-1.7.13-sources.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

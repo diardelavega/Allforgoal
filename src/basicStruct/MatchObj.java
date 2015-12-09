@@ -156,4 +156,13 @@ public class MatchObj {
 		this.dat = dat;
 	}
 
+	public boolean isFull() {
+		try {
+			if (ht1 >= 0)
+				return true;
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
 }
