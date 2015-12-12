@@ -6,49 +6,49 @@ public class BasicTableEntity extends HalfTimeExtend {
 	private int teamid;
 
 	private int points;
-	private int matchesIn;
-	private int matchesOut;
-	private int ftScoreIn;
-	private int ftScoreOut;
-	private int ftConcededIn;
-	private int ftConcededOut;
+	private int matchesIn=0;
+	private int matchesOut=0;
+	private int ftScoreIn=0;
+	private int ftScoreOut=0;
+	private int ftConcededIn=0;
+	private int ftConcededOut=0;
 
-	private int p3MatchesIn;
-	private int p3MatchesOut;
-	private int p3FtScoreIn;
-	private int p3FtScoreOut;
-	private int p3FtConcededIn;
-	private int p3FtConcededOut;
+	private int p3MatchesIn=0;
+	private int p3MatchesOut=0;
+	private int p3FtScoreIn=0;
+	private int p3FtScoreOut=0;
+	private int p3FtConcededIn=0;
+	private int p3FtConcededOut=0;
 
-	private int ttMatchesIn;
-	private int ttMatchesOut;
-	private int ttFtScoreIn;
-	private int ttFtScoreOut;
-	private int ttFtConcededIn;
-	private int ttFtConcededOut;
+	private int ttMatchesIn=0;
+	private int ttMatchesOut=0;
+	private int ttFtScoreIn=0;
+	private int ttFtScoreOut=0;
+	private int ttFtConcededIn=0;
+	private int ttFtConcededOut=0;
 
-	private int p3UpMatchesIn;
-	private int p3UpMatchesOut;
-	private int p3UpFtScoreIn;
-	private int p3UpFtScoreOut;
-	private int p3UpFtConcededIn;
-	private int p3UpFtConcededOut;
+	private int p3UpMatchesIn=0;
+	private int p3UpMatchesOut=0;
+	private int p3UpFtScoreIn=0;
+	private int p3UpFtScoreOut=0;
+	private int p3UpFtConcededIn=0;
+	private int p3UpFtConcededOut=0;
 
-	private int p3DownMatchesIn;
-	private int p3DownMatchesOut;
-	private int p3DownFtScoreIn;
-	private int p3DownFtScoreOut;
-	private int p3DownFtConcededIn;
-	private int p3DownFtConcededOut;
+	private int p3DownMatchesIn=0;
+	private int p3DownMatchesOut=0;
+	private int p3DownFtScoreIn=0;
+	private int p3DownFtScoreOut=0;
+	private int p3DownFtConcededIn=0;
+	private int p3DownFtConcededOut=0;
 
-	private float form;
-	private float form1;
-	private float form2;
-	private float form3;
-	private float form4;
+	private float form=0;
+	private float form1=0;
+	private float form2=0;
+	private float form3=0;
+	private float form4=0;
 
-	private float formAtack;
-	private float formDefence;
+	private float formAtack=0;
+	private float formDefence=0;
 
 	public String getTeam() {
 		return team;

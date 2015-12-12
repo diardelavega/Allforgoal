@@ -26,6 +26,9 @@ taking in consideration the match in hand.
 	
 ***) Re-think and Redesign the architecture to keep in ming the continuous/big amount of games per each competition.
 	 To skip some calculation for the first 3 weeks of games (like tt, p3 up& down, form) since at the 
-	 beginning all the teams are in the same situation. 
+	 beginning all the teams are in the same situation.
+	 @@ count the matches in & out.
+	 ** to init the teamtable attributes with 0 instead of null values when we just got the first data for that
+	 	table. (So  when it is a new table)  
 	 
 	 				 	  

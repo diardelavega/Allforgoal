@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import dbtry.Conn;
 import basicStruct.MatchObj;
 
 /**
@@ -20,11 +21,17 @@ import basicStruct.MatchObj;
 public class MatchHandler {
 
 	List<MatchObj> mlist = new ArrayList<>();
+	Conn conn;
 
-	public void insertMatches(Connection conn, List<MatchObj> mlist)
-			throws SQLException {
+	private void getCoonection() {
+		conn = new Conn();
+		conn.open();
+	}
+
+	public void insertMatches(List<MatchObj> mlist) throws SQLException {
+		getCoonection();
 		String insert = "insert into matches values(null,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		PreparedStatement ps = conn.prepareStatement(insert);
+		PreparedStatement ps = conn.getConn().prepareStatement(insert);
 
 		for (MatchObj mobj : mlist) {
 			ps.setInt(1, mobj.getComId());
@@ -44,58 +51,82 @@ public class MatchHandler {
 		}
 		ps.executeBatch();
 		ps.close();
+		conn.close();
 
 	}
 
-	public void getMatches(Connection conn) throws SQLException {
-		Statement st = conn.createStatement();
+	public void getMatches() throws SQLException {
+		getCoonection();
+		Statement st = conn.getConn().createStatement();
 		ResultSet rs = st.executeQuery("SELECT * FROM matches");
 		listFill(rs);
+		rs.close();
+		st.close();
+		conn.close();
+
 	}
 
-	public void getMatchesComp(Connection conn, int compId) throws SQLException {
-		Statement st = conn.createStatement();
+	public void getMatchesComp(int compId) throws SQLException {
+		getCoonection();
+		Statement st = conn.getConn().createStatement();
 		ResultSet rs = st.executeQuery("SELECT * FROM matches WHERE compid = "
 				+ compId);
 		listFill(rs);
+		rs.close();
+		st.close();
+		conn.close();
 	}
 
-	public void getMatchesDateBetween(Connection conn, Date date1, Date date2)
+	public void getMatchesDateBetween(Date date1, Date date2)
 			throws SQLException {
+		getCoonection();
 		// the lower date rows are included, the upper date rows are not
 		// included
-		Statement st = conn.createStatement();
+		Statement st = conn.getConn().createStatement();
 		ResultSet rs = st
 				.executeQuery("SELECT * FROM matches WHERE dat between "
 						+ date1 + " AND " + date2);
 		listFill(rs);
+		rs.close();
+		st.close();
+		conn.close();
 	}
 
-	public void getMatchesDateComp(Connection conn, int compId, Date date1,
-			Date date2) throws SQLException {
+	public void getMatchesDateComp(int compId, Date date1, Date date2)
+			throws SQLException {
+		getCoonection();
 		// the lower date rows are included, the upper date rows are not
 		// included
-		Statement st = conn.createStatement();
+		Statement st = conn.getConn().createStatement();
 		ResultSet rs = st
 				.executeQuery("SELECT * FROM matches WHERE (dat between "
 						+ date1 + " AND " + date2 + ") AND  compid = " + compId);
 		listFill(rs);
+		rs.close();
+		st.close();
+		conn.close();
 	}
 
-	public void getMatchesDateBefore(Connection conn, Date date)
-			throws SQLException {
-		Statement st = conn.createStatement();
+	public void getMatchesDateBefore(Date date) throws SQLException {
+		getCoonection();
+		Statement st = conn.getConn().createStatement();
 		ResultSet rs = st.executeQuery("SELECT * FROM matches WHERE dat <= "
 				+ date);
 		listFill(rs);
+		rs.close();
+		st.close();
+		conn.close();
 	}
 
-	public void getMatchesDateAfter(Connection conn, Date date)
-			throws SQLException {
-		Statement st = conn.createStatement();
+	public void getMatchesDateAfter(Date date) throws SQLException {
+		getCoonection();
+		Statement st = conn.getConn().createStatement();
 		ResultSet rs = st.executeQuery("SELECT * FROM matches WHERE dat >= "
 				+ date);
 		listFill(rs);
+		rs.close();
+		st.close();
+		conn.close();
 	}
 
 	public void listFill(ResultSet rs) throws SQLException {

@@ -12,6 +12,12 @@ import basicStruct.MatchObj;
 import dbhandler.MatchHandler;
 import dbtry.Conn;
 
+/**
+ * @author Administrator
+ *
+ *
+ *class koti
+ */
 public class MatchQueries {
 
 public void init() throws SQLException{	
@@ -24,6 +30,7 @@ public void init() throws SQLException{
 	
 	Conn conn = new Conn();
 	conn.open();
+	
 //	
 //	String sql ="insert into matches values ("+null+",1,'Juventus F.C.','Manchester City F.C.',1,0,1,0,2.10,3.20,3.0,2.0,1.7,'"+tst+"')";
 //	Statement st = conn.getConn().createStatement();
@@ -32,7 +39,7 @@ public void init() throws SQLException{
 //	boolean b = st.execute(sql);
 //	
 	MatchHandler mh = new MatchHandler ();
-	mh.insertMatches(conn.getConn(), mlist);
+	mh.insertMatches(mlist);
 	conn.close();
 	
 }

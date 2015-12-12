@@ -3,30 +3,31 @@ package dbhandler;
 public class HalfTimeExtend {
 	
 	
-	protected int htScoreIn;
-	protected int htScoreOut;
-	protected int htConcededIn;
-	protected int htConcededOut;
+	protected int htScoreIn=0;
+	protected int htScoreOut=0;
+	protected int htConcededIn=0;
+	protected int htConcededOut=0;
 	
-	protected int p3HtScoreIn;
-	protected int p3HtScoreOut;
-	protected int p3HtConcededIn;
-	protected int p3HtConcededOut;
+	protected int p3HtScoreIn=0;
+	protected int p3HtScoreOut=0;
+	protected int p3HtConcededIn=0;
+	protected int p3HtConcededOut=0;
 	
-	protected int ttHtScoreIn;
-	protected int ttHtScoreOut;
-	protected int ttHtConcededIn;
-	protected int ttHtConcededOut;
+	protected int ttHtScoreIn=0;
+	protected int ttHtScoreOut=0;
+	protected int ttHtConcededIn=0;
+	protected int ttHtConcededOut=0;
 
-	protected int p3UpHtScoreIn;
-	protected int p3UpHtScoreOut;
-	protected int p3UpHtConcededIn;
-	protected int p3UpHtConcededOut;
+	protected int p3UpHtScoreIn=0;
+	protected int p3UpHtScoreOut=0;
+	protected int p3UpHtConcededIn=0;
+	protected int p3UpHtConcededOut=0;
 	
-	protected int p3DownHtScoreIn;
-	protected int p3DownHtScoreOut;
-	protected int p3DownHtConcededIn;
-	protected int p3DownHtConcededOut;
+	protected int p3DownHtScoreIn=0;
+	protected int p3DownHtScoreOut=0;
+	protected int p3DownHtConcededIn=0;
+	protected int p3DownHtConcededOut=0;
+	
 	public int getHtScoreIn() {
 		return htScoreIn;
 	}

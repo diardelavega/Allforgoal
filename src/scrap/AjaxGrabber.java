@@ -42,11 +42,14 @@ public class AjaxGrabber {
 	// 2086384&typeId=47";
 
 	public boolean f47(String mid) throws IOException {
-
-		// JsonReader reader = new JsonReader(
-		// new InputStreamReader(new FileInputStream(
-		// "C:/Users/Administrator/Desktop/tjson.json")));
-		// "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&typeId=47
+		/* this function call the o/u data link and collects the data */
+		/**
+		 * *** READ FROM FILE EXAMPLE ** * JsonReader reader = new JsonReader(
+		 * new InputStreamReader(new FileInputStream(
+		 * "C:/Users/Administrator/Desktop/tjson.json")));
+		 * "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&t
+		 * y p e I d = 4 7
+		 */
 		URL url = new URL(ajaxUrl + mid + "&typeId=47");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
@@ -72,31 +75,32 @@ public class AjaxGrabber {
 			return flag;
 		}
 
-		try {
+		try {// controls in case the values we require are missing
 			int i = 0;
-			if (jobj.has("1")) {
+			if (jobj.has("1")) {// bookie 1
 				over += jobj.get("1").getAsJsonObject().get("Over")
 						.getAsJsonObject().get("odds").getAsFloat();
 				under += jobj.get("1").getAsJsonObject().get("Under")
 						.getAsJsonObject().get("odds").getAsFloat();
 				i++;
 			}
-			if (jobj.has("2")) {
+			if (jobj.has("2")) {// bookie 2
 				over += jobj.get("2").getAsJsonObject().get("Over")
 						.getAsJsonObject().get("odds").getAsFloat();
 				under += jobj.get("2").getAsJsonObject().get("Under")
 						.getAsJsonObject().get("odds").getAsFloat();
 				i++;
 			}
-			if (jobj.has("3")) {
+			if (jobj.has("3")) {// bookie 3
 				over += jobj.get("3").getAsJsonObject().get("Over")
 						.getAsJsonObject().get("odds").getAsFloat();
 				under += jobj.get("3").getAsJsonObject().get("Under")
 						.getAsJsonObject().get("odds").getAsFloat();
 				i++;
-				over /= i;
-				under /= i;
 			}
+			// as value we get the average of the three bookies
+			over /= i;
+			under /= i;
 		} catch (Exception e) {
 			logger.info("No odds for this match");
 			flag = false;
@@ -110,6 +114,7 @@ public class AjaxGrabber {
 	}
 
 	public boolean f69(String mid) throws IOException {
+		/* read the 1x2 odds from the json data */
 		URL url = new URL(ajaxUrl + mid + "&typeId=69");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
@@ -164,6 +169,7 @@ public class AjaxGrabber {
 						.getAsJsonObject().get("odds").getAsFloat();
 				i++;
 			}
+			// as value we get the average of the three bookies
 			_1 /= i;
 			_x /= i;
 			_2 /= i;

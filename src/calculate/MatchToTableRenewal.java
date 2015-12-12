@@ -1,6 +1,8 @@
 package calculate;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
@@ -16,16 +18,19 @@ import dbhandler.TableMaker;
  *         in this class we should get the competition table of a particular
  *         competition from the db, get the fields of the teams that are playing
  *         in a Match. The tablemaker classes for each team are recalculated
- *         takin in consideration the new results and are stored back in the db
+ *         taking in consideration the new results and are stored back in the db
  */
 public class MatchToTableRenewal {
 
+	private List<MatchObj> matchList;
+	private int compId;
 	private MatchObj mobj;
 	private CompetitionTeamTable ctt = new CompetitionTeamTable();
 	private BasicTableEntity t1, t2;
 	private int N;
 	private int posT1 = 0;
 	private int posT2 = 0;
+	private int match_counter = 0;
 
 	// vars to know which sets of db update to execute
 	private boolean t1tt = false, t1p3 = false, t1p3up = false,
@@ -33,36 +38,54 @@ public class MatchToTableRenewal {
 	private boolean t2tt = false, t2p3 = false, t2p3up = false,
 			t2p3down = false;
 
-	public MatchToTableRenewal(MatchObj mobj) {
+	public MatchToTableRenewal(List<MatchObj> list, int compId2) {
 		super();
-		this.mobj = mobj;
+		this.matchList = list;
+		this.compId = compId2;
 	}
 
 	public MatchToTableRenewal() {
 		super();
 	}
 
+	public void calculate() throws SQLException {
+		// TODO init teamtable structures
+		init();
+		// MatchObj mobj;
+		if (N == 0) {// table didn't exist
+			for (int i = 0; i < matchList.size(); i++) {
+				mobj = matchList.get(i);
+//				if()
+				BasicTableEntity t1 = new BasicTableEntity();
+				BasicTableEntity t2 = new BasicTableEntity();
+				t1.setTeam(mobj.getT1());
+				t1.setTeam(mobj.getT2());
+				renew(t1, t2);
+				ctt.getClassificationPos().add(t1);
+				ctt.getClassificationPos().add(t2);
+				match_counter++;
+			}
+		} else {// N>0 -> table exists and has data
+
+		}
+	}
+
 	public void init() throws SQLException {
-		String compName = CountryCompetition.compList.get(mobj.getComId() - 1)
+		/*
+		 * in nit we check if the db table exists and then we read it else we
+		 * create it. In any case we set a teamtable for a specific competition
+		 * ready
+		 */
+		String compName = CountryCompetition.compList.get(compId - 1)
 				.getCompetition();
 		ctt.existsDb(compName);
 		if (ctt.isTable()) {
 			ctt.tableReader(compName, mobj.getT1(), mobj.getT2());
-			getTablePosition();
-			evalUpdateGroups();
-			assert posT1 != 0 && posT2 != 0;
-			recalculate();
-
+			N = ctt.getClassificationPos().size();
 		} else {
-			// create table
-			// calculate the data
-			// insert into the table
+			ctt.createFullTable(compName);
+			N = 0;
 		}
-		// TODO check if competition table exists
-		// TODO check if it it is a fulltable or simpletable
-		// get the fields from the db to the analog java object
-		// calculate the necessary attributes
-		// insert or update the db
 	}
 
 	public void recalculate() {
@@ -149,7 +172,7 @@ public class MatchToTableRenewal {
 		}
 
 		// CALCULATE FORM
-		formCalc();
+		// formCalc();
 		// points are added in the end, after form is calculated
 		if (mobj.getFt1() > mobj.getFt2()) {
 			t1.addPoints(3);
@@ -162,12 +185,24 @@ public class MatchToTableRenewal {
 
 	}
 
-	private void formCalc() {
+	private void formCalc(boolean posPoint) {
 
-		float t1Form, t2Form;
+		float t1Form = 0, t2Form = 0;
 		float t1Atack, t1Defence;
 		float t2Atack, t2Defence;
 
+		// standard points
+		if (mobj.getFt1() > mobj.getFt2()) {
+			t1Form = 2;
+			t2Form = -1;
+		} else if (mobj.getFt1() < mobj.getFt2()) {
+			t1Form = -1;
+			t2Form = 2;
+		} else {
+			t1Form = 1;
+			t2Form = 1;
+		}
+		// score points
 		if ((mobj.getFt1() + mobj.getFt2()) == 0) {
 			t1Atack = 0;
 			t1Defence = 0;
@@ -179,53 +214,49 @@ public class MatchToTableRenewal {
 			t2Atack = mobj.getFt2() / (mobj.getFt1() + mobj.getFt2());
 			t2Defence = -mobj.getFt1() / (mobj.getFt1() + mobj.getFt2());
 		}
-
-		if (mobj.getFt1() > mobj.getFt2()) {
-			t1Form = 2;
-			t2Form = -1;
-			if (t1.getPoints() == 0) {
-				t1Form += 1 / 2;
-				t2Form -= 1 / 2;
-			} else {
-				t1Form += Math.abs(t1.getPoints() - t2.getPoints())
-						/ t1.getPoints();
-				t2Form -= Math.abs(t1.getPoints() - t2.getPoints())
-						/ t1.getPoints();
-			}
-		} else if (mobj.getFt1() < mobj.getFt2()) {
-			t1Form = -1;
-			t2Form = 2;
-			if (t2.getPoints() == 0) {
-				t1Form -= 1 / 2;
-				t2Form += 1 / 2;
-			} else {
-				t1Form -= Math.abs(t1.getPoints() - t2.getPoints())
-						/ t2.getPoints();
-				t2Form += Math.abs(t1.getPoints() - t2.getPoints())
-						/ t2.getPoints();
-			}
-		} else {// in case of draw
-			t1Form = 1;
-			t2Form = 1;
-			if (t1.getPoints() > t2.getPoints()) {
+		// classification points
+		if (posPoint) { // if teams points are more than 3
+			if (mobj.getFt1() > mobj.getFt2()) {
+				if (t1.getPoints() == 0) {
+					t1Form += 1 / 2;
+					t2Form -= 1 / 2;
+				} else {
+					t1Form += Math.abs(t1.getPoints() - t2.getPoints())
+							/ t1.getPoints();
+					t2Form -= Math.abs(t1.getPoints() - t2.getPoints())
+							/ t1.getPoints();
+				}
+			} else if (mobj.getFt1() < mobj.getFt2()) {
 				if (t2.getPoints() == 0) {
-					t1Form -= 1 / 4;
-					t2Form += 1 / 4;
+					t1Form -= 1 / 2;
+					t2Form += 1 / 2;
 				} else {
 					t1Form -= Math.abs(t1.getPoints() - t2.getPoints())
 							/ t2.getPoints();
 					t2Form += Math.abs(t1.getPoints() - t2.getPoints())
 							/ t2.getPoints();
 				}
-			} else if (t1.getPoints() < t2.getPoints()) {
-				if (t1.getPoints() == 0) {
-					t1Form -= 1 / 4;
-					t2Form += 1 / 4;
-				} else {
-					t1Form += Math.abs(t1.getPoints() - t2.getPoints())
-							/ t1.getPoints();
-					t2Form -= Math.abs(t1.getPoints() - t2.getPoints())
-							/ t1.getPoints();
+			} else {// in case of draw
+				if (t1.getPoints() > t2.getPoints()) {
+					if (t2.getPoints() == 0) {
+						t1Form -= 1 / 4;
+						t2Form += 1 / 4;
+					} else {
+						t1Form -= Math.abs(t1.getPoints() - t2.getPoints())
+								/ t2.getPoints();
+						t2Form += Math.abs(t1.getPoints() - t2.getPoints())
+								/ t2.getPoints();
+					}
+				} else if (t1.getPoints() < t2.getPoints()) {
+					if (t1.getPoints() == 0) {
+						t1Form += 1 / 4;
+						t2Form -= 1 / 4;
+					} else {
+						t1Form += Math.abs(t1.getPoints() - t2.getPoints())
+								/ t1.getPoints();
+						t2Form -= Math.abs(t1.getPoints() - t2.getPoints())
+								/ t1.getPoints();
+					}
 				}
 			}
 		}
@@ -264,34 +295,10 @@ public class MatchToTableRenewal {
 				posT2 = i;
 			}
 		}
-
-		// if (ctt.isFullTable()) {
-		// N = ctt.getClassificationPos().size();
-		// for (int i = 0; i < N; i++) {
-		// if (mobj.getT1().equals(
-		// ctt.getClassificationFtm().get(i).getTeam())) {
-		// posT1 = i;
-		// } else if (mobj.getT2().equals(
-		// ctt.getClassificationFtm().get(i).getTeam())) {
-		// posT2 = i;
-		// }
-		// // assert posT1 != 0 && posT2 != 0;
-		// }
-		// } else {
-		// N = ctt.getClassificationTm().size();
-		// for (int i = 0; i < N; i++) {
-		// if (mobj.getT1().equals(
-		// ctt.getClassificationTm().get(i).getTeam())) {
-		// posT1 = i;
-		// } else if (mobj.getT2().equals(
-		// ctt.getClassificationTm().get(i).getTeam())) {
-		// posT2 = i;
-		// }
-		// }
-		// }
 	}
 
 	private void evalUpdateGroups() {
+
 		/*
 		 * depending on the teams position on the classification table we can
 		 * determine the different groups of attributes to calculate and updates
@@ -325,4 +332,13 @@ public class MatchToTableRenewal {
 			}
 		}
 	}
+
+	public void setMatch(MatchObj mobj) {
+		this.mobj = mobj;
+	}
+
+	public MatchObj getMatch() {
+		return mobj;
+	}
+
 }

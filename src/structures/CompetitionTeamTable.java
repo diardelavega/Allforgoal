@@ -3,6 +3,7 @@ package structures;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,101 +68,16 @@ public class CompetitionTeamTable {
 		Conn conn = new Conn();
 		conn.open();
 		ResultSet rs = conn.getConn().createStatement().executeQuery(query);
-		// if (isFullTable) {
-		// fullTableEntity(rs);
-		// } else {
 		tableEntity(rs);
-		// }
+		rs.close();
 		conn.close();
 	}
 
-	// public void clasificationReader(ResultSet rs) throws SQLException {
-	// // store the points and team for this competition to a java structure
-	// ClasifficationStruct cs;
-	// while (rs.next()) {
-	// cs = new ClasifficationStruct();
-	// cs.setTemaName(rs.getString("team"));
-	// cs.setPoints(rs.getInt("points"));
-	// // classificationPoints.put(rs.getString("team"),
-	// // rs.getInt("points"));
-	// }
-	// }
-
-	public void fullTableEntity(ResultSet rs) throws SQLException {
-		// // create Java Entity from DB Relation
-		// FullTableMaker ftm = new FullTableMaker();
-		// // if (classificationFtm == null) {
-		// // classificationFtm = new ArrayList<>();
-		// // }
-		// while (rs.next()) {
-		// ftm.setPoints(rs.getInt("points"));
-		// ftm.setMatchesIn(rs.getInt("matchesin"));
-		// ftm.setMatchesOut(rs.getInt("matchesout"));
-		// ftm.setHtScoreIn(rs.getInt("htscorein"));
-		// ftm.setHtScoreOut(rs.getInt("htscoreout"));
-		// ftm.setHtConcededOut(rs.getInt("htconcedeout"));
-		// ftm.setHtConcededIn(rs.getInt("htconcedein"));
-		// ftm.setFtScoreOut(rs.getInt("ftscoreout"));
-		// ftm.setFtScoreIn(rs.getInt("ftscorein"));
-		// ftm.setFtConcededOut(rs.getInt("ftconcedeout"));
-		// ftm.setFtConcededIn(rs.getInt("ftconcedein"));
-		//
-		// ftm.setP3MatchesIn(rs.getInt("p3_min"));
-		// ftm.setP3MatchesOut(rs.getInt("p3_mout"));
-		// ftm.setP3HtScoreOut(rs.getInt("p3_htscoreout"));
-		// ftm.setP3HtScoreIn(rs.getInt("p3_htscoreint"));
-		// ftm.setP3HtConcededOut(rs.getInt("p3_htconcedeout"));
-		// ftm.setP3HtConcededIn(rs.getInt("p3_htconcedein"));
-		// ftm.setP3FtScoreOut(rs.getInt("p3_ftscoreout"));
-		// ftm.setP3FtScoreIn(rs.getInt("p3_ftscoreint"));
-		// ftm.setP3FtConcededOut(rs.getInt("p3_ftconcedeout"));
-		// ftm.setP3FtConcededIn(rs.getInt("p3_ftconcedein"));
-		//
-		// ftm.setTtMatchesIn(rs.getInt("tt_min"));
-		// ftm.setTtMatchesOut(rs.getInt("tt_mout"));
-		// ftm.setTtHtScoreOut(rs.getInt("tt_htscoreout"));
-		// ftm.setTtHtScoreIn(rs.getInt("tt_htscoreint"));
-		// ftm.setTtHtConcededOut(rs.getInt("tt_htconcedeout"));
-		// ftm.setTtHtConcededIn(rs.getInt("tt_htconcedein"));
-		// ftm.setTtFtScoreOut(rs.getInt("tt_ftscoreout"));
-		// ftm.setTtFtScoreIn(rs.getInt("tt_ftscoreint"));
-		// ftm.setTtFtConcededOut(rs.getInt("tt_ftconcedeout"));
-		// ftm.setTtFtConcededIn(rs.getInt("tt_ftconcedein"));
-		//
-		// ftm.setP3DownMatchesIn(rs.getInt("p3down_min"));
-		// ftm.setP3DownMatchesOut(rs.getInt("p3down_mout"));
-		// ftm.setP3DownHtScoreOut(rs.getInt("p3down_htscoreout"));
-		// ftm.setP3DownHtScoreIn(rs.getInt("p3down_htscoreint"));
-		// ftm.setP3DownHtConcededOut(rs.getInt("p3down_htconcedeout"));
-		// ftm.setP3DownHtConcededIn(rs.getInt("p3down_htconcedein"));
-		// ftm.setP3DownFtScoreOut(rs.getInt("p3down_ftscoreout"));
-		// ftm.setP3DownFtScoreIn(rs.getInt("p3down_ftscoreint"));
-		// ftm.setP3DownFtConcededOut(rs.getInt("p3down_ftconcedeout"));
-		// ftm.setP3DownFtConcededIn(rs.getInt("p3down_ftconcedein"));
-		//
-		// ftm.setP3UpMatchesIn(rs.getInt("p3up_min"));
-		// ftm.setP3UpMatchesOut(rs.getInt("p3up_mout"));
-		// ftm.setP3UpHtScoreOut(rs.getInt("p3up_htscoreout"));
-		// ftm.setP3UpHtScoreIn(rs.getInt("p3up_htscoreint"));
-		// ftm.setP3UpHtConcededOut(rs.getInt("p3up_htconcedeout"));
-		// ftm.setP3UpHtConcededIn(rs.getInt("p3up_htconcedein"));
-		// ftm.setP3UpFtScoreOut(rs.getInt("p3up_ftscoreout"));
-		// ftm.setP3UpFtScoreIn(rs.getInt("p3up_ftscoreint"));
-		// ftm.setP3UpFtConcededOut(rs.getInt("p3up_ftconcedeout"));
-		// ftm.setP3UpFtConcededIn(rs.getInt("p3up_ftconcedein"));
-		//
-		// ftm.setForm(rs.getFloat("form"));
-		// ftm.setForm1(rs.getFloat("form1"));
-		// ftm.setForm2(rs.getFloat("form2"));
-		// ftm.setForm3(rs.getFloat("form3"));
-		//
-		// classificationFtm.add(ftm);
-		// }
-		//
-	}
-
 	public void tableEntity(ResultSet rs) throws SQLException {
-		// create Java Entity from DB Relation
+		/*
+		 * create Java Entity from DB Relation and store it in the
+		 * classification position list, daa is ordered by points
+		 */
 		// TableMaker tm = new TableMaker();
 		BasicTableEntity tm = new BasicTableEntity();
 		// if (classificationTm == null) {
@@ -248,17 +164,45 @@ public class CompetitionTeamTable {
 		return isTable;
 	}
 
-	
+	public void createFullTable(String tableName) throws SQLException {
+		String create = "createTable Full" + tableName + " ( ";
+		String attributes = " team varchar(25) not null unique, "
+				+ "teamid int, points int not null, matchesin int not null, matchesout int not null, "
+				+ " htscorein int, htscoreout int, htconcedein int, htconcedeout int, "
+				+ " ftscorein int not null, ftscoreout int not null, ftconcedein int, ftconcedeout int, "
+				+ "p3_matchesin int,  p3_matchesout int,  p3_htscorein int not null,  p3_htscoreout int not null, p3_htconcedein int, p3_htconcedeout int, "
+				+ "p3_ftscorein int not null,  p3_ftscoreout int not null, p3_ftconcedein int, p3_ftconcedeout int, "
+				+ " tt_matchesin int,  tt_matchesout int, tt_htscorein int not null, tt_htscoreout int not null, tt_htconcedein int, tt_htconcedeout int, "
+				+ "tt_ftscorein int not null, tt_ftscoreout int not null, tt_ftconcedein int, tt_ftconcedeout int, "
+				+ " p3up_matchesin int,  p3up_matchesout int, p3up_htscorein int not null, p3up_htscoreout int not null, p3up_htconcedein int, p3up_htconcedeout int, "
+				+ "p3up_ftscorein int not null, p3up_ftscoreout int not null, p3up_ftconcedein int, p3up_ftconcedeout int, "
+				+ "p3down_matchesin int,  p3down_matchesout int, p3down_htscorein int not null, p3down_htscoreout int not null, p3down_htconcedein int, p3down_htconcedeout int, "
+				+ "p3down_ftscorein int not null, p3down_ftscoreout int not null, p3down_ftconcedein int, p3down_ftconcedeout int, "
+				+ " form numeric(5,3) , form1 numeric(5,3) , form2 numeric(5,3), form3 numeric(5,3), form4 numeric(5,3), formAtack numeric(5,3), formDefence numeric(5,3) ";
+
+		Conn conn = new Conn();
+		conn.open();
+		conn.getConn().createStatement().execute(create + attributes + " );");
+		conn.close();
+
+		// return create + attributes + " );";
+	}
+
+	public void orderClassificationTable() {
+		// TODO sort the classificationPos based on the points of eachteam
+	}
+
+	public boolean hasTeamInClassification(String team) {
+		for (int i = 0; i < classificationPos.size(); i++) {
+			if (classificationPos.get(i).getTeam() == team) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public List<BasicTableEntity> getClassificationPos() {
 		return classificationPos;
 	}
-
-	// public List<FullTableMaker> getClassificationFtm() {
-	// return classificationFtm;
-	// }
-	//
-	// public List<TableMaker> getClassificationTm() {
-	// return classificationTm;
-	// }
 
 }

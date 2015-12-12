@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 
+import calculate.MatchToTableRenewal;
+import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
 import dbtry.Conn;
 import scrap.AjaxGrabber;
@@ -12,6 +14,7 @@ import scrap.SoccerPrunterMAtches;
 import scrap.Soccerpunter_homePage;
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
+import structures.MatchesList;
 import test.MatchQueries;
 import test.Timestamps;
 
@@ -21,30 +24,21 @@ public class Demo {
 		// TODO Auto-generated method stub
 		// Soccerpunter_homePage sp = new Soccerpunter_homePage();
 		// sp.goGetCompetitions();
-//		int i;
 
-		System.out.println(0/30);
-		// initStructs();
-		// SoccerPrunterMAtches spm = new SoccerPrunterMAtches ();
+		initStructs();
+
+		String link = CountryCompetition.compLinkList.get(0).getCompLink();
+		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
 		// spm.matchGraber();
+		spm.competitionResultsGrabbers(link);
+		// at this point matches garbed and put to list
+		//TODO store the list in db
 
-		// CompetitionTeamTable ctt = new CompetitionTeamTable ();
-		// ctt.existsDb("country");
-
-		// for (int i=0;i<CountryCompetition.compList.size();i++){
-		// CountryCompObj c= CountryCompetition.compList.get(i);
-		// System.out.println(i+" "+c.getId()+" "+ c.getCompetition()+
-		// " "+c.getCountry());
-		// }
-
-		// Timestamps ts = new Timestamps ();
-		// ts.ts("12/01/1990");
-		// ts.spliter("http://www.soccerpunter.com/soccer-statistics/Spain/Primera-División-2015-2016/livesoccerodds?match_id=2086384&home=Getafe+Club+de+Fútbol&away=Villarreal+Club+de+Fútbol&date=2015-11-29+11%3A00%3A00");
-
-		// ajaxGrabber();
-		// foo(); // test db function
-		// MatchQueries mq = new MatchQueries ();
-		// mq.init();
+		// TODO call MatchToTableRenewual and evaluate attributes
+		MatchToTableRenewal mttr;
+		for(Integer key:MatchesList.readMatches.keySet()){
+			mttr=new MatchToTableRenewal(MatchesList.readMatches.get(key),key);
+		}
 	}
 
 	public static void ajaxGrabber() throws IOException {
@@ -57,16 +51,15 @@ public class Demo {
 	}
 
 	public static void initStructs() throws SQLException {
+		/*
+		 * read from the DB the competitions data and keep them in the java
+		 * Competition* structures
+		 */
 		Conn conn = new Conn();
-
 		conn.open();
 		initCC(conn.getConn());
 		initLinks(conn.getConn());
-		// cp.readCompIdLink(conn.getConn());
-		// cp.readContryComp(conn.getConn());
 		conn.close();
-		// if()
-
 	}
 
 	public static void initCC(Connection conn) throws SQLException {
