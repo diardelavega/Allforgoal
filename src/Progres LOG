@@ -31,4 +31,27 @@ taking in consideration the match in hand.
 	 ** to init the teamtable attributes with 0 instead of null values when we just got the first data for that
 	 	table. (So  when it is a new table)  
 	 
+
+---) the structure that keeps matches keeps a Map with competition-<matchesList>. The list is passed to be calculated
+	 at every step we check if the teams are in the array if so we get them with their values otherwise we create new ones
+	 once the attributes are updated every 4 matches we RECLASSIFY the teams in the tables so that their position is 
+	 correct. at the end of the list we store the data to db.
+	 
+	 
+	 **TODO-  inplement the order clasification table on temtable class.
+
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
 	 				 	  

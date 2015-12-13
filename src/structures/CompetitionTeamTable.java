@@ -47,11 +47,12 @@ public class CompetitionTeamTable {
 		if (resultSet.next()) {
 			isTable = true;
 			// logger.info(resultSet.getString("TABLE_NAME"));
-			resultSet = metadata.getColumns(null, null, dbName, "htScoreIn");
-			if (resultSet.next())
-				isFullTable = true;
+			// resultSet = metadata.getColumns(null, null, dbName, "htScoreIn");
+			// if (resultSet.next())
+			// isFullTable = true;
 			// logger.info(resultSet.getString("COLUMN_NAME"));
 		}
+		resultSet.close();
 		conn.close();
 	}
 

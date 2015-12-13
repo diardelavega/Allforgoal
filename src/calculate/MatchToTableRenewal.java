@@ -49,24 +49,54 @@ public class MatchToTableRenewal {
 	}
 
 	public void calculate() throws SQLException {
-		// TODO init teamtable structures
-		init();
-		// MatchObj mobj;
-		if (N == 0) {// table didn't exist
-			for (int i = 0; i < matchList.size(); i++) {
-				mobj = matchList.get(i);
-//				if()
-				BasicTableEntity t1 = new BasicTableEntity();
-				BasicTableEntity t2 = new BasicTableEntity();
-				t1.setTeam(mobj.getT1());
-				t1.setTeam(mobj.getT2());
-				renew(t1, t2);
-				ctt.getClassificationPos().add(t1);
-				ctt.getClassificationPos().add(t2);
-				match_counter++;
-			}
-		} else {// N>0 -> table exists and has data
+		BasicTableEntity t1, t2;
 
+		init();
+		for (int i = 0; i < matchList.size(); i++) {
+			mobj = matchList.get(i);
+			if (getTablePosition()) {
+				t1 = ctt.getClassificationPos().get(posT1);
+				t2 = ctt.getClassificationPos().get(posT2);
+			} else {
+				t1 = new BasicTableEntity();
+				t2 = new BasicTableEntity();
+			}
+			t1.setTeam(mobj.getT1());
+			t1.setTeam(mobj.getT2());
+
+			if (t1.getMatchesIn() + t1.getMatchesOut() > 3
+					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
+				// if teams matches > 3 then start calculating group attributes
+				evalUpdateGroups();
+				renew(t1, t2, true);
+			} else {
+				renew(t1, t2, false);
+			}
+
+			if (posT1 > 0) {// if team exists replace with updated version
+				ctt.getClassificationPos().remove(posT1);
+				ctt.getClassificationPos().add(posT1, t1);
+			} else {
+				ctt.getClassificationPos().add(t1);
+			}
+			if (posT2 > 0) {
+				ctt.getClassificationPos().remove(posT2);
+				ctt.getClassificationPos().add(posT2, t2);
+			} else {
+				ctt.getClassificationPos().add(t2);
+			}
+
+			ctt.getClassificationPos().add(t2);
+			match_counter++;
+			if (match_counter >= 4) {
+				// for every 4 matcher reorder teams in classification table
+				match_counter = 0;
+				// TODO reorder table based on new points
+			}
+		}
+		// at the end
+		if (ctt.isTable()) {
+			// TODO insert/update classification to db
 		}
 	}
 
@@ -93,10 +123,11 @@ public class MatchToTableRenewal {
 		 * get the team table object. Check if it is full or half table, also
 		 * look and get the field of the first and second team to elaborate
 		 */
-		renew(t1, t2);
+		// renew(t1, t2);
 	}
 
-	private void renew(BasicTableEntity t12, BasicTableEntity t22) {
+	private void renew(BasicTableEntity t12, BasicTableEntity t22,
+			boolean flag4matches) {
 		// calculate and change the appropriate values for the second team
 		t2.addMatchesOut();
 		t2.addHtConcededOut(mobj.getHt1());
@@ -172,7 +203,7 @@ public class MatchToTableRenewal {
 		}
 
 		// CALCULATE FORM
-		// formCalc();
+		formCalc(flag4matches);
 		// points are added in the end, after form is calculated
 		if (mobj.getFt1() > mobj.getFt2()) {
 			t1.addPoints(3);
@@ -281,20 +312,23 @@ public class MatchToTableRenewal {
 
 	}
 
-	private void getTablePosition() {
+	private boolean getTablePosition() {
 		// get the classification position on the team table for the two teams
 		// in hand
-
-		N = ctt.getClassificationPos().size();
-		for (int i = 0; i < N; i++) {
+		boolean flag = false;
+		// N = ctt.getClassificationPos().size();
+		for (int i = 0; i < ctt.getClassificationPos().size(); i++) {
 			if (mobj.getT1()
 					.equals(ctt.getClassificationPos().get(i).getTeam())) {
 				posT1 = i;
+				flag = true;
 			} else if (mobj.getT2().equals(
 					ctt.getClassificationPos().get(i).getTeam())) {
 				posT2 = i;
+				flag = true;
 			}
 		}
+		return flag;
 	}
 
 	private void evalUpdateGroups() {
