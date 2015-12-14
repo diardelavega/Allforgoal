@@ -4,6 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.LoggerFactory;
+
+import com.sun.media.jfxmedia.logging.Logger;
+
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
 import basicStruct.ClasifficationStruct;
@@ -22,10 +26,13 @@ import dbhandler.TableMaker;
  */
 public class MatchToTableRenewal {
 
+	public static final org.slf4j.Logger logger = LoggerFactory
+			.getLogger(MatchToTableRenewal.class);
+
 	private List<MatchObj> matchList;
 	private int compId;
 	private MatchObj mobj;
-	private CompetitionTeamTable ctt = new CompetitionTeamTable();
+	private CompetitionTeamTable ctt;
 	private BasicTableEntity t1, t2;
 	private int N;
 	private int posT1 = 0;
@@ -49,7 +56,8 @@ public class MatchToTableRenewal {
 	}
 
 	public void calculate() throws SQLException {
-		BasicTableEntity t1, t2;
+		t1 = null;
+		t2 = null;
 
 		init();
 		for (int i = 0; i < matchList.size(); i++) {
@@ -68,9 +76,9 @@ public class MatchToTableRenewal {
 					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
 				// if teams matches > 3 then start calculating group attributes
 				evalUpdateGroups();
-				renew(t1, t2, true);
+				renew( true);
 			} else {
-				renew(t1, t2, false);
+				renew(false);
 			}
 
 			if (posT1 > 0) {// if team exists replace with updated version
@@ -86,18 +94,21 @@ public class MatchToTableRenewal {
 				ctt.getClassificationPos().add(t2);
 			}
 
-			ctt.getClassificationPos().add(t2);
+			// ctt.getClassificationPos().add(t2);.
 			match_counter++;
 			if (match_counter >= 4) {
 				// for every 4 matcher reorder teams in classification table
 				match_counter = 0;
-				// TODO reorder table based on new points
+				ctt.orderClassificationTable();
 			}
 		}
 		// at the end
 		if (ctt.isTable()) {
-			// TODO insert/update classification to db
+			ctt.insertTable();
+		} else {
+			ctt.updateTable();
 		}
+
 	}
 
 	public void init() throws SQLException {
@@ -106,29 +117,25 @@ public class MatchToTableRenewal {
 		 * create it. In any case we set a teamtable for a specific competition
 		 * ready
 		 */
+
 		String compName = CountryCompetition.compList.get(compId - 1)
 				.getCompetition();
-		ctt.existsDb(compName);
+		compName = compName.replaceAll(" ", "_");
+		ctt = new CompetitionTeamTable(compName);
+
+		ctt.existsDb();
 		if (ctt.isTable()) {
-			ctt.tableReader(compName, mobj.getT1(), mobj.getT2());
+			ctt.tableReader();
 			N = ctt.getClassificationPos().size();
 		} else {
-			ctt.createFullTable(compName);
+			ctt.createFullTable();
 			N = 0;
 		}
 	}
 
-	public void recalculate() {
-		/*
-		 * get the team table object. Check if it is full or half table, also
-		 * look and get the field of the first and second team to elaborate
-		 */
-		// renew(t1, t2);
-	}
-
-	private void renew(BasicTableEntity t12, BasicTableEntity t22,
-			boolean flag4matches) {
+	private void renew(	boolean flag4matches) {
 		// calculate and change the appropriate values for the second team
+
 		t2.addMatchesOut();
 		t2.addHtConcededOut(mobj.getHt1());
 		t2.addHtScoreOut(mobj.getHt2());
@@ -293,6 +300,12 @@ public class MatchToTableRenewal {
 		}
 		t1Form = t1Form + t1Atack + t1Defence;
 		t2Form = t2Form + t2Atack + t2Defence;
+
+//		if (t1 != null) {
+//			logger.info("t1 f4 = {},  t1 f3 = {}, t1f2 ={}, t1.f1={}, t1f={}",
+//					t1.getForm4(), t1.getForm3(), t1.getForm2(), t1.getForm1(),
+//					t1.getForm());
+//		}
 
 		t1.setForm4(t1.getForm3());
 		t1.setForm3(t1.getForm2());

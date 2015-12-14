@@ -1,54 +1,55 @@
 package dbhandler;
 
-public class BasicTableEntity extends HalfTimeExtend {
+public class BasicTableEntity extends HalfTimeExtend implements
+		Comparable<BasicTableEntity> {
 
 	private String team;
 	private int teamid;
 
 	private int points;
-	private int matchesIn=0;
-	private int matchesOut=0;
-	private int ftScoreIn=0;
-	private int ftScoreOut=0;
-	private int ftConcededIn=0;
-	private int ftConcededOut=0;
+	private int matchesIn = 0;
+	private int matchesOut = 0;
+	private int ftScoreIn = 0;
+	private int ftScoreOut = 0;
+	private int ftConcededIn = 0;
+	private int ftConcededOut = 0;
 
-	private int p3MatchesIn=0;
-	private int p3MatchesOut=0;
-	private int p3FtScoreIn=0;
-	private int p3FtScoreOut=0;
-	private int p3FtConcededIn=0;
-	private int p3FtConcededOut=0;
+	private int p3MatchesIn = 0;
+	private int p3MatchesOut = 0;
+	private int p3FtScoreIn = 0;
+	private int p3FtScoreOut = 0;
+	private int p3FtConcededIn = 0;
+	private int p3FtConcededOut = 0;
 
-	private int ttMatchesIn=0;
-	private int ttMatchesOut=0;
-	private int ttFtScoreIn=0;
-	private int ttFtScoreOut=0;
-	private int ttFtConcededIn=0;
-	private int ttFtConcededOut=0;
+	private int ttMatchesIn = 0;
+	private int ttMatchesOut = 0;
+	private int ttFtScoreIn = 0;
+	private int ttFtScoreOut = 0;
+	private int ttFtConcededIn = 0;
+	private int ttFtConcededOut = 0;
 
-	private int p3UpMatchesIn=0;
-	private int p3UpMatchesOut=0;
-	private int p3UpFtScoreIn=0;
-	private int p3UpFtScoreOut=0;
-	private int p3UpFtConcededIn=0;
-	private int p3UpFtConcededOut=0;
+	private int p3UpMatchesIn = 0;
+	private int p3UpMatchesOut = 0;
+	private int p3UpFtScoreIn = 0;
+	private int p3UpFtScoreOut = 0;
+	private int p3UpFtConcededIn = 0;
+	private int p3UpFtConcededOut = 0;
 
-	private int p3DownMatchesIn=0;
-	private int p3DownMatchesOut=0;
-	private int p3DownFtScoreIn=0;
-	private int p3DownFtScoreOut=0;
-	private int p3DownFtConcededIn=0;
-	private int p3DownFtConcededOut=0;
+	private int p3DownMatchesIn = 0;
+	private int p3DownMatchesOut = 0;
+	private int p3DownFtScoreIn = 0;
+	private int p3DownFtScoreOut = 0;
+	private int p3DownFtConcededIn = 0;
+	private int p3DownFtConcededOut = 0;
 
-	private float form=0;
-	private float form1=0;
-	private float form2=0;
-	private float form3=0;
-	private float form4=0;
+	private float form = 0;
+	private float form1 = 0;
+	private float form2 = 0;
+	private float form3 = 0;
+	private float form4 = 0;
 
-	private float formAtack=0;
-	private float formDefence=0;
+	private float formAtack = 0;
+	private float formDefence = 0;
 
 	public String getTeam() {
 		return team;
@@ -382,22 +383,6 @@ public class BasicTableEntity extends HalfTimeExtend {
 		this.matchesOut += 1;
 	}
 
-	// public void addHtScoreIn(int htScoreIn) {
-	// this.htScoreIn += htScoreIn;
-	// }
-	//
-	// public void addHtScoreOut(int htScoreOut) {
-	// this.htScoreOut += htScoreOut;
-	// }
-	//
-	// public void addHtConcededIn(int htConcededIn) {
-	// this.htConcededIn += htConcededIn;
-	// }
-	//
-	// public void addHtConcededOut(int htConcededOut) {
-	// this.htConcededOut += htConcededOut;
-	// }
-
 	public void addFtScoreIn(int ftScoreIn) {
 		this.ftScoreIn += ftScoreIn;
 	}
@@ -421,22 +406,6 @@ public class BasicTableEntity extends HalfTimeExtend {
 	public void addP3MatchesOut() {
 		this.p3MatchesOut += 1;
 	}
-
-	// public void addP3HtScoreIn(int p3HtScoreIn) {
-	// this.p3HtScoreIn += p3HtScoreIn;
-	// }
-	//
-	// public void addP3HtScoreOut(int p3HtScoreOut) {
-	// this.p3HtScoreOut += p3HtScoreOut;
-	// }
-	//
-	// public void addP3HtConcededIn(int p3HtConcededIn) {
-	// this.p3HtConcededIn += p3HtConcededIn;
-	// }
-	//
-	// public void addP3HtConcededOut(int p3HtConcededOut) {
-	// this.p3HtConcededOut += p3HtConcededOut;
-	// }
 
 	public void addP3FtScoreIn(int p3FtScoreIn) {
 		this.p3FtScoreIn += p3FtScoreIn;
@@ -462,23 +431,6 @@ public class BasicTableEntity extends HalfTimeExtend {
 		this.ttMatchesOut += 1;
 	}
 
-	//
-	// public void addTtHtScoreIn(int ttHtScoreIn) {
-	// this.ttHtScoreIn += ttHtScoreIn;
-	// }
-	//
-	// public void addTtHtScoreOut(int ttHtScoreOut) {
-	// this.ttHtScoreOut += ttHtScoreOut;
-	// }
-	//
-	// public void addTtHtConcededIn(int ttHtConcededIn) {
-	// this.ttHtConcededIn += ttHtConcededIn;
-	// }
-	//
-	// public void addTtHtConcededOut(int ttHtConcededOut) {
-	// this.ttHtConcededOut += ttHtConcededOut;
-	// }
-
 	public void addTtFtScoreIn(int ttFtScoreIn) {
 		this.ttFtScoreIn += ttFtScoreIn;
 	}
@@ -502,23 +454,6 @@ public class BasicTableEntity extends HalfTimeExtend {
 	public void addP3UpMatchesOut() {
 		this.p3UpMatchesOut += 1;
 	}
-
-	//
-	// public void addP3UpHtScoreIn(int p3UpHtScoreIn) {
-	// this.p3UpHtScoreIn += p3UpHtScoreIn;
-	// }
-	//
-	// public void addP3UpHtScoreOut(int p3UpHtScoreOut) {
-	// this.p3UpHtScoreOut += p3UpHtScoreOut;
-	// }
-	//
-	// public void addP3UpHtConcededIn(int p3UpHtConcededIn) {
-	// this.p3UpHtConcededIn += p3UpHtConcededIn;
-	// }
-	//
-	// public void addP3UpHtConcededOut(int p3UpHtConcededOut) {
-	// this.p3UpHtConcededOut += p3UpHtConcededOut;
-	// }
 
 	public void addP3UpFtScoreIn(int p3UpFtScoreIn) {
 		this.p3UpFtScoreIn += p3UpFtScoreIn;
@@ -544,22 +479,6 @@ public class BasicTableEntity extends HalfTimeExtend {
 		this.p3DownMatchesOut += 1;
 	}
 
-	// public void addP3DownHtScoreIn(int p3DownHtScoreIn) {
-	// this.p3DownHtScoreIn += p3DownHtScoreIn;
-	// }
-	//
-	// public void addP3DownHtScoreOut(int p3DownHtScoreOut) {
-	// this.p3DownHtScoreOut += p3DownHtScoreOut;
-	// }
-	//
-	// public void addP3DownHtConcededIn(int p3DownHtConcededIn) {
-	// this.p3DownHtConcededIn += p3DownHtConcededIn;
-	// }
-	//
-	// public void addP3DownHtConcededOut(int p3DownHtConcededOut) {
-	// this.p3DownHtConcededOut += p3DownHtConcededOut;
-	// }
-
 	public void addP3DownFtScoreIn(int p3DownFtScoreIn) {
 		this.p3DownFtScoreIn += p3DownFtScoreIn;
 	}
@@ -580,22 +499,6 @@ public class BasicTableEntity extends HalfTimeExtend {
 		this.form += form;
 	}
 
-//	public void addForm1(float form1) {
-//		this.form1 = form1;
-//	}
-//
-//	public void addForm2(float form2) {
-//		this.form2 = form2;
-//	}
-//
-//	public void addForm3(float form3) {
-//		this.form3 = form3;
-//	}
-//
-//	public void addForm4(float form4) {
-//		this.form4 = form4;
-//	}
-
 	public void addFormAtack(float formAtack) {
 		this.formAtack += formAtack;
 	}
@@ -604,4 +507,153 @@ public class BasicTableEntity extends HalfTimeExtend {
 		this.formDefence += formDefence;
 	}
 
+	public int goalScored() {
+		return ftScoreIn + ftScoreOut;
+	}
+
+	public int goalConceded() {
+		return ftConcededIn + ftConcededOut;
+	}
+
+	@Override
+	public int compareTo(BasicTableEntity o) {
+		int compare = o.getPoints();
+		if (compare == this.getPoints()) {
+			return (((o.getFtScoreIn() + o.getFtScoreOut()) - (o
+					.getFtConcededIn() + o.ftConcededOut)) - ((this
+					.getFtScoreIn() + this.getFtScoreOut()) - (this
+					.getFtConcededIn() + this.ftConcededOut)));
+		} else {
+			return compare - this.getPoints();
+		}
+	}
+
+	public String line () {
+		StringBuilder sb = new StringBuilder();
+		sb.append(team);
+		sb.append(" , ");
+		sb.append(points);
+		sb.append(" , ");
+		sb.append(matchesIn);
+		sb.append(" , ");
+		sb.append(matchesOut);
+		sb.append(" , ");
+		sb.append(htScoreIn);
+		sb.append(" , ");
+		sb.append(htScoreOut);
+		sb.append(" , ");
+		sb.append(htConcededIn);
+		sb.append(" , ");
+		sb.append(htConcededOut);
+		sb.append(" , ");
+		sb.append(ftScoreIn);
+		sb.append(" , ");
+		sb.append(ftScoreOut);
+		sb.append(" , ");
+		sb.append(ftConcededIn);
+		sb.append(" , ");
+		sb.append(ftConcededOut);
+		sb.append(" , ");
+
+		sb.append(p3MatchesIn);
+		sb.append(" , ");
+		sb.append(p3MatchesOut);
+		sb.append(" , ");
+		sb.append(p3HtScoreIn);
+		sb.append(" , ");
+		sb.append(p3HtScoreOut);
+		sb.append(" , ");
+		sb.append(p3HtConcededIn);
+		sb.append(" , ");
+		sb.append(p3HtConcededOut);
+		sb.append(" , ");
+		sb.append(p3FtScoreIn);
+		sb.append(" , ");
+		sb.append(p3FtScoreOut);
+		sb.append(" , ");
+		sb.append(p3FtConcededIn);
+		sb.append(" , ");
+		sb.append(p3FtConcededOut);
+		sb.append(" , ");
+
+		// matches against the top teams on the competition cielic(n/4)
+		sb.append(ttMatchesIn);
+		sb.append(" , ");
+		sb.append(ttMatchesOut);
+		sb.append(" , ");
+		sb.append(ttHtScoreIn);
+		sb.append(" , ");
+		sb.append(ttHtScoreOut);
+		sb.append(" , ");
+		sb.append(ttHtConcededIn);
+		sb.append(" , ");
+		sb.append(ttHtConcededOut);
+		sb.append(" , ");
+		sb.append(ttFtScoreIn);
+		sb.append(" , ");
+		sb.append(ttFtScoreOut);
+		sb.append(" , ");
+		sb.append(ttFtConcededIn);
+		sb.append(" , ");
+		sb.append(ttFtConcededOut);
+		sb.append(" , ");
+
+		sb.append(p3UpMatchesIn);
+		sb.append(" , ");
+		sb.append(p3UpMatchesOut);
+		sb.append(" , ");
+		sb.append(p3UpHtScoreIn);
+		sb.append(" , ");
+		sb.append(p3UpHtScoreOut);
+		sb.append(" , ");
+		sb.append(p3UpHtConcededIn);
+		sb.append(" , ");
+		sb.append(p3UpHtConcededOut);
+		sb.append(" , ");
+		sb.append(p3UpFtScoreIn);
+		sb.append(" , ");
+		sb.append(p3UpFtScoreOut);
+		sb.append(" , ");
+		sb.append(p3UpFtConcededIn);
+		sb.append(" , ");
+		sb.append(p3UpFtConcededOut);
+		sb.append(" , ");
+
+		sb.append(p3DownMatchesIn);
+		sb.append(" , ");
+		sb.append(p3DownMatchesOut);
+		sb.append(" , ");
+		sb.append(p3DownHtScoreIn);
+		sb.append(" , ");
+		sb.append(p3DownHtScoreOut);
+		sb.append(" , ");
+		sb.append(p3DownHtConcededIn);
+		sb.append(" , ");
+		sb.append(p3DownHtConcededOut);
+		sb.append(" , ");
+		sb.append(p3DownFtScoreIn);
+		sb.append(" , ");
+		sb.append(p3DownFtScoreOut);
+		sb.append(" , ");
+		sb.append(p3DownFtConcededIn);
+		sb.append(" , ");
+		sb.append(p3DownFtConcededOut);
+		sb.append(" , ");
+
+		sb.append(form);
+		sb.append(" , ");
+		sb.append(form1);
+		sb.append(" , ");
+		sb.append(form2);
+		sb.append(" , ");
+		sb.append(form3);
+		sb.append(" , ");
+		sb.append(form4);
+		sb.append(" , ");
+		sb.append(formAtack);
+		sb.append(" , ");
+		sb.append(formDefence);
+
+		return  sb.toString();
+	}
 }

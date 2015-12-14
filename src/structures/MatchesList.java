@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dbtry.Conn;
 import basicStruct.MatchObj;
 
@@ -23,7 +26,8 @@ import basicStruct.MatchObj;
  *
  */
 public class MatchesList {
-
+	private static final Logger logger = LoggerFactory
+			.getLogger(MatchesList.class);
 	public static Map<Integer, List<MatchObj>> readMatches = new HashMap<>();
 	// public static List<MatchObj> toStoreMatches = new ArrayList<>();
 	private Conn conn = new Conn();
@@ -58,15 +62,15 @@ public class MatchesList {
 			flag = true;
 		}
 		sb.append(" ORDER BY compid ");
+		logger.info("query is {}", sb.toString());
 		ResultSet rs = conn.getConn().createStatement()
 				.executeQuery(sb.toString());
-		listFill(rs);
+		listFill(rs, compId);
 		rs.close();
 		conn.close();
 	}
 
 	public void insertMatches() throws SQLException {
-
 		conn.open();
 
 		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -102,16 +106,16 @@ public class MatchesList {
 
 	}
 
-	public void listFill(ResultSet rs) throws SQLException {
+	public void listFill(ResultSet rs, int compId) throws SQLException {
 		/*
 		 * get the result set with the data for the matches and put them to a
 		 * map
 		 */
 		MatchObj mobj = null;
 		List<MatchObj> ml = new ArrayList<>();
-		readMatches = new HashMap<>();
+		// readMatches = new HashMap<>();
 		while (rs.next()) {
-			if (mobj.getComId() != rs.getInt(2)) {
+			if (compId != rs.getInt(2)) {
 				// if the new match is of a different competition, then store
 				// the current list of matches
 				readMatches.put(mobj.getComId(), ml);
@@ -133,6 +137,7 @@ public class MatchesList {
 			mobj.setDat(rs.getDate(14));
 			ml.add(mobj);
 		}
+		logger.info("MAthes list are  {}", ml.size());
 		readMatches.put(mobj.getComId(), ml);
 	}
 

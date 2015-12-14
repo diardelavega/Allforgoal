@@ -29,19 +29,22 @@ public class Demo {
 
 		String link = CountryCompetition.compLinkList.get(0).getCompLink();
 		int compId = CountryCompetition.compList.get(0).getId();
-		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-		// spm.matchGraber();
-		spm.competitionResultsGrabbers(link,compId);
+//		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+//		 spm.matchGraber();
+//		spm.competitionResultsGrabbers(link,compId);
 		// at this point matches garbed and put to list
 		MatchesList ml = new MatchesList();
-		ml.insertMatches();
+//		ml.insertMatches();
+		ml.readMatchesComp(compId);
 		//TODO store the list in db
 
 		// TODO call MatchToTableRenewual and evaluate attributes
 		MatchToTableRenewal mttr;
 		for(Integer key:MatchesList.readMatches.keySet()){
 			mttr=new MatchToTableRenewal(MatchesList.readMatches.get(key),key);
+			mttr.calculate();
 		}
+		
 	}
 
 	public static void ajaxGrabber() throws IOException {
