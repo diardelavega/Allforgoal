@@ -35,8 +35,8 @@ public class MatchToTableRenewal {
 	private CompetitionTeamTable ctt;
 	private BasicTableEntity t1, t2;
 	private int N;
-	private int posT1 = 0;
-	private int posT2 = 0;
+	private int posT1 = -1;
+	private int posT2 = -1;
 	private int match_counter = 0;
 
 	// vars to know which sets of db update to execute
@@ -62,51 +62,61 @@ public class MatchToTableRenewal {
 		init();
 		for (int i = 0; i < matchList.size(); i++) {
 			mobj = matchList.get(i);
-			if (getTablePosition()) {
+			posT1 = -1;
+			posT2 = -1;
+			getTablePosition();
+			if (posT1 >= 0) {
 				t1 = ctt.getClassificationPos().get(posT1);
-				t2 = ctt.getClassificationPos().get(posT2);
 			} else {
 				t1 = new BasicTableEntity();
-				t2 = new BasicTableEntity();
+				t1.setTeam(mobj.getT1());
 			}
-			t1.setTeam(mobj.getT1());
-			t1.setTeam(mobj.getT2());
+			if (posT2 >= 0) {
+				t2 = ctt.getClassificationPos().get(posT2);
+			} else {
+				t2 = new BasicTableEntity();
+				t2.setTeam(mobj.getT2());
+			}
 
 			if (t1.getMatchesIn() + t1.getMatchesOut() > 3
 					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
 				// if teams matches > 3 then start calculating group attributes
 				evalUpdateGroups();
-				renew( true);
+				renew(true);
 			} else {
 				renew(false);
 			}
 
-			if (posT1 > 0) {// if team exists replace with updated version
+			if (posT1 >= 0) {// if team exists replace with updated version
 				ctt.getClassificationPos().remove(posT1);
 				ctt.getClassificationPos().add(posT1, t1);
 			} else {
 				ctt.getClassificationPos().add(t1);
 			}
-			if (posT2 > 0) {
+			if (posT2 >= 0) {
 				ctt.getClassificationPos().remove(posT2);
 				ctt.getClassificationPos().add(posT2, t2);
 			} else {
 				ctt.getClassificationPos().add(t2);
 			}
-
+			ctt.testPrint();
 			// ctt.getClassificationPos().add(t2);.
 			match_counter++;
 			if (match_counter >= 4) {
 				// for every 4 matcher reorder teams in classification table
 				match_counter = 0;
 				ctt.orderClassificationTable();
+
 			}
 		}
 		// at the end
 		if (ctt.isTable()) {
-			ctt.insertTable();
-		} else {
+			logger.info("classification size ={}", ctt.getClassificationPos()
+					.size());
 			ctt.updateTable();
+		} else {
+			ctt.insertTable();
+
 		}
 
 	}
@@ -133,7 +143,7 @@ public class MatchToTableRenewal {
 		}
 	}
 
-	private void renew(	boolean flag4matches) {
+	private void renew(boolean flag4matches) {
 		// calculate and change the appropriate values for the second team
 
 		t2.addMatchesOut();
@@ -247,52 +257,58 @@ public class MatchToTableRenewal {
 			t2Atack = 0;
 			t2Defence = 0;
 		} else {
-			t1Atack = mobj.getFt1() / (mobj.getFt1() + mobj.getFt2());
-			t1Defence = -mobj.getFt2() / (mobj.getFt1() + mobj.getFt2());
-			t2Atack = mobj.getFt2() / (mobj.getFt1() + mobj.getFt2());
-			t2Defence = -mobj.getFt1() / (mobj.getFt1() + mobj.getFt2());
+			t1Atack = (float) mobj.getFt1() / (mobj.getFt1() + mobj.getFt2());
+			t1Defence = -(float) mobj.getFt2()
+					/ (mobj.getFt1() + mobj.getFt2());
+			t2Atack = (float) mobj.getFt2() / (mobj.getFt1() + mobj.getFt2());
+			t2Defence = -(float) mobj.getFt1()
+					/ (mobj.getFt1() + mobj.getFt2());
 		}
 		// classification points
 		if (posPoint) { // if teams points are more than 3
 			if (mobj.getFt1() > mobj.getFt2()) {
 				if (t1.getPoints() == 0) {
-					t1Form += 1 / 2;
-					t2Form -= 1 / 2;
+					t1Form += (float) 1 / 2;
+					t2Form -= (float) 1 / 2;
 				} else {
-					t1Form += Math.abs(t1.getPoints() - t2.getPoints())
+					t1Form += (float) Math.abs(t1.getPoints() - t2.getPoints())
 							/ t1.getPoints();
-					t2Form -= Math.abs(t1.getPoints() - t2.getPoints())
+					t2Form -= (float) Math.abs(t1.getPoints() - t2.getPoints())
 							/ t1.getPoints();
 				}
 			} else if (mobj.getFt1() < mobj.getFt2()) {
 				if (t2.getPoints() == 0) {
-					t1Form -= 1 / 2;
-					t2Form += 1 / 2;
+					t1Form -= (float) 1 / 2;
+					t2Form += (float) 1 / 2;
 				} else {
-					t1Form -= Math.abs(t1.getPoints() - t2.getPoints())
+					t1Form -= (float) Math.abs(t1.getPoints() - t2.getPoints())
 							/ t2.getPoints();
-					t2Form += Math.abs(t1.getPoints() - t2.getPoints())
+					t2Form += (float) Math.abs(t1.getPoints() - t2.getPoints())
 							/ t2.getPoints();
 				}
 			} else {// in case of draw
 				if (t1.getPoints() > t2.getPoints()) {
 					if (t2.getPoints() == 0) {
-						t1Form -= 1 / 4;
-						t2Form += 1 / 4;
+						t1Form -= (float) 1 / 4;
+						t2Form += (float) 1 / 4;
 					} else {
-						t1Form -= Math.abs(t1.getPoints() - t2.getPoints())
+						t1Form -= (float) Math.abs(t1.getPoints()
+								- t2.getPoints())
 								/ t2.getPoints();
-						t2Form += Math.abs(t1.getPoints() - t2.getPoints())
+						t2Form += (float) Math.abs(t1.getPoints()
+								- t2.getPoints())
 								/ t2.getPoints();
 					}
 				} else if (t1.getPoints() < t2.getPoints()) {
 					if (t1.getPoints() == 0) {
-						t1Form += 1 / 4;
-						t2Form -= 1 / 4;
+						t1Form += (float) 1 / 4;
+						t2Form -= (float) 1 / 4;
 					} else {
-						t1Form += Math.abs(t1.getPoints() - t2.getPoints())
+						t1Form += (float) Math.abs(t1.getPoints()
+								- t2.getPoints())
 								/ t1.getPoints();
-						t2Form -= Math.abs(t1.getPoints() - t2.getPoints())
+						t2Form -= (float) Math.abs(t1.getPoints()
+								- t2.getPoints())
 								/ t1.getPoints();
 					}
 				}
@@ -301,11 +317,11 @@ public class MatchToTableRenewal {
 		t1Form = t1Form + t1Atack + t1Defence;
 		t2Form = t2Form + t2Atack + t2Defence;
 
-//		if (t1 != null) {
-//			logger.info("t1 f4 = {},  t1 f3 = {}, t1f2 ={}, t1.f1={}, t1f={}",
-//					t1.getForm4(), t1.getForm3(), t1.getForm2(), t1.getForm1(),
-//					t1.getForm());
-//		}
+		// if (t1 != null) {
+		// logger.info("t1 f4 = {},  t1 f3 = {}, t1f2 ={}, t1.f1={}, t1f={}",
+		// t1.getForm4(), t1.getForm3(), t1.getForm2(), t1.getForm1(),
+		// t1.getForm());
+		// }
 
 		t1.setForm4(t1.getForm3());
 		t1.setForm3(t1.getForm2());

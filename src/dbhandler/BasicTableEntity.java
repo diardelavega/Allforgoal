@@ -372,7 +372,7 @@ public class BasicTableEntity extends HalfTimeExtend implements
 	}
 
 	public void addPoints(int points) {
-		this.points = points;
+		this.points += points;
 	}
 
 	public void addMatchesIn() {

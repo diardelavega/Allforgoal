@@ -96,31 +96,31 @@ public class CompetitionTeamTable {
 			tm.setFtConcededOut(rs.getInt("ftconcedeout"));
 			tm.setFtConcededIn(rs.getInt("ftconcedein"));
 
-			tm.setP3MatchesIn(rs.getInt("p3_min"));
-			tm.setP3MatchesOut(rs.getInt("p3_mout"));
+			tm.setP3MatchesIn(rs.getInt("p3_matchesin"));
+			tm.setP3MatchesOut(rs.getInt("p3_matchesout"));
 			tm.setP3FtScoreOut(rs.getInt("p3_ftscoreout"));
-			tm.setP3FtScoreIn(rs.getInt("p3_ftscoreint"));
+			tm.setP3FtScoreIn(rs.getInt("p3_ftscorein"));
 			tm.setP3FtConcededOut(rs.getInt("p3_ftconcedeout"));
 			tm.setP3FtConcededIn(rs.getInt("p3_ftconcedein"));
 
-			tm.setTtMatchesIn(rs.getInt("tt_min"));
-			tm.setTtMatchesOut(rs.getInt("tt_mout"));
+			tm.setTtMatchesIn(rs.getInt("tt_matchesin"));
+			tm.setTtMatchesOut(rs.getInt("tt_matchesout"));
 			tm.setTtFtScoreOut(rs.getInt("tt_ftscoreout"));
-			tm.setTtFtScoreIn(rs.getInt("tt_ftscoreint"));
+			tm.setTtFtScoreIn(rs.getInt("tt_ftscorein"));
 			tm.setTtFtConcededOut(rs.getInt("tt_ftconcedeout"));
 			tm.setTtFtConcededIn(rs.getInt("tt_ftconcedein"));
 
-			tm.setP3DownMatchesIn(rs.getInt("p3down_min"));
-			tm.setP3DownMatchesOut(rs.getInt("p3down_mout"));
+			tm.setP3DownMatchesIn(rs.getInt("p3down_matchesin"));
+			tm.setP3DownMatchesOut(rs.getInt("p3down_matchesout"));
 			tm.setP3DownFtScoreOut(rs.getInt("p3down_ftscoreout"));
-			tm.setP3DownFtScoreIn(rs.getInt("p3down_ftscoreint"));
+			tm.setP3DownFtScoreIn(rs.getInt("p3down_ftscorein"));
 			tm.setP3DownFtConcededOut(rs.getInt("p3down_ftconcedeout"));
 			tm.setP3DownFtConcededIn(rs.getInt("p3down_ftconcedein"));
 
-			tm.setP3UpMatchesIn(rs.getInt("p3up_min"));
-			tm.setP3UpMatchesOut(rs.getInt("p3up_mout"));
+			tm.setP3UpMatchesIn(rs.getInt("p3up_matchesin"));
+			tm.setP3UpMatchesOut(rs.getInt("p3up_matchesout"));
 			tm.setP3UpFtScoreOut(rs.getInt("p3up_ftscoreout"));
-			tm.setP3UpFtScoreIn(rs.getInt("p3up_ftscoreint"));
+			tm.setP3UpFtScoreIn(rs.getInt("p3up_ftscorein"));
 			tm.setP3UpFtConcededOut(rs.getInt("p3up_ftconcedeout"));
 			tm.setP3UpFtConcededIn(rs.getInt("p3up_ftconcedein"));
 
@@ -136,22 +136,22 @@ public class CompetitionTeamTable {
 			tm.setHtConcededIn(rs.getInt("htconcedein"));
 
 			tm.setP3HtScoreOut(rs.getInt("p3_htscoreout"));
-			tm.setP3HtScoreIn(rs.getInt("p3_htscoreint"));
+			tm.setP3HtScoreIn(rs.getInt("p3_htscorein"));
 			tm.setP3HtConcededOut(rs.getInt("p3_htconcedeout"));
 			tm.setP3HtConcededIn(rs.getInt("p3_htconcedein"));
 
 			tm.setTtHtScoreOut(rs.getInt("tt_htscoreout"));
-			tm.setTtHtScoreIn(rs.getInt("tt_htscoreint"));
+			tm.setTtHtScoreIn(rs.getInt("tt_htscorein"));
 			tm.setTtHtConcededOut(rs.getInt("tt_htconcedeout"));
 			tm.setTtHtConcededIn(rs.getInt("tt_htconcedein"));
 
 			tm.setP3DownHtScoreOut(rs.getInt("p3down_htscoreout"));
-			tm.setP3DownHtScoreIn(rs.getInt("p3down_htscoreint"));
+			tm.setP3DownHtScoreIn(rs.getInt("p3down_htscorein"));
 			tm.setP3DownHtConcededOut(rs.getInt("p3down_htconcedeout"));
 			tm.setP3DownHtConcededIn(rs.getInt("p3down_htconcedein"));
 
 			tm.setP3UpHtScoreOut(rs.getInt("p3up_htscoreout"));
-			tm.setP3UpHtScoreIn(rs.getInt("p3up_htscoreint"));
+			tm.setP3UpHtScoreIn(rs.getInt("p3up_htscorein"));
 			tm.setP3UpHtConcededOut(rs.getInt("p3up_htconcedeout"));
 			tm.setP3UpHtConcededIn(rs.getInt("p3up_htconcedein"));
 			// }
@@ -186,16 +186,18 @@ logger.info(create);
 
 	public void insertTable() throws SQLException {
 		String sql = "insert into " + tableName
-				+ "FullTable values (?,?,?,?,?,?,?,?,?,?"
-				+ "?,?,?,?,?,?,?,?,?,?" + "?,?,?,?,?,?,?,?,?,?"
-				+ "?,?,?,?,?,?,?,?,?,?" + "?,?,?,?,?,?,?,?,?,?"
+				+ "FullTable values (?,?,?,?,?,?,?,?,?,?,"
+				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?,"
+				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?,"
 				+ "?,?,?,?,?,?,?,?,?,?)";
+		
+//		logger.info(sql);
 		Conn conn = new Conn();
 		conn.open();
 		PreparedStatement ps = conn.getConn().prepareStatement(sql);
 		for (BasicTableEntity o : classificationPos) {
 			ps.setString(1, o.getTeam());
-			ps.setNull(2, 0);
+			ps.setInt(2, 0);
 			ps.setInt(3, o.getPoints());
 
 			ps.setInt(4, o.getMatchesIn());
