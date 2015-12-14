@@ -24,8 +24,8 @@ import basicStruct.MatchObj;
  */
 public class MatchesList {
 
-	public static Map<Integer, List<MatchObj>> readMatches =new HashMap<>();
-	public static List<MatchObj> toStoreMatches=new ArrayList<>();
+	public static Map<Integer, List<MatchObj>> readMatches = new HashMap<>();
+	// public static List<MatchObj> toStoreMatches = new ArrayList<>();
 	private Conn conn = new Conn();
 
 	public void readMatchesCompTeamDateFromTo(int compId, String teamName,
@@ -65,28 +65,36 @@ public class MatchesList {
 		conn.close();
 	}
 
-	public void insertMatches(List<MatchObj> mlist) throws SQLException {
+	public void insertMatches() throws SQLException {
 
 		conn.open();
 
 		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(insert);
-
-		for (MatchObj mobj : mlist) {
-			ps.setNull(1, mobj.getComId());
-			ps.setString(2, mobj.getT1());
-			ps.setString(3, mobj.getT2());
-			ps.setInt(4, mobj.getFt1());
-			ps.setInt(5, mobj.getFt2());
-			ps.setInt(6, mobj.getHt1());
-			ps.setInt(7, mobj.getHt2());
-			ps.setDouble(8, mobj.get_1());
-			ps.setDouble(9, mobj.get_x());
-			ps.setDouble(10, mobj.get_2());
-			ps.setDouble(11, mobj.get_o());
-			ps.setDouble(12, mobj.get_u());
-			ps.setDate(13, mobj.getDat());
-			ps.addBatch();
+		int i = 0;
+		for (Integer k : readMatches.keySet()) {
+			for (MatchObj mobj : readMatches.get(k)) {
+				ps.setLong(1, mobj.getmId());
+				ps.setInt(2, mobj.getComId());
+				ps.setString(3, mobj.getT1());
+				ps.setString(4, mobj.getT2());
+				ps.setInt(5, mobj.getFt1());
+				ps.setInt(6, mobj.getFt2());
+				ps.setInt(7, mobj.getHt1());
+				ps.setInt(8, mobj.getHt2());
+				ps.setDouble(9, mobj.get_1());
+				ps.setDouble(10, mobj.get_x());
+				ps.setDouble(11, mobj.get_2());
+				ps.setDouble(12, mobj.get_o());
+				ps.setDouble(13, mobj.get_u());
+				ps.setDate(14, mobj.getDat());
+				ps.addBatch();
+				i++;
+				if (i % 500 == 0) {
+					ps.executeBatch();
+					i = 0;
+				}
+			}
 		}
 		ps.executeBatch();
 		ps.close();
@@ -127,7 +135,6 @@ public class MatchesList {
 		}
 		readMatches.put(mobj.getComId(), ml);
 	}
-
 
 	public void readMatchesComp(int compId) throws SQLException {
 		readMatchesCompTeamDateFromTo(compId, "", null, null);

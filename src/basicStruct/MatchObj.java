@@ -165,4 +165,36 @@ public class MatchObj {
 		}
 		return false;
 	}
+
+	public void printMatch() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(dat);
+		sb.append(",  ");
+		sb.append(comId);
+		sb.append(",  ");
+		sb.append(t1);
+		sb.append(",  ");
+		sb.append(t2);
+		sb.append(",  ");
+		sb.append(ft1);
+		sb.append(",  ");
+		sb.append(ft2);
+		sb.append(",  ");
+		sb.append(ht1);
+		sb.append(",  ");
+		sb.append(ht2);
+		sb.append(",  ");
+		sb.append(_1);
+		sb.append(",  ");
+		sb.append(_2);
+		sb.append(",  ");
+		sb.append(_x);
+		sb.append(",  ");
+		sb.append(_o);
+		sb.append(",  ");
+		sb.append(_u);
+		sb.append(",  ");
+		System.out.println(sb.toString());
+
+	}
 }

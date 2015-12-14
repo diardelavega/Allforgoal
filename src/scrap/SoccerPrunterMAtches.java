@@ -1,5 +1,6 @@
 package scrap;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -16,6 +17,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import extra.NameCleaner;
 import basicStruct.MatchObj;
 import structures.CountryCompetition;
 import structures.MatchesList;
@@ -41,6 +43,7 @@ public class SoccerPrunterMAtches {
 
 	private String errorStatus = "OK"; // a simple way to report problems
 	private List<MatchObj> matchlist = new ArrayList<>();
+	private NameCleaner nc = new NameCleaner();
 
 	public void matchGraber() {
 		// for every competition link we have go get all results until now
@@ -64,54 +67,86 @@ public class SoccerPrunterMAtches {
 		}
 	}
 
-	public void competitionResultsGrabbers(String url) throws IOException {
+	public int competitionResultsGrabbers(String url, int compId)
+			throws IOException {
 		/*
 		 * go to the page with the results table and gather the match data we
 		 * want report error in case something goes wrong
 		 */
 		Document doc = null;
 		try {
-			doc = Jsoup.connect(url).get();
+			logger.info(url + "/results");
+			// doc = Jsoup.connect(url + "/results")
+			doc = Jsoup.parse(new File(
+					"C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
+			// .userAgent(
+			// "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+			// .maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.warn("---------:Connection not possible");
 			errorStatus = "Faulty Connection";
+			logger.warn("---------:Connection not possible  {}", errorStatus);
+			return -1;
 		}
-		// get table with class= competitionRanking roundsResultDisplay
-		Element resultTable = doc.getElementsByClass(
-				"competitionRanking roundsResultDisplay").get(0);
+
+		Element resultTable = doc.getElementsByClass("roundsResultDisplay")
+				.get(0);
+		doc = null;
 		if (resultTable == null) {
 			logger.warn("---------:Element not found");
 			errorStatus = "Unfound Element";
 		} else {
+
 			Elements trs = resultTable.getElementsByTag("tr");
 			for (Element tr : trs) {
-				if (tr.getElementsByClass("scoreW").get(0) != null) {
-					Elements tds = tr.getElementsByTag("td");
-					adapt(tds.get(0).text(), tds.get(1).text(), tds.get(2)
-							.text(), tds.get(3).text(), tds.get(4).text(), tds
-							.get(5).text(), tds.get(8).text());
+				if (tr.hasClass("even") || tr.hasClass("odd")) {
+					Element scoretd = tr.children().get(3)
+							.getElementsByTag("div").first();
+
+					// logger.info("********** {}", scoretd);
+					if (scoretd.hasClass("scoreW")
+							|| scoretd.hasClass("scoreL")
+							|| scoretd.hasClass("scoreD")) {
+						Elements tds = tr.getElementsByTag("td");
+						tds.get(2).select("span").remove();
+						tds.get(4).select("span").remove();
+						// String tm1=tds..text();
+						// String tm2=tds.get(4).select("span").remove().text();
+
+						adapto(tds.get(0).text(), tds.get(1).text(),/* tm1 */
+								tds.get(2).text(), tds.get(3).text(), /* tm2 */
+								tds.get(4).text(), tds.get(5).text(), tds
+										.get(8).attr("href"), compId);
+					}
 				}
 			}// for
 		}
+		logger.info("STATUS is {}", errorStatus);
+		return 0;
+
 	}
 
-	private void adapt(String week, String date, String t1, String ft,
-			String t2, String ht, String oddUrl) throws IOException {
+	private void adapto(String week, String date, String t1, String ft,
+			String t2, String ht, String oddUrl, int compId) throws IOException {
 		/*
 		 * get all the data including the odds which should come from another 2
 		 * url calls
 		 */
+
+		t1 = nc.convertNonAscii(t1.replaceFirst("\u00A0", ""));
+		t2 = nc.convertNonAscii(t2.replaceFirst("\u00A0", ""));
+
 		MatchObj match = new MatchObj();
 		match.setT1(t1);
 		match.setT2(t2);
+		match.setComId(compId);
 		match.setDat(ts(date));
 		String[] temp = ft.split(" - ");
 		match.setFt1(Integer.parseInt(temp[0]));
 		match.setFt2(Integer.parseInt(temp[1]));
 		if (!ht.equals("")) {
 			// not all the matches have ht result records
-			temp = ht.split(" - ");
+			temp = ht.split("-");
 			match.setHt1(Integer.parseInt(temp[0]));
 			match.setHt2(Integer.parseInt(temp[1]));
 		}
@@ -129,8 +164,16 @@ public class SoccerPrunterMAtches {
 				match.set_u(ag.getUnder());
 			}
 		}
+		match.printMatch();
 		// put the matches to the appropriate list structure
-		MatchesList.toStoreMatches.add(match);
+		if (MatchesList.readMatches.get(compId) == null) {
+			MatchesList.readMatches.put(compId, new ArrayList<>());
+			MatchesList.readMatches.get(compId).add(match);
+		} else {
+			MatchesList.readMatches.get(compId).add(match);
+		}
+		// logger.info("MAtches map  {}", MatchesList.readMatches.get(compId)
+		// .size());
 
 	}
 

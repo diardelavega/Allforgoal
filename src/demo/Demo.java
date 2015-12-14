@@ -28,10 +28,13 @@ public class Demo {
 		initStructs();
 
 		String link = CountryCompetition.compLinkList.get(0).getCompLink();
+		int compId = CountryCompetition.compList.get(0).getId();
 		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
 		// spm.matchGraber();
-		spm.competitionResultsGrabbers(link);
+		spm.competitionResultsGrabbers(link,compId);
 		// at this point matches garbed and put to list
+		MatchesList ml = new MatchesList();
+		ml.insertMatches();
 		//TODO store the list in db
 
 		// TODO call MatchToTableRenewual and evaluate attributes
