@@ -1,0 +1,58 @@
+
+
+--) we are in the phase to calculate the db necessary components for the competition table attributes calculation
+taking in consideration the match in hand.
+
+---) TO calculate the isTopTeam, isP3, isP3Up or p3Down a structure with all the teams and their points is needed.
+	  So an addition query and analog data structure is needed at structures. Instead of taking all the 
+	  teamtable attributes for all the teams it would be more memory effective to get just teamName and points.
+	  
+
+***) we are at the point where we are trying to implement the teamtable attributes calculation when the matches are inserted
+	 for the first time and in case of renewal for the next match.
+	 These are all untested. 
+	 procedure to be tested 
+	 						get matches
+	 						calculate attributes
+	 						set tables ready
+	 						store / update to db
+	 						
+--) A problem we might be having is the empty ht values from competition matches that don't have them.
+	Security Measures Required	 
+	
+	
+--) i changed a bit the structure so now we dont have two types of entity classes but one basic that extends another 
+	one with the HT attributes. 
+	
+***) Re-think and Redesign the architecture to keep in ming the continuous/big amount of games per each competition.
+	 To skip some calculation for the first 3 weeks of games (like tt, p3 up& down, form) since at the 
+	 beginning all the teams are in the same situation.
+	 @@ count the matches in & out.
+	 ** to init the teamtable attributes with 0 instead of null values when we just got the first data for that
+	 	table. (So  when it is a new table)  
+	 
+
+---) the structure that keeps matches keeps a Map with competition-<matchesList>. The list is passed to be calculated
+	 at every step we check if the teams are in the array if so we get them with their values otherwise we create new ones
+	 once the attributes are updated every 4 matches we RECLASSIFY the teams in the tables so that their position is 
+	 correct. at the end of the list we store the data to db.
+	 
+	 
+	 **TODO-  inplement the order clasification table on temtable class.
+	 !! sort sort of implemented. (trying)
+
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
+	 				 	  
