@@ -83,12 +83,15 @@ public class CompetitionTeamTable {
 		 * classification position list, daa is ordered by points
 		 */
 		// TableMaker tm = new TableMaker();
-		BasicTableEntity tm = new BasicTableEntity();
+		BasicTableEntity tm;
 		// if (classificationTm == null) {
 		// classificationTm = new ArrayList<>();
 		// }
 		while (rs.next()) {
+			tm = new BasicTableEntity();
+			tm.setTeam(rs.getString("team"));
 			tm.setPoints(rs.getInt("points"));
+			
 			tm.setMatchesIn(rs.getInt("matchesin"));
 			tm.setMatchesOut(rs.getInt("matchesout"));
 			tm.setFtScoreOut(rs.getInt("ftscoreout"));

@@ -653,6 +653,7 @@ public class BasicTableEntity extends HalfTimeExtend implements
 		sb.append(formAtack);
 		sb.append(" , ");
 		sb.append(formDefence);
+		sb.append(" , ");
 
 		return  sb.toString();
 	}

@@ -1,5 +1,8 @@
 package calculate;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +42,9 @@ public class MatchToTableRenewal {
 	private int posT2 = -1;
 	private int match_counter = 0;
 
+	Path path = Paths.get("C:/Users/Administrator/Desktop/matches.csv");
+	List<String> matchesDF = new ArrayList<>();
+
 	// vars to know which sets of db update to execute
 	private boolean t1tt = false, t1p3 = false, t1p3up = false,
 			t1p3down = false;
@@ -59,15 +65,17 @@ public class MatchToTableRenewal {
 		t1 = null;
 		t2 = null;
 
-		init();
+		init();// get the db table ready
 		for (int i = 0; i < matchList.size(); i++) {
 			mobj = matchList.get(i);
 			posT1 = -1;
 			posT2 = -1;
 			getTablePosition();
 			if (posT1 >= 0) {
+				// if found on the classification table read them
 				t1 = ctt.getClassificationPos().get(posT1);
 			} else {
+				// make a new one
 				t1 = new BasicTableEntity();
 				t1.setTeam(mobj.getT1());
 			}
@@ -80,12 +88,21 @@ public class MatchToTableRenewal {
 
 			if (t1.getMatchesIn() + t1.getMatchesOut() > 3
 					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
+				fileIt();// write match to file
+
 				// if teams matches > 3 then start calculating group attributes
 				evalUpdateGroups();
 				renew(true);
 			} else {
 				renew(false);
 			}
+			// -------------------------------------------
+			// TODO test
+			logger.info("t1 ={}    htscoreout={}  htconcedein={}",
+					t1.getTeam(), t1.getHtScoreOut(), t1.getHtConcededIn());
+			logger.info("t2 ={}    htscoreout={}  htconcedein={}",
+					t2.getTeam(), t2.getHtScoreOut(), t2.getHtConcededIn());
+			// -------------------------------------------
 
 			if (posT1 >= 0) {// if team exists replace with updated version
 				ctt.getClassificationPos().remove(posT1);
@@ -99,26 +116,31 @@ public class MatchToTableRenewal {
 			} else {
 				ctt.getClassificationPos().add(t2);
 			}
-			ctt.testPrint();
-			// ctt.getClassificationPos().add(t2);.
+
+			// ctt.testPrint();
+			// ctt.getClassificationPos().add(t2);
 			match_counter++;
 			if (match_counter >= 4) {
 				// for every 4 matcher reorder teams in classification table
 				match_counter = 0;
 				ctt.orderClassificationTable();
-
 			}
 		}
 		// at the end
 		if (ctt.isTable()) {
-			logger.info("classification size ={}", ctt.getClassificationPos()
-					.size());
+			logger.info(
+					"*******************************classification size ={}",
+					ctt.getClassificationPos().size());
 			ctt.updateTable();
 		} else {
 			ctt.insertTable();
-
 		}
 
+		mobj = new MatchObj();
+		for (BasicTableEntity t : ctt.getClassificationPos()) {
+			fileIt();
+		}
+		storeIt();
 	}
 
 	public void init() throws SQLException {
@@ -135,7 +157,9 @@ public class MatchToTableRenewal {
 
 		ctt.existsDb();
 		if (ctt.isTable()) {
+			logger.info("----- IT IS TABLE!!!");
 			ctt.tableReader();
+			ctt.testPrint();
 			N = ctt.getClassificationPos().size();
 		} else {
 			ctt.createFullTable();
@@ -317,12 +341,6 @@ public class MatchToTableRenewal {
 		t1Form = t1Form + t1Atack + t1Defence;
 		t2Form = t2Form + t2Atack + t2Defence;
 
-		// if (t1 != null) {
-		// logger.info("t1 f4 = {},  t1 f3 = {}, t1f2 ={}, t1.f1={}, t1f={}",
-		// t1.getForm4(), t1.getForm3(), t1.getForm2(), t1.getForm1(),
-		// t1.getForm());
-		// }
-
 		t1.setForm4(t1.getForm3());
 		t1.setForm3(t1.getForm2());
 		t1.setForm2(t1.getForm1());
@@ -402,6 +420,25 @@ public class MatchToTableRenewal {
 
 	public MatchObj getMatch() {
 		return mobj;
+	}
+
+	public void fileIt() {
+		String line = mobj.printMatch() + t1.line() + t2.line();
+		logger.info(
+				" t1= {}   ht1 : {}     ht2 : {} t2={}     HtconcedeIn1={}    htConcedeOut1={}  HtconcedeIn2={}    htConcedeOut2={} ",
+				mobj.getT1(), mobj.getHt1(), mobj.getHt2(), mobj.getT2(),
+				t1.getHtConcededIn(), t1.getHtConcededOut(),
+				t2.getHtConcededIn(), t2.getHtConcededOut());
+		matchesDF.add(line);
+	}
+
+	public void storeIt() {
+		try {
+			Files.write(path, matchesDF);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Could not Save To FIle");
+		}
 	}
 
 }

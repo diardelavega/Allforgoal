@@ -8,16 +8,24 @@ import java.util.List;
 import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
 
 public class MainTry {
+static{
+	System.out.println("_static");
+}
 
+
+	
 	public static void main(String[] args) {
-		// String a ="ale";
-		// if("ale"==a){
-		// System.out.println("AAAAAAAAA");
-		// }else {System.out.println("BBBBBB");}
-
-		sortArray();
-
+//A a = new A();
+		
+//A.x=10;		
+		
+//		sortArray();
 	}
+		class A{
+//			static int x=20;
+		}
+
+	
 
 	public static void sortArray(){
 		ArrayObj ao11 = new ArrayObj(1, 1, "one");

@@ -46,7 +46,7 @@ public class MatchesList {
 		if (teamName != "") {
 			if (flag)
 				sb.append(" AND ");
-			sb.append("( t1 OR t2 = '" + compId + "')");
+			sb.append("( t1 OR t2 = '" + teamName + "')");
 			flag = true;
 		}
 		if (date1 != null) {
@@ -61,7 +61,7 @@ public class MatchesList {
 			sb.append(" dat <= '" + date2 + "'");
 			flag = true;
 		}
-		sb.append(" ORDER BY compid ");
+		sb.append(" ORDER BY dat ");
 		logger.info("query is {}", sb.toString());
 		ResultSet rs = conn.getConn().createStatement()
 				.executeQuery(sb.toString());

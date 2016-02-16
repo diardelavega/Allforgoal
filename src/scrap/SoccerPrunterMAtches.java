@@ -76,12 +76,12 @@ public class SoccerPrunterMAtches {
 		Document doc = null;
 		try {
 			logger.info(url + "/results");
-			// doc = Jsoup.connect(url + "/results")
-			doc = Jsoup.parse(new File(
-					"C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
-			// .userAgent(
-			// "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			// .maxBodySize(0).timeout(600000).get();
+			 doc = Jsoup.connect(url + "/results")
+//			doc = Jsoup.parse(new File(
+//					"C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
+			 .userAgent(
+			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+			 .maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			e.printStackTrace();
 			errorStatus = "Faulty Connection";

@@ -166,7 +166,7 @@ public class MatchObj {
 		return false;
 	}
 
-	public void printMatch() {
+	public String printMatch() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(dat);
 		sb.append(",  ");
@@ -194,7 +194,8 @@ public class MatchObj {
 		sb.append(",  ");
 		sb.append(_u);
 		sb.append(",  ");
-		System.out.println(sb.toString());
+//		System.out.println(sb.toString());
+		return sb.toString();
 
 	}
 }
