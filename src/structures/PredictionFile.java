@@ -1,7 +1,11 @@
 package structures;
 
-public class PredictionFile {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class PredictionFile {
+	private static final Logger logger = LoggerFactory
+			.getLogger(PredictionFile.class);
 	private int week = 0;
 	private String headOutcome; // MatchOutcome val 1/x/2
 	private String scoreOutcome; // o/u
@@ -96,6 +100,12 @@ public class PredictionFile {
 
 	public int getWeek() {
 		return week;
+	}
+
+	
+	
+	public void setWeek(int week) {
+		this.week = week;
 	}
 
 	public String getT1() {
@@ -368,6 +378,8 @@ public class PredictionFile {
 		sb.append(" ,");
 		sb.append(bet_U);
 
+		logger.info(sb.toString());
+		
 		return sb.toString();
 	}
 

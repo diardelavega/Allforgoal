@@ -46,10 +46,13 @@ public class Demo {
 
 		// TODO call MatchToTableRenewual and evaluate attributes
 		MatchToTableRenewal mttr;
+		
 		for (Integer key : MatchesList.readMatches.keySet()) {
 			mttr = new MatchToTableRenewal(MatchesList.readMatches.get(key),
 					key);
+			MatchToTableRenewal.fh.openOutput();
 			mttr.calculate();
+			MatchToTableRenewal.fh.closeOutput();
 		}
 		
 //		ajaxGrabber();

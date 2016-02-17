@@ -7,8 +7,8 @@ import java.io.IOException;
 
 public class FileHandler {
 
-	private File bastFileFolder = new File("C:/BastData/");
-	private File csvFile = new File(bastFileFolder + "matches.csv");
+	private File bastFileFolder = new File("C:/BastData");
+	private File csvFile = new File(bastFileFolder + "/matches.csv");
 	private BufferedWriter bw = null;
 
 	public void openOutput() throws IOException {

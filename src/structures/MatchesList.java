@@ -34,6 +34,7 @@ public class MatchesList {
 
 	public void readMatchesCompTeamDateFromTo(int compId, String teamName,
 			Date date1, Date date2) throws SQLException {
+		
 		conn.open();
 		boolean flag = false;
 		StringBuilder sb = new StringBuilder();
@@ -128,7 +129,7 @@ public class MatchesList {
 			mobj.setFt1(rs.getInt(5));
 			mobj.setFt2(rs.getInt(6));
 			mobj.setHt1(rs.getInt(7));
-			mobj.setHt1(rs.getInt(8));
+			mobj.setHt2(rs.getInt(8));
 			mobj.set_1(rs.getFloat(9));
 			mobj.set_x(rs.getFloat(10));
 			mobj.set_2(rs.getFloat(11));

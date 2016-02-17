@@ -1,5 +1,6 @@
 package calculate;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,7 +20,9 @@ import basicStruct.MatchObj;
 import dbhandler.BasicTableEntity;
 import dbhandler.FullTableMaker;
 import dbhandler.TableMaker;
+import diskStore.FileHandler;
 import extra.ClassifiStatus;
+import extra.MatchOutcome;
 
 /**
  * @author Administrator
@@ -39,6 +42,7 @@ public class MatchToTableRenewal {
 			.getLogger(MatchToTableRenewal.class);
 
 	private PredictionFile pf;
+	public static FileHandler fh = new FileHandler();
 
 	private List<MatchObj> matchList;
 	private int compId;
@@ -49,6 +53,7 @@ public class MatchToTableRenewal {
 	private int posT1 = -1;
 	private int posT2 = -1;
 	private int match_counter = 0;
+	private int totMatches = 0;
 
 	Path path = Paths.get("C:/Users/Administrator/Desktop/matches.csv");
 	List<String> matchesDF = new ArrayList<>();
@@ -69,14 +74,19 @@ public class MatchToTableRenewal {
 		super();
 	}
 
-	public void calculate() throws SQLException {
-		pf = new PredictionFile();
+	public void calculate() throws SQLException, IOException {
+
 		t1 = null;
 		t2 = null;
 
 		init();// get the db table ready
 		for (int i = 0; i < matchList.size(); i++) {
 			mobj = matchList.get(i);
+			// -------TEST
+			logger.info("{}  {} vs {}  {}  ", mobj.getT1(), mobj.getFt1(),
+					mobj.getFt2(), mobj.getT2());
+			// --------------
+
 			posT1 = -1;
 			posT2 = -1;
 			getTablePosition();
@@ -97,27 +107,23 @@ public class MatchToTableRenewal {
 
 			if (t1.getMatchesIn() + t1.getMatchesOut() > 3
 					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
-				fileIt();// write match to file
-
 				// -----Execute all prediction file asignments
+
+				// fh.openOutput();
+				pf = new PredictionFile();
 				predictionFileAttributeAsignment();
+				if (totMatches % N == 0) {
+					pf.setWeek(totMatches / N);
+				}
+				fh.appendCsv(pf.liner());
+				// fh.closeOutput();
 
-				// pf.setT1Form(t1Form););
-
-				// ---------------------
 				// if teams matches > 3 then start calculating group attributes
 				evalUpdateGroups();
 				renew(true);
 			} else {
 				renew(false);
 			}
-			// -------------------------------------------
-			// TODO test
-			logger.info("t1 ={}    htscoreout={}  htconcedein={}",
-					t1.getTeam(), t1.getHtScoreOut(), t1.getHtConcededIn());
-			logger.info("t2 ={}    htscoreout={}  htconcedein={}",
-					t2.getTeam(), t2.getHtScoreOut(), t2.getHtConcededIn());
-			// -------------------------------------------
 
 			if (posT1 >= 0) {// if team exists replace with updated version
 				ctt.getClassificationPos().remove(posT1);
@@ -132,8 +138,7 @@ public class MatchToTableRenewal {
 				ctt.getClassificationPos().add(t2);
 			}
 
-			// ctt.testPrint();
-			// ctt.getClassificationPos().add(t2);
+			totMatches++;
 			match_counter++;
 			if (match_counter >= 4) {
 				// for every 4 matcher reorder teams in classification table
@@ -151,11 +156,11 @@ public class MatchToTableRenewal {
 			ctt.insertTable();
 		}
 
-		mobj = new MatchObj();
-		for (BasicTableEntity t : ctt.getClassificationPos()) {
-			fileIt();
-		}
-		storeIt();
+		// mobj = new MatchObj();
+		// for (BasicTableEntity t : ctt.getClassificationPos()) {
+		// fileIt();
+		// }
+		// storeIt();
 	}
 
 	public void init() throws SQLException {
@@ -379,7 +384,7 @@ public class MatchToTableRenewal {
 		// get the classification position on the team table for the two teams
 		// in hand
 		boolean flag = false;
-
+		N = ctt.getClassificationPos().size();
 		for (int i = 0; i < ctt.getClassificationPos().size(); i++) {
 			if (mobj.getT1()
 					.equals(ctt.getClassificationPos().get(i).getTeam())) {
@@ -465,6 +470,7 @@ public class MatchToTableRenewal {
 	}
 
 	private void predictionFileAttributeAsignment() {
+		// pf.setWeek(totMatches);
 		BasicTableEntity Elem = ctt.getClassificationPos().get(posT1);
 
 		pf.setT1(Elem.getTeam());
@@ -474,14 +480,25 @@ public class MatchToTableRenewal {
 		pf.setT1Form2Diff(Elem.getForm2());
 		pf.setT1Form3Diff(Elem.getForm3());
 		pf.setT1Form4Diff(Elem.getForm4());
-		pf.setT1AtackIn(Elem.getFtScoreIn()
-				/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
-		pf.setT1AtackOut(Elem.getFtScoreOut()
-				/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
-		pf.setT1DefenseIn(Elem.getFtConcededIn()
-				/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
-		pf.setT1DefenseIn(Elem.getFtConcededOut()
-				/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+
+		if (Elem.getFtScoreIn() + Elem.getFtConcededIn() == 0) {
+			pf.setT1AtackIn(0);
+			pf.setT1DefenseIn(0);
+		} else {
+			pf.setT1AtackIn(Elem.getFtScoreIn()
+					/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+			pf.setT1DefenseIn(Elem.getFtConcededIn()
+					/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+		}
+		if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
+			pf.setT1AtackOut(0);
+			pf.setT1DefenseIn(0);
+		} else {
+			pf.setT1AtackOut(Elem.getFtScoreOut()
+					/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+			pf.setT1DefenseOut(Elem.getFtConcededOut()
+					/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+		}
 
 		Elem = ctt.getClassificationPos().get(posT2);
 
@@ -492,14 +509,25 @@ public class MatchToTableRenewal {
 		pf.setT2Form2Diff(Elem.getForm2());
 		pf.setT2Form3Diff(Elem.getForm3());
 		pf.setT2Form4Diff(Elem.getForm4());
-		pf.setT2AtackIn(Elem.getFtScoreIn()
-				/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
-		pf.setT2AtackOut(Elem.getFtScoreOut()
-				/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
-		pf.setT2DefenseIn(Elem.getFtConcededIn()
-				/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
-		pf.setT2DefenseIn(Elem.getFtConcededOut()
-				/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+
+		if (Elem.getFtScoreIn() + Elem.getFtConcededIn() == 0) {
+			pf.setT2AtackIn(0);
+			pf.setT2AtackIn(0);
+		} else {
+			pf.setT2AtackIn(Elem.getFtScoreIn()
+					/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+			pf.setT2DefenseIn(Elem.getFtConcededIn()
+					/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+		}
+		if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
+			pf.setT2AtackOut(0);
+			pf.setT2DefenseOut(0);
+		} else {
+			pf.setT2AtackOut(Elem.getFtScoreOut()
+					/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+			pf.setT2DefenseOut(Elem.getFtConcededOut()
+					/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+		}
 
 		classificationGroupsAsignment();// group position
 
@@ -508,12 +536,31 @@ public class MatchToTableRenewal {
 		pf.setBet_2((float) mobj.get_2());
 		pf.setBet_O((float) mobj.get_o());
 		pf.setBet_U((float) mobj.get_u());
-		
-		
+		outcomeAsignment();
+
+		// try {
+		// fh.appendCsv(pf.liner());
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
-	
-	private void outcomeAsignment(){
-		
+
+	private void outcomeAsignment() {
+		if (mobj.getFt1() > mobj.getFt2()) {
+			pf.setHeadOutcome(MatchOutcome.home);
+		} else if (mobj.getFt1() < mobj.getFt2()) {
+			pf.setHeadOutcome(MatchOutcome.away);
+		} else {
+			pf.setHeadOutcome(MatchOutcome.deaw);
+		}
+
+		if (mobj.getFt1() + mobj.getFt2() >= 3) {
+			pf.setScoreOutcome(MatchOutcome.over);
+		} else {
+			pf.setScoreOutcome(MatchOutcome.under);
+		}
+
 	}
 
 	private void classificationGroupsAsignment() {
@@ -554,7 +601,7 @@ public class MatchToTableRenewal {
 			// t1tt = true;
 			// }
 			if (posT1 <= N / 4) {
-				t2tt = true;// statistical data element
+				// t2tt = true;// statistical data element
 				pf.setT1Classification(ClassifiStatus.ttable);
 			} else if (posT1 > N / 4 && posT1 <= N / 2) {
 				pf.setT1Classification(ClassifiStatus.mup);
@@ -564,7 +611,7 @@ public class MatchToTableRenewal {
 				pf.setT1Classification(ClassifiStatus.btable);
 			}
 			if (posT2 <= N / 4) {
-				t1tt = true;// statistical data element *top of the table
+				// t1tt = true;// statistical data element *top of the table
 				pf.setT2Classification(ClassifiStatus.ttable);
 			} else if (posT2 > N / 4 && posT2 <= N / 2) {
 				pf.setT2Classification(ClassifiStatus.mup);
