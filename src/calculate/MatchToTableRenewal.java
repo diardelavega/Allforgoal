@@ -13,11 +13,13 @@ import com.sun.media.jfxmedia.logging.Logger;
 
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
+import structures.PredictionFile;
 import basicStruct.ClasifficationStruct;
 import basicStruct.MatchObj;
 import dbhandler.BasicTableEntity;
 import dbhandler.FullTableMaker;
 import dbhandler.TableMaker;
+import extra.ClassifiStatus;
 
 /**
  * @author Administrator
@@ -31,6 +33,8 @@ public class MatchToTableRenewal {
 
 	public static final org.slf4j.Logger logger = LoggerFactory
 			.getLogger(MatchToTableRenewal.class);
+
+	private PredictionFile pf;
 
 	private List<MatchObj> matchList;
 	private int compId;
@@ -62,6 +66,7 @@ public class MatchToTableRenewal {
 	}
 
 	public void calculate() throws SQLException {
+		pf = new PredictionFile();
 		t1 = null;
 		t2 = null;
 
@@ -363,7 +368,10 @@ public class MatchToTableRenewal {
 		// get the classification position on the team table for the two teams
 		// in hand
 		boolean flag = false;
-		// N = ctt.getClassificationPos().size();
+
+		pf.setT1(mobj.getT1()); // set prediction file elements
+		pf.setT2(mobj.getT2());
+
 		for (int i = 0; i < ctt.getClassificationPos().size(); i++) {
 			if (mobj.getT1()
 					.equals(ctt.getClassificationPos().get(i).getTeam())) {
@@ -375,6 +383,8 @@ public class MatchToTableRenewal {
 				flag = true;
 			}
 		}
+
+		// if(posT1>=0&&<N/4){}
 		return flag;
 	}
 
@@ -386,20 +396,63 @@ public class MatchToTableRenewal {
 		 * to execute in the db
 		 */
 		if (N <= 12) {// less than 12 teams
-			if (posT1 <= Math.floor(N / 3)) {
-				t2tt = true;
+			// if (posT1 <= Math.floor(N / 3)) {
+			// t2tt = true;
+			// }
+			// if (posT2 <= Math.floor(N / 3)) {
+			// t1tt = true;
+			// }
+			// ------------prediction file elements
+			if (posT1 <= N / 3) {
+				t2tt = true; // statistical data element *top of the table
+				pf.setT1Classification(ClassifiStatus.ttable);
+			} else if (posT1 > N / 3 && posT1 <= N / 2) {
+				pf.setT1Classification(ClassifiStatus.mup);
+			} else if (posT1 > N / 2 && posT1 <= N - 3) {
+				pf.setT1Classification(ClassifiStatus.mdown);
+			} else {
+				pf.setT1Classification(ClassifiStatus.btable);
 			}
-			if (posT2 <= Math.floor(N / 3)) {
-				t1tt = true;
+			if (posT2 <= N / 3) {
+				t1tt = true;// statistical data element
+				pf.setT2Classification(ClassifiStatus.ttable);
+			} else if (posT2 > N / 3 && posT2 <= N / 2) {
+				pf.setT2Classification(ClassifiStatus.mup);
+			} else if (posT2 > N / 2 && posT2 <= N - 3) {
+				pf.setT2Classification(ClassifiStatus.mdown);
+			} else {
+				pf.setT2Classification(ClassifiStatus.btable);
 			}
+
 		} else {// more than 12 teams in table
-			if (posT1 <= Math.ceil(N / 4)) {
-				t2tt = true;
+			// if (posT1 <= Math.ceil(N / 4)) {
+			// t2tt = true;
+			// }
+			// if (posT2 <= Math.ceil(N / 4)) {
+			// t1tt = true;
+			// }
+			if (posT1 <= N / 4) {
+				t2tt = true;// statistical data element
+				pf.setT1Classification(ClassifiStatus.ttable);
+			} else if (posT1 > N / 4 && posT1 <= N / 2) {
+				pf.setT1Classification(ClassifiStatus.mup);
+			} else if (posT1 > N / 2 && posT1 <= 3 * N / 4) {
+				pf.setT1Classification(ClassifiStatus.mdown);
+			} else {
+				pf.setT1Classification(ClassifiStatus.btable);
 			}
-			if (posT2 <= Math.ceil(N / 4)) {
-				t1tt = true;
+			if (posT2 <= N / 4) {
+				t1tt = true;// statistical data element *top of the table
+				pf.setT2Classification(ClassifiStatus.ttable);
+			} else if (posT2 > N / 4 && posT2 <= N / 2) {
+				pf.setT2Classification(ClassifiStatus.mup);
+			} else if (posT2 > N / 2 && posT2 <= 3 * N / 4) {
+				pf.setT2Classification(ClassifiStatus.mdown);
+			} else {
+				pf.setT2Classification(ClassifiStatus.btable);
 			}
 		}
+
 		if (Math.abs(posT1 - posT2) <= 3) {// 3 pos near each other
 			t1p3 = true;
 			t2p3 = true;

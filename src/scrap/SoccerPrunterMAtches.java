@@ -111,21 +111,12 @@ public class SoccerPrunterMAtches {
 						Elements tds = tr.getElementsByTag("td");
 						tds.get(2).select("span").remove();
 						tds.get(4).select("span").remove();
-						// String tm1=tds..text();
-						// String tm2=tds.get(4).select("span").remove().text();
-
-//						logger.info(tds.get(8).select("href").toString());
-//						logger.info(tds.get(8).attr("href"));
-//						logger.info(tds.get(8).getElementsByTag("a")
-//								.attr("href"));
-//
-//						logger.info(tds.get(8).getElementsByAttribute("href")
-//								.toString());
 
 						adapto(tds.get(0).text(), tds.get(1).text(),/* tm1 */
 								tds.get(2).text(), tds.get(3).text(), /* tm2 */
-								tds.get(4).text(), tds.get(5).text(), tds
-										.get(8).getElementsByTag("a").attr("href"), compId);
+								tds.get(4).text(), tds.get(5).text(),
+								tds.get(8).getElementsByTag("a").attr("href"),
+								compId);
 					}
 				}
 			}// for

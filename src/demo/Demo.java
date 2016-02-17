@@ -29,29 +29,30 @@ public class Demo {
 
 		String link = CountryCompetition.compLinkList.get(35).getCompLink();
 		int compId = CountryCompetition.compList.get(35).getId();
-
+//
 		{// TODO this section grabs the matches from the site
-			 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-			 spm.matchGraber();
-			 spm.competitionResultsGrabbers(link,compId);
+//			 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+//			 spm.matchGraber();
+//			 spm.competitionResultsGrabbers(link,compId);
 			// at this point matches garbed and put to list
 		}
 
 		{// TODO this section reads and writes data to matches table
 			MatchesList ml = new MatchesList();
-			ml.insertMatches();
-//			ml.readMatchesComp(compId);
+//			ml.insertMatches();
+			ml.readMatchesComp(compId);
 		}
 		// TODO store the list in db
 
 		// TODO call MatchToTableRenewual and evaluate attributes
-//		MatchToTableRenewal mttr;
-//		for (Integer key : MatchesList.readMatches.keySet()) {
-//			mttr = new MatchToTableRenewal(MatchesList.readMatches.get(key),
-//					key);
-//			mttr.calculate();
-//		}
+		MatchToTableRenewal mttr;
+		for (Integer key : MatchesList.readMatches.keySet()) {
+			mttr = new MatchToTableRenewal(MatchesList.readMatches.get(key),
+					key);
+			mttr.calculate();
+		}
 		
+//		System.out.println(10/4);
 //		ajaxGrabber();
 
 	}
@@ -94,7 +95,7 @@ public class Demo {
 		cp.readCompIdLink(conn);
 		if (cp.compLinkList.size() > 0) {
 			System.out.println("Competition link structure is ready");
-			System.out.println(cp.compLinkList.get(0).getCompLink());
+//			System.out.println(cp.compLinkList.get(0).getCompLink());
 		} else {
 			System.out
 					.println("Competition link structure is not initialized corectly");
