@@ -76,12 +76,13 @@ public class SoccerPrunterMAtches {
 		Document doc = null;
 		try {
 			logger.info(url + "/results");
-			 doc = Jsoup.connect(url + "/results")
-//			doc = Jsoup.parse(new File(
-//					"C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
-			 .userAgent(
-			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			 .maxBodySize(0).timeout(600000).get();
+			doc = Jsoup
+					.connect(url + "/results")
+					// doc = Jsoup.parse(new File(
+					// "C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+					.maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			e.printStackTrace();
 			errorStatus = "Faulty Connection";
@@ -113,10 +114,18 @@ public class SoccerPrunterMAtches {
 						// String tm1=tds..text();
 						// String tm2=tds.get(4).select("span").remove().text();
 
+//						logger.info(tds.get(8).select("href").toString());
+//						logger.info(tds.get(8).attr("href"));
+//						logger.info(tds.get(8).getElementsByTag("a")
+//								.attr("href"));
+//
+//						logger.info(tds.get(8).getElementsByAttribute("href")
+//								.toString());
+
 						adapto(tds.get(0).text(), tds.get(1).text(),/* tm1 */
 								tds.get(2).text(), tds.get(3).text(), /* tm2 */
 								tds.get(4).text(), tds.get(5).text(), tds
-										.get(8).attr("href"), compId);
+										.get(8).getElementsByTag("a").attr("href"), compId);
 					}
 				}
 			}// for

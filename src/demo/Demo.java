@@ -31,32 +31,35 @@ public class Demo {
 		int compId = CountryCompetition.compList.get(35).getId();
 
 		{// TODO this section grabs the matches from the site
-			// SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-			// spm.matchGraber();
-			// spm.compfetitionResultsGrabbers(link,compId);
+			 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+			 spm.matchGraber();
+			 spm.competitionResultsGrabbers(link,compId);
 			// at this point matches garbed and put to list
 		}
 
 		{// TODO this section reads and writes data to matches table
 			MatchesList ml = new MatchesList();
-//			ml.insertMatches();
-			ml.readMatchesComp(compId);
+			ml.insertMatches();
+//			ml.readMatchesComp(compId);
 		}
 		// TODO store the list in db
 
 		// TODO call MatchToTableRenewual and evaluate attributes
-		MatchToTableRenewal mttr;
-		for (Integer key : MatchesList.readMatches.keySet()) {
-			mttr = new MatchToTableRenewal(MatchesList.readMatches.get(key),
-					key);
-			mttr.calculate();
-		}
+//		MatchToTableRenewal mttr;
+//		for (Integer key : MatchesList.readMatches.keySet()) {
+//			mttr = new MatchToTableRenewal(MatchesList.readMatches.get(key),
+//					key);
+//			mttr.calculate();
+//		}
+		
+//		ajaxGrabber();
 
 	}
 
 	public static void ajaxGrabber() throws IOException {
 		AjaxGrabber ag = new AjaxGrabber();
-		String url = "http://www.soccerpunter.com/soccer-statistics/Albania/Superliga-2015-2016/livesoccerodds?match_id=2074044&home=KF+Tirana&away=KS+Skënderbeu+Korçë&date=2015-11-30+13%3A00%3A00";
+		String url = "http://www.soccerpunter.com/soccer-statistics/England/Premier-League-2015-2016/livesoccerodds?match_id=2043399&home=Manchester+City+FC&away=Tottenham+Hotspur+FC&date=2016-02-14+16%3A15%3A00";
+//		String url = "http://www.soccerpunter.com/soccer-statistics/Albania/Superliga-2015-2016/livesoccerodds?match_id=2074044&home=KF+Tirana&away=KS+Skënderbeu+Korçë&date=2015-11-30+13%3A00%3A00";
 		String matchId = url.split("_id=|&home")[1];
 		ag.f69(matchId);
 		// ag.headResults("http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&typeId=69");
