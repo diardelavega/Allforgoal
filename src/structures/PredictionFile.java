@@ -3,16 +3,14 @@ package structures;
 public class PredictionFile {
 
 	private int week = 0;
-	private String headOutcome;
-	private String scoreOutcome;
-	
-	private float bet_1=0;
-	private float bet_2=0;
-	private float bet_X=0;
-	private float bet_O=0;
-	private float bet_U=0;
-	
-	
+	private String headOutcome; // MatchOutcome val 1/x/2
+	private String scoreOutcome; // o/u
+
+	private float bet_1 = 0;
+	private float bet_2 = 0;
+	private float bet_X = 0;
+	private float bet_O = 0;
+	private float bet_U = 0;
 
 	private String t1;
 	private int t1Points = 0; // top, mid_up, mid_down, bot_table
@@ -40,12 +38,6 @@ public class PredictionFile {
 	private float t2DefenseIn = 0;
 	private float t2DefenseOut = 0;
 
-	
-	
-	
-	
-	
-	
 	public float getBet_1() {
 		return bet_1;
 	}
@@ -305,46 +297,78 @@ public class PredictionFile {
 	public String liner() {
 		// return a string to be stored in a file
 		StringBuilder sb = new StringBuilder();
-		sb.append(week); sb.append(" ,");
-		sb.append(headOutcome); sb.append(" ,");
-		sb.append(scoreOutcome); sb.append(" ,");
-		
-		sb.append(t1); sb.append(" ,");
-		sb.append(t1Points); sb.append(" ,");
-		sb.append(t1Classification); sb.append(" ,");
-		sb.append(t1Form); sb.append(" ,");
-		sb.append(t1Form1Diff); sb.append(" ,");
-		sb.append(t1Form1Diff); sb.append(" ,");
-		sb.append(t1Form2Diff); sb.append(" ,");
-		sb.append(t1Form3Diff); sb.append(" ,");
-		sb.append(t1Form4Diff); sb.append(" ,");
-		sb.append(t1AtackIn); sb.append(" ,");
-		sb.append(t1AtackOut); sb.append(" ,");
-		sb.append(t1DefenseIn); sb.append(" ,");
-		sb.append(t1DefenseOut); sb.append(" ,");
+		sb.append(week);
+		sb.append(" ,");
+		sb.append(headOutcome);
+		sb.append(" ,");
+		sb.append(scoreOutcome);
+		sb.append(" ,");
 
-		sb.append(t2); sb.append(" ,");
-		sb.append(t2Points); sb.append(" ,");
-		sb.append(t2Classification); sb.append(" ,");
-		sb.append(t2Form); sb.append(" ,");
-		sb.append(t2Form1Diff); sb.append(" ,");
-		sb.append(t2Form1Diff); sb.append(" ,");
-		sb.append(t2Form2Diff); sb.append(" ,");
-		sb.append(t2Form3Diff); sb.append(" ,");
-		sb.append(t2Form4Diff); sb.append(" ,");
-		sb.append(t2AtackIn); sb.append(" ,");
-		sb.append(t2AtackOut); sb.append(" ,");
-		sb.append(t2DefenseIn); sb.append(" ,");
-		sb.append(t2DefenseOut); sb.append(" ,");
-		
-		sb.append(bet_1); sb.append(" ,");
-		sb.append(bet_X); sb.append(" ,");
-		sb.append(bet_2); sb.append(" ,");
-		sb.append(bet_O); sb.append(" ,");
+		sb.append(t1);
+		sb.append(" ,");
+		sb.append(t1Points);
+		sb.append(" ,");
+		sb.append(t1Classification);
+		sb.append(" ,");
+		sb.append(t1Form);
+		sb.append(" ,");
+		sb.append(t1Form1Diff);
+		sb.append(" ,");
+		sb.append(t1Form1Diff);
+		sb.append(" ,");
+		sb.append(t1Form2Diff);
+		sb.append(" ,");
+		sb.append(t1Form3Diff);
+		sb.append(" ,");
+		sb.append(t1Form4Diff);
+		sb.append(" ,");
+		sb.append(t1AtackIn);
+		sb.append(" ,");
+		sb.append(t1AtackOut);
+		sb.append(" ,");
+		sb.append(t1DefenseIn);
+		sb.append(" ,");
+		sb.append(t1DefenseOut);
+		sb.append(" ,");
+
+		sb.append(t2);
+		sb.append(" ,");
+		sb.append(t2Points);
+		sb.append(" ,");
+		sb.append(t2Classification);
+		sb.append(" ,");
+		sb.append(t2Form);
+		sb.append(" ,");
+		sb.append(t2Form1Diff);
+		sb.append(" ,");
+		sb.append(t2Form1Diff);
+		sb.append(" ,");
+		sb.append(t2Form2Diff);
+		sb.append(" ,");
+		sb.append(t2Form3Diff);
+		sb.append(" ,");
+		sb.append(t2Form4Diff);
+		sb.append(" ,");
+		sb.append(t2AtackIn);
+		sb.append(" ,");
+		sb.append(t2AtackOut);
+		sb.append(" ,");
+		sb.append(t2DefenseIn);
+		sb.append(" ,");
+		sb.append(t2DefenseOut);
+		sb.append(" ,");
+
+		sb.append(bet_1);
+		sb.append(" ,");
+		sb.append(bet_X);
+		sb.append(" ,");
+		sb.append(bet_2);
+		sb.append(" ,");
+		sb.append(bet_O);
+		sb.append(" ,");
 		sb.append(bet_U);
-				
+
 		return sb.toString();
 	}
 
 }
-

@@ -28,6 +28,10 @@ import extra.ClassifiStatus;
  *         competition from the db, get the fields of the teams that are playing
  *         in a Match. The tablemaker classes for each team are recalculated
  *         taking in consideration the new results and are stored back in the db
+ *         *****************************************************************
+ *         Also calculate and store in a file atributes for prediction
+ *         algorithms. This attributes of PredictionFile are calculated before
+ *         the new match data is calculated
  */
 public class MatchToTableRenewal {
 
@@ -95,6 +99,12 @@ public class MatchToTableRenewal {
 					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
 				fileIt();// write match to file
 
+				// -----Execute all prediction file asignments
+				predictionFileAttributeAsignment();
+
+				// pf.setT1Form(t1Form););
+
+				// ---------------------
 				// if teams matches > 3 then start calculating group attributes
 				evalUpdateGroups();
 				renew(true);
@@ -280,7 +290,7 @@ public class MatchToTableRenewal {
 			t2Form = 1;
 		}
 		// score points
-		if ((mobj.getFt1() + mobj.getFt2()) == 0) {
+		if ((mobj.getFt1() + mobj.getFt2()) == 0) { // avoid division/Zero
 			t1Atack = 0;
 			t1Defence = 0;
 			t2Atack = 0;
@@ -293,6 +303,7 @@ public class MatchToTableRenewal {
 			t2Defence = -(float) mobj.getFt1()
 					/ (mobj.getFt1() + mobj.getFt2());
 		}
+
 		// classification points
 		if (posPoint) { // if teams points are more than 3
 			if (mobj.getFt1() > mobj.getFt2()) {
@@ -369,9 +380,6 @@ public class MatchToTableRenewal {
 		// in hand
 		boolean flag = false;
 
-		pf.setT1(mobj.getT1()); // set prediction file elements
-		pf.setT2(mobj.getT2());
-
 		for (int i = 0; i < ctt.getClassificationPos().size(); i++) {
 			if (mobj.getT1()
 					.equals(ctt.getClassificationPos().get(i).getTeam())) {
@@ -384,7 +392,6 @@ public class MatchToTableRenewal {
 			}
 		}
 
-		// if(posT1>=0&&<N/4){}
 		return flag;
 	}
 
@@ -393,8 +400,123 @@ public class MatchToTableRenewal {
 		/*
 		 * depending on the teams position on the classification table we can
 		 * determine the different groups of attributes to calculate and updates
-		 * to execute in the db
+		 * to execute in the db ****************************************
+		 * Furthermore we calculate some of the elements for the prediction file
 		 */
+
+		if (N <= 12) {// less than 12 teams
+			if (posT1 <= Math.floor(N / 3)) {
+				t2tt = true;
+			}
+			if (posT2 <= Math.floor(N / 3)) {
+				t1tt = true;
+			}
+			// ------------prediction file elements
+
+		} else {// more than 12 teams in table
+			if (posT1 <= Math.ceil(N / 4)) {
+				t2tt = true;
+			}
+			if (posT2 <= Math.ceil(N / 4)) {
+				t1tt = true;
+			}
+
+		}
+
+		if (Math.abs(posT1 - posT2) <= 3) {// 3 pos near each other
+			t1p3 = true;
+			t2p3 = true;
+		} else {
+			if (posT1 > posT2) {
+				t1p3down = true;
+				t2p3up = true;
+			} else {
+				t2p3down = true;
+				t1p3up = true;
+			}
+		}
+	}
+
+	public void setMatch(MatchObj mobj) {
+		this.mobj = mobj;
+	}
+
+	public MatchObj getMatch() {
+		return mobj;
+	}
+
+	public void fileIt() {
+		String line = mobj.printMatch() + t1.line() + t2.line();
+		logger.info(
+				" t1= {}   ht1 : {}     ht2 : {} t2={}     HtconcedeIn1={}    htConcedeOut1={}  HtconcedeIn2={}    htConcedeOut2={} ",
+				mobj.getT1(), mobj.getHt1(), mobj.getHt2(), mobj.getT2(),
+				t1.getHtConcededIn(), t1.getHtConcededOut(),
+				t2.getHtConcededIn(), t2.getHtConcededOut());
+		matchesDF.add(line);
+	}
+
+	public void storeIt() {
+		try {
+			Files.write(path, matchesDF);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Could not Save To FIle");
+		}
+	}
+
+	private void predictionFileAttributeAsignment() {
+		BasicTableEntity Elem = ctt.getClassificationPos().get(posT1);
+
+		pf.setT1(Elem.getTeam());
+		pf.setT1Points(Elem.getPoints());
+		pf.setT1Form(Elem.getForm());
+		pf.setT1Form1Diff(Elem.getForm1());
+		pf.setT1Form2Diff(Elem.getForm2());
+		pf.setT1Form3Diff(Elem.getForm3());
+		pf.setT1Form4Diff(Elem.getForm4());
+		pf.setT1AtackIn(Elem.getFtScoreIn()
+				/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+		pf.setT1AtackOut(Elem.getFtScoreOut()
+				/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+		pf.setT1DefenseIn(Elem.getFtConcededIn()
+				/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+		pf.setT1DefenseIn(Elem.getFtConcededOut()
+				/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+
+		Elem = ctt.getClassificationPos().get(posT2);
+
+		pf.setT2(Elem.getTeam());
+		pf.setT2Points(Elem.getPoints());
+		pf.setT2Form(Elem.getForm());
+		pf.setT2Form1Diff(Elem.getForm1());
+		pf.setT2Form2Diff(Elem.getForm2());
+		pf.setT2Form3Diff(Elem.getForm3());
+		pf.setT2Form4Diff(Elem.getForm4());
+		pf.setT2AtackIn(Elem.getFtScoreIn()
+				/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+		pf.setT2AtackOut(Elem.getFtScoreOut()
+				/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+		pf.setT2DefenseIn(Elem.getFtConcededIn()
+				/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+		pf.setT2DefenseIn(Elem.getFtConcededOut()
+				/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+
+		classificationGroupsAsignment();// group position
+
+		pf.setBet_1((float) mobj.get_1());
+		pf.setBet_X((float) mobj.get_x());
+		pf.setBet_2((float) mobj.get_2());
+		pf.setBet_O((float) mobj.get_o());
+		pf.setBet_U((float) mobj.get_u());
+		
+		
+	}
+	
+	private void outcomeAsignment(){
+		
+	}
+
+	private void classificationGroupsAsignment() {
 		if (N <= 12) {// less than 12 teams
 			// if (posT1 <= Math.floor(N / 3)) {
 			// t2tt = true;
@@ -453,45 +575,6 @@ public class MatchToTableRenewal {
 			}
 		}
 
-		if (Math.abs(posT1 - posT2) <= 3) {// 3 pos near each other
-			t1p3 = true;
-			t2p3 = true;
-		} else {
-			if (posT1 > posT2) {
-				t1p3down = true;
-				t2p3up = true;
-			} else {
-				t2p3down = true;
-				t1p3up = true;
-			}
-		}
-	}
-
-	public void setMatch(MatchObj mobj) {
-		this.mobj = mobj;
-	}
-
-	public MatchObj getMatch() {
-		return mobj;
-	}
-
-	public void fileIt() {
-		String line = mobj.printMatch() + t1.line() + t2.line();
-		logger.info(
-				" t1= {}   ht1 : {}     ht2 : {} t2={}     HtconcedeIn1={}    htConcedeOut1={}  HtconcedeIn2={}    htConcedeOut2={} ",
-				mobj.getT1(), mobj.getHt1(), mobj.getHt2(), mobj.getT2(),
-				t1.getHtConcededIn(), t1.getHtConcededOut(),
-				t2.getHtConcededIn(), t2.getHtConcededOut());
-		matchesDF.add(line);
-	}
-
-	public void storeIt() {
-		try {
-			Files.write(path, matchesDF);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Could not Save To FIle");
-		}
 	}
 
 }

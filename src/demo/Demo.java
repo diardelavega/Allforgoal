@@ -52,7 +52,6 @@ public class Demo {
 			mttr.calculate();
 		}
 		
-//		System.out.println(10/4);
 //		ajaxGrabber();
 
 	}
