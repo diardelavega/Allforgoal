@@ -85,6 +85,7 @@ public class MatchToTableRenewal {
 			// -------TEST
 			logger.info("{}  {} vs {}  {}  ", mobj.getT1(), mobj.getFt1(),
 					mobj.getFt2(), mobj.getT2());
+			logger.info("tot = {},  N={}", totMatches, N);
 			// --------------
 
 			posT1 = -1;
@@ -112,9 +113,9 @@ public class MatchToTableRenewal {
 				// fh.openOutput();
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment();
-				if (totMatches % N == 0) {
-					pf.setWeek(totMatches / N);
-				}
+				// if (totMatches % N == 0) {
+				pf.setWeek(totMatches / (N / 2));
+				// }
 				fh.appendCsv(pf.liner());
 				// fh.closeOutput();
 
@@ -156,11 +157,11 @@ public class MatchToTableRenewal {
 			ctt.insertTable();
 		}
 
-		// mobj = new MatchObj();
-		// for (BasicTableEntity t : ctt.getClassificationPos()) {
-		// fileIt();
-		// }
-		// storeIt();
+		mobj = new MatchObj();
+		for (BasicTableEntity t : ctt.getClassificationPos()) {
+			fileIt();
+		}
+		storeIt();
 	}
 
 	public void init() throws SQLException {
@@ -481,23 +482,42 @@ public class MatchToTableRenewal {
 		pf.setT1Form3Diff(Elem.getForm3());
 		pf.setT1Form4Diff(Elem.getForm4());
 
+		logger.info(Elem.getFtScoreIn() + " " + Elem.getFtScoreIn() + " "
+				+ Elem.getFtConcededIn());
 		if (Elem.getFtScoreIn() + Elem.getFtConcededIn() == 0) {
 			pf.setT1AtackIn(0);
 			pf.setT1DefenseIn(0);
 		} else {
-			pf.setT1AtackIn(Elem.getFtScoreIn()
-					/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
-			pf.setT1DefenseIn(Elem.getFtConcededIn()
-					/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+			int scin1 = Elem.getFtScoreIn();
+			int concin1 = Elem.getFtConcededIn();
+			{//------Projection
+				logger.info("setT1AtackIn :  {}/{} = {}", scin1, scin1 + concin1, ((float) scin1 / (scin1 + concin1)));
+				logger.info("setT1DefenseIn :  {}/{} = {}", concin1, scin1 + concin1, ((float) concin1 / (scin1 + concin1)));
+			}
+			pf.setT1AtackIn(((float) scin1 / (scin1 + concin1)));
+			logger.info("{}",pf.getT1AtackIn());
+			pf.setT1DefenseIn(((float) concin1 / (scin1 + concin1)));
+			logger.info("{}",pf.getT1DefenseIn());
+
+			
+
 		}
 		if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
 			pf.setT1AtackOut(0);
 			pf.setT1DefenseIn(0);
 		} else {
-			pf.setT1AtackOut(Elem.getFtScoreOut()
-					/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
-			pf.setT1DefenseOut(Elem.getFtConcededOut()
-					/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+			int scout1 = Elem.getFtScoreOut();
+			int concout1 = Elem.getFtConcededOut();
+			{//------Projection
+				logger.info("setT1AtackOut :  {} / {} = {}", scout1, scout1 + concout1, ((float) scout1/ (scout1 + concout1)));
+				logger.info("setT1DefenseOut :  {} / {} = {}", concout1, scout1 + concout1, ((float) concout1 / (scout1 + concout1)));
+			}
+			
+			pf.setT1AtackOut(((float) scout1 / ( scout1 + concout1 )));
+			logger.info("{}",pf.getT1AtackOut());
+			
+			pf.setT1DefenseOut(((float) concout1 / ( scout1 + concout1 )));
+			logger.info("{}",pf.getT1DefenseOut());
 		}
 
 		Elem = ctt.getClassificationPos().get(posT2);
@@ -514,19 +534,32 @@ public class MatchToTableRenewal {
 			pf.setT2AtackIn(0);
 			pf.setT2AtackIn(0);
 		} else {
-			pf.setT2AtackIn(Elem.getFtScoreIn()
-					/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
-			pf.setT2DefenseIn(Elem.getFtConcededIn()
-					/ (Elem.getFtScoreIn() + Elem.getFtConcededIn()));
+			int scin2 = Elem.getFtScoreIn();
+			int concin2 = Elem.getFtConcededIn();
+			{//------Projection
+				logger.info("setT2AtackIn :  {} / {} = {}", scin2, scin2 + concin2, ((float) scin2 / (scin2 + concin2)));
+				logger.info("setT2DefenseIn :  {} / {} = {}", concin2, scin2 + concin2, ((float) concin2 / (scin2 + concin2)));
+			}
+			pf.setT2AtackIn(((float) scin2 / (scin2 + concin2)));
+			logger.info("{}",pf.getT2AtackIn());
+			pf.setT2DefenseIn(((float) concin2 / (scin2 + concin2)));
+			logger.info("{}",pf.getT2DefenseIn());
 		}
 		if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
 			pf.setT2AtackOut(0);
 			pf.setT2DefenseOut(0);
 		} else {
-			pf.setT2AtackOut(Elem.getFtScoreOut()
-					/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
-			pf.setT2DefenseOut(Elem.getFtConcededOut()
-					/ (Elem.getFtScoreOut() + Elem.getFtConcededOut()));
+			int scout2 = Elem.getFtScoreOut();
+			int concout2 = Elem.getFtConcededOut();
+			{//------Projection
+				logger.info("setT2AtackOut :  {} / {} = {}", scout2, scout2 + concout2, ((float) scout2 / (scout2 + concout2)));
+				logger.info("setT2DefenseOut :  {} / {} = {}", concout2, scout2 + concout2, ((float) concout2 / (scout2 + concout2)));
+			}
+			
+			pf.setT2AtackOut(((float) scout2 / (scout2 + concout2)));
+			logger.info("{}",pf.getT2AtackOut());
+			pf.setT2DefenseOut(((float) concout2 / (scout2 +concout2)));
+			logger.info("{}",pf.getT2DefenseOut());
 		}
 
 		classificationGroupsAsignment();// group position
