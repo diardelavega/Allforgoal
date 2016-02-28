@@ -110,18 +110,18 @@ public class MatchToTableRenewal {
 					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
 				// -----Execute all prediction file asignments
 
-				// fh.openOutput();
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment();
-				// if (totMatches % N == 0) {
 				pf.setWeek(totMatches / (N / 2));
-				// }
 				fh.appendCsv(pf.liner());
-				// fh.closeOutput();
 
 				// if teams matches > 3 then start calculating group attributes
 				evalUpdateGroups();
-				renew(true);
+				/*
+				 * TODO if mobj. has (ft1 || ft2)= null => next match do not
+				 * "renew()" classification table. use this part of calculation
+				 * method only to get new files for predict outcomes
+				 */renew(true);
 			} else {
 				renew(false);
 			}
@@ -369,7 +369,9 @@ public class MatchToTableRenewal {
 		t1.setForm1(t1.getForm());
 		t1.addForm(t1Form);
 		t1.addFormAtack(t1Atack);
+		t1.addFormAtackIn(t1Atack);
 		t1.addFormDefence(t1Defence);
+		t1.addFormDefenceIn(t1Defence);
 
 		t2.setForm4(t2.getForm3());
 		t2.setForm3(t2.getForm2());
@@ -377,7 +379,9 @@ public class MatchToTableRenewal {
 		t2.setForm1(t2.getForm());
 		t2.addForm(t2Form);
 		t2.addFormAtack(t2Atack);
+		t2.addFormAtackOut(t2Atack);
 		t2.addFormDefence(t2Defence);
+		t2.addFormDefenceOut(t2Defence);
 
 	}
 
@@ -481,44 +485,54 @@ public class MatchToTableRenewal {
 		pf.setT1Form2Diff(Elem.getForm2());
 		pf.setT1Form3Diff(Elem.getForm3());
 		pf.setT1Form4Diff(Elem.getForm4());
+		pf.setT1Atack(Elem.getFormAtack());
+		pf.setT1AtackIn(Elem.getFormAtackIn());
+		pf.setT1AtackOut(Elem.getFormAtackOut());
+		pf.setT1Defense(Elem.getFormDefence());
+		pf.setT1DefenseIn(Elem.getFormDefenceIn());
+		pf.setT1DefenseOut(Elem.getFormDefenceOut());
 
-		logger.info(Elem.getFtScoreIn() + " " + Elem.getFtScoreIn() + " "
-				+ Elem.getFtConcededIn());
-		if (Elem.getFtScoreIn() + Elem.getFtConcededIn() == 0) {
-			pf.setT1AtackIn(0);
-			pf.setT1DefenseIn(0);
-		} else {
-			int scin1 = Elem.getFtScoreIn();
-			int concin1 = Elem.getFtConcededIn();
-			{//------Projection
-				logger.info("setT1AtackIn :  {}/{} = {}", scin1, scin1 + concin1, ((float) scin1 / (scin1 + concin1)));
-				logger.info("setT1DefenseIn :  {}/{} = {}", concin1, scin1 + concin1, ((float) concin1 / (scin1 + concin1)));
-			}
-			pf.setT1AtackIn(((float) scin1 / (scin1 + concin1)));
-			logger.info("{}",pf.getT1AtackIn());
-			pf.setT1DefenseIn(((float) concin1 / (scin1 + concin1)));
-			logger.info("{}",pf.getT1DefenseIn());
-
-			
-
-		}
-		if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
-			pf.setT1AtackOut(0);
-			pf.setT1DefenseIn(0);
-		} else {
-			int scout1 = Elem.getFtScoreOut();
-			int concout1 = Elem.getFtConcededOut();
-			{//------Projection
-				logger.info("setT1AtackOut :  {} / {} = {}", scout1, scout1 + concout1, ((float) scout1/ (scout1 + concout1)));
-				logger.info("setT1DefenseOut :  {} / {} = {}", concout1, scout1 + concout1, ((float) concout1 / (scout1 + concout1)));
-			}
-			
-			pf.setT1AtackOut(((float) scout1 / ( scout1 + concout1 )));
-			logger.info("{}",pf.getT1AtackOut());
-			
-			pf.setT1DefenseOut(((float) concout1 / ( scout1 + concout1 )));
-			logger.info("{}",pf.getT1DefenseOut());
-		}
+		// {// logger.info(Elem.getFtScoreIn() + " " + Elem.getFtScoreIn() + " "
+		// // + Elem.getFtConcededIn());
+		// if (Elem.getFtScoreIn() + Elem.getFtConcededIn() == 0) {
+		// pf.setT1AtackIn(0);
+		// pf.setT1DefenseIn(0);
+		// } else {
+		// int scin1 = Elem.getFtScoreIn();
+		// int concin1 = Elem.getFtConcededIn();
+		// {// ------Projection
+		// logger.info("setT1AtackIn :  {}/{} = {}", scin1, scin1
+		// + concin1, ((float) scin1 / (scin1 + concin1)));
+		// logger.info("setT1DefenseIn :  {}/{} = {}", concin1, scin1
+		// + concin1, ((float) concin1 / (scin1 + concin1)));
+		// }
+		// // pf.setT1AtackIn(((float) scin1 / (scin1 + concin1)));
+		// // pf.setT1AtackIn(Elem.gett1);
+		// logger.info("{}", pf.getT1AtackIn());
+		// pf.setT1DefenseIn(((float) concin1 / (scin1 + concin1)));
+		// logger.info("{}", pf.getT1DefenseIn());
+		//
+		// }
+		// if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
+		// pf.setT1AtackOut(0);
+		// pf.setT1DefenseIn(0);
+		// } else {
+		// int scout1 = Elem.getFtScoreOut();
+		// int concout1 = Elem.getFtConcededOut();
+		// {// ------Projection
+		// logger.info("setT1AtackOut :  {} / {} = {}", scout1, scout1
+		// + concout1, ((float) scout1 / (scout1 + concout1)));
+		// logger.info("setT1DefenseOut :  {} / {} = {}", concout1, scout1
+		// + concout1, ((float) concout1 / (scout1 + concout1)));
+		// }
+		//
+		// pf.setT1AtackOut(((float) scout1 / (scout1 + concout1)));
+		// logger.info("{}", pf.getT1AtackOut());
+		//
+		// pf.setT1DefenseOut(((float) concout1 / (scout1 + concout1)));
+		// logger.info("{}", pf.getT1DefenseOut());
+		// }
+		// }
 
 		Elem = ctt.getClassificationPos().get(posT2);
 
@@ -529,38 +543,49 @@ public class MatchToTableRenewal {
 		pf.setT2Form2Diff(Elem.getForm2());
 		pf.setT2Form3Diff(Elem.getForm3());
 		pf.setT2Form4Diff(Elem.getForm4());
+		pf.setT2Atack(Elem.getFormAtack());
+		pf.setT2AtackIn(Elem.getFormAtackIn());
+		pf.setT2AtackOut(Elem.getFormAtackOut());
+		pf.setT2Defense(Elem.getFormDefence());
+		pf.setT2DefenseIn(Elem.getFormDefenceIn());
+		pf.setT2DefenseOut(Elem.getFormDefenceOut());
 
-		if (Elem.getFtScoreIn() + Elem.getFtConcededIn() == 0) {
-			pf.setT2AtackIn(0);
-			pf.setT2AtackIn(0);
-		} else {
-			int scin2 = Elem.getFtScoreIn();
-			int concin2 = Elem.getFtConcededIn();
-			{//------Projection
-				logger.info("setT2AtackIn :  {} / {} = {}", scin2, scin2 + concin2, ((float) scin2 / (scin2 + concin2)));
-				logger.info("setT2DefenseIn :  {} / {} = {}", concin2, scin2 + concin2, ((float) concin2 / (scin2 + concin2)));
-			}
-			pf.setT2AtackIn(((float) scin2 / (scin2 + concin2)));
-			logger.info("{}",pf.getT2AtackIn());
-			pf.setT2DefenseIn(((float) concin2 / (scin2 + concin2)));
-			logger.info("{}",pf.getT2DefenseIn());
-		}
-		if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
-			pf.setT2AtackOut(0);
-			pf.setT2DefenseOut(0);
-		} else {
-			int scout2 = Elem.getFtScoreOut();
-			int concout2 = Elem.getFtConcededOut();
-			{//------Projection
-				logger.info("setT2AtackOut :  {} / {} = {}", scout2, scout2 + concout2, ((float) scout2 / (scout2 + concout2)));
-				logger.info("setT2DefenseOut :  {} / {} = {}", concout2, scout2 + concout2, ((float) concout2 / (scout2 + concout2)));
-			}
-			
-			pf.setT2AtackOut(((float) scout2 / (scout2 + concout2)));
-			logger.info("{}",pf.getT2AtackOut());
-			pf.setT2DefenseOut(((float) concout2 / (scout2 +concout2)));
-			logger.info("{}",pf.getT2DefenseOut());
-		}
+		// {if (Elem.getFtScoreIn() + Elem.getFtConcededIn() == 0) {
+		// pf.setT2AtackIn(0);
+		// pf.setT2AtackIn(0);
+		// } else {
+		// int scin2 = Elem.getFtScoreIn();
+		// int concin2 = Elem.getFtConcededIn();
+		// {// ------Projection
+		// logger.info("setT2AtackIn :  {} / {} = {}", scin2, scin2
+		// + concin2, ((float) scin2 / (scin2 + concin2)));
+		// logger.info("setT2DefenseIn :  {} / {} = {}", concin2, scin2
+		// + concin2, ((float) concin2 / (scin2 + concin2)));
+		// }
+		// pf.setT2AtackIn(((float) scin2 / (scin2 + concin2)));
+		// logger.info("{}", pf.getT2AtackIn());
+		// pf.setT2DefenseIn(((float) concin2 / (scin2 + concin2)));
+		// logger.info("{}", pf.getT2DefenseIn());
+		// }
+		// if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
+		// pf.setT2AtackOut(0);
+		// pf.setT2DefenseOut(0);
+		// } else {
+		// int scout2 = Elem.getFtScoreOut();
+		// int concout2 = Elem.getFtConcededOut();
+		// {// ------Projection
+		// logger.info("setT2AtackOut :  {} / {} = {}", scout2, scout2
+		// + concout2, ((float) scout2 / (scout2 + concout2)));
+		// logger.info("setT2DefenseOut :  {} / {} = {}", concout2, scout2
+		// + concout2, ((float) concout2 / (scout2 + concout2)));
+		// }
+		//
+		// pf.setT2AtackOut(((float) scout2 / (scout2 + concout2)));
+		// logger.info("{}", pf.getT2AtackOut());
+		// pf.setT2DefenseOut(((float) concout2 / (scout2 + concout2)));
+		// logger.info("{}", pf.getT2DefenseOut());
+		// }
+		// }
 
 		classificationGroupsAsignment();// group position
 

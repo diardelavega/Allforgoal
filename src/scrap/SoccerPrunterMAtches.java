@@ -17,6 +17,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import diskStore.FileHandler;
 import extra.NameCleaner;
 import basicStruct.MatchObj;
 import structures.CountryCompetition;
@@ -44,6 +45,7 @@ public class SoccerPrunterMAtches {
 	private String errorStatus = "OK"; // a simple way to report problems
 	private List<MatchObj> matchlist = new ArrayList<>();
 	private NameCleaner nc = new NameCleaner();
+	FileHandler fh;
 
 	public void matchGraber() {
 		// for every competition link we have go get all results until now
@@ -97,6 +99,9 @@ public class SoccerPrunterMAtches {
 			logger.warn("---------:Element not found");
 			errorStatus = "Unfound Element";
 		} else {
+			// set file ready to be writen
+			fh = new FileHandler();
+			fh.opendataWrite();
 
 			Elements trs = resultTable.getElementsByTag("tr");
 			for (Element tr : trs) {
@@ -120,6 +125,7 @@ public class SoccerPrunterMAtches {
 					}
 				}
 			}// for
+			fh.closeOutput();
 		}
 		logger.info("STATUS is {}", errorStatus);
 		return 0;
@@ -156,15 +162,28 @@ public class SoccerPrunterMAtches {
 			ag.f47(matchId);
 			ag.f69(matchId);
 			errorStatus = ag.errorStatus;
+			logger.warn(errorStatus);
 			if (errorStatus == "OK") {
+				
 				match.set_1(ag.get_1());
 				match.set_2(ag.get_2());
 				match.set_x(ag.get_x());
+				if(ag.getOver()<=0){
 				match.set_o(ag.getOver());
+				}
 				match.set_u(ag.getUnder());
-			}
+			}else{
+				logger.warn(ag.get_1()+"");
+				logger.warn(ag.get_2()+"");
+				logger.warn(ag.get_x()+"");
+				logger.warn(ag.getOver()+"");
+				logger.warn(ag.getUnder()+"");
+							}
 		}
-		match.printMatch();
+		// match.printMatch();
+		
+		// append to file;
+		fh.appendMatchData(match);
 		// put the matches to the appropriate list structure
 		if (MatchesList.readMatches.get(compId) == null) {
 			MatchesList.readMatches.put(compId, new ArrayList<>());

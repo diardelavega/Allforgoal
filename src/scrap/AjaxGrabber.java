@@ -47,8 +47,8 @@ public class AjaxGrabber {
 		 * *** READ FROM FILE EXAMPLE ** * JsonReader reader = new JsonReader(
 		 * new InputStreamReader(new FileInputStream(
 		 * "C:/Users/Administrator/Desktop/tjson.json")));
-		 * "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&t
-		 * y p e I d = 4 7
+		 * "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&
+		 * t y p e I d = 4 7
 		 */
 		URL url = new URL(ajaxUrl + mid + "&typeId=47");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -99,8 +99,13 @@ public class AjaxGrabber {
 				i++;
 			}
 			// as value we get the average of the three bookies
-			over /= i;
-			under /= i;
+			if (i == 0) {
+				over = 0;
+				under = 0;
+			} else {
+				over /= i;
+				under /= i;
+			}
 		} catch (Exception e) {
 			logger.info("No odds for this match");
 			flag = false;
@@ -108,7 +113,7 @@ public class AjaxGrabber {
 			return flag;
 		}
 
-		logger.info("under is ={},  over is ={}", under, over);
+		// logger.info("under is ={},  over is ={}", under, over);
 
 		return flag;
 	}
@@ -170,11 +175,17 @@ public class AjaxGrabber {
 				i++;
 			}
 			// as value we get the average of the three bookies
-			_1 /= i;
-			_x /= i;
-			_2 /= i;
+			if (i == 0) {
+				_1 = 0;
+				_x = 0;
+				_2 = 0;
+			} else {
+				_1 /= i;
+				_x /= i;
+				_2 /= i;
+			}
 
-			logger.info("1 is = {}, x is ={}, 2 is ={} ", _1, _x, _2);
+			// logger.info("1 is = {}, x is ={}, 2 is ={} ", _1, _x, _2);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("No odds for this match");

@@ -49,7 +49,12 @@ public class BasicTableEntity extends HalfTimeExtend implements
 	private float form4 = 0;
 
 	private float formAtack = 0;
+	private float formAtackIn = 0;
+	private float formAtackOut = 0;
+	
 	private float formDefence = 0;
+	private float formDefenceIn = 0;
+	private float formDefenceOut = 0;
 
 	public String getTeam() {
 		return team;
@@ -513,6 +518,40 @@ public class BasicTableEntity extends HalfTimeExtend implements
 
 	public int goalConceded() {
 		return ftConcededIn + ftConcededOut;
+	}
+
+	
+	
+	public float getFormAtackIn() {
+		return formAtackIn;
+	}
+
+	public float getFormAtackOut() {
+		return formAtackOut;
+	}
+
+	public float getFormDefenceIn() {
+		return formDefenceIn;
+	}
+
+	public float getFormDefenceOut() {
+		return formDefenceOut;
+	}
+
+	public void addFormAtackIn(float formAtackIn) {
+		this.formAtackIn += formAtackIn;
+	}
+
+	public void addFormAtackOut(float formAtackOut) {
+		this.formAtackOut += formAtackOut;
+	}
+
+	public void addFormDefenceIn(float formDefenceIn) {
+		this.formDefenceIn += formDefenceIn;
+	}
+
+	public void addFormDefenceOut(float formDefenceOut) {
+		this.formDefenceOut += formDefenceOut;
 	}
 
 	@Override

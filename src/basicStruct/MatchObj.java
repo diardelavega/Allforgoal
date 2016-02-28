@@ -193,8 +193,8 @@ public class MatchObj {
 		sb.append(_o);
 		sb.append(",  ");
 		sb.append(_u);
-		sb.append(",  ");
-//		System.out.println(sb.toString());
+//		sb.append(",  ");
+		System.out.println(sb.toString());
 		return sb.toString();
 
 	}

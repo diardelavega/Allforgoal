@@ -24,8 +24,10 @@ public class PredictionFile {
 	private float t1Form2Diff = 0;
 	private float t1Form3Diff = 0;
 	private float t1Form4Diff = 0;
+	private float t1Atack = 0;
 	private float t1AtackIn = 0;
 	private float t1AtackOut = 0;
+	private float t1Defense = 0;
 	private float t1DefenseIn = 0;
 	private float t1DefenseOut = 0;
 
@@ -37,8 +39,10 @@ public class PredictionFile {
 	private float t2Form2Diff = 0;
 	private float t2Form3Diff = 0;
 	private float t2Form4Diff = 0;
+	private float t2Atack = 0;
 	private float t2AtackIn = 0;
 	private float t2AtackOut = 0;
+	private float t2Defense = 0;
 	private float t2DefenseIn = 0;
 	private float t2DefenseOut = 0;
 
@@ -102,8 +106,6 @@ public class PredictionFile {
 		return week;
 	}
 
-	
-	
 	public void setWeek(int week) {
 		this.week = week;
 	}
@@ -140,12 +142,20 @@ public class PredictionFile {
 		return t1Form4Diff;
 	}
 
+	public float getT1Atack() {
+		return t1Atack;
+	}
+
 	public float getT1AtackIn() {
 		return t1AtackIn;
 	}
 
 	public float getT1AtackOut() {
 		return t1AtackOut;
+	}
+
+	public float getT1Defense() {
+		return t1Defense;
 	}
 
 	public float getT1DefenseIn() {
@@ -186,6 +196,10 @@ public class PredictionFile {
 
 	public float getT2Form4Diff() {
 		return t2Form4Diff;
+	}
+
+	public float getT2Atack() {
+		return t2Atack;
 	}
 
 	public float getT2AtackIn() {
@@ -304,6 +318,26 @@ public class PredictionFile {
 		this.t2DefenseOut = t2DefenseOut;
 	}
 
+	public float getT2Defense() {
+		return t2Defense;
+	}
+
+	public void setT1Atack(float t1Atack) {
+		this.t1Atack = t1Atack;
+	}
+
+	public void setT1Defense(float t1Defense) {
+		this.t1Defense = t1Defense;
+	}
+
+	public void setT2Atack(float t2Atack) {
+		this.t2Atack = t2Atack;
+	}
+
+	public void setT2Defense(float t2Defense) {
+		this.t2Defense = t2Defense;
+	}
+
 	public String liner() {
 		// return a string to be stored in a file
 		StringBuilder sb = new StringBuilder();
@@ -324,17 +358,19 @@ public class PredictionFile {
 		sb.append(" ,");
 		sb.append(t1Form1Diff);
 		sb.append(" ,");
-		sb.append(t1Form1Diff);
-		sb.append(" ,");
 		sb.append(t1Form2Diff);
 		sb.append(" ,");
 		sb.append(t1Form3Diff);
 		sb.append(" ,");
 		sb.append(t1Form4Diff);
 		sb.append(" ,");
+		sb.append(t1Atack);
+		sb.append(" ,");
 		sb.append(t1AtackIn);
 		sb.append(" ,");
 		sb.append(t1AtackOut);
+		sb.append(" ,");
+		sb.append(t1Defense);
 		sb.append(" ,");
 		sb.append(t1DefenseIn);
 		sb.append(" ,");
@@ -351,17 +387,19 @@ public class PredictionFile {
 		sb.append(" ,");
 		sb.append(t2Form1Diff);
 		sb.append(" ,");
-		sb.append(t2Form1Diff);
-		sb.append(" ,");
 		sb.append(t2Form2Diff);
 		sb.append(" ,");
 		sb.append(t2Form3Diff);
 		sb.append(" ,");
 		sb.append(t2Form4Diff);
 		sb.append(" ,");
+		sb.append(t2Atack);
+		sb.append(" ,");
 		sb.append(t2AtackIn);
 		sb.append(" ,");
 		sb.append(t2AtackOut);
+		sb.append(" ,");
+		sb.append(t2Defense);
 		sb.append(" ,");
 		sb.append(t2DefenseIn);
 		sb.append(" ,");
@@ -379,7 +417,7 @@ public class PredictionFile {
 		sb.append(bet_U);
 
 		logger.info(sb.toString());
-		
+
 		return sb.toString();
 	}
 
