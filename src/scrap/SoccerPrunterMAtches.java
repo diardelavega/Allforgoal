@@ -50,8 +50,8 @@ public class SoccerPrunterMAtches {
 	public void matchGraber() {
 		// for every competition link we have go get all results until now
 		String matchResultUrl;
-		for (int i = 0; i < CountryCompetition.compLinkList.size(); i++) {
-			matchResultUrl = CountryCompetition.compLinkList.get(i)
+		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
+			matchResultUrl = CountryCompetition.ccasList.get(i)
 					.getCompLink() + "/results";
 
 			logger.info("link : {}", matchResultUrl);

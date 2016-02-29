@@ -21,16 +21,17 @@ import test.Timestamps;
 public class Demo {
 
 	public static void main(String[] args) throws IOException, SQLException {
-		// TODO Auto-generated method stub
-		// Soccerpunter_homePage sp = new Soccerpunter_homePage();
+		{// fill ccallstruct from site and store to db
+			// Soccerpunter_homePage sp = new Soccerpunter_homePage();
 		// sp.goGetCompetitions();
+		}
 
-		initStructs();
+		initCCAllStruct();
+		
+		 String link = CountryCompetition.ccasList.get(37).getCompLink();
+		 int compId = CountryCompetition.ccasList.get(37).getCompId();
+		 System.out.println(link);
 
-		String link = CountryCompetition.compLinkList.get(37).getCompLink();
-		int compId = CountryCompetition.compList.get(37).getId();
-		System.out.println(link);
-		//
 		{
 			{// TODO this section grabs the matches from the site
 				SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
@@ -74,39 +75,22 @@ public class Demo {
 		// ag.f47("http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&typeId=47");
 	}
 
-	public static void initStructs() throws SQLException {
+	public static void initCCAllStruct() throws SQLException {
 		/*
 		 * read from the DB the competitions data and keep them in the java
 		 * Competition* structures
 		 */
+		CountryCompetition cp = new CountryCompetition();
 		Conn conn = new Conn();
 		conn.open();
-		initCC(conn.getConn());
-		initLinks(conn.getConn());
-		conn.close();
-	}
-
-	public static void initCC(Connection conn) throws SQLException {
-		CountryCompetition cp = new CountryCompetition();
-		cp.readContryComp(conn);
-		if (cp.compList.size() > 0) {
+		cp.readCCAllStruct(conn.getConn());
+		if (cp.ccasList.size() > 0) {
 			System.out.println("Country competition structure is ready");
 		} else {
 			System.out
 					.println("Country competition structure not initialized corectly");
 		}
-	}
-
-	public static void initLinks(Connection conn) throws SQLException {
-		CountryCompetition cp = new CountryCompetition();
-		cp.readCompIdLink(conn);
-		if (cp.compLinkList.size() > 0) {
-			System.out.println("Competition link structure is ready");
-			// System.out.println(cp.compLinkList.get(0).getCompLink());
-		} else {
-			System.out
-					.println("Competition link structure is not initialized corectly");
-		}
+		conn.close();
 	}
 
 	public static void foo() {

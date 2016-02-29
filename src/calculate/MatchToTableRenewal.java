@@ -171,7 +171,7 @@ public class MatchToTableRenewal {
 		 * ready
 		 */
 
-		String compName = CountryCompetition.compList.get(compId - 1)
+		String compName = CountryCompetition.ccasList.get(compId - 1)
 				.getCompetition();
 		compName = compName.replaceAll(" ", "_");
 		ctt = new CompetitionTeamTable(compName);
