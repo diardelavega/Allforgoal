@@ -5,13 +5,20 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LoggerFactoryBinder;
+
 import calculate.MatchToTableRenewal;
 import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
 import dbtry.Conn;
+import extra.StringSimilarity;
 import scrap.AjaxGrabber;
 import scrap.SoccerPrunterMAtches;
 import scrap.Soccerpunter_homePage;
+import scrap.XscoreUpComing;
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
 import structures.MatchesList;
@@ -19,47 +26,57 @@ import test.MatchQueries;
 import test.Timestamps;
 
 public class Demo {
+	public static final Logger logger = LoggerFactory.getLogger(Demo.class);
 
 	public static void main(String[] args) throws IOException, SQLException {
-		{// fill ccallstruct from site and store to db
-			// Soccerpunter_homePage sp = new Soccerpunter_homePage();
-		// sp.goGetCompetitions();
-		}
+//		{// fill ccallstruct from site and store to db
+//			 Soccerpunter_homePage sp = new Soccerpunter_homePage();
+//			 sp.goGetCompetitions();
+//		}
 
-		initCCAllStruct();
-		
-		 String link = CountryCompetition.ccasList.get(37).getCompLink();
-		 int compId = CountryCompetition.ccasList.get(37).getCompId();
-		 System.out.println(link);
+//		 {initCCAllStruct();
+		//
+		// String link = CountryCompetition.ccasList.get(37).getCompLink();
+		// int compId = CountryCompetition.ccasList.get(37).getCompId();
+		// System.out.println(link);
+		// }
 
-		{
-			{// TODO this section grabs the matches from the site
-				SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-				spm.matchGraber();
-				spm.competitionResultsGrabbers(link, compId);
-				// at this point matches garbed and put to list
-			}
+		// {
+		// {// TODO this section grabs the matches from the site
+		// SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+		// spm.matchGraber();
+		// spm.competitionResultsGrabbers(link, compId);
+		// // at this point matches garbed and put to list
+		// }
+		//
+		// {// TODO this section reads and writes data to matches table
+		// MatchesList ml = new MatchesList();
+		// ml.insertMatches();
+		// if (ml.readMatches.size() == 0) {
+		// ml.readMatchesComp(compId);
+		// }
+		// }
+		// // TODO store the list in db
+		//
+		// // TODO call MatchToTableRenewual and evaluate attributes
+		// MatchToTableRenewal mttr;
+		//
+		// for (Integer key : MatchesList.readMatches.keySet()) {
+		// mttr = new MatchToTableRenewal(
+		// MatchesList.readMatches.get(key), key);
+		// MatchToTableRenewal.fh.openOutput();
+		// mttr.calculate();
+		// MatchToTableRenewal.fh.closeOutput();
+		// }
+		// }
 
-			{// TODO this section reads and writes data to matches table
-				MatchesList ml = new MatchesList();
-				ml.insertMatches();
-				if (ml.readMatches.size() == 0) {
-					ml.readMatchesComp(compId);
-				}
-			}
-			// TODO store the list in db
+		// XscoreUpComing sc = new XscoreUpComing();
+		// sc.dateTodayFormat();
+		// sc.dateTomorrowFormat();
+		// sc.dateYesterdayFormat();
 
-			// TODO call MatchToTableRenewual and evaluate attributes
-			MatchToTableRenewal mttr;
-
-			for (Integer key : MatchesList.readMatches.keySet()) {
-				mttr = new MatchToTableRenewal(
-						MatchesList.readMatches.get(key), key);
-				MatchToTableRenewal.fh.openOutput();
-				mttr.calculate();
-				MatchToTableRenewal.fh.closeOutput();
-			}
-		}
+		logger.info("{}", StringSimilarity.levenshteinDistance("MACEDONIa", "FYR Macedonia"));
+		logger.info("{}","MACEDONIa".compareToIgnoreCase("FYR Macedonia"));
 		// ajaxGrabber();
 
 	}
@@ -87,8 +104,7 @@ public class Demo {
 		if (cp.ccasList.size() > 0) {
 			System.out.println("Country competition structure is ready");
 		} else {
-			System.out
-					.println("Country competition structure not initialized corectly");
+			System.out.println("Country competition structure not initialized corectly");
 		}
 		conn.close();
 	}

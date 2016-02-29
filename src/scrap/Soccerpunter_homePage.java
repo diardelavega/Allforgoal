@@ -31,7 +31,6 @@ import extra.NameCleaner;
 public class Soccerpunter_homePage {
 
 	private String link = "http://www.soccerpunter.com";
-	private List<String> competitions = new ArrayList<>();
 	private NameCleaner nc = new NameCleaner();
 
 	public void goGetCompetitions() throws IOException {
@@ -48,12 +47,9 @@ public class Soccerpunter_homePage {
 
 		int i = 0;
 		String s, txt;
-		// CountryCompObj ccobj;// =new CountryCompObj();
-		// CompIdLinkSoccerPlunter cid;// =new CompIdLinkSoccerPlunter ();
 		CCAllStruct ccas;
 
 		for (Element o : opts) {
-			// System.out.println(o.attr("value"));
 			s = o.attr("value").toString();
 			txt = o.text();
 			if (s.length() == 0) {
@@ -75,8 +71,6 @@ public class Soccerpunter_homePage {
 				temp[2] = temp[2].replaceAll("-", " ");
 				String ret = getComp(c, txt);
 
-				// ccobj = new CountryCompObj();
-				// cid = new CompIdLinkSoccerPlunter();
 				ccas = new CCAllStruct();
 				i++;
 
@@ -85,14 +79,6 @@ public class Soccerpunter_homePage {
 				ccas.setCompetition(ret);
 				ccas.setCompLink(s);
 
-				// ccobj.setId(i);
-				// ccobj.setCountry(temp[2]);
-				// ccobj.setCompetition(ret);
-				//
-				// cid.setCompId(i);
-				// cid.setCompLink(s);
-				// CountryCompetition.compList.add(ccobj);
-				// CountryCompetition.compLinkList.add(cid);
 				CountryCompetition.ccasList.add(ccas);
 				// System.out.println(i + " " + s);
 			}
@@ -100,8 +86,6 @@ public class Soccerpunter_homePage {
 		try {
 			CountryCompetition cc = new CountryCompetition();
 			cc.storeCCAllStruct();
-			// cc.storeCountryComp();
-			// cc.storeCompIdLink();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

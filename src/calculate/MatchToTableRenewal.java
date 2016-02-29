@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.slf4j.LoggerFactory;
 
-import com.sun.media.jfxmedia.logging.Logger;
 
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
