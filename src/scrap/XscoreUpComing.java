@@ -23,22 +23,21 @@ public class XscoreUpComing {
 																				// +
 	// 28-02
 
-	public void dateTomorrowFormat() {
-		logger.info(allDateFormater(LocalDate.now().plusDays(1)));
-	}
-
-	public void dateTodayFormat() {
-		logger.info(allDateFormater(LocalDate.now()));
-	}
-
-	public void dateYesterdayFormat() {
-		logger.info(allDateFormater(LocalDate.now().minusDays(1)));
-	}
-
 	public void scrapMatches(String url) {
 		/*
 		 * TODO jsoup to site, get all matches if country ~= usable countries
-		 * get it. FOR every new scoreCountryName 
+		 * get it. FOR every new scoreCountryName 1) SEE IF COMPETITION WE GOT
+		 * IS usable in db 2) if yes get match data
+		 * country,competition,competitionId,t1,t2,dat 3)?? get bets for the
+		 * match 4) store match in temp db matches table
+		 */
+	}
+
+	public void getMatchesResults(String url) {
+		/*
+		 * TODO jsoup url and get finished matches add results to stored temp
+		 * matches
+		 * 
 		 */
 	}
 
@@ -58,6 +57,18 @@ public class XscoreUpComing {
 		}
 		return mainUrl + date;
 
+	}
+
+	public void dateTomorrowFormat() {
+		logger.info(allDateFormater(LocalDate.now().plusDays(1)));
+	}
+
+	public void dateTodayFormat() {
+		logger.info(allDateFormater(LocalDate.now()));
+	}
+
+	public void dateYesterdayFormat() {
+		logger.info(allDateFormater(LocalDate.now().minusDays(1)));
 	}
 
 	public List<MatchObj> getTempNewMatches() {

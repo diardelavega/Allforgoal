@@ -21,6 +21,8 @@ public class Unilang {
 	public static Map<Integer, String> ccasMap = new HashMap<>();
 	public static Map<String, Integer> scoreMap = new HashMap<>();
 
-
+// ******a system to propose which term is more similar from the compared ones with string similarity
+//	from the fidelstain comparisons between xscore an soccerpunter terms keep track of the one with the min distance
+	//and propose it as a term to be used in unilang maps
 
 }
