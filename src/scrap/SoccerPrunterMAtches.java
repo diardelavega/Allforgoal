@@ -39,8 +39,7 @@ import structures.MatchesList;
 public class SoccerPrunterMAtches {
 
 	// CountryCompetition.readCompIdLink
-	private static final Logger logger = LoggerFactory
-			.getLogger(SoccerPrunterMAtches.class);
+	private static final Logger logger = LoggerFactory.getLogger(SoccerPrunterMAtches.class);
 
 	private String errorStatus = "OK"; // a simple way to report problems
 	private List<MatchObj> matchlist = new ArrayList<>();
@@ -51,8 +50,7 @@ public class SoccerPrunterMAtches {
 		// for every competition link we have go get all results until now
 		String matchResultUrl;
 		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
-			matchResultUrl = CountryCompetition.ccasList.get(i)
-					.getCompLink() + "/results";
+			matchResultUrl = CountryCompetition.ccasList.get(i).getCompLink() + "/results";
 
 			logger.info("link : {}", matchResultUrl);
 
@@ -69,8 +67,7 @@ public class SoccerPrunterMAtches {
 		}
 	}
 
-	public int competitionResultsGrabbers(String url, int compId)
-			throws IOException {
+	public int competitionResultsGrabbers(String url, int compId) throws IOException {
 		/*
 		 * go to the page with the results table and gather the match data we
 		 * want report error in case something goes wrong
@@ -78,12 +75,10 @@ public class SoccerPrunterMAtches {
 		Document doc = null;
 		try {
 			logger.info(url + "/results");
-			doc = Jsoup
-					.connect(url + "/results")
+			doc = Jsoup.connect(url + "/results")
 					// doc = Jsoup.parse(new File(
 					// "C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
-					.userAgent(
-							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+					.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
 					.maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -92,8 +87,7 @@ public class SoccerPrunterMAtches {
 			return -1;
 		}
 
-		Element resultTable = doc.getElementsByClass("roundsResultDisplay")
-				.get(0);
+		Element resultTable = doc.getElementsByClass("roundsResultDisplay").get(0);
 		doc = null;
 		if (resultTable == null) {
 			logger.warn("---------:Element not found");
@@ -106,25 +100,21 @@ public class SoccerPrunterMAtches {
 			Elements trs = resultTable.getElementsByTag("tr");
 			for (Element tr : trs) {
 				if (tr.hasClass("even") || tr.hasClass("odd")) {
-					Element scoretd = tr.children().get(3)
-							.getElementsByTag("div").first();
+					Element scoretd = tr.children().get(3).getElementsByTag("div").first();
 
 					// logger.info("********** {}", scoretd);
-					if (scoretd.hasClass("scoreW")
-							|| scoretd.hasClass("scoreL")
-							|| scoretd.hasClass("scoreD")) {
+					if (scoretd.hasClass("scoreW") || scoretd.hasClass("scoreL") || scoretd.hasClass("scoreD")) {
 						Elements tds = tr.getElementsByTag("td");
 						tds.get(2).select("span").remove();
 						tds.get(4).select("span").remove();
 
-						adapto(tds.get(0).text(), tds.get(1).text(),/* tm1 */
+						adapto(tds.get(0).text(), tds.get(1).text(), /* tm1 */
 								tds.get(2).text(), tds.get(3).text(), /* tm2 */
-								tds.get(4).text(), tds.get(5).text(),
-								tds.get(8).getElementsByTag("a").attr("href"),
+								tds.get(4).text(), tds.get(5).text(), tds.get(8).getElementsByTag("a").attr("href"),
 								compId);
 					}
 				}
-			}// for
+			} // for
 			fh.closeOutput();
 		}
 		logger.info("STATUS is {}", errorStatus);
@@ -132,8 +122,8 @@ public class SoccerPrunterMAtches {
 
 	}
 
-	private void adapto(String week, String date, String t1, String ft,
-			String t2, String ht, String oddUrl, int compId) throws IOException {
+	private void adapto(String week, String date, String t1, String ft, String t2, String ht, String oddUrl, int compId)
+			throws IOException {
 		/*
 		 * get all the data including the odds which should come from another 2
 		 * url calls
@@ -164,24 +154,24 @@ public class SoccerPrunterMAtches {
 			errorStatus = ag.errorStatus;
 			logger.warn(errorStatus);
 			if (errorStatus == "OK") {
-				
+
 				match.set_1(ag.get_1());
 				match.set_2(ag.get_2());
 				match.set_x(ag.get_x());
-				if(ag.getOver()<=0){
-				match.set_o(ag.getOver());
+				if (ag.getOver() <= 0) {
+					match.set_o(ag.getOver());
 				}
 				match.set_u(ag.getUnder());
-			}else{
-				logger.warn(ag.get_1()+"");
-				logger.warn(ag.get_2()+"");
-				logger.warn(ag.get_x()+"");
-				logger.warn(ag.getOver()+"");
-				logger.warn(ag.getUnder()+"");
-							}
+			} else {
+				logger.warn(ag.get_1() + "");
+				logger.warn(ag.get_2() + "");
+				logger.warn(ag.get_x() + "");
+				logger.warn(ag.getOver() + "");
+				logger.warn(ag.getUnder() + "");
+			}
 		}
 		// match.printMatch();
-		
+
 		// append to file;
 		fh.appendMatchData(match);
 		// put the matches to the appropriate list structure
@@ -191,7 +181,7 @@ public class SoccerPrunterMAtches {
 		} else {
 			MatchesList.readMatches.get(compId).add(match);
 		}
-		// logger.info("MAtches map  {}", MatchesList.readMatches.get(compId)
+		// logger.info("MAtches map {}", MatchesList.readMatches.get(compId)
 		// .size());
 
 	}

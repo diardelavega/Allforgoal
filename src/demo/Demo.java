@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
@@ -29,12 +32,12 @@ public class Demo {
 	public static final Logger logger = LoggerFactory.getLogger(Demo.class);
 
 	public static void main(String[] args) throws IOException, SQLException {
-//		{// fill ccallstruct from site and store to db
-//			 Soccerpunter_homePage sp = new Soccerpunter_homePage();
-//			 sp.goGetCompetitions();
-//		}
+		// {// fill ccallstruct from site and store to db
+		// Soccerpunter_homePage sp = new Soccerpunter_homePage();
+		// sp.goGetCompetitions();
+		// }
 
-//		 {initCCAllStruct();
+		// {initCCAllStruct();
 		//
 		// String link = CountryCompetition.ccasList.get(37).getCompLink();
 		// int compId = CountryCompetition.ccasList.get(37).getCompId();
@@ -71,14 +74,17 @@ public class Demo {
 		// }
 
 		// XscoreUpComing sc = new XscoreUpComing();
+		// sc.scrapMatchesDate(LocalDate.now());
 		// sc.dateTodayFormat();
 		// sc.dateTomorrowFormat();
 		// sc.dateYesterdayFormat();
 
-		logger.info("{}", StringSimilarity.levenshteinDistance("MACEDONIa", "FYR Macedonia"));
-		logger.info("{}","MACEDONIa".compareToIgnoreCase("FYR Macedonia"));
+		// logger.info("{}", StringSimilarity.levenshteinDistance("MACEDONIa",
+		// "FYR Macedonia"));
+		// logger.info("{}","MACEDONIa".compareToIgnoreCase("FYR Macedonia"));
 		// ajaxGrabber();
 
+		bar();
 	}
 
 	public static void ajaxGrabber() throws IOException {
@@ -114,5 +120,25 @@ public class Demo {
 		c.open();
 		c.getData();
 		c.close();
+	}
+
+	public static void bar() {
+		Map<String, Integer> mm = new HashMap<>();
+		mm.put("A", 0);
+		mm.put("a", 1);
+		mm.put("b", 2);
+		mm.put("c", 3);
+		mm.put("e", 4);
+		mm.put("f", 5);
+
+		String c = null;
+		System.out.println(mm.get(c));
+		Integer k = mm.get("b");
+		if (k != null) {
+			System.out.println(k);
+		} else {
+			System.out.println("aaaaaaaaaaaaaaa");
+		}
+
 	}
 }

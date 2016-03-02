@@ -3,8 +3,8 @@ package extra;
 public class StringSimilarity {
 
 	 public static int levenshteinDistance(String a, String b) {
-	        a = a.toLowerCase();
-	        b = b.toLowerCase();
+	        a = a.toUpperCase();
+	        b = b.toUpperCase();
 	        // i == 0
 	        int [] costs = new int [b.length() + 1];
 	        for (int j = 0; j < costs.length; j++)

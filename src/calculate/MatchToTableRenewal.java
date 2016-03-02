@@ -82,9 +82,9 @@ public class MatchToTableRenewal {
 		for (int i = 0; i < matchList.size(); i++) {
 			mobj = matchList.get(i);
 			// -------TEST
-			logger.info("{}  {} vs {}  {}  ", mobj.getT1(), mobj.getFt1(),
-					mobj.getFt2(), mobj.getT2());
-			logger.info("tot = {},  N={}", totMatches, N);
+//			logger.info("{}  {} vs {}  {}  ", mobj.getT1(), mobj.getFt1(),
+//					mobj.getFt2(), mobj.getT2());
+//			logger.info("tot = {},  N={}", totMatches, N);
 			// --------------
 
 			posT1 = -1;

@@ -1,9 +1,16 @@
 package scrap;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +27,8 @@ public class XscoreUpComing {
 	public static final Logger logger = LoggerFactory.getLogger(XscoreUpComing.class);
 	private List<MatchObj> tempNewMatches = new ArrayList<>();
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";// <-
-																				// +
+	private Map<String, Integer> allowedcomps = new HashMap<>();
+	// +
 	// 28-02
 
 	public void scrapMatches(String url) {
@@ -39,6 +47,55 @@ public class XscoreUpComing {
 		 * matches
 		 * 
 		 */
+	}
+
+	public void scrapMatchesDate(LocalDate dat) {
+		String url = allDateFormater(dat);
+		Document doc = null;
+		try {
+			logger.info(url);
+			// doc = Jsoup.connect(url )
+			doc = Jsoup.parse(new File("C:/Users/diego/Desktop/Scores.html"), "UTF-8");
+			// .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0)
+			// Gecko/20100101 Firefox/23.0")
+			// .maxBodySize(0).timeout(600000).get();
+		} catch (Exception e) {
+			logger.info("couldnf connect or parse the page");
+			e.printStackTrace();
+		}
+
+		Element tab = doc.select("table table table").get(2);
+		Elements mrows = tab.getElementsByTag("tr");
+		for (Element row : mrows) {
+			if (row.hasAttr("class") && row.attr("class").contains("#")) {
+				String[] clasVal = row.attr("class").split("#");
+				logger.info("country {},   comp {}", clasVal[0], clasVal[4]);
+
+				// TODO search and get competition id;=>
+				/*
+				 * 1)keep a list of allowed competitions & fast check to see if
+				 * the comp we want (in scorer format writing) is there. * * ***
+				 * 2) search on uniLang for the term (country & competition); 3)
+				 * search in the aacstruct for the compid {if search -> -1 skip}
+				 * 
+				 */
+				// get teams; create a new tempMatchesList; store to db
+				// tempMatches table
+
+			}
+		}
+
+	}
+
+	public int searchForCompId(String country, String comp) {
+		Integer searchCompId = allowedcomps.get(comp);
+		if (searchCompId != null) {
+			return searchCompId;
+		}else{
+			
+		}
+		return searchCompId;
+
 	}
 
 	private String allDateFormater(LocalDate dat) {

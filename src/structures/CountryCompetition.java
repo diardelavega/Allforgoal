@@ -8,10 +8,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import basicStruct.CCAllStruct;
 import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
 import dbtry.Conn;
+import extra.StringSimilarity;
+import extra.Unilang;
 
 /**
  * @author Administrator
@@ -22,6 +27,8 @@ import dbtry.Conn;
  */
 
 public class CountryCompetition {
+
+	public static final Logger logger = LoggerFactory.getLogger(CountryCompetition.class);
 
 	public static final String baseUrl = "http://www.soccerpunter.com";
 	public static List<CCAllStruct> ccasList = new ArrayList<>();
@@ -85,7 +92,11 @@ public class CountryCompetition {
 		// the first encountered instance of country might not be first orr last
 		// but in the middle so we search from the middle up or down
 		int initial = binarySearchCountry(country, 0, ccasList.size());
+		if (initial < 0) {
+			return initial;
+		}
 		int i = initial;
+
 		while (ccasList.get(i).getCountry().equals(country)) {
 			if (ccasList.get(i).getCompetition().equals(country)) {
 				return i;
@@ -100,7 +111,7 @@ public class CountryCompetition {
 			i--;
 		}
 
-		return 0;
+		return -1;
 	}
 
 	private int binarySearchCountry(String country, int min, int max) {
@@ -138,17 +149,42 @@ public class CountryCompetition {
 
 	public int searchCompUsable(String compName) {
 		/*
-		 * searches to find a competition if it is db set, so it can be utilizet
+		 * searches to find a competition if it is db set, so it can be utilized
 		 * for processing
 		 */
+		// StringSimilarity ss = new StringSimilarity();
+		int minDistanceCompIdx = 0;
+		int minDist = 100;
+		int dist = 0;
 		for (int i = 0; i < ccasList.size(); i++) {
 			if (ccasList.get(i).getDb() == 1) {
-				if (compName.equals(ccasList.get(i).getCompetition())) {
+				dist = StringSimilarity.levenshteinDistance(compName, ccasList.get(i).getCompetition());
+				if (dist <= 2) {
 					return ccasList.get(i).getCompId();
-				}
-			}
+				} else {
+					if (dist < minDist) {
+						minDist = dist;
+						minDistanceCompIdx = i;
+					}
+				} // else
+			} // db ==1
 		}
-		return 0;
+		// TODO insert new Term in unilang and coordinate
+		Unilang ul = new Unilang();
+		int newId = ul.addTerm(ccasList.get(minDistanceCompIdx).getCompetition(), compName);
+		logger.warn("with levistainDistance = {} the new id is {}", minDist, newId);
+
+		if (newId >= compName.length() / 2) {
+			return -1;
+		} else {
+			return newId;
+		}
 	}
 
+	public int completeSearch(String country, String compName) {
+		if (searchComp(country, compName) < 0) {
+			return searchCompUsable(compName);
+		}
+		return -1;
+	}
 }
