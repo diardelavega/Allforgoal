@@ -14,7 +14,7 @@ public class TupleIdTerm {
 		// TODO Auto-generated constructor stub
 	}
 
-	public TupleIdTerm(String s, int i) {
+	public TupleIdTerm(int i, String s) {
 		super();
 		this.s = s;
 		this.i = i;

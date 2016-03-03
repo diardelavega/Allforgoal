@@ -6,10 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.org.apache.bcel.internal.generic.ALOAD;
 
 import basicStruct.CCAllStruct;
 import basicStruct.CompIdLinkSoccerPlunter;
@@ -35,19 +39,12 @@ public class CountryCompetition {
 
 	public static final String baseUrl = "http://www.soccerpunter.com";
 	public static List<CCAllStruct> ccasList = new ArrayList<>();
-
-	// public static List<CountryCompObj> compList = new ArrayList<>();
-	// public static List<CompIdLinkSoccerPlunter> compLinkList = new
-	// ArrayList<>();
+	public static Map<String, Integer> allowedcomps = new HashMap<>();
 
 	public CountryCompetition() throws SQLException {
 		super();
-//		if(ccasList.size()==0){
-//			Demo.initCCAllStruct();
-//		}
 	}
-	
-	
+
 	public void readCCAllStruct(Connection conn) throws SQLException {
 		// read from db and insert to list;
 		// possible necessity of some ordering; COUNTRIES are already ordered
@@ -72,8 +69,6 @@ public class CountryCompetition {
 		}
 	}
 
-
-
 	public void storeCCAllStruct() throws SQLException {
 		// write the comp country to the db
 		Conn conn = new Conn();
@@ -95,7 +90,8 @@ public class CountryCompetition {
 		conn.close();
 	}
 
-	public int searchComp(String country, String compName) {
+	// ----------------------------------------
+	public int searchCompBinary(String country, String compName, boolean b) {
 		/*
 		 * search the competitions list and from the name return its id & index
 		 * position. (use the fact that the countries are alphabetically ordered
@@ -103,31 +99,56 @@ public class CountryCompetition {
 		 * *********************************************** the first encountered
 		 * instance of country might not be first or last for the competition we
 		 * are looking for; it can be in the middle so we search from the middle
-		 * up or down
+		 * up or down. Depending on b we search with levistein similarity or
+		 * without it (with equality)
 		 */
 
-		int initial = binarySearchCountry(country, 0, ccasList.size());
-		if (initial < 0) {// country not found
-			return initial;
+		int idx = binarySearchCountry(country, 0, ccasList.size());
+		if (idx < 0) {// country not found
+			return idx;
 		} else {// country found, search for competition
-			int i = initial;
+			idx = smallCompSearch(idx, country, compName, b);
+			// allowedcomps.put(compName, idx);
+			return idx;
+
+		}
+	}
+
+	private int smallCompSearch(int initial, String country, String comp,
+			boolean b) {
+		int i = initial;
+		if (b) {// with levistein
 			while (ccasList.get(i).getCountry().equals(country)) {
 				if (StringSimilarity.levenshteinDistance(ccasList.get(i)
-						.getCompetition(), compName) <= StandartResponses.LEV_DISTANCE) {
+						.getCompetition(), comp) <= StandartResponses.LEV_DISTANCE) {
 					return i;
 				}
-				initial++;
+				i++;
 			}
 			i = initial;
 			while (ccasList.get(i).getCountry().equals(country)) {
 				if (StringSimilarity.levenshteinDistance(ccasList.get(i)
-						.getCompetition(), compName) <= StandartResponses.LEV_DISTANCE) {
+						.getCompetition(), comp) <= StandartResponses.LEV_DISTANCE) {
 					return i;
 				}
 				i--;
 			}
-			return -1;
+		} else {// no levestein
+			while (ccasList.get(i).getCountry().equals(country)) {
+				if (ccasList.get(i).getCompetition().equalsIgnoreCase(comp)) {
+					return i;
+				}
+				i++;
+			}
+			i = initial;
+			while (ccasList.get(i).getCountry().equals(country)) {
+				if (ccasList.get(i).getCompetition().equalsIgnoreCase(comp)) {
+					return i;
+				}
+				i--;
+			}
 		}
+		return -1;
 	}
 
 	private int binarySearchCountry(String country, int min, int max) {
@@ -136,7 +157,7 @@ public class CountryCompetition {
 		 * for. Keep in mind the countries are alphabetically sorted and present
 		 * more than once (one country many competitions)
 		 */
-		
+
 		if (min > max) {
 			return -1;
 		}
@@ -151,6 +172,7 @@ public class CountryCompetition {
 		}
 	}
 
+	// ---------------------------------
 	public int searchComp(String compName) {
 		/*
 		 * search the competitions list and from the name return its id & index
@@ -164,7 +186,7 @@ public class CountryCompetition {
 		return 0;
 	}
 
-	public int searchCompUsable(String compName) {
+	public int searchUsableComp(String compName) {
 		/*
 		 * searches to find a competition if it is db set, so it can be utilised
 		 * for processing. Searching for competitions within the allowed
@@ -192,7 +214,7 @@ public class CountryCompetition {
 		logger.warn(
 				"with levistainDistance = {} ccasTerm = {}  & scorerTerm = {} ",
 				minDist, ccasList.get(i).getCompId(), compName);
-		
+
 		// if distance is greater than 1/2 of the word call it wrong
 		if (minDist >= compName.length() / 2) {
 			return -1;
@@ -207,11 +229,26 @@ public class CountryCompetition {
 	}
 
 	public int fullSearch(String country, String compName) {
-		int retId = searchComp(country, compName);
-		if (retId > 0) {
-			return retId;
-		} else {
-			return searchCompUsable(compName);
-		}
+		// int retId = searchBinaryComp(country, compName);
+		// if (retId > 0) {
+		// if (ccasList.get(retId).getDb() == 1) {
+		// return retId;
+		// }
+		// return -1;
+		// } else {
+		// return searchCompUsable(compName);
+		// }
+		return -1;
 	}
+
+	//
+	// public static Map<String, Integer> getAllowedcomps() {
+	// return allowedcomps;
+	// }
+
+	public void addAllowedComp(String comp, int idx) {
+		allowedcomps.put(comp, idx);
+		// append to file
+	}
+
 }

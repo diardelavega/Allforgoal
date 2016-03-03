@@ -21,7 +21,7 @@ taking in consideration the match in hand.
 	Security Measures Required	 
 	
 	
---) i changed a bit the structure so now we dont have two types of entity classes but one basic that extends another 
+--) i changed a bit the structure so now we don't have two types of entity classes but one basic that extends another 
 	one with the HT attributes. 
 	
 ***) Re-think and Redesign the architecture to keep in ming the continuous/big amount of games per each competition.
@@ -38,11 +38,18 @@ taking in consideration the match in hand.
 	 correct. at the end of the list we store the data to db.
 	 
 	 
-	 **TODO-  inplement the order clasification table on temtable class.
+	 **TODO-  implement the order classification table on team-table class.
 	 !! sort sort of implemented. (trying)
 
-	 				 	  
-	 				 	  
+	 			-------------------------------------------------
+	 			-------------------------------------------------------
+	 			************************************************
+	 			---------------------------------------------------------
+	 
+	 	 	  
+	set up write to file methods for unilang Maps and also for allowed competitionsMap*(this should be in countrycomp class file)
+	 
+	 * implement a better comparison than simple leveshtain for Strings comprized of more than one word.  				 	  
 	 				 	  
 	 				 	  
 	 				 	  

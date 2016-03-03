@@ -31,7 +31,6 @@ public class XscoreUpComing {
 			.getLogger(XscoreUpComing.class);
 	private List<MatchObj> tempNewMatches = new ArrayList<>();
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";// <-
-	private Map<String, Integer> allowedcomps = new HashMap<>();
 
 	// +
 	// 28-02
@@ -77,6 +76,7 @@ public class XscoreUpComing {
 			if (row.hasAttr("class") && row.attr("class").contains("#")) {
 				String[] clasVal = row.attr("class").split("#");
 				logger.info("country {},   comp {}", clasVal[0], clasVal[4]);
+
 				int compId = searchForCompId(clasVal[0], clasVal[4]);
 				if (compId < 0) {
 					continue;
@@ -91,7 +91,7 @@ public class XscoreUpComing {
 						String[] scores;
 						// HT score - @ td_14
 						if (tds.get(13).text().length() == 3) {// score-score
-							scores= tds.get(14).text().split("-");
+							scores = tds.get(14).text().split("-");
 							try {// just in case some error happens
 								int ht1 = Integer.parseInt(scores[0]);
 								int ht2 = Integer.parseInt(scores[1]);
@@ -108,7 +108,6 @@ public class XscoreUpComing {
 								logger.warn(" SOMTHING WHENT WRONG WITH THE FT SCORE");
 							}
 						}
-						
 
 					}
 				}
@@ -129,27 +128,63 @@ public class XscoreUpComing {
 
 	public int searchForCompId(String country, String comp) throws SQLException {
 		// search in allowed competitions map
-		Integer searchCompId = allowedcomps.get(comp);
+		CountryCompetition cc = new CountryCompetition();
+		Integer searchCompId = cc.allowedcomps.get(comp);
 		if (searchCompId != null) {
 			return searchCompId;
 		} else {
-			/*
-			 * search in unilab for analog word in ccas comps ** TO BE THOUGHT
-			 * {Unilang ul = new Unilang(); String countryName=
-			 * ul.scoreToccas(country); String compName= ul.scoreToccas(comp); }
-			 */
 
-			 country = country.substring(0, 1).toUpperCase() + country.substring(1).toLowerCase();
-			// use advanced searching and comparing
-			CountryCompetition cc = new CountryCompetition();
-			searchCompId = cc.fullSearch(country, comp);
-			if (searchCompId > 0) {
-				allowedcomps.put(comp, searchCompId);// enrich allowed comp
-				return searchCompId;
+			Unilang ul = new Unilang();
+			String newCountry = ul.scoreToCcas(country);
+			String newComp = ul.scoreToCcas(comp);
+
+			if (newCountry != null) {
+				if (newComp != null) {// binarysearch newComp no levistein
+					searchCompId = cc.searchCompBinary(newCountry, newComp,
+							false);
+					if (searchCompId > 0) {
+						ul.addTerm(newCountry, country);
+						ul.addTerm(newComp, comp);
+						if (cc.ccasList.get(searchCompId).getDb() == 1) {
+							cc.addAllowedComp(comp, searchCompId);
+						}
+					}
+				} else {// bynarysearch with levistain for competition
+					searchCompId = cc.searchCompBinary(newCountry, comp, true);
+					if (searchCompId > 0) {
+						ul.addTerm(newCountry, country);
+						ul.addTerm(cc.ccasList.get(searchCompId)
+								.getCompetition(), comp);
+						if (cc.ccasList.get(searchCompId).getDb() == 1) {
+							cc.addAllowedComp(comp, searchCompId);
+						}
+					}
+				}
+			} else {
+				if (newComp != null) {
+					// search usable (DB)newComp no levistein
+				} else {
+					// search usable with levistain for competition
+				}
 			}
-		}
-		return searchCompId;
 
+			// transform country from all upperCase to first letter uppercase
+			// country = country.substring(0, 1).toUpperCase()
+			// + country.substring(1).toLowerCase();
+
+			// searchCompId = cc.fullSearch(country, comp);
+			// if (searchCompId > 0) {
+			// cc.allowedcomps.put(comp, searchCompId);// enrich allowed comp
+			// return searchCompId;
+			// }
+			return searchCompId;
+		}
+		//
+	}
+
+	public void searchForTeam(String team, int compId) {
+		// TODO search in unilang if the team is there
+		// get teams from db and compare
 	}
 
 	private String allDateFormater(LocalDate dat) {
