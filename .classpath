@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_73">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_60">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
@@ -13,16 +13,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/slf4j-1.7.18/slf4j-api-1.7.18.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/slf4j-1.7.18/slf4j-api-1.7.18-sources.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/slf4j-1.7.18/slf4j-simple-1.7.18.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/slf4j-1.7.18/slf4j-simple-1.7.18-sources.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/JSOUP/jsoup-1.8.3.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/JSOUP/jsoup-1.8.3-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/JSOUP/jsoup-1.8.3-sources.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/Gson/gson-2.2.4.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/Gson/gson-2.2.4-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/Gson/gson-2.2.4-sources.jar"/>
-	<classpathentry kind="lib" path="D:/diego/DEV_ZONE/mysql-connector-java-5.1.38/mysql-connector-java-5.1.38-bin.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/BastRequirements"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

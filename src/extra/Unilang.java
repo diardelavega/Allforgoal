@@ -20,8 +20,8 @@ public class Unilang {
 
 	public static Map<Integer, String> ccasMap = new HashMap<>();
 	public static Map<String, Integer> scoreMap = new HashMap<>();
-	private int lastCassMapIdx;
-	private int lastScoreMapIdx;
+	private static int lastCassMapIdx;
+	private static int lastScoreMapIdx;
 
 	public String scoreToccas(String term) {
 		return ccasMap.get(scoreMap.get(term));

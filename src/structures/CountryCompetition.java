@@ -15,6 +15,7 @@ import basicStruct.CCAllStruct;
 import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
 import dbtry.Conn;
+import extra.StandartResponses;
 import extra.StringSimilarity;
 import extra.Unilang;
 
@@ -28,10 +29,12 @@ import extra.Unilang;
 
 public class CountryCompetition {
 
-	public static final Logger logger = LoggerFactory.getLogger(CountryCompetition.class);
+	public static final Logger logger = LoggerFactory
+			.getLogger(CountryCompetition.class);
 
 	public static final String baseUrl = "http://www.soccerpunter.com";
 	public static List<CCAllStruct> ccasList = new ArrayList<>();
+
 	// public static List<CountryCompObj> compList = new ArrayList<>();
 	// public static List<CompIdLinkSoccerPlunter> compLinkList = new
 	// ArrayList<>();
@@ -87,31 +90,34 @@ public class CountryCompetition {
 		 * search the competitions list and from the name return its id & index
 		 * position. (use the fact that the countries are alphabetically ordered
 		 * to make a faster search).
+		 * *********************************************** the first encountered
+		 * instance of country might not be first or last for the competition we
+		 * are looking for; it can be in the middle so we search from the middle
+		 * up or down
 		 */
 
-		// the first encountered instance of country might not be first orr last
-		// but in the middle so we search from the middle up or down
 		int initial = binarySearchCountry(country, 0, ccasList.size());
-		if (initial < 0) {
+		if (initial < 0) {// country not found
 			return initial;
-		}
-		int i = initial;
-
-		while (ccasList.get(i).getCountry().equals(country)) {
-			if (ccasList.get(i).getCompetition().equals(country)) {
-				return i;
+		} else {// country found, search for competition
+			int i = initial;
+			while (ccasList.get(i).getCountry().equals(country)) {
+				if (StringSimilarity.levenshteinDistance(ccasList.get(i)
+						.getCompetition(), compName) <= StandartResponses.LEV_DISTANCE) {
+					return i;
+				}
+				initial++;
 			}
-			initial++;
-		}
-		i = initial;
-		while (ccasList.get(i).getCountry().equals(country)) {
-			if (ccasList.get(i).getCompetition().equals(country)) {
-				return i;
+			i = initial;
+			while (ccasList.get(i).getCountry().equals(country)) {
+				if (StringSimilarity.levenshteinDistance(ccasList.get(i)
+						.getCompetition(), compName) <= StandartResponses.LEV_DISTANCE) {
+					return i;
+				}
+				i--;
 			}
-			i--;
+			return -1;
 		}
-
-		return -1;
 	}
 
 	private int binarySearchCountry(String country, int min, int max) {
@@ -149,16 +155,19 @@ public class CountryCompetition {
 
 	public int searchCompUsable(String compName) {
 		/*
-		 * searches to find a competition if it is db set, so it can be utilized
-		 * for processing
+		 * searches to find a competition if it is db set, so it can be utilised
+		 * for processing. Searching for competitions within the allowed
+		 * Levestain distance
 		 */
-		// StringSimilarity ss = new StringSimilarity();
-		int minDistanceCompIdx = 0;
-		int minDist = 100;
-		int dist = 0;
-		for (int i = 0; i < ccasList.size(); i++) {
+		int minDistanceCompIdx = 0;// the idx of the most similar term
+		int minDist = 100;// var to keep the min distance
+		int dist = 0; // temporary distance var
+
+		int i;
+		for (i = 0; i < ccasList.size(); i++) {
 			if (ccasList.get(i).getDb() == 1) {
-				dist = StringSimilarity.levenshteinDistance(compName, ccasList.get(i).getCompetition());
+				dist = StringSimilarity.levenshteinDistance(compName, ccasList
+						.get(i).getCompetition());
 				if (dist <= 2) {
 					return ccasList.get(i).getCompId();
 				} else {
@@ -169,22 +178,29 @@ public class CountryCompetition {
 				} // else
 			} // db ==1
 		}
-		// TODO insert new Term in unilang and coordinate
-		Unilang ul = new Unilang();
-		int newId = ul.addTerm(ccasList.get(minDistanceCompIdx).getCompetition(), compName);
-		logger.warn("with levistainDistance = {} the new id is {}", minDist, newId);
-
-		if (newId >= compName.length() / 2) {
+		logger.warn(
+				"with levistainDistance = {} ccasTerm = {}  & scorerTerm = {} ",
+				minDist, ccasList.get(i).getCompId(), compName);
+		
+		// if distance is greater than 1/2 of the word call it wrong
+		if (minDist >= compName.length() / 2) {
 			return -1;
 		} else {
+			// insert new Term in unilang and coordinate
+			Unilang ul = new Unilang();
+			int newId = ul.addTerm(ccasList.get(minDistanceCompIdx)
+					.getCompetition(), compName);
+
 			return newId;
 		}
 	}
 
-	public int completeSearch(String country, String compName) {
-		if (searchComp(country, compName) < 0) {
+	public int fullSearch(String country, String compName) {
+		int retId = searchComp(country, compName);
+		if (retId > 0) {
+			return retId;
+		} else {
 			return searchCompUsable(compName);
 		}
-		return -1;
 	}
 }

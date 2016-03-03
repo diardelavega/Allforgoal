@@ -14,6 +14,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import extra.Unilang;
+import structures.CountryCompetition;
 import basicStruct.MatchObj;
 
 /**
@@ -24,10 +26,12 @@ import basicStruct.MatchObj;
  *
  */
 public class XscoreUpComing {
-	public static final Logger logger = LoggerFactory.getLogger(XscoreUpComing.class);
+	public static final Logger logger = LoggerFactory
+			.getLogger(XscoreUpComing.class);
 	private List<MatchObj> tempNewMatches = new ArrayList<>();
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";// <-
 	private Map<String, Integer> allowedcomps = new HashMap<>();
+
 	// +
 	// 28-02
 
@@ -45,7 +49,6 @@ public class XscoreUpComing {
 		/*
 		 * TODO jsoup url and get finished matches add results to stored temp
 		 * matches
-		 * 
 		 */
 	}
 
@@ -55,7 +58,8 @@ public class XscoreUpComing {
 		try {
 			logger.info(url);
 			// doc = Jsoup.connect(url )
-			doc = Jsoup.parse(new File("C:/Users/diego/Desktop/Scores.html"), "UTF-8");
+			doc = Jsoup.parse(new File("C:/Users/diego/Desktop/Scores.html"),
+					"UTF-8");
 			// .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0)
 			// Gecko/20100101 Firefox/23.0")
 			// .maxBodySize(0).timeout(600000).get();
@@ -70,14 +74,19 @@ public class XscoreUpComing {
 			if (row.hasAttr("class") && row.attr("class").contains("#")) {
 				String[] clasVal = row.attr("class").split("#");
 				logger.info("country {},   comp {}", clasVal[0], clasVal[4]);
-
+				int compId = searchForCompId(clasVal[0], clasVal[4]);
+				if (compId < 0) {
+					continue;
+				}
+				else{
+					
+				}
 				// TODO search and get competition id;=>
 				/*
 				 * 1)keep a list of allowed competitions & fast check to see if
 				 * the comp we want (in scorer format writing) is there. * * ***
 				 * 2) search on uniLang for the term (country & competition); 3)
-				 * search in the aacstruct for the compid {if search -> -1 skip}
-				 * 
+				 * search in the accstruct for the compid {if search -> -1 skip}
 				 */
 				// get teams; create a new tempMatchesList; store to db
 				// tempMatches table
@@ -88,11 +97,24 @@ public class XscoreUpComing {
 	}
 
 	public int searchForCompId(String country, String comp) {
+		// search in allowed competitions map
 		Integer searchCompId = allowedcomps.get(comp);
 		if (searchCompId != null) {
 			return searchCompId;
-		}else{
-			
+		} else {
+			/*
+			 * search in unilab for analog word in ccas comps ** TO BE THOUGHT
+			 * {Unilang ul = new Unilang(); String countryName=
+			 * ul.scoreToccas(country); String compName= ul.scoreToccas(comp); }
+			 */
+
+			// use advanced searching and comparing
+			CountryCompetition cc = new CountryCompetition();
+			searchCompId = cc.fullSearch(country, comp);
+			if (searchCompId > 0) {
+				allowedcomps.put(comp, searchCompId);// enrich allowed comp
+				return searchCompId;
+			}
 		}
 		return searchCompId;
 
