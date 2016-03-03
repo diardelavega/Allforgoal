@@ -15,6 +15,7 @@ import basicStruct.CCAllStruct;
 import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
 import dbtry.Conn;
+import demo.Demo;
 import extra.StandartResponses;
 import extra.StringSimilarity;
 import extra.Unilang;
@@ -39,6 +40,14 @@ public class CountryCompetition {
 	// public static List<CompIdLinkSoccerPlunter> compLinkList = new
 	// ArrayList<>();
 
+	public CountryCompetition() throws SQLException {
+		super();
+//		if(ccasList.size()==0){
+//			Demo.initCCAllStruct();
+//		}
+	}
+	
+	
 	public void readCCAllStruct(Connection conn) throws SQLException {
 		// read from db and insert to list;
 		// possible necessity of some ordering; COUNTRIES are already ordered
@@ -50,11 +59,10 @@ public class CountryCompetition {
 			ccas.setCompId(rs.getInt("compid"));
 			ccas.setCountry(rs.getString("country"));
 			ccas.setCompetition(rs.getString("competition"));
-			ccas.setCompLink(rs.getString("link"));
+			ccas.setCompLink(rs.getString("complink"));
 			ccas.setDb(rs.getInt("db"));
 			ccas.setDb(rs.getInt("_level"));
 			ccasList.add(ccas);
-
 		}
 		try {
 			st.close();
@@ -63,6 +71,8 @@ public class CountryCompetition {
 			e.printStackTrace();
 		}
 	}
+
+
 
 	public void storeCCAllStruct() throws SQLException {
 		// write the comp country to the db
@@ -126,6 +136,7 @@ public class CountryCompetition {
 		 * for. Keep in mind the countries are alphabetically sorted and present
 		 * more than once (one country many competitions)
 		 */
+		
 		if (min > max) {
 			return -1;
 		}

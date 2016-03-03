@@ -37,12 +37,12 @@ public class Demo {
 		// sp.goGetCompetitions();
 		// }
 
-		// {initCCAllStruct();
+		 {initCCAllStruct();
 		//
-		// String link = CountryCompetition.ccasList.get(37).getCompLink();
-		// int compId = CountryCompetition.ccasList.get(37).getCompId();
-		// System.out.println(link);
-		// }
+//		 String link = CountryCompetition.ccasList.get(37).getCompLink();
+//		 int compId = CountryCompetition.ccasList.get(37).getCompId();
+//		 System.out.println(link);
+		 }
 
 		// {
 		// {// TODO this section grabs the matches from the site
@@ -73,8 +73,8 @@ public class Demo {
 		// }
 		// }
 
-		// XscoreUpComing sc = new XscoreUpComing();
-		// sc.scrapMatchesDate(LocalDate.now());
+		 XscoreUpComing sc = new XscoreUpComing();
+		 sc.scrapMatchesDate(LocalDate.now());
 		// sc.dateTodayFormat();
 		// sc.dateTomorrowFormat();
 		// sc.dateYesterdayFormat();
@@ -84,7 +84,7 @@ public class Demo {
 		// logger.info("{}","MACEDONIa".compareToIgnoreCase("FYR Macedonia"));
 		// ajaxGrabber();
 
-		bar();
+//		bar();
 	}
 
 	public static void ajaxGrabber() throws IOException {

@@ -1,6 +1,7 @@
 package scrap;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,14 +53,16 @@ public class XscoreUpComing {
 		 */
 	}
 
-	public void scrapMatchesDate(LocalDate dat) {
+	public void scrapMatchesDate(LocalDate dat) throws SQLException {
 		String url = allDateFormater(dat);
 		Document doc = null;
 		try {
 			logger.info(url);
 			// doc = Jsoup.connect(url )
-			doc = Jsoup.parse(new File("C:/Users/diego/Desktop/Scores.html"),
-					"UTF-8");
+			// doc = Jsoup.parse(new
+			// File("C:/Users/diego/Desktop/Scores.html"),"UTF-8");
+			doc = Jsoup.parse(new File(
+					"C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
 			// .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0)
 			// Gecko/20100101 Firefox/23.0")
 			// .maxBodySize(0).timeout(600000).get();
@@ -77,9 +80,37 @@ public class XscoreUpComing {
 				int compId = searchForCompId(clasVal[0], clasVal[4]);
 				if (compId < 0) {
 					continue;
-				}
-				else{
-					
+				} else {
+					Elements tds = row.getElementsByTag("td");
+					// for(Element td:tds){
+					String status = tds.get(1).text();
+					String t1 = tds.get(5).text();
+					String t2 = tds.get(9).text();
+
+					if (status == "Fin") {
+						String[] scores;
+						// HT score - @ td_14
+						if (tds.get(13).text().length() == 3) {// score-score
+							scores= tds.get(14).text().split("-");
+							try {// just in case some error happens
+								int ht1 = Integer.parseInt(scores[0]);
+								int ht2 = Integer.parseInt(scores[1]);
+							} catch (NumberFormatException e) {
+								logger.warn(" SOMTHING WHENT WRONG WITH THE HT SCORE");
+							}
+						}
+						if (tds.get(14).text().length() == 3) {// FT @ td_15
+							scores = tds.get(15).text().split("-");
+							try {// just in case some error happens
+								int ft1 = Integer.parseInt(scores[0]);
+								int ft2 = Integer.parseInt(scores[1]);
+							} catch (NumberFormatException e) {
+								logger.warn(" SOMTHING WHENT WRONG WITH THE FT SCORE");
+							}
+						}
+						
+
+					}
 				}
 				// TODO search and get competition id;=>
 				/*
@@ -96,7 +127,7 @@ public class XscoreUpComing {
 
 	}
 
-	public int searchForCompId(String country, String comp) {
+	public int searchForCompId(String country, String comp) throws SQLException {
 		// search in allowed competitions map
 		Integer searchCompId = allowedcomps.get(comp);
 		if (searchCompId != null) {
@@ -108,6 +139,7 @@ public class XscoreUpComing {
 			 * ul.scoreToccas(country); String compName= ul.scoreToccas(comp); }
 			 */
 
+			 country = country.substring(0, 1).toUpperCase() + country.substring(1).toLowerCase();
 			// use advanced searching and comparing
 			CountryCompetition cc = new CountryCompetition();
 			searchCompId = cc.fullSearch(country, comp);
