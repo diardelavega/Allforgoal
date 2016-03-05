@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +39,8 @@ public class Demo {
 		// sp.goGetCompetitions();
 		// }
 
-		 {initCCAllStruct();
+		 {
+//			 initCCAllStruct();
 		//
 //		 String link = CountryCompetition.ccasList.get(37).getCompLink();
 //		 int compId = CountryCompetition.ccasList.get(37).getCompId();
@@ -73,8 +76,8 @@ public class Demo {
 		// }
 		// }
 
-		 XscoreUpComing sc = new XscoreUpComing();
-		 sc.scrapMatchesDate(LocalDate.now());
+//		 XscoreUpComing sc = new XscoreUpComing();
+//		 sc.scrapMatchesDate(LocalDate.now());
 		// sc.dateTodayFormat();
 		// sc.dateTomorrowFormat();
 		// sc.dateYesterdayFormat();
@@ -84,7 +87,9 @@ public class Demo {
 		// logger.info("{}","MACEDONIa".compareToIgnoreCase("FYR Macedonia"));
 		// ajaxGrabber();
 
-//		bar();
+		 
+		 
+		bar();
 	}
 
 	public static void ajaxGrabber() throws IOException {
@@ -116,29 +121,36 @@ public class Demo {
 	}
 
 	public static void foo() {
-		Conn c = new Conn();
-		c.open();
-		c.getData();
-		c.close();
+		LocalDate d1 = LocalDate.now();
+		 LocalDate pd = LocalDate.of(2016, Month.JANUARY, 12);
+		 
+		 if(d1.isAfter(d1)){
+			 logger.info("FFF UUUUUUU");
+		 }
+		 else{logger.info("NOOOOOOOOOOOOOOOOOOOO");}
 	}
 
 	public static void bar() {
-		Map<String, Integer> mm = new HashMap<>();
-		mm.put("A", 0);
-		mm.put("a", 1);
-		mm.put("b", 2);
-		mm.put("c", 3);
-		mm.put("e", 4);
-		mm.put("f", 5);
-
-		String c = null;
-		System.out.println(mm.get(c));
-		Integer k = mm.get("b");
-		if (k != null) {
-			System.out.println(k);
-		} else {
-			System.out.println("aaaaaaaaaaaaaaa");
-		}
-
+//		Map<String, Integer> mm = new HashMap<>();
+//		mm.put("A", 0);
+//		mm.put("a", 1);
+//		mm.put("b", 2);
+//		mm.put("c", 3);
+//		mm.put("e", 4);
+//		mm.put("f", 5);
+//
+//		String c = null;
+//		System.out.println(mm.get(c));
+//		Integer k = mm.get("b");
+//		if (k != null) {
+//			System.out.println(k);
+//		} else {
+//			System.out.println("aaaaaaaaaaaaaaa");
+//		}
+		
+		
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate mDat = LocalDate.parse("01/03/2016",DateTimeFormatter.ofPattern("dd/MM/yyyy") );
+		logger.info(mDat.toString());
 	}
 }

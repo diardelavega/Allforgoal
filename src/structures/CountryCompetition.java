@@ -58,7 +58,7 @@ public class CountryCompetition {
 			ccas.setCompetition(rs.getString("competition"));
 			ccas.setCompLink(rs.getString("complink"));
 			ccas.setDb(rs.getInt("db"));
-			ccas.setDb(rs.getInt("_level"));
+			ccas.setLevel(rs.getInt("_level"));
 			ccasList.add(ccas);
 		}
 		try {
@@ -186,7 +186,7 @@ public class CountryCompetition {
 		return 0;
 	}
 
-	public int searchUsableComp(String compName) {
+	public int searchUsableComp(String compName, boolean b) {
 		/*
 		 * searches to find a competition if it is db set, so it can be utilised
 		 * for processing. Searching for competitions within the allowed
@@ -199,33 +199,33 @@ public class CountryCompetition {
 		int i;
 		for (i = 0; i < ccasList.size(); i++) {
 			if (ccasList.get(i).getDb() == 1) {
-				dist = StringSimilarity.levenshteinDistance(compName, ccasList
-						.get(i).getCompetition());
-				if (dist <= 2) {
-					return ccasList.get(i).getCompId();
-				} else {
-					if (dist < minDist) {
-						minDist = dist;
-						minDistanceCompIdx = i;
+				if (b) {
+					dist = StringSimilarity.levenshteinDistance(compName,
+							ccasList.get(i).getCompetition());
+					if (dist <= 2) {
+						return ccasList.get(i).getCompId();
+					} else {
+						if (dist < minDist) {
+							minDist = dist;
+							minDistanceCompIdx = i;
+						}
+					} // else
+				}// b
+				else {
+					if (compName.equalsIgnoreCase(ccasList.get(i)
+							.getCompetition())) {
+						return i;
 					}
-				} // else
+				}
 			} // db ==1
-		}
+		}// for
 		logger.warn(
 				"with levistainDistance = {} ccasTerm = {}  & scorerTerm = {} ",
-				minDist, ccasList.get(i).getCompId(), compName);
+				minDist, ccasList.get(minDistanceCompIdx).getCompId(), compName);
 
 		// if distance is greater than 1/2 of the word call it wrong
-		if (minDist >= compName.length() / 2) {
-			return -1;
-		} else {
-			// insert new Term in unilang and coordinate
-			Unilang ul = new Unilang();
-			int newId = ul.addTerm(ccasList.get(minDistanceCompIdx)
-					.getCompetition(), compName);
 
-			return newId;
-		}
+		return -1;
 	}
 
 	public int fullSearch(String country, String compName) {
@@ -240,11 +240,6 @@ public class CountryCompetition {
 		// }
 		return -1;
 	}
-
-	//
-	// public static Map<String, Integer> getAllowedcomps() {
-	// return allowedcomps;
-	// }
 
 	public void addAllowedComp(String comp, int idx) {
 		allowedcomps.put(comp, idx);

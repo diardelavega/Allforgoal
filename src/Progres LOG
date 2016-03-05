@@ -54,9 +54,13 @@ taking in consideration the match in hand.
 	 				 	  
 	 				 	  
 	 				 	  
-	 				 	  
-	 				 	  
-	 				 	  
+	**Find with actions have to go together and coordinate them in strategy pack 				 	  
+	 * set CCAS DB to 1 for competitions we are considering				 	  
+	
+	
+	while match scraping we get the teams with the xscorer name and put them on the list. But the teams are going
+	to be stored as are the rest of the teams of the from soccerPunter. the teams are converted afterwards to be
+	more efficient with database io.   				 	  
 	 				 	  
 	 				 	  
 	 				 	  

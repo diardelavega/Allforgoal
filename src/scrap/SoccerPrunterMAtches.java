@@ -7,6 +7,8 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,35 +41,105 @@ import structures.MatchesList;
 public class SoccerPrunterMAtches {
 
 	// CountryCompetition.readCompIdLink
-	private static final Logger logger = LoggerFactory.getLogger(SoccerPrunterMAtches.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(SoccerPrunterMAtches.class);
 
 	private String errorStatus = "OK"; // a simple way to report problems
 	private List<MatchObj> matchlist = new ArrayList<>();
 	private NameCleaner nc = new NameCleaner();
 	FileHandler fh;
 
-	public void matchGraber() {
-		// for every competition link we have go get all results until now
-		String matchResultUrl;
-		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
-			matchResultUrl = CountryCompetition.ccasList.get(i).getCompLink() + "/results";
+	// ------------------MODULATE FUNCTIONS
 
-			logger.info("link : {}", matchResultUrl);
-
-			// get page
-			// get matches with results
-			// for every match
-			// // // get odds link & match id
-			// http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2120515&typeId=69
-			// (change match id and seq to get json results)
-			// traverse json and get data from different bookies providers
-			// return.
-			// fill a list with matches
-
+	private Elements docConnectAndScrap(String url) {
+		Document doc = null;
+		try {
+			logger.info(url + "/results");
+			doc = Jsoup
+					.connect(url + "/results")
+					// doc = Jsoup.parse(new File(
+					// "C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+					.maxBodySize(0).timeout(600000).get();
+		} catch (Exception e) {
+			e.printStackTrace();
+			errorStatus = "Faulty Connection";
+			logger.warn("---------:Connection not possible  {}", errorStatus);
+			return null;
 		}
+
+		Element resultTable = doc.getElementsByClass("roundsResultDisplay")
+				.get(0);
+		doc = null;// free scpace
+		System.gc();// free scpace
+		if (resultTable == null) {
+			logger.warn("---------:Element not found");
+			errorStatus = "Unfound Element";
+			return null;
+		} else {
+			Elements trs = resultTable.getElementsByTag("tr");
+			return trs;
+		}
+
 	}
 
-	public int competitionResultsGrabbers(String url, int compId) throws IOException {
+	// -------------------------
+
+	public int remainingResultsGraber(String url, int compId,
+			LocalDate supplyDate, boolean partial) throws IOException {
+		/*
+		 * go to the page of the url; get matches list; get only matches with
+		 * date greater than supplied date. this function is to be use in two
+		 * ways. by getting all the matches dta up untill now AND also by taking
+		 * a portion of matches(from a specific date up until now). The boolean
+		 * partial variable specifies whether or not will be the second case. if
+		 * it is the second case a valid date must also be provided to complete
+		 * the required research factors
+		 */
+
+		Elements trs = docConnectAndScrap(url);// resultTable.getElementsByTag("tr");
+		if (trs == null) {
+			return -1;
+		}
+		fh = new FileHandler();// append matches to a json file
+		fh.opendataWrite();
+		for (Element tr : trs) {
+			if (tr.hasClass("even") || tr.hasClass("odd")) {
+				Element scoretd = tr.children().get(3).getElementsByTag("div")
+						.first();
+
+				if (scoretd.hasClass("scoreW") || scoretd.hasClass("scoreL")
+						|| scoretd.hasClass("scoreD")) {
+					Elements tds = tr.getElementsByTag("td");
+					tds.get(2).select("span").remove();
+					tds.get(4).select("span").remove();
+
+					if (partial) {// in case of partial match grub
+						LocalDate matchDat = LocalDate.parse(tds.get(1).text(),
+								DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+						if (matchDat.isEqual(supplyDate)) {
+							// we already have the matches earlier than
+							// supplied date
+							fh.closeOutput();
+							return 0;
+						}
+					}
+
+					adapto(tds.get(0).text(), tds.get(1).text(), /* tm1 */
+							tds.get(2).text(), tds.get(3).text(), /* tm2 */
+							tds.get(4).text(), tds.get(5).text(), tds.get(8)
+									.getElementsByTag("a").attr("href"), compId);
+				}
+			}
+		} // for
+		fh.closeOutput();
+
+		return 0;
+	}
+
+	public int competitionResultsGrabbers(String url, int compId)
+			throws IOException {
 		/*
 		 * go to the page with the results table and gather the match data we
 		 * want report error in case something goes wrong
@@ -75,10 +147,12 @@ public class SoccerPrunterMAtches {
 		Document doc = null;
 		try {
 			logger.info(url + "/results");
-			doc = Jsoup.connect(url + "/results")
+			doc = Jsoup
+					.connect(url + "/results")
 					// doc = Jsoup.parse(new File(
 					// "C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
-					.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
 					.maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -87,7 +161,8 @@ public class SoccerPrunterMAtches {
 			return -1;
 		}
 
-		Element resultTable = doc.getElementsByClass("roundsResultDisplay").get(0);
+		Element resultTable = doc.getElementsByClass("roundsResultDisplay")
+				.get(0);
 		doc = null;
 		if (resultTable == null) {
 			logger.warn("---------:Element not found");
@@ -100,17 +175,21 @@ public class SoccerPrunterMAtches {
 			Elements trs = resultTable.getElementsByTag("tr");
 			for (Element tr : trs) {
 				if (tr.hasClass("even") || tr.hasClass("odd")) {
-					Element scoretd = tr.children().get(3).getElementsByTag("div").first();
+					Element scoretd = tr.children().get(3)
+							.getElementsByTag("div").first();
 
 					// logger.info("********** {}", scoretd);
-					if (scoretd.hasClass("scoreW") || scoretd.hasClass("scoreL") || scoretd.hasClass("scoreD")) {
+					if (scoretd.hasClass("scoreW")
+							|| scoretd.hasClass("scoreL")
+							|| scoretd.hasClass("scoreD")) {
 						Elements tds = tr.getElementsByTag("td");
 						tds.get(2).select("span").remove();
 						tds.get(4).select("span").remove();
 
 						adapto(tds.get(0).text(), tds.get(1).text(), /* tm1 */
 								tds.get(2).text(), tds.get(3).text(), /* tm2 */
-								tds.get(4).text(), tds.get(5).text(), tds.get(8).getElementsByTag("a").attr("href"),
+								tds.get(4).text(), tds.get(5).text(),
+								tds.get(8).getElementsByTag("a").attr("href"),
 								compId);
 					}
 				}
@@ -122,24 +201,30 @@ public class SoccerPrunterMAtches {
 
 	}
 
-	private void adapto(String week, String date, String t1, String ft, String t2, String ht, String oddUrl, int compId)
-			throws IOException {
+	private void adapto(String week, String date, String t1, String ft,
+			String t2, String ht, String oddUrl, int compId) throws IOException {
 		/*
 		 * get all the data including the odds which should come from another 2
 		 * url calls
 		 */
 
+		MatchObj match = new MatchObj();
+		String[] temp = ft.split(" - ");
+		try {// look out for posponed matches without int results
+			match.setFt1(Integer.parseInt(temp[0]));
+			match.setFt2(Integer.parseInt(temp[1]));
+		} catch (Exception e) {
+			logger.warn("POSTMONED MATCH {} vs {}  @ dat={}", t1, t2, date);
+			return;
+		}
+
 		t1 = nc.convertNonAscii(t1.replaceFirst("\u00A0", ""));
 		t2 = nc.convertNonAscii(t2.replaceFirst("\u00A0", ""));
 
-		MatchObj match = new MatchObj();
 		match.setT1(t1);
 		match.setT2(t2);
 		match.setComId(compId);
 		match.setDat(ts(date));
-		String[] temp = ft.split(" - ");
-		match.setFt1(Integer.parseInt(temp[0]));
-		match.setFt2(Integer.parseInt(temp[1]));
 		if (!ht.equals("")) {
 			// not all the matches have ht result records
 			temp = ht.split("-");
@@ -154,7 +239,6 @@ public class SoccerPrunterMAtches {
 			errorStatus = ag.errorStatus;
 			logger.warn(errorStatus);
 			if (errorStatus == "OK") {
-
 				match.set_1(ag.get_1());
 				match.set_2(ag.get_2());
 				match.set_x(ag.get_x());
@@ -162,12 +246,6 @@ public class SoccerPrunterMAtches {
 					match.set_o(ag.getOver());
 				}
 				match.set_u(ag.getUnder());
-			} else {
-				logger.warn(ag.get_1() + "");
-				logger.warn(ag.get_2() + "");
-				logger.warn(ag.get_x() + "");
-				logger.warn(ag.getOver() + "");
-				logger.warn(ag.getUnder() + "");
 			}
 		}
 		// match.printMatch();
@@ -181,9 +259,6 @@ public class SoccerPrunterMAtches {
 		} else {
 			MatchesList.readMatches.get(compId).add(match);
 		}
-		// logger.info("MAtches map {}", MatchesList.readMatches.get(compId)
-		// .size());
-
 	}
 
 	public Date ts(String date) {
