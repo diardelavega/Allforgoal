@@ -60,7 +60,15 @@ taking in consideration the match in hand.
 	
 	while match scraping we get the teams with the xscorer name and put them on the list. But the teams are going
 	to be stored as are the rest of the teams of the from soccerPunter. the teams are converted afterwards to be
-	more efficient with database io.   				 	  
+	more efficient with database io.  *** (change of plan)
+	
+	The teams are going to be stored in the TempMatchDatabase as the Rest of the SocerPunter cleaned names.
+		The reason for this is that we need a common format for the team names considering that we may be using
+		names from other sites for the betting odds.  
+	SO : from xscorer get (competition and countries) & compId; fill the tempMatchesList; correlate names & populate 
+	Unilang TeamMaps. On the rest "periodic" (add results, odds etc) use unilang conversion for fast team correlation
+	
+		   				 	  
 	 				 	  
 	 				 	  
 	 				 	  

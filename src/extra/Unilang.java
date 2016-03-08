@@ -24,8 +24,8 @@ public class Unilang {
 	public static Map<Integer, String> ccasTeamsMap = new HashMap<>();
 	public static Map<String, Integer> scoreTeamsMap = new HashMap<>();
 
-	private static int lastCassMapIdx;
-	private static int lastScoreMapIdx;
+//	private static int lastCassMapIdx;
+//	private static int lastScoreMapIdx;
 
 	public String scoreToCcas(String term) {
 		return ccasMap.get(scoreMap.get(term));

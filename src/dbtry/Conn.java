@@ -28,7 +28,8 @@ public class Conn {
 		return flag;
 	}
 
-	public void getData() {
+	public void foo() {
+
 		if (conn == null) {
 			System.out.println("NULL connection");
 		} else {
@@ -63,10 +64,8 @@ public class Conn {
 		return conn;
 	}
 
-//	public void setConn(Connection conn) {
-//		this.conn = conn;
-//	}
-	
-	
+	// public void setConn(Connection conn) {
+	// this.conn = conn;
+	// }
 
 }

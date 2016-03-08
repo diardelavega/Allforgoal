@@ -89,7 +89,7 @@ public class Demo {
 
 		 
 		 
-		bar();
+//		bar();
 	}
 
 	public static void ajaxGrabber() throws IOException {

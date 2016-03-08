@@ -1,33 +1,58 @@
 package test;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import strategyAction.TempMatchFunctions;
+import structures.CountryCompetition;
+import basicStruct.MatchObj;
+
 import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
 
+import dbtry.Conn;
+import demo.Demo;
+import extra.StringSimilarity;
+
 public class MainTry {
-static{
-	System.out.println("_static");
-}
-
-
-	
-	public static void main(String[] args) {
-//A a = new A();
-		
-//A.x=10;		
-		
-//		sortArray();
+	{
+		System.out.println("_static");
 	}
-		class A{
-//			static int x=20;
-		}
 
-	
+	public static void log2() {
+		System.out.println("AAAAAAAAAAAAAA");
+	}
 
-	public static void sortArray(){
+	public static void main(String[] args) throws SQLException {
+//		Demo.initCCAllStruct();
+		MatchObj mobj = new MatchObj();
+		mobj.setT1("hua");
+		mobj.setT2("borxh");
+		mobj.setComId(3);
+		
+		TempMatchFunctions tmf= new TempMatchFunctions();
+		tmf.incomeTempMatchesList.add(mobj);
+		tmf.storeToTempMatchesDB();
+
+		
+//		log(CountryCompetition.ccasList.get(5 - 1).getCompetition());
+//		log(CountryCompetition.ccasList.get(5 - 1).getCompId() + "");
+
+	}
+
+	public static void log(String s) {
+		System.out.println(s);
+	}
+
+	class A {
+		// static int x=20;
+	}
+
+	public static void sortArray() {
 		ArrayObj ao11 = new ArrayObj(1, 1, "one");
 		ArrayObj ao12 = new ArrayObj(1, 2, "two");
 		ArrayObj ao13 = new ArrayObj(1, 3, "three");
@@ -45,12 +70,13 @@ static{
 		list.add(ao22);
 		list.add(ao23);
 		list.add(ao24);
-//		print(list);
-		
-//		Collections.shuffle(list);
+		// print(list);
+
+		// Collections.shuffle(list);
 		Collections.sort(list);
 		print(list);
 	}
+
 	public static void print(List<ArrayObj> list) {
 		for (ArrayObj ob : list) {
 			ob.print();

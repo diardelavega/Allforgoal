@@ -26,9 +26,16 @@ import basicStruct.MatchObj;
  * @author diego
  *
  *         it will serve to scrap from xscore/soccer the upcoming matches of the
- *         day
- *
+ *         day. ***************************************************************
+ *         Get all matches as are normally on the xScorer page and put them in
+ *         the list; Before they are put in the DB TempMathes Table, transform
+ *         them to the DB Punter matches format. During the correlation process
+ *         the unilang maps should have been populated with the corresponding
+ *         names of each country, competition and teams. After the first search
+ *         then we can find each-other easy by using unilang Team Maps
+ * 
  */
+
 public class XscoreUpComing {
 	public static final Logger logger = LoggerFactory
 			.getLogger(XscoreUpComing.class);
@@ -41,6 +48,7 @@ public class XscoreUpComing {
 		// get matches of the date from xScored.soccer; collect only matches
 		// based on the specified status. The matches are stored into their
 		// respective arrays
+
 		String url = allDateFormater(dat);
 		Document doc = null;
 		try {
@@ -89,6 +97,7 @@ public class XscoreUpComing {
 						if (status == Status.ABANDONED
 								|| status == Status.CANCELED
 								|| status == Status.POSTPONED) {
+							// find interrupted matches to delete them
 							errorNewMatches.add(mobj);
 						}
 						if (status == Status.FINISHED) {
@@ -221,6 +230,8 @@ public class XscoreUpComing {
 	public void searchForTeam(String team, int compId) {
 		// TODO search in unilang if the team is there
 		// get teams from db and compare
+		// This func probably is not needed here since we are going to use it
+		// after the TempMatch<L> is filled with data
 	}
 
 	private String allDateFormater(LocalDate dat) {

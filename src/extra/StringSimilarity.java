@@ -2,9 +2,8 @@ package extra;
 
 public class StringSimilarity {
 
-	public static int levenshteinDistance(String a, String b) {
-		a = a.toUpperCase();
-		b = b.toUpperCase();
+	private static int levPerWord(String a, String b) {
+
 		// i == 0
 		int[] costs = new int[b.length() + 1];
 		for (int j = 0; j < costs.length; j++)
@@ -22,6 +21,34 @@ public class StringSimilarity {
 		}
 		return costs[b.length()];
 	}
+
+	public static int levenshteinDistance(String a, String b) {
+		// izraeli teams area all macabi and hapoel ... return a list of
+		// distances
+
+		a = a.toLowerCase();
+		b = b.toLowerCase();
+
+		String[] aa = a.split(" ");
+		String[] bb = b.split(" ");
+		int distance = 100;
+		int i = 0, j = 0;
+
+		for (String sa : aa) {
+			if (sa.length() > 3) {
+				i++;
+				for (String sb : bb) {
+					if (sb.length() > 3) {
+						j++;
+						distance += levPerWord(sa, sb);
+					}
+				}
+			}
+		}
+		// total errors divided by sum of +3 letter words
+		return distance / (i + j);
+	}
+
 	// an option for searching terms with more than one word
 	// compare only the more near length word ??
 	// cartesian compare of the terms ???

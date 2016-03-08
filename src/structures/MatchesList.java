@@ -138,7 +138,7 @@ public class MatchesList {
 			mobj.setDat(rs.getDate(14));
 			ml.add(mobj);
 		}
-		logger.info("MAthes list are  {}", ml.size());
+//		logger.info("MAthes list are  {}", ml.size());
 		readMatches.put(mobj.getComId(), ml);
 	}
 
