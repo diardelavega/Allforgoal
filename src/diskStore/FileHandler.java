@@ -166,7 +166,7 @@ public class FileHandler {
 	}
 
 	public void appendUnlangScorerTerm(String s, Integer i) throws IOException {
-		bw = new BufferedWriter(new FileWriter(unilangCcasTerms, true));
+		bw = new BufferedWriter(new FileWriter(unilangScorerTerms, true));
 		TupleTermId ti = new TupleTermId(s, i);
 		bw.write(gson.toJson(ti) + "\n");
 		bw.close();
@@ -175,11 +175,11 @@ public class FileHandler {
 	public void readUnilangAllScorerTerms() throws JsonSyntaxException,
 			IOException {
 		// read from file and put directly to Unilang map
-		if(!unilangCcasTerms.exists()){
-			unilangCcasTerms.createNewFile();
+		if(!unilangScorerTerms.exists()){
+			unilangScorerTerms.createNewFile();
 			return;
 		}
-		BufferedReader br = new BufferedReader(new FileReader(unilangCcasTerms));
+		BufferedReader br = new BufferedReader(new FileReader(unilangScorerTerms));
 		String line;
 		while ((line = br.readLine()) != null) {
 			TupleTermId ti = gson.fromJson(line, TupleTermId.class);

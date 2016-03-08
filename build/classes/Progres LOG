@@ -68,6 +68,8 @@ taking in consideration the match in hand.
 	SO : from xscorer get (competition and countries) & compId; fill the tempMatchesList; correlate names & populate 
 	Unilang TeamMaps. On the rest "periodic" (add results, odds etc) use unilang conversion for fast team correlation
 	
+	
+	*** Watching term correlation in files some error must be accouring
 		   				 	  
 	 				 	  
 	 				 	  

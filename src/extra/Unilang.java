@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.JsonSyntaxException;
 
 import diskStore.FileHandler;
@@ -22,6 +25,8 @@ import diskStore.FileHandler;
  *
  */
 public class Unilang {
+
+	public static final Logger logger = LoggerFactory.getLogger(Unilang.class);
 
 	public static Map<Integer, String> ccasMap = new HashMap<>();
 	public static Map<String, Integer> scoreMap = new HashMap<>();
@@ -143,22 +148,27 @@ public class Unilang {
 
 	// =====================================
 	public void appendScoreTerms(String term, int id) throws IOException {
+		logger.info("score    {} -   {}", id, term);
+
 		fh.appendUnlangScorerTerm(term, id);
 	}
 
 	public void appendCcasTerms(int id, String term) throws IOException {
+		logger.info("ccas    {} -   {}", id, term);
+		scoreMap.put(term, id);
 		fh.appendUnilangCcasTerm(id, term);
 	}
 
 	public void readScoreTerms() throws JsonSyntaxException, IOException {
 		// TODO go to file and read all the terms
 		// last idx= map.size
+
 		fh.readUnilangAllScorerTerms();
 
 	}
 
 	public void readCcasTerms() throws JsonSyntaxException, IOException {
-		fh.readUnilangAllCcasTeams();
+		fh.readUnilangAllCcasTerms();
 	}
 
 	// -------------------------------------

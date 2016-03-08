@@ -57,13 +57,12 @@ public class XscoreUpComing {
 		Document doc = null;
 		try {
 			logger.info(url);
-			doc = Jsoup
-					.connect(url)
-					// doc = Jsoup.parse(new File(
-					// "C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
-					.userAgent(
-							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-					.maxBodySize(0).timeout(600000).get();
+			 doc = Jsoup.parse(new File( "C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
+//			doc = Jsoup
+//					.connect(url)
+//					.userAgent(
+//							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+//					.maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
 			e.printStackTrace();
@@ -104,8 +103,11 @@ public class XscoreUpComing {
 					mobj = new MatchObj();
 					mobj.setT1(t1);
 					mobj.setT2(t2);
+					logger.info("1-{}  2-{}   3-{}   4-{}", status,
+							Status.SCHEDULED, status, _status);
 
-					if (status == Status.SCHEDULED && status == _status) {
+					if (status.equals(Status.SCHEDULED)
+							&& status.equals(_status)) {
 						mobj.setDat(Date.valueOf(dat));
 						mobj.setComId(compId);
 						schedNewMatches.add(mobj);
@@ -236,7 +238,10 @@ public class XscoreUpComing {
 				if (newComp != null) { // search usable (DB)newComp no levistein
 					searchCompId = cc.searchUsableComp(newComp, false);
 					if (searchCompId > 0) {
-						if(StringSimilarity.levenshteinDistance(country, CountryCompetition.ccasList.get(searchCompId-1).getCountry())>3){
+						if (StringSimilarity.levenshteinDistance(
+								country,
+								CountryCompetition.ccasList.get(
+										searchCompId - 1).getCountry()) > 3) {
 							return -1;
 						}
 						// ul.addTerm(newCountry, country);
@@ -246,11 +251,14 @@ public class XscoreUpComing {
 				} else {
 					searchCompId = cc.searchUsableComp(comp, true);
 					if (searchCompId > 0) {
-						if(StringSimilarity.levenshteinDistance(country, CountryCompetition.ccasList.get(searchCompId-1).getCountry())>3){
+						if (StringSimilarity.levenshteinDistance(
+								country,
+								CountryCompetition.ccasList.get(
+										searchCompId - 1).getCountry()) > 3) {
 							return -1;
 						}
 						// ul.addTerm(newCountry, country);
-						ul.addTerm(cc.ccasList.get(searchCompId)
+						ul.addTerm(cc.ccasList.get(searchCompId-1)
 								.getCompetition(), comp);
 						cc.addAllowedComp(comp, searchCompId);
 					}

@@ -80,9 +80,18 @@ public class Demo {
 		// }
 		// }
 
-		 XscoreUpComing sc = new XscoreUpComing();
+//		 XscoreUpComing sc = new XscoreUpComing();
 //		 sc.scrapMatchesDate(LocalDate.now(),Status.SCHEDULED);
-		 sc.getScheduledToday();
+//		 sc.getScheduledToday();
+		 
+		 
+		 Unilang ul = new Unilang();
+		 log(ul.ccasMap.size()+"");
+		 log(ul.scoreMap.size()+"");
+		 log("");
+		 log(ul.scoreTermsId("CHAMPIONSHIP")+"");
+		 log(ul.scoreToCcas("CHAMPIONSHIP")+"");
+		 
 		// sc.dateTodayFormat();
 		// sc.dateTomorrowFormat();
 		// sc.dateYesterdayFormat();
@@ -95,6 +104,11 @@ public class Demo {
 		 
 		 
 //		bar();
+	}
+
+	private static void log(String s) {
+		System.out.println(s);
+		
 	}
 
 	public static void ajaxGrabber() throws IOException {

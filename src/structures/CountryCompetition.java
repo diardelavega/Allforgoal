@@ -224,9 +224,9 @@ public class CountryCompetition {
 				}
 			} // db ==1
 		}// for
-		logger.warn(
-				"with levistainDistance = {} ccasTerm = {}  & scorerTerm = {} ",
-				minDist, ccasList.get(minDistanceCompIdx).getCompId(), compName);
+//		logger.warn(
+//				"with levistainDistance = {} ccasTerm = {}  & scorerTerm = {} ",
+//				minDist, ccasList.get(minDistanceCompIdx).getCompId(), compName);
 
 		// if distance is greater than 1/2 of the word call it wrong
 
