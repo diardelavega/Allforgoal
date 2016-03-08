@@ -66,6 +66,7 @@ public class FileHandler {
 	}
 
 	public List<MatchObj> readMatchData() throws IOException {
+		
 		BufferedReader br = new BufferedReader(new FileReader(mDataFile));
 		String line;
 		List<MatchObj> matchesList = new ArrayList<>();
@@ -104,6 +105,10 @@ public class FileHandler {
 	public void readUnilangAllCcasTerms() throws JsonSyntaxException,
 			IOException {
 		// read from file and put directly to Unilang map
+		if(!unilangCcasTerms.exists()){
+			unilangCcasTerms.createNewFile();
+			return;
+		}
 		BufferedReader br = new BufferedReader(new FileReader(unilangCcasTerms));
 		String line;
 		while ((line = br.readLine()) != null) {
@@ -135,6 +140,10 @@ public class FileHandler {
 	public void readUnilangAllCcasTeams() throws JsonSyntaxException,
 			IOException {
 		// read from file and put directly to Unilang map
+		if(!unilangCcasTeams.exists()){
+			unilangCcasTeams.createNewFile();
+			return;
+		}
 		BufferedReader br = new BufferedReader(new FileReader(unilangCcasTeams));
 		String line;
 		while ((line = br.readLine()) != null) {
@@ -166,6 +175,10 @@ public class FileHandler {
 	public void readUnilangAllScorerTerms() throws JsonSyntaxException,
 			IOException {
 		// read from file and put directly to Unilang map
+		if(!unilangCcasTerms.exists()){
+			unilangCcasTerms.createNewFile();
+			return;
+		}
 		BufferedReader br = new BufferedReader(new FileReader(unilangCcasTerms));
 		String line;
 		while ((line = br.readLine()) != null) {
@@ -196,6 +209,10 @@ public class FileHandler {
 
 	public void readUnilangAllScorerTeams() throws JsonSyntaxException,
 			IOException {
+		if(!unilangScorerTeams.exists()){
+			unilangScorerTeams.createNewFile();
+			return;
+		}
 		BufferedReader br = new BufferedReader(new FileReader(
 				unilangScorerTeams));
 		String line;

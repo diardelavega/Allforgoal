@@ -28,19 +28,20 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException {
-//		Demo.initCCAllStruct();
-		MatchObj mobj = new MatchObj();
-		mobj.setT1("hua");
-		mobj.setT2("borxh");
-		mobj.setComId(3);
-		
-		TempMatchFunctions tmf= new TempMatchFunctions();
-		tmf.incomeTempMatchesList.add(mobj);
-		tmf.storeToTempMatchesDB();
+		// Demo.initCCAllStruct();
+		// MatchObj mobj = new MatchObj();
+		// mobj.setT1("hua");
+		// mobj.setT2("borxh");
+		// mobj.setComId(3);
+		//
+		// TempMatchFunctions tmf= new TempMatchFunctions();
+		// tmf.incomeTempMatchesList.add(mobj);
+		// tmf.storeToTempMatchesDB();
 
-		
-//		log(CountryCompetition.ccasList.get(5 - 1).getCompetition());
-//		log(CountryCompetition.ccasList.get(5 - 1).getCompId() + "");
+	log(	StringSimilarity.levenshteinDistance("championship", "CHAMPIONSHIP")+"");
+	log(	StringSimilarity.levPerWord("champ", "CHAMp")+"");
+		// log(CountryCompetition.ccasList.get(5 - 1).getCompetition());
+		// log(CountryCompetition.ccasList.get(5 - 1).getCompId() + "");
 
 	}
 

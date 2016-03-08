@@ -2,8 +2,9 @@ package extra;
 
 public class StringSimilarity {
 
-	private static int levPerWord(String a, String b) {
-
+	public static int levPerWord(String a, String b) {
+		// a = a.toUpperCase();
+		// b = b.toUpperCase();
 		// i == 0
 		int[] costs = new int[b.length() + 1];
 		for (int j = 0; j < costs.length; j++)
@@ -31,22 +32,29 @@ public class StringSimilarity {
 
 		String[] aa = a.split(" ");
 		String[] bb = b.split(" ");
-		int distance = 100;
-		int i = 0, j = 0;
+		int distance = 0, curdist = 0;
+		int i = 0;
 
 		for (String sa : aa) {
 			if (sa.length() > 3) {
-				i++;
 				for (String sb : bb) {
 					if (sb.length() > 3) {
-						j++;
-						distance += levPerWord(sa, sb);
+						curdist = levPerWord(sa, sb);
+						if (curdist < 2) {
+							i++;
+						}
+						distance += curdist;
+
 					}
 				}
 			}
 		}
-		// total errors divided by sum of +3 letter words
-		return distance / (i + j);
+		// total errors divided by sum of +3 letter words that are <2 simmilar
+		if (i < 1) {
+			return distance;
+		} else {
+			return distance / (i);
+		}
 	}
 
 	// an option for searching terms with more than one word

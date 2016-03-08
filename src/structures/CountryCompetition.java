@@ -206,6 +206,7 @@ public class CountryCompetition {
 				if (b) {
 					dist = StringSimilarity.levenshteinDistance(compName,
 							ccasList.get(i).getCompetition());
+					{}
 					if (dist <= 2) {
 						return ccasList.get(i).getCompId();
 					} else {

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import extra.Status;
+import extra.StringSimilarity;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import extra.Unilang;
 import structures.CountryCompetition;
+import basicStruct.CCAllStruct;
 import basicStruct.MatchObj;
 
 /**
@@ -55,10 +57,13 @@ public class XscoreUpComing {
 		Document doc = null;
 		try {
 			logger.info(url);
-			 doc = Jsoup.connect(url )
-//			doc = Jsoup.parse(new File(
-//					"C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
-			 .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0") .maxBodySize(0).timeout(600000).get();
+			doc = Jsoup
+					.connect(url)
+					// doc = Jsoup.parse(new File(
+					// "C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+					.maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
 			e.printStackTrace();
@@ -71,6 +76,22 @@ public class XscoreUpComing {
 			if (row.hasAttr("class") && row.attr("class").contains("#")) {
 				String[] clasVal = row.attr("class").split("#");
 				logger.info("country {},   comp {}", clasVal[0], clasVal[4]);
+
+				if (clasVal[0].contains("WORLD")
+						|| clasVal[0].contains("AFRICA")
+						|| clasVal[0].contains("AMERICA")
+						|| clasVal[0].contains("EUROPE")
+						|| clasVal[0].contains("ASIA")
+
+						|| clasVal[4].contains("CUP")
+						|| clasVal[4].contains("COPPA")
+						|| clasVal[4].contains("COPA")
+						|| clasVal[4].contains("OFF")
+						|| clasVal[4].contains("TROPHY")
+						|| clasVal[4].contains("COUPE")
+						|| clasVal[4].contains("EURO")) {
+					continue;
+				}
 
 				int compId = searchForCompId(clasVal[0], clasVal[4]);
 				if (compId < 0) {
@@ -215,6 +236,9 @@ public class XscoreUpComing {
 				if (newComp != null) { // search usable (DB)newComp no levistein
 					searchCompId = cc.searchUsableComp(newComp, false);
 					if (searchCompId > 0) {
+						if(StringSimilarity.levenshteinDistance(country, CountryCompetition.ccasList.get(searchCompId-1).getCountry())>3){
+							return -1;
+						}
 						// ul.addTerm(newCountry, country);
 						ul.addTerm(newComp, comp);
 						cc.addAllowedComp(comp, searchCompId);
@@ -222,6 +246,9 @@ public class XscoreUpComing {
 				} else {
 					searchCompId = cc.searchUsableComp(comp, true);
 					if (searchCompId > 0) {
+						if(StringSimilarity.levenshteinDistance(country, CountryCompetition.ccasList.get(searchCompId-1).getCountry())>3){
+							return -1;
+						}
 						// ul.addTerm(newCountry, country);
 						ul.addTerm(cc.ccasList.get(searchCompId)
 								.getCompetition(), comp);
