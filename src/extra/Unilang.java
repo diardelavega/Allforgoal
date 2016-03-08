@@ -1,7 +1,10 @@
 package extra;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import diskStore.FileHandler;
 
 /**
  * @author diego
@@ -24,8 +27,10 @@ public class Unilang {
 	public static Map<Integer, String> ccasTeamsMap = new HashMap<>();
 	public static Map<String, Integer> scoreTeamsMap = new HashMap<>();
 
-//	private static int lastCassMapIdx;
-//	private static int lastScoreMapIdx;
+	private FileHandler fh = new FileHandler();
+
+	// private static int lastCassMapIdx;
+	// private static int lastScoreMapIdx;
 
 	public String scoreToCcas(String term) {
 		return ccasMap.get(scoreMap.get(term));
@@ -135,14 +140,12 @@ public class Unilang {
 	}
 
 	// =====================================
-	public void appendScoreTerms() {
-		// TODO go to filehandler and append tuples from the last idx ()
-		// last idx= map/size
+	public void appendScoreTerms(String term, int id) throws IOException {
+		fh.appendUnlangScorerTerm(term, id);
 	}
 
-	public void appendCcasTerms() {
-		// TODO go to filehandler and append tuples from the last idx ()
-		// last idx= map/size
+	public void appendCcasTerms(int id, String term) throws IOException {
+		fh.appendUnilangCcasTerm(id, term);
 	}
 
 	public void readScoreTerms() {
@@ -154,46 +157,49 @@ public class Unilang {
 	}
 
 	// -------------------------------------
-	public void appendScoreTeamTerms() {
-		// TODO go to filehandler and append tuples from the last idx ()
-		// last idx= map/size
+	public void appendScoreTeamTerms(String team, int id) throws IOException {
+		scoreTeamsMap.put(team, id);
+		fh.appendUnlangScorerTeam(team, id);
 	}
 
-	public void appendCcasTeamTerms() {
-		// TODO go to filehandler and append tuples from the last idx ()
-		// last idx= map/size
+	public void appendCcasTeamTerms(int id, String team) throws IOException {
+		ccasTeamsMap.put(id, team);
+		fh.appendUnilangCcasTeam(id, team);
 	}
 
 	public void readScoreTeamTerms() {
 		// TODO go to file and read all the terms
 		// last idx= map.size
+	scoreMap	fh.readUnilangAllScorerTeams();
 	}
 
 	public void readCcasTeamTerms() {
 	}
 
-	public int addTerm(String ccasTerm, String scoreTerm) {
+	public int addTerm(String ccasTerm, String scoreTerm) throws IOException {
 		/*
 		 * as common id we use a random integer. to make it unique for booth
 		 * maps we chose the biggest of the two map sizes
 		 */
 
 		int id = Math.max(ccasMap.size(), scoreMap.size());
-		ccasMap.put(id, ccasTerm);
-		scoreMap.put(scoreTerm, id);
+		appendCcasTerms(id, ccasTerm);
+		appendScoreTerms(scoreTerm, id);
 		return id;
 
 	}
 
-	public int addTeam(String ccasTeam, String scoreTeam) {
+	public int addTeam(String ccasTeam, String scoreTeam) throws IOException{
 		/*
 		 * as common id we use a random integer. to make it unique for booth
 		 * maps we chose the biggest of the two map sizes
 		 */
 
 		int id = Math.max(ccasMap.size(), scoreMap.size());
-		ccasTeamsMap.put(id, ccasTeam);
-		scoreTeamsMap.put(scoreTeam, id);
+		appendCcasTeamTerms(id, ccasTeam);
+		appendScoreTeamTerms(scoreTeam, id);
+		// ccasTeamsMap.put(id, ccasTeam);
+		// scoreTeamsMap.put(scoreTeam, id);
 		return id;
 
 	}

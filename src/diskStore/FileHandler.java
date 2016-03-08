@@ -94,7 +94,7 @@ public class FileHandler {
 		bw.close();
 	}
 
-	public void appendUnlangCcasTerm(Integer i, String s) throws IOException {
+	public void appendUnilangCcasTerm(Integer i, String s) throws IOException {
 		bw = new BufferedWriter(new FileWriter(unilangCcasTerms, true));
 		TupleIdTerm it = new TupleIdTerm(i, s);
 		bw.write(gson.toJson(it) + "\n");
@@ -125,7 +125,7 @@ public class FileHandler {
 		bw.close();
 	}
 
-	public void appendUnlangCcasTeam(Integer i, String s) throws IOException {
+	public void appendUnilangCcasTeam(Integer i, String s) throws IOException {
 		bw = new BufferedWriter(new FileWriter(unilangCcasTeams, true));
 		TupleIdTerm it = new TupleIdTerm(i, s);
 		bw.write(gson.toJson(it) + "\n");

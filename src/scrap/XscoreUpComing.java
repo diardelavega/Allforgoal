@@ -1,6 +1,7 @@
 package scrap;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -44,7 +45,8 @@ public class XscoreUpComing {
 	public static List<MatchObj> errorNewMatches = new ArrayList<>();
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";// <-
 
-	private void scrapMatchesDate(LocalDate dat, String _status) {
+	private void scrapMatchesDate(LocalDate dat, String _status)
+			throws IOException {
 		// get matches of the date from xScored.soccer; collect only matches
 		// based on the specified status. The matches are stored into their
 		// respective arrays
@@ -137,13 +139,23 @@ public class XscoreUpComing {
 	public void getFinishedOnDate(LocalDate dat) {
 		// TODO search for matches of that date that are finished (status
 		// 'Fin'); `8`8```*~*~ get cancelled & postponed matches
-		scrapMatchesDate(dat, Status.FINISHED);
+		try {
+			scrapMatchesDate(dat, Status.FINISHED);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
 	public void getScheduledOnDate(LocalDate dat) {
 		// matches of that date that are scheduled(status Sched'); `*`* *
-		scrapMatchesDate(dat, Status.SCHEDULED);
+		try {
+			scrapMatchesDate(dat, Status.SCHEDULED);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void getScheduledToday() {
@@ -164,7 +176,7 @@ public class XscoreUpComing {
 
 	// ----------------------------------
 
-	public int searchForCompId(String country, String comp) {
+	public int searchForCompId(String country, String comp) throws IOException {
 		// search in allowed competitions map and CCAS
 		CountryCompetition cc = null;
 		try {

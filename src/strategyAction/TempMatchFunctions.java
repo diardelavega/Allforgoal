@@ -1,5 +1,6 @@
 package strategyAction;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,16 +30,22 @@ public class TempMatchFunctions {
 	private Conn conn;
 
 	public void readTodaysMatches() {
-		// TODO read matches of dat == todays Date
-		// and put them to the tmList
+		try {
+			readFromTempMatches(LocalDate.now());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void readYesterdaysMatches() {
-		// TODO read matches of dat == yesterdays Date
-		// and put them to the tmList
+		try {
+			readFromTempMatches(LocalDate.now().minusDays(1));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void corelatePunterXScorerTeams(List<MatchObj> ml) {
+	public void corelatePunterXScorerTeams(List<MatchObj> ml) throws IOException {
 		/*
 		 * for every xScorer team name in the list find the analog Punter
 		 * teamName, populate unilang Teams with it and convert the list team
