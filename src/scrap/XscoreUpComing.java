@@ -55,14 +55,10 @@ public class XscoreUpComing {
 		Document doc = null;
 		try {
 			logger.info(url);
-			// doc = Jsoup.connect(url )
-			// doc = Jsoup.parse(new
-			// File("C:/Users/diego/Desktop/Scores.html"),"UTF-8");
-			doc = Jsoup.parse(new File(
-					"C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
-			// .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0)
-			// Gecko/20100101 Firefox/23.0")
-			// .maxBodySize(0).timeout(600000).get();
+			 doc = Jsoup.connect(url )
+//			doc = Jsoup.parse(new File(
+//					"C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
+			 .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0") .maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
 			e.printStackTrace();

@@ -15,11 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
 
+import com.google.gson.JsonSyntaxException;
+
 import calculate.MatchToTableRenewal;
 import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
 import dbtry.Conn;
+import extra.Status;
 import extra.StringSimilarity;
+import extra.Unilang;
 import scrap.AjaxGrabber;
 import scrap.SoccerPrunterMAtches;
 import scrap.Soccerpunter_homePage;
@@ -40,7 +44,7 @@ public class Demo {
 		// }
 
 		 {
-//			 initCCAllStruct();
+			 initCCAllStruct();
 		//
 //		 String link = CountryCompetition.ccasList.get(37).getCompLink();
 //		 int compId = CountryCompetition.ccasList.get(37).getCompId();
@@ -76,8 +80,9 @@ public class Demo {
 		// }
 		// }
 
-//		 XscoreUpComing sc = new XscoreUpComing();
-//		 sc.scrapMatchesDate(LocalDate.now());
+		 XscoreUpComing sc = new XscoreUpComing();
+//		 sc.scrapMatchesDate(LocalDate.now(),Status.SCHEDULED);
+		 sc.getScheduledToday();
 		// sc.dateTodayFormat();
 		// sc.dateTomorrowFormat();
 		// sc.dateYesterdayFormat();
@@ -103,7 +108,7 @@ public class Demo {
 		// ag.f47("http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&typeId=47");
 	}
 
-	public static void initCCAllStruct() throws SQLException {
+	public static void initCCAllStruct() throws SQLException, JsonSyntaxException, IOException {
 		/*
 		 * read from the DB the competitions data and keep them in the java
 		 * Competition* structures
@@ -117,6 +122,9 @@ public class Demo {
 		} else {
 			System.out.println("Country competition structure not initialized corectly");
 		}
+		
+		Unilang ul = new Unilang();
+		ul.init();
 		conn.close();
 	}
 

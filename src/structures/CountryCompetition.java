@@ -90,6 +90,10 @@ public class CountryCompetition {
 		conn.close();
 	}
 
+	public void readAllowedComps(){
+		
+	} 
+	
 	// ----------------------------------------
 	public int searchCompBinary(String country, String compName, boolean b) {
 		/*

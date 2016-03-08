@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.JsonSyntaxException;
+
 import diskStore.FileHandler;
 
 /**
@@ -148,12 +150,15 @@ public class Unilang {
 		fh.appendUnilangCcasTerm(id, term);
 	}
 
-	public void readScoreTerms() {
+	public void readScoreTerms() throws JsonSyntaxException, IOException {
 		// TODO go to file and read all the terms
 		// last idx= map.size
+		fh.readUnilangAllScorerTerms();
+
 	}
 
-	public void readCcasTerms() {
+	public void readCcasTerms() throws JsonSyntaxException, IOException {
+		fh.readUnilangAllCcasTeams();
 	}
 
 	// -------------------------------------
@@ -167,13 +172,12 @@ public class Unilang {
 		fh.appendUnilangCcasTeam(id, team);
 	}
 
-	public void readScoreTeamTerms() {
-		// TODO go to file and read all the terms
-		// last idx= map.size
-	scoreMap	fh.readUnilangAllScorerTeams();
+	public void readScoreTeamTerms() throws JsonSyntaxException, IOException {
+		fh.readUnilangAllScorerTeams();
 	}
 
-	public void readCcasTeamTerms() {
+	public void readCcasTeamTerms() throws JsonSyntaxException, IOException {
+		fh.readUnilangAllCcasTeams();
 	}
 
 	public int addTerm(String ccasTerm, String scoreTerm) throws IOException {
@@ -189,7 +193,7 @@ public class Unilang {
 
 	}
 
-	public int addTeam(String ccasTeam, String scoreTeam) throws IOException{
+	public int addTeam(String ccasTeam, String scoreTeam) throws IOException {
 		/*
 		 * as common id we use a random integer. to make it unique for booth
 		 * maps we chose the biggest of the two map sizes
@@ -201,6 +205,15 @@ public class Unilang {
 		// ccasTeamsMap.put(id, ccasTeam);
 		// scoreTeamsMap.put(scoreTeam, id);
 		return id;
+
+	}
+
+	public void init() throws JsonSyntaxException, IOException {
+		// init unilang structures
+		readCcasTeamTerms();
+		readCcasTerms();
+		readScoreTeamTerms();
+		readScoreTerms();
 
 	}
 
