@@ -19,6 +19,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import diskStore.AnalyticFileHandler;
 import diskStore.FileHandler;
 import extra.NameCleaner;
 import basicStruct.MatchObj;
@@ -47,7 +48,7 @@ public class SoccerPrunterMAtches {
 	private String errorStatus = "OK"; // a simple way to report problems
 	private List<MatchObj> matchlist = new ArrayList<>();
 	private NameCleaner nc = new NameCleaner();
-	FileHandler fh;
+	AnalyticFileHandler afh;
 
 	// ------------------MODULATE FUNCTIONS
 
@@ -102,8 +103,8 @@ public class SoccerPrunterMAtches {
 		if (trs == null) {
 			return -1;
 		}
-		fh = new FileHandler();// append matches to a json file
-		fh.opendataWrite();
+		afh = new AnalyticFileHandler();// append matches to a json file
+		afh.opendataWrite();
 		for (Element tr : trs) {
 			if (tr.hasClass("even") || tr.hasClass("odd")) {
 				Element scoretd = tr.children().get(3).getElementsByTag("div")
@@ -121,7 +122,7 @@ public class SoccerPrunterMAtches {
 						if (matchDat.isEqual(supplyDate)) {
 							// we already have the matches earlier than
 							// supplied date
-							fh.closeOutput();
+							afh.closeOutput();
 							return 0;
 						}
 					}
@@ -133,7 +134,7 @@ public class SoccerPrunterMAtches {
 				}
 			}
 		} // for
-		fh.closeOutput();
+		afh.closeOutput();
 
 		return 0;
 	}
@@ -169,8 +170,8 @@ public class SoccerPrunterMAtches {
 			errorStatus = "Unfound Element";
 		} else {
 			// set file ready to be writen
-			fh = new FileHandler();
-			fh.opendataWrite();
+			afh = new AnalyticFileHandler();
+			afh.opendataWrite();
 
 			Elements trs = resultTable.getElementsByTag("tr");
 			for (Element tr : trs) {
@@ -194,7 +195,7 @@ public class SoccerPrunterMAtches {
 					}
 				}
 			} // for
-			fh.closeOutput();
+			afh.closeOutput();
 		}
 		logger.info("STATUS is {}", errorStatus);
 		return 0;
@@ -251,7 +252,7 @@ public class SoccerPrunterMAtches {
 		// match.printMatch();
 
 		// append to file;
-		fh.appendMatchData(match);
+		afh.appendMatchData(match);
 		// put the matches to the appropriate list structure
 		if (MatchesList.readMatches.get(compId) == null) {
 			MatchesList.readMatches.put(compId, new ArrayList<>());

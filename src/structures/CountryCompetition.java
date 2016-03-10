@@ -1,5 +1,6 @@
 package structures;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
 import com.sun.org.apache.bcel.internal.generic.ALOAD;
 
 import basicStruct.CCAllStruct;
@@ -20,6 +22,7 @@ import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
 import dbtry.Conn;
 import demo.Demo;
+import diskStore.FileHandler;
 import extra.StandartResponses;
 import extra.StringSimilarity;
 import extra.Unilang;
@@ -90,10 +93,11 @@ public class CountryCompetition {
 		conn.close();
 	}
 
-	public void readAllowedComps(){
-		
-	} 
-	
+	public void readAllowedComps() throws JsonSyntaxException, IOException {
+FileHandler fh = new FileHandler();
+fh.readAllowedCompetitions();
+	}
+
 	// ----------------------------------------
 	public int searchCompBinary(String country, String compName, boolean b) {
 		/*
@@ -194,43 +198,33 @@ public class CountryCompetition {
 		/*
 		 * searches to find a competition if it is db set, so it can be utilised
 		 * for processing. Searching for competitions within the allowed
-		 * Levestain distance
+		 * Levestain distance (b is with or without levistani distance)
 		 */
-		int minDistanceCompIdx = 0;// the idx of the most similar term
+		int minDistanceCompIdx = -1;// the idx of the most similar term
 		int minDist = 100;// var to keep the min distance
 		int dist = 0; // temporary distance var
 
-		int i;
-		for (i = 0; i < ccasList.size(); i++) {
+		for (int i = 0; i < ccasList.size(); i++) {
 			if (ccasList.get(i).getDb() == 1) {
 				if (b) {
-					dist = StringSimilarity.levenshteinDistance(compName,
-							ccasList.get(i).getCompetition());
-					{}
+					dist = StringSimilarity.levenshteinDistance(compName, ccasList.get(i).getCompetition());
 					if (dist <= 2) {
-						return ccasList.get(i).getCompId();
+						return i;
 					} else {
 						if (dist < minDist) {
 							minDist = dist;
 							minDistanceCompIdx = i;
 						}
 					} // else
-				}// b
-				else {
-					if (compName.equalsIgnoreCase(ccasList.get(i)
-							.getCompetition())) {
+				} else {
+					if (compName.equalsIgnoreCase(ccasList.get(i) .getCompetition())) {
 						return i;
 					}
 				}
 			} // db ==1
 		}// for
-//		logger.warn(
-//				"with levistainDistance = {} ccasTerm = {}  & scorerTerm = {} ",
-//				minDist, ccasList.get(minDistanceCompIdx).getCompId(), compName);
 
-		// if distance is greater than 1/2 of the word call it wrong
-
-		return -1;
+		return minDistanceCompIdx;
 	}
 
 	public int fullSearch(String country, String compName) {
@@ -248,7 +242,13 @@ public class CountryCompetition {
 
 	public void addAllowedComp(String comp, int idx) {
 		allowedcomps.put(comp, idx);
-		// append to file
+		FileHandler fh= new FileHandler();
+		try {
+			fh.appendAllowedCompetitions(comp, idx);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

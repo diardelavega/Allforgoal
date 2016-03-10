@@ -62,7 +62,7 @@ public class Unilang {
 
 	// ------------------------------------------
 	public String scoreTeamToCcas(String term) {
-		return ccasTeamsMap.get(scoreMap.get(term));
+		return ccasTeamsMap.get(scoreTeamsMap.get(term));
 	}
 
 	public String ccasTeamToScore(String term) {
@@ -149,13 +149,13 @@ public class Unilang {
 	// =====================================
 	public void appendScoreTerms(String term, int id) throws IOException {
 		logger.info("score    {} -   {}", id, term);
-
+		scoreMap.put(term, id);
 		fh.appendUnlangScorerTerm(term, id);
 	}
 
 	public void appendCcasTerms(int id, String term) throws IOException {
 		logger.info("ccas    {} -   {}", id, term);
-		scoreMap.put(term, id);
+		ccasMap.put(id, term);
 		fh.appendUnilangCcasTerm(id, term);
 	}
 
@@ -209,7 +209,8 @@ public class Unilang {
 		 * maps we chose the biggest of the two map sizes
 		 */
 
-		int id = Math.max(ccasMap.size(), scoreMap.size());
+		logger.info("ccasTeamsize-: {}  scorerTeamSize-: {}",ccasTeamsMap.size(), scoreTeamsMap.size());
+		int id = Math.max(ccasTeamsMap.size(), scoreTeamsMap.size());
 		appendCcasTeamTerms(id, ccasTeam);
 		appendScoreTeamTerms(scoreTeam, id);
 		// ccasTeamsMap.put(id, ccasTeam);

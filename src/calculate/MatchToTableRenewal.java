@@ -11,6 +11,7 @@ import java.util.List;
 import org.slf4j.LoggerFactory;
 
 
+
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
 import structures.PredictionFile;
@@ -19,6 +20,7 @@ import basicStruct.MatchObj;
 import dbhandler.BasicTableEntity;
 import dbhandler.FullTableMaker;
 import dbhandler.TableMaker;
+import diskStore.AnalyticFileHandler;
 import diskStore.FileHandler;
 import extra.ClassifiStatus;
 import extra.MatchOutcome;
@@ -41,7 +43,7 @@ public class MatchToTableRenewal {
 			.getLogger(MatchToTableRenewal.class);
 
 	private PredictionFile pf;
-	public static FileHandler fh = new FileHandler();
+	public static AnalyticFileHandler afh = new AnalyticFileHandler();
 
 	private List<MatchObj> matchList;
 	private int compId;
@@ -112,7 +114,7 @@ public class MatchToTableRenewal {
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment();
 				pf.setWeek(totMatches / (N / 2));
-				fh.appendCsv(pf.liner());
+				afh.appendCsv(pf.liner());
 
 				// if teams matches > 3 then start calculating group attributes
 				evalUpdateGroups();

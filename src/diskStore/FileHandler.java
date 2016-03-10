@@ -25,58 +25,17 @@ public class FileHandler {
 
 	Gson gson = new Gson();
 	private File bastFileFolder = new File("C:/BastData");
-	private File csvFile = new File(bastFileFolder + "/matches.csv");
-	private File mDataFile = new File(bastFileFolder + "/matchData.csv");
+//	private File csvFile = new File(bastFileFolder + "/matches.csv");
+//	private File mDataFile = new File(bastFileFolder + "/matchData.csv");
 
 	private File dataFilesFolder = new File(bastFileFolder + "/data_files");
 	private File unilangCcasTerms = new File(dataFilesFolder + "/ccasTerms");
 	private File unilangScorerTerms = new File(dataFilesFolder + "/scorerTerms");
 	private File unilangCcasTeams = new File(dataFilesFolder + "/ccasTeams");
 	private File unilangScorerTeams = new File(dataFilesFolder + "/scorerTeams");
-	private File allowedComps = new File(dataFilesFolder
-			+ "/allowedCompetitions");
+	private File allowedComps = new File(dataFilesFolder + "/allowedCompetitions");
 
 	private BufferedWriter bw = null;
-
-	public void openOutput() throws IOException {
-		bw = new BufferedWriter(new FileWriter(csvFile, true));
-	}
-
-	public void closeOutput() throws IOException {
-		if (bw != null) {
-			bw.close();
-		}
-	}
-
-	public void appendCsv(String line) throws IOException {
-		bw.write(line + "\n");
-	}
-
-	// -----------------------------------------
-	public void opendataWrite() throws IOException {
-		// inits the buffer
-		bw = new BufferedWriter(new FileWriter(mDataFile, true));
-	}
-
-	public void appendMatchData(MatchObj match) throws IOException {
-		match.printMatch();
-		String line = gson.toJson(match);
-
-		bw.write(line + "\n");
-	}
-
-	public List<MatchObj> readMatchData() throws IOException {
-		
-		BufferedReader br = new BufferedReader(new FileReader(mDataFile));
-		String line;
-		List<MatchObj> matchesList = new ArrayList<>();
-		MatchObj match;
-		while ((line = br.readLine()) != null) {
-			match = gson.fromJson(line, MatchObj.class);
-			matchesList.add(match);
-		}
-		return matchesList;
-	}
 
 	// ==================UNILANG=========================================
 	/*
@@ -227,6 +186,9 @@ public class FileHandler {
 	public void appendAllowedCompetitions(String compName, int compId)
 			throws IOException {
 		// the compName comes from xscorer and compId is from cca_structure
+//		format Map<xscoreCompName, ccasCompId>
+		
+		
 		bw = new BufferedWriter(new FileWriter(allowedComps, true));
 		TupleTermId ti = new TupleTermId(compName, compId);
 		bw.write(gson.toJson(ti) + "\n");
@@ -235,6 +197,10 @@ public class FileHandler {
 
 	public void readAllowedCompetitions() throws JsonSyntaxException,
 			IOException {
+		if(!allowedComps.exists()){
+			allowedComps.createNewFile();
+			return;
+		}
 		BufferedReader br = new BufferedReader(new FileReader(allowedComps));
 		String line;
 		while ((line = br.readLine()) != null) {

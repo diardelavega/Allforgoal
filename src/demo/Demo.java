@@ -20,6 +20,7 @@ import com.google.gson.JsonSyntaxException;
 import calculate.MatchToTableRenewal;
 import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
+import basicStruct.MatchObj;
 import dbtry.Conn;
 import extra.Status;
 import extra.StringSimilarity;
@@ -28,6 +29,7 @@ import scrap.AjaxGrabber;
 import scrap.SoccerPrunterMAtches;
 import scrap.Soccerpunter_homePage;
 import scrap.XscoreUpComing;
+import strategyAction.TempMatchFunctions;
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
 import structures.MatchesList;
@@ -43,13 +45,13 @@ public class Demo {
 		// sp.goGetCompetitions();
 		// }
 
-		 {
-			 initCCAllStruct();
-		//
-//		 String link = CountryCompetition.ccasList.get(37).getCompLink();
-//		 int compId = CountryCompetition.ccasList.get(37).getCompId();
-//		 System.out.println(link);
-		 }
+		{
+			initCCAllStruct();
+			//
+			// String link = CountryCompetition.ccasList.get(37).getCompLink();
+			// int compId = CountryCompetition.ccasList.get(37).getCompId();
+			// System.out.println(link);
+		}
 
 		// {
 		// {// TODO this section grabs the matches from the site
@@ -80,18 +82,41 @@ public class Demo {
 		// }
 		// }
 
-//		 XscoreUpComing sc = new XscoreUpComing();
-//		 sc.scrapMatchesDate(LocalDate.now(),Status.SCHEDULED);
-//		 sc.getScheduledToday();
-		 
-		 
-		 Unilang ul = new Unilang();
-		 log(ul.ccasMap.size()+"");
-		 log(ul.scoreMap.size()+"");
-		 log("");
-		 log(ul.scoreTermsId("CHAMPIONSHIP")+"");
-		 log(ul.scoreToCcas("CHAMPIONSHIP")+"");
-		 
+		XscoreUpComing sc = new XscoreUpComing();
+//		sc.getScheduledToday();
+		TempMatchFunctions tmf = new TempMatchFunctions();
+
+		
+		tmf.openDBConn();
+//		tmf.corelatePunterXScorerTeams();
+//		tmf.storeToTempMatchesDB();
+		
+		//when the periodic check for finished matches is on
+//		tmf.readTodaysMatches();
+		sc.getFinishedToday();
+		
+		tmf.complete(LocalDate.now());
+		
+		
+		tmf.closeDBConn();
+
+		// Unilang ul = new Unilang();
+		// log(ul.scoreTeamsMap.size() + "");
+		// log(ul.ccasTeamsMap.size() + "");
+		// for(Integer key:ul.ccasTeamsMap.keySet()){
+		// log(key+" "+ul.ccasTeamsMap.get(key));
+		// }
+		// log(ul.scoreTeamsId("BLACKBURN") + "");
+		// log(ul.ccasIdsTeam(ul.scoreTeamsId("BLACKBURN")) + "");
+		//
+		// log(ul.scoreTeamToCcas("BLACKBURN"));
+
+		// log(ul.ccasMap.size()+"");
+		// log(ul.scoreMap.size()+"");
+		// log("");
+		// log(ul.scoreTermsId("ENGLAND")+"");
+		// log(ul.scoreToCcas("ENGLAND")+"");
+
 		// sc.dateTodayFormat();
 		// sc.dateTomorrowFormat();
 		// sc.dateYesterdayFormat();
@@ -101,14 +126,12 @@ public class Demo {
 		// logger.info("{}","MACEDONIa".compareToIgnoreCase("FYR Macedonia"));
 		// ajaxGrabber();
 
-		 
-		 
-//		bar();
+		// bar();
 	}
 
 	private static void log(String s) {
 		System.out.println(s);
-		
+
 	}
 
 	public static void ajaxGrabber() throws IOException {
@@ -122,7 +145,8 @@ public class Demo {
 		// ag.f47("http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&typeId=47");
 	}
 
-	public static void initCCAllStruct() throws SQLException, JsonSyntaxException, IOException {
+	public static void initCCAllStruct() throws SQLException,
+			JsonSyntaxException, IOException {
 		/*
 		 * read from the DB the competitions data and keep them in the java
 		 * Competition* structures
@@ -134,9 +158,11 @@ public class Demo {
 		if (cp.ccasList.size() > 0) {
 			System.out.println("Country competition structure is ready");
 		} else {
-			System.out.println("Country competition structure not initialized corectly");
+			System.out
+					.println("Country competition structure not initialized corectly");
 		}
-		
+		cp.readAllowedComps();
+
 		Unilang ul = new Unilang();
 		ul.init();
 		conn.close();
@@ -144,35 +170,37 @@ public class Demo {
 
 	public static void foo() {
 		LocalDate d1 = LocalDate.now();
-		 LocalDate pd = LocalDate.of(2016, Month.JANUARY, 12);
-		 
-		 if(d1.isAfter(d1)){
-			 logger.info("FFF UUUUUUU");
-		 }
-		 else{logger.info("NOOOOOOOOOOOOOOOOOOOO");}
+		LocalDate pd = LocalDate.of(2016, Month.JANUARY, 12);
+
+		if (d1.isAfter(d1)) {
+			logger.info("FFF UUUUUUU");
+		} else {
+			logger.info("NOOOOOOOOOOOOOOOOOOOO");
+		}
 	}
 
 	public static void bar() {
-//		Map<String, Integer> mm = new HashMap<>();
-//		mm.put("A", 0);
-//		mm.put("a", 1);
-//		mm.put("b", 2);
-//		mm.put("c", 3);
-//		mm.put("e", 4);
-//		mm.put("f", 5);
-//
-//		String c = null;
-//		System.out.println(mm.get(c));
-//		Integer k = mm.get("b");
-//		if (k != null) {
-//			System.out.println(k);
-//		} else {
-//			System.out.println("aaaaaaaaaaaaaaa");
-//		}
-		
-		
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		LocalDate mDat = LocalDate.parse("01/03/2016",DateTimeFormatter.ofPattern("dd/MM/yyyy") );
+		// Map<String, Integer> mm = new HashMap<>();
+		// mm.put("A", 0);
+		// mm.put("a", 1);
+		// mm.put("b", 2);
+		// mm.put("c", 3);
+		// mm.put("e", 4);
+		// mm.put("f", 5);
+		//
+		// String c = null;
+		// System.out.println(mm.get(c));
+		// Integer k = mm.get("b");
+		// if (k != null) {
+		// System.out.println(k);
+		// } else {
+		// System.out.println("aaaaaaaaaaaaaaa");
+		// }
+
+		// DateTimeFormatter formatter =
+		// DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate mDat = LocalDate.parse("01/03/2016",
+				DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		logger.info(mDat.toString());
 	}
 }

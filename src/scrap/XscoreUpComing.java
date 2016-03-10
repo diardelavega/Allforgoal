@@ -57,12 +57,13 @@ public class XscoreUpComing {
 		Document doc = null;
 		try {
 			logger.info(url);
-			 doc = Jsoup.parse(new File( "C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
-//			doc = Jsoup
-//					.connect(url)
-//					.userAgent(
-//							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-//					.maxBodySize(0).timeout(600000).get();
+			doc = Jsoup.parse(new File(
+					"C:/Users/Administrator/Desktop/FinxScores.htm"), "UTF-8");
+			// doc = Jsoup
+			// .connect(url)
+			// .userAgent(
+			// "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+			// .maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
 			e.printStackTrace();
@@ -74,28 +75,19 @@ public class XscoreUpComing {
 		for (Element row : mrows) {
 			if (row.hasAttr("class") && row.attr("class").contains("#")) {
 				String[] clasVal = row.attr("class").split("#");
-				logger.info("country {},   comp {}", clasVal[0], clasVal[4]);
+				// logger.info("country {},   comp {}", clasVal[0], clasVal[4]);
 
 				if (clasVal[0].contains("WORLD")
-						|| clasVal[0].contains("AFRICA")
-						|| clasVal[0].contains("AMERICA")
-						|| clasVal[0].contains("EUROPE")
-						|| clasVal[0].contains("ASIA")
-
-						|| clasVal[4].contains("CUP")
-						|| clasVal[4].contains("COPPA")
-						|| clasVal[4].contains("COPA")
-						|| clasVal[4].contains("OFF")
-						|| clasVal[4].contains("TROPHY")
-						|| clasVal[4].contains("COUPE")
-						|| clasVal[4].contains("EURO")) {
+						|| clasVal[0].contains("AFRICA") || clasVal[0].contains("AMERICA") || clasVal[0].contains("EUROPE") || clasVal[0].contains("ASIA")
+						|| clasVal[4].contains("CUP")|| clasVal[4].contains("COPPA")|| clasVal[4].contains("COPA")|| clasVal[4].contains("OFF")	|| clasVal[4].contains("TROPHY")|| clasVal[4].contains("COUPE")|| clasVal[4].contains("EURO")) {
 					continue;
 				}
 
-				int compId = searchForCompId(clasVal[0], clasVal[4]);
-				if (compId < 0) {
+				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
+				if (compIdx < 0) {
 					continue;
 				} else {
+					logger.info("comp-: {}   id-: {}    found_idx-: {}", CountryCompetition.ccasList.get(compIdx) .getCompetition(), CountryCompetition.ccasList.get(compIdx) .getCompId(), compIdx);
 					Elements tds = row.getElementsByTag("td");
 					String status = tds.get(1).text();
 					String t1 = tds.get(5).text();
@@ -103,29 +95,27 @@ public class XscoreUpComing {
 					mobj = new MatchObj();
 					mobj.setT1(t1);
 					mobj.setT2(t2);
-					logger.info("1-{}  2-{}   3-{}   4-{}", status,
-							Status.SCHEDULED, status, _status);
+					// logger.info("1-{}  2-{}   3-{}   4-{}", status,
+					// Status.SCHEDULED, status, _status);
 
-					if (status.equals(Status.SCHEDULED)
-							&& status.equals(_status)) {
+					if (_status.equals(Status.SCHEDULED) && (status.equals(Status.SCHEDULED) || status .equals(Status.FTR))) {
 						mobj.setDat(Date.valueOf(dat));
-						mobj.setComId(compId);
+						mobj.setComId(compIdx + 1);
 						schedNewMatches.add(mobj);
 						continue;
 					}
 
 					if (_status == Status.FINISHED) {
-						if (status == Status.ABANDONED
-								|| status == Status.CANCELED
-								|| status == Status.POSTPONED) {
+						if (status.equals( Status.ABANDONED) || status.equals(  Status.CANCELED) || status.equals( Status.POSTPONED)) {
 							// find interrupted matches to delete them
 							errorNewMatches.add(mobj);
 						}
-						if (status == Status.FINISHED) {
+						if (status.equals( Status.FINISHED) ){
 							String[] scores;
 							// HT score - @ td_14
 							if (tds.get(13).text().length() >= 3) {// score-score
-								scores = tds.get(14).text().split("-");
+								logger.info("{}",tds.get(13).text());
+								scores = tds.get(13).text().split("-");
 								try {// just in case some error happens
 									int ht1 = Integer.parseInt(scores[0]);
 									int ht2 = Integer.parseInt(scores[1]);
@@ -136,7 +126,7 @@ public class XscoreUpComing {
 								}
 							}
 							if (tds.get(14).text().length() >= 3) {// FT @ td_15
-								scores = tds.get(15).text().split("-");
+								scores = tds.get(14).text().split("-");
 								try {// just in case some error happens
 									int ft1 = Integer.parseInt(scores[0]);
 									int ft2 = Integer.parseInt(scores[1]);
@@ -195,7 +185,7 @@ public class XscoreUpComing {
 
 	// ----------------------------------
 
-	public int searchForCompId(String country, String comp) throws IOException {
+	public int searchForCompIdx(String country, String comp) throws IOException {
 		// search in allowed competitions map and CCAS
 		CountryCompetition cc = null;
 		try {
@@ -203,9 +193,9 @@ public class XscoreUpComing {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Integer searchCompId = cc.allowedcomps.get(comp);
-		if (searchCompId != null) {
-			return searchCompId;
+		Integer searchCompIdx = cc.allowedcomps.get(comp);
+		if (searchCompIdx != null) {
+			return searchCompIdx - 1;
 		} else {
 
 			Unilang ul = new Unilang();
@@ -214,58 +204,65 @@ public class XscoreUpComing {
 
 			if (newCountry != null) {
 				if (newComp != null) {// binarysearch newComp no levistein
-					searchCompId = cc.searchCompBinary(newCountry, newComp,
+					searchCompIdx = cc.searchCompBinary(newCountry, newComp,
 							false);
-					if (searchCompId > 0) {
-						ul.addTerm(newCountry, country);
-						ul.addTerm(newComp, comp);
-						if (cc.ccasList.get(searchCompId).getDb() == 1) {
-							cc.addAllowedComp(comp, searchCompId);
+					if (searchCompIdx > 0) {
+						// ul.addTerm(newCountry, country);
+						// ul.addTerm(newComp, comp);
+						if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
+							cc.addAllowedComp(comp, searchCompIdx + 1);
+						} else {
+							return -1;
 						}
 					}
 				} else {// bynarysearch with levistain for competition
-					searchCompId = cc.searchCompBinary(newCountry, comp, true);
-					if (searchCompId > 0) {
-						ul.addTerm(newCountry, country);
-						ul.addTerm(cc.ccasList.get(searchCompId)
+					searchCompIdx = cc.searchCompBinary(newCountry, comp, true);
+					if (searchCompIdx > 0) {
+						// ul.addTerm(newCountry, country);
+						ul.addTerm(cc.ccasList.get(searchCompIdx)
 								.getCompetition(), comp);
-						if (cc.ccasList.get(searchCompId).getDb() == 1) {
-							cc.addAllowedComp(comp, searchCompId);
+						if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
+							cc.addAllowedComp(comp, searchCompIdx + 1);
+						} else {
+							return -1;
 						}
 					}
 				}
 			} else {
 				if (newComp != null) { // search usable (DB)newComp no levistein
-					searchCompId = cc.searchUsableComp(newComp, false);
-					if (searchCompId > 0) {
-						if (StringSimilarity.levenshteinDistance(
-								country,
-								CountryCompetition.ccasList.get(
-										searchCompId - 1).getCountry()) > 3) {
+					searchCompIdx = cc.searchUsableComp(newComp, false);
+					if (searchCompIdx > 0) {
+						// in case the leagues have the same name but belong to
+						// different countries, check the country too
+						if (StringSimilarity.levenshteinDistance(country,
+								CountryCompetition.ccasList.get(searchCompIdx)
+										.getCountry()) > 3) {
 							return -1;
 						}
-						// ul.addTerm(newCountry, country);
-						ul.addTerm(newComp, comp);
-						cc.addAllowedComp(comp, searchCompId);
+						ul.addTerm(
+								CountryCompetition.ccasList.get(searchCompIdx)
+										.getCountry(), country);
+						cc.addAllowedComp(comp, searchCompIdx + 1);
 					}
 				} else {
-					searchCompId = cc.searchUsableComp(comp, true);
-					if (searchCompId > 0) {
-						if (StringSimilarity.levenshteinDistance(
-								country,
-								CountryCompetition.ccasList.get(
-										searchCompId - 1).getCountry()) > 3) {
+					searchCompIdx = cc.searchUsableComp(comp, true);
+					if (searchCompIdx > 0) {
+						if (StringSimilarity.levenshteinDistance(country,
+								CountryCompetition.ccasList.get(searchCompIdx)
+										.getCountry()) > 3) {
 							return -1;
 						}
-						// ul.addTerm(newCountry, country);
-						ul.addTerm(cc.ccasList.get(searchCompId-1)
+						ul.addTerm(
+								CountryCompetition.ccasList.get(searchCompIdx)
+										.getCountry(), country);
+						ul.addTerm(cc.ccasList.get(searchCompIdx)
 								.getCompetition(), comp);
-						cc.addAllowedComp(comp, searchCompId);
+						cc.addAllowedComp(comp, searchCompIdx + 1);
 					}
 				}
 			}
 
-			return searchCompId;
+			return searchCompIdx;
 		}
 		//
 	}

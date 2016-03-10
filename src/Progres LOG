@@ -69,8 +69,16 @@ taking in consideration the match in hand.
 	Unilang TeamMaps. On the rest "periodic" (add results, odds etc) use unilang conversion for fast team correlation
 	
 	
-	*** Watching term correlation in files some error must be accouring
-		   				 	  
+	*** Watching term correlation in files some error must be occurring (fixed bug when writing but it writes it twice) even if	
+		it is already written in the file	
+	HOPEFULLY successful search and correlation for term.  
+
+	** Passing to team search and Finished matches completion {problems with team finding}
+	
+	Generally working ... ** problem with deleteing data from tempMAtchesDb  __****__  Fixed*** {wasn't reading mId from tempMatches-> considering all mids =0 => could not delete any tempt match with actual mIds != 0}
+
+	*** handle cancelled and postponed matches (delete from temp matches but dont store to matches)
+	*** TODO clear all the maps and lists of data after the periodic function has ended
 	 				 	  
 	 				 	  
 	 				 	  

@@ -36,11 +36,11 @@ public class StringSimilarity {
 		int i = 0;
 
 		for (String sa : aa) {
-			if (sa.length() > 3) {
+			if (sa.length() > StandartResponses.DISMIS_WORD) {
 				for (String sb : bb) {
-					if (sb.length() > 3) {
+					if (sb.length() > StandartResponses.DISMIS_WORD) {
 						curdist = levPerWord(sa, sb);
-						if (curdist < 2) {
+						if (curdist < StandartResponses.LEV_DISTANCE) {
 							i++;
 						}
 						distance += curdist;
@@ -51,9 +51,9 @@ public class StringSimilarity {
 		}
 		// total errors divided by sum of +3 letter words that are <2 simmilar
 		if (i < 1) {
-			return distance;
+			return distance +StandartResponses.LEV_DISTANCE;
 		} else {
-			return distance / (i);
+			return (distance / (2*i));
 		}
 	}
 

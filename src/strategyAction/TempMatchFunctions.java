@@ -10,6 +10,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import scrap.XscoreUpComing;
 import structures.CountryCompetition;
 import dbtry.Conn;
 import extra.StringSimilarity;
@@ -19,11 +23,12 @@ import basicStruct.MatchObj;
 
 public class TempMatchFunctions {
 
-	// private static final String ResultSet = null;
+	public static final Logger logger = LoggerFactory
+			.getLogger(TempMatchFunctions.class);
 	private Unilang ul = new Unilang();
-	public List<MatchObj> incomeTempMatchesList = new ArrayList<>();// temp
-																	// matches
-																	// list
+	public List<MatchObj> incomeTempMatchesLists = new ArrayList<>();// temp
+																		// matches
+																		// list
 	public List<MatchObj> readTempMatchesList = new ArrayList<>();// temp
 																	// matches
 																	// list
@@ -45,7 +50,7 @@ public class TempMatchFunctions {
 		}
 	}
 
-	public void corelatePunterXScorerTeams(List<MatchObj> ml) throws IOException {
+	public void corelatePunterXScorerTeams() throws IOException {
 		/*
 		 * for every xScorer team name in the list find the analog Punter
 		 * teamName, populate unilang Teams with it and convert the list team
@@ -56,11 +61,10 @@ public class TempMatchFunctions {
 		 * smaller levenstain distance.
 		 */
 
-		List<String> dbTeams = null;
-		openDBConn();
+		List<String> dbTeams = new ArrayList<>();
 		int compId = -1;
 
-		for (MatchObj m : ml) {
+		for (MatchObj m : XscoreUpComing.schedNewMatches) {
 			// first search in unilang
 			String t = ul.scoreTeamToCcas(m.getT1());
 			if (t == null) {
@@ -71,22 +75,29 @@ public class TempMatchFunctions {
 					compId = m.getComId();
 				}
 				int minDist = 100;
-				int chosenIdx = -1;
+				int chosenDbIdx = -1;
 				int curDist;
 				for (int i = 0; i < dbTeams.size(); i++) {
 					curDist = StringSimilarity.levenshteinDistance(m.getT1(),
 							dbTeams.get(i));
+					logger.info(
+							"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
+							m.getT1(), dbTeams.get(i), curDist, minDist);
+					if (curDist >= m.getT2().length())
+						continue;
 					if (curDist < minDist) {
 						minDist = curDist;
-						chosenIdx = i;
+						chosenDbIdx = i;
 					}
 				}
 				// find the most similar terms; add the to Unilang; delete them
 				// from dbTeamsList so to be more efficient in the next search.
 				// change the team names on the list
-				ul.addTerm(m.getT1(), dbTeams.get(chosenIdx));
-				dbTeams.remove(chosenIdx);
-				m.setT1(dbTeams.get(chosenIdx));
+				logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
+						dbTeams.get(chosenDbIdx));
+				ul.addTeam(dbTeams.get(chosenDbIdx), m.getT1());
+				m.setT1(dbTeams.get(chosenDbIdx));
+				dbTeams.remove(chosenDbIdx);
 			} else {
 				m.setT1(t);
 			}
@@ -104,20 +115,26 @@ public class TempMatchFunctions {
 				for (int i = 0; i < dbTeams.size(); i++) {
 					curDist = StringSimilarity.levenshteinDistance(m.getT2(),
 							dbTeams.get(i));
+					logger.info(
+							"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
+							m.getT2(), dbTeams.get(i), curDist, minDist);
+					if (curDist >= m.getT2().length())
+						continue;
 					if (curDist < minDist) {
 						minDist = curDist;
 						chosenIdx = i;
 					}
 				}
-				ul.addTerm(m.getT2(), dbTeams.get(chosenIdx));
-				dbTeams.remove(chosenIdx);
+				logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
+						dbTeams.get(chosenIdx));
+				ul.addTeam(dbTeams.get(chosenIdx), m.getT2());
 				m.setT2(dbTeams.get(chosenIdx));
+				dbTeams.remove(chosenIdx);
 			} else {
 				m.setT2(t);
 			}
 		}
-		incomeTempMatchesList = ml;
-		closeDBConn();
+		// incomeTempMatchesList = ml;
 	}
 
 	public void storeToTempMatchesDB() throws SQLException {
@@ -133,7 +150,8 @@ public class TempMatchFunctions {
 		String insert = "insert into tempmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(insert);
 		int i = 0;
-		for (MatchObj mobj : incomeTempMatchesList) {
+		// @ this point suppose xscore.shcedmatches is converted to punter teams
+		for (MatchObj mobj : XscoreUpComing.schedNewMatches) {
 			// ps.setNull(1, java.sql.Types.INTEGER);
 			ps.setLong(1, mobj.getmId());
 			ps.setInt(2, mobj.getComId());
@@ -174,7 +192,7 @@ public class TempMatchFunctions {
 		MatchObj mobj = null;
 		while (rs.next()) {
 			mobj = new MatchObj();
-			// mobj.setmId(rs.getLong(1));
+			 mobj.setmId(rs.getLong(1));
 			mobj.setComId(rs.getInt(2));
 			mobj.setT1(rs.getString(3));
 			mobj.setT2(rs.getString(4));
@@ -192,22 +210,23 @@ public class TempMatchFunctions {
 		}
 	}
 
-	public void complete(LocalDate dat) throws SQLException {
+	public void complete(LocalDate d) throws SQLException {
 		/*
 		 * intended to be used during the periodical check for results of
-		 * matches. Supposedly the readTempMatchesKList is full of matches of a
+		 * matches. Supposedly the readTempMatchesList is full of matches of a
 		 * certain date ordered by home team for binary search. add results to
 		 * the finished matches; store them to "regular" matches delete them
-		 * from tempmatches db table
+		 * from tempmatches db table. This func should be called after Xcore
+		 * class functions have gathered the scores of the finished matches
 		 */
-		readFromTempMatches(LocalDate.now());
+
+		readFromTempMatches(d);// fill readTempMatchesList from db
 
 		// keep the mid of the matches in the tempMatches db that will be
 		// deleted
-		StringBuilder sb = new StringBuilder();
 
 		List<MatchObj> finMatches = new ArrayList<MatchObj>();
-		for (MatchObj m : incomeTempMatchesList) {
+		for (MatchObj m : XscoreUpComing.finNewMatches) {
 			String team = ul.scoreTeamToCcas(m.getT1());
 			if (team != null) {
 				int idx = binarySearch(team, 0, readTempMatchesList.size());
@@ -227,21 +246,27 @@ public class TempMatchFunctions {
 					// mobj.set_u(m.get_u());
 					// }
 					finMatches.add(mobj);
-					sb.append(mobj.getmId() + ", ");
 				}
 			}
 		}// for
-		sb.append("-1");
+		
+	String del=	deleteTempMatches(finMatches);
 
-		conn.getConn()
-				.createStatement()
-				.execute(
-						"DELETE FROM tempmatches where mid in ("
-								+ sb.toString() + ");");
+		logger.info(del);
+		conn.getConn().createStatement().execute("DELETE FROM tempmatches where mid in ("+ del + ");");
+		
 		insertMatches(finMatches);
-
 	}
 
+	private String deleteTempMatches(List<MatchObj> ml){
+		StringBuilder sb = new StringBuilder();
+		for(MatchObj m:ml){
+			sb.append(m.getmId() + ", ");
+		}
+		sb.append("-1");
+		return sb.toString();
+	}
+	
 	private void insertMatches(List<MatchObj> finMatches) throws SQLException {
 		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(insert);
