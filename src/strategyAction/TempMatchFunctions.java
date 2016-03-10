@@ -26,12 +26,9 @@ public class TempMatchFunctions {
 	public static final Logger logger = LoggerFactory
 			.getLogger(TempMatchFunctions.class);
 	private Unilang ul = new Unilang();
-	public List<MatchObj> incomeTempMatchesLists = new ArrayList<>();// temp
-																		// matches
-																		// list
-	public List<MatchObj> readTempMatchesList = new ArrayList<>();// temp
-																	// matches
-																	// list
+	// public List<MatchObj> incomeTempMatchesLists = new ArrayList<>();
+	public List<MatchObj> readTempMatchesList = new ArrayList<>();
+
 	private Conn conn;
 
 	public void readTodaysMatches() {
@@ -192,7 +189,7 @@ public class TempMatchFunctions {
 		MatchObj mobj = null;
 		while (rs.next()) {
 			mobj = new MatchObj();
-			 mobj.setmId(rs.getLong(1));
+			mobj.setmId(rs.getLong(1));
 			mobj.setComId(rs.getInt(2));
 			mobj.setT1(rs.getString(3));
 			mobj.setT2(rs.getString(4));
@@ -220,12 +217,10 @@ public class TempMatchFunctions {
 		 * class functions have gathered the scores of the finished matches
 		 */
 
-		readFromTempMatches(d);// fill readTempMatchesList from db
+		// fill from db readTempMatchesList List<>, order by t1
+		readFromTempMatches(d);
 
-		// keep the mid of the matches in the tempMatches db that will be
-		// deleted
-
-		List<MatchObj> finMatches = new ArrayList<MatchObj>();
+		List<MatchObj> matches = new ArrayList<MatchObj>();
 		for (MatchObj m : XscoreUpComing.finNewMatches) {
 			String team = ul.scoreTeamToCcas(m.getT1());
 			if (team != null) {
@@ -245,28 +240,51 @@ public class TempMatchFunctions {
 					// mobj.set_o(m.get_o());
 					// mobj.set_u(m.get_u());
 					// }
-					finMatches.add(mobj);
+					matches.add(mobj);
+					readTempMatchesList.remove(idx);// for efficiency
 				}
 			}
 		}// for
-		
-	String del=	deleteTempMatches(finMatches);
+		deleteTempMatches(matches);// delete finished matches
+		insertMatches(matches);
 
-		logger.info(del);
-		conn.getConn().createStatement().execute("DELETE FROM tempmatches where mid in ("+ del + ");");
-		
-		insertMatches(finMatches);
+		if (readTempMatchesList.size() > 0) {
+			/*
+			 * keep looping through the remaining matches from the db read to
+			 * delete the postponed or cancelled matches
+			 */
+			for (MatchObj m : XscoreUpComing.errorNewMatches) {
+				String team = ul.scoreTeamToCcas(m.getT1());
+				if (team != null) {
+					int idx = binarySearch(team, 0, readTempMatchesList.size());
+					if (idx < 0) {
+						continue;
+					} else {
+						MatchObj mobj = readTempMatchesList.get(idx);
+						matches.add(mobj);
+					}
+				}
+			}// for
+
+			deleteTempMatches(matches);// delete cancelled matches
+		}
 	}
 
-	private String deleteTempMatches(List<MatchObj> ml){
+	private boolean deleteTempMatches(List<MatchObj> ml) throws SQLException {
 		StringBuilder sb = new StringBuilder();
-		for(MatchObj m:ml){
+		for (MatchObj m : ml) {
 			sb.append(m.getmId() + ", ");
 		}
 		sb.append("-1");
-		return sb.toString();
+		boolean b = conn
+				.getConn()
+				.createStatement()
+				.execute(
+						"DELETE FROM tempmatches where mid in ("
+								+ sb.toString() + ");");
+		return b;
 	}
-	
+
 	private void insertMatches(List<MatchObj> finMatches) throws SQLException {
 		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(insert);

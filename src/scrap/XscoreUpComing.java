@@ -58,7 +58,7 @@ public class XscoreUpComing {
 		try {
 			logger.info(url);
 			doc = Jsoup.parse(new File(
-					"C:/Users/Administrator/Desktop/FinxScores.htm"), "UTF-8");
+					"C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
 			// doc = Jsoup
 			// .connect(url)
 			// .userAgent(
@@ -87,7 +87,7 @@ public class XscoreUpComing {
 				if (compIdx < 0) {
 					continue;
 				} else {
-					logger.info("comp-: {}   id-: {}    found_idx-: {}", CountryCompetition.ccasList.get(compIdx) .getCompetition(), CountryCompetition.ccasList.get(compIdx) .getCompId(), compIdx);
+//					logger.info("comp-: {}   id-: {}    found_idx-: {}", CountryCompetition.ccasList.get(compIdx) .getCompetition(), CountryCompetition.ccasList.get(compIdx) .getCompId(), compIdx);
 					Elements tds = row.getElementsByTag("td");
 					String status = tds.get(1).text();
 					String t1 = tds.get(5).text();
@@ -95,13 +95,13 @@ public class XscoreUpComing {
 					mobj = new MatchObj();
 					mobj.setT1(t1);
 					mobj.setT2(t2);
-					// logger.info("1-{}  2-{}   3-{}   4-{}", status,
-					// Status.SCHEDULED, status, _status);
+					 logger.info("t1-{}  t2-{}",t1,t2);
 
 					if (_status.equals(Status.SCHEDULED) && (status.equals(Status.SCHEDULED) || status .equals(Status.FTR))) {
 						mobj.setDat(Date.valueOf(dat));
 						mobj.setComId(compIdx + 1);
 						schedNewMatches.add(mobj);
+						 logger.info("scheduled ---  t1-{}  t2-{}",t1,t2);
 						continue;
 					}
 
@@ -109,12 +109,12 @@ public class XscoreUpComing {
 						if (status.equals( Status.ABANDONED) || status.equals(  Status.CANCELED) || status.equals( Status.POSTPONED)) {
 							// find interrupted matches to delete them
 							errorNewMatches.add(mobj);
+							logger.info("ABANDONED ---  t1-{}  t2-{}",t1,t2);
 						}
 						if (status.equals( Status.FINISHED) ){
 							String[] scores;
 							// HT score - @ td_14
 							if (tds.get(13).text().length() >= 3) {// score-score
-								logger.info("{}",tds.get(13).text());
 								scores = tds.get(13).text().split("-");
 								try {// just in case some error happens
 									int ht1 = Integer.parseInt(scores[0]);
@@ -136,6 +136,7 @@ public class XscoreUpComing {
 									logger.warn(" SOMTHING WHENT WRONG WITH THE FT SCORE");
 								}
 							}
+							logger.info("FINISHED ---  t1-{} vs t2-{} ;; {} , {}  ",t1,t2,tds.get(13).text(),tds.get(14).text());
 							finNewMatches.add(mobj);
 						}// fin status
 					}
@@ -183,9 +184,15 @@ public class XscoreUpComing {
 		getFinishedOnDate(LocalDate.now().minusDays(1));
 	}
 
+	public void clearLists(){
+		schedNewMatches.clear();
+		finNewMatches.clear();
+		errorNewMatches.clear();
+	}
+	
 	// ----------------------------------
 
-	public int searchForCompIdx(String country, String comp) throws IOException {
+	private int searchForCompIdx(String country, String comp) throws IOException {
 		// search in allowed competitions map and CCAS
 		CountryCompetition cc = null;
 		try {
@@ -265,13 +272,6 @@ public class XscoreUpComing {
 			return searchCompIdx;
 		}
 		//
-	}
-
-	public void searchForTeam(String team, int compId) {
-		// TODO search in unilang if the team is there
-		// get teams from db and compare
-		// This func probably is not needed here since we are going to use it
-		// after the TempMatch<L> is filled with data
 	}
 
 	private String allDateFormater(LocalDate dat) {

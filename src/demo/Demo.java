@@ -83,22 +83,21 @@ public class Demo {
 		// }
 
 		XscoreUpComing sc = new XscoreUpComing();
-//		sc.getScheduledToday();
+		
 		TempMatchFunctions tmf = new TempMatchFunctions();
 
-		
+		sc.getScheduledToday();
 		tmf.openDBConn();
-//		tmf.corelatePunterXScorerTeams();
-//		tmf.storeToTempMatchesDB();
-		
-		//when the periodic check for finished matches is on
-//		tmf.readTodaysMatches();
-		sc.getFinishedToday();
-		
-		tmf.complete(LocalDate.now());
-		
-		
+		tmf.corelatePunterXScorerTeams();
+		tmf.storeToTempMatchesDB();
+		{
+			// when the periodic check for finished matches is on
+//			sc.getFinishedToday();
+//			tmf.complete(LocalDate.now());
+
+		}
 		tmf.closeDBConn();
+		sc.clearLists();
 
 		// Unilang ul = new Unilang();
 		// log(ul.scoreTeamsMap.size() + "");
