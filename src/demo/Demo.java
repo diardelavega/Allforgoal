@@ -198,8 +198,7 @@ public class Demo {
 
 		// DateTimeFormatter formatter =
 		// DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		LocalDate mDat = LocalDate.parse("01/03/2016",
-				DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		LocalDate mDat = LocalDate.parse("01/03/2016", DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		logger.info(mDat.toString());
 	}
 }

@@ -75,9 +75,10 @@ taking in consideration the match in hand.
 
 	** Passing to team search and Finished matches completion {problems with team finding}
 	
-	Generally working ... ** problem with deleteing data from tempMAtchesDb && 
-	*** handle canceled and postponed matches (delete from temp matches but dont store to matches)
-	*** TODO clear all the ,aps and lists of data after the periodic function has ended
+	Generally working ... ** problem with deleteing data from tempMAtchesDb  __****__  Fixed*** {wasn't reading mId from tempMatches-> considering all mids =0 => could not delete any tempt match with actual mIds != 0}
+
+	*** handle cancelled and postponed matches (delete from temp matches but dont store to matches)
+	*** TODO clear all the maps and lists of data after the periodic function has ended
 	 				 	  
 	 				 	  
 	 				 	  

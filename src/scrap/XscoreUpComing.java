@@ -79,7 +79,7 @@ public class XscoreUpComing {
 
 				if (clasVal[0].contains("WORLD")
 						|| clasVal[0].contains("AFRICA") || clasVal[0].contains("AMERICA") || clasVal[0].contains("EUROPE") || clasVal[0].contains("ASIA")
-						|| clasVal[4].contains("CUP")|| clasVal[4].contains("COPPA")|| clasVal[4].contains("COPA")|| clasVal[4].contains("OFF")	|| clasVal[4].contains("TROPHY")|| clasVal[4].contains("COUPE")|| clasVal[4].contains("EURO")) {
+						|| clasVal[4].contains("CUP")|| clasVal[4].contains("KUPA")|| clasVal[4].contains("COPPA")|| clasVal[4].contains("COPA")|| clasVal[4].contains("OFF")	|| clasVal[4].contains("TROPHY")|| clasVal[4].contains("COUPE")|| clasVal[4].contains("EURO")) {
 					continue;
 				}
 

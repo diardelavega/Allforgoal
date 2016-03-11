@@ -270,6 +270,41 @@ public class TempMatchFunctions {
 		}
 	}
 
+	public void completeYesterday() throws SQLException {
+		LocalDate dat = LocalDate.now().minusDays(1);
+		complete(dat);
+	}
+
+	public void completeToday() throws SQLException {
+		LocalDate dat = LocalDate.now();
+		complete(dat);
+	}
+
+	public List<String> getTempDates() throws SQLException {
+		// get different dates of matches in temp matches
+		openDBConn();
+		ResultSet rs = conn
+				.getConn()
+				.createStatement()
+				.executeQuery(
+						"SELECT dat FROM tempmatches GROUP BY dat ORDER BY dat asc ; ");
+		List<String> dats = new ArrayList<String>();
+		while (rs.next()) {
+			dats.add(rs.getString(1));
+		}
+		closeDBConn();
+		return dats;
+	}
+
+	public boolean deleteMatches(LocalDate dat) throws SQLException{
+		boolean b = conn
+				.getConn()
+				.createStatement()
+				.execute(
+						"DELETE FROM tempmatches where dat like '"+ Date.valueOf(dat)+"');");
+		return b;
+	}
+	
 	private boolean deleteTempMatches(List<MatchObj> ml) throws SQLException {
 		StringBuilder sb = new StringBuilder();
 		for (MatchObj m : ml) {
@@ -355,8 +390,10 @@ public class TempMatchFunctions {
 	}
 
 	public void openDBConn() {
-		conn = new Conn();
-		conn.open();
+		if (conn == null) {
+			conn = new Conn();
+			conn.open();
+		}
 	}
 
 	public void closeDBConn() {
