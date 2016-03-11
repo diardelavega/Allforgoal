@@ -5,12 +5,16 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import basicStruct.MatchObj;
 import scrap.XscoreUpComing;
+import test.TestFile;
 
 /**
  * @author Administrator
@@ -27,7 +31,7 @@ public class Strategy {
 	XscoreUpComing score = new XscoreUpComing();
 	private int periode = 6; // 6 hours
 
-	public void periodeTask() throws SQLException, IOException {
+	public void task() throws SQLException, IOException {
 		/*
 		 * set all the temp match scraping, transforming, calculating re-storing
 		 * and re-writing.
@@ -49,37 +53,12 @@ public class Strategy {
 				tmf.completeYesterday();
 				lastDatCheck = LocalDate.now();
 				score.clearLists();
+				checkReamaining();
 			} else {
 				// is still the same day get todays results
 				score.getFinishedToday();
 				tmf.completeToday();
 				score.clearLists();
-			}
-
-			// TODO search db temp matches and get dates of matches
-			tmf.openDBConn();
-			List<String> dates = tmf.getTempDates();
-			if (dates.size() == 0) {
-				// if(db dates == empty)=> scrap todays & tomorrows matches
-				score.getScheduledToday();
-				score.getScheduledTomorrow();
-				tmf.openDBConn();
-				tmf.corelatePunterXScorerTeams();
-				tmf.storeToTempMatchesDB();
-				lastDatCheck = LocalDate.now();
-			} else {
-
-				// for (String d : dates) {
-				// LocalDate mDat = LocalDate.parse(d,
-				// DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				// if(mDat.isBefore(LocalDate.now().plusDays(1))){
-				// score.getFinishedOnDate(mDat);
-				// tmf.complete(mDat);
-				// }
-				// score.getFinishedOnDate(mDat);
-				// tmf.complete(mDat);
-				//
-				// }
 			}
 
 		}
@@ -93,7 +72,8 @@ public class Strategy {
 			logger.info("NO REMAINING MATCHES");
 		} else {
 			for (String d : dates) {
-				LocalDate mDat = LocalDate.parse(d, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				LocalDate mDat = LocalDate.parse(d,
+						DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 				if (mDat.isBefore(LocalDate.now().minusDays(1))) {
 					// if match is older than yesterday
 					score.getFinishedOnDate(mDat);
@@ -102,12 +82,33 @@ public class Strategy {
 			}// for
 
 			if (tmf.readTempMatchesList.size() > 0) {
-				for (MatchObj s : tmf.readTempMatchesList) {
-
+				TestFile tf = new TestFile();
+				tf.inidRB();
+				for (MatchObj m : tmf.readTempMatchesList) {
+					tf.write(m);
 				}
+				tf.closeRB();
 			}
 
 		}
 	}
 
+	public void periodic() throws SQLException, IOException {
+		ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
+		// Task t = new Task();
+		Runnable task = () -> {
+			// System.out.println(t.getI());
+			try {
+				task();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		};
+		// System.out.println("Scheduling: " + System.nanoTime());
+
+		int initialDelay = 5;
+		int period = 4;
+		executor.scheduleAtFixedRate(task, initialDelay, period,
+				TimeUnit.SECONDS);
+	}
 }
