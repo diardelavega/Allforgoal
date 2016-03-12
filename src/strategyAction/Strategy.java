@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import basicStruct.MatchObj;
 import scrap.XscoreUpComing;
+import test.MatchGetter;
 import test.TestFile;
 
 /**
@@ -28,7 +29,7 @@ public class Strategy {
 	public static final Logger logger = LoggerFactory.getLogger(Strategy.class);
 	private LocalDate lastDatCheck;
 	private TempMatchFunctions tmf = new TempMatchFunctions();
-	XscoreUpComing score = new XscoreUpComing();
+	MatchGetter score = new MatchGetter();
 	private int periode = 6; // 6 hours
 
 	public void task() throws SQLException, IOException {
@@ -36,31 +37,37 @@ public class Strategy {
 		 * set all the temp match scraping, transforming, calculating re-storing
 		 * and re-writing.
 		 */
-		if (lastDatCheck == null) {
-			// TODO scrap todays matches & tomorrows
-			score.getScheduledToday();
-			score.getScheduledTomorrow();
-			tmf.corelatePunterXScorerTeams();
-			tmf.storeToTempMatchesDB();
-			score.clearLists();
-		} else {
-			if (lastDatCheck.isBefore(LocalDate.now())) {
-				// is new day so get yesterdays results and tomorrows schedule
+		tmf.openDBConn();
+		try {
+			if (lastDatCheck == null) {
+				// TODO scrap todays matches & tomorrows
+				score.getScheduledToday();
 				score.getScheduledTomorrow();
-				tmf.corelatePunterXScorerTeams();
+				// tmf.corelatePunterXScorerTeams();
 				tmf.storeToTempMatchesDB();
-				score.getFinishedYesterday();
-				tmf.completeYesterday();
-				lastDatCheck = LocalDate.now();
 				score.clearLists();
-				checkReamaining();
 			} else {
-				// is still the same day get todays results
-				score.getFinishedToday();
-				tmf.completeToday();
-				score.clearLists();
-			}
+				if (lastDatCheck.isBefore(LocalDate.now())) {
+					// is new day so get yesterdays results and tomorrows
+					// schedule
+					score.getScheduledTomorrow();
+					// tmf.corelatePunterXScorerTeams();
+					tmf.storeToTempMatchesDB();
+					score.getFinishedYesterday();
+					tmf.completeYesterday();
+					lastDatCheck = LocalDate.now();
+					score.clearLists();
+					checkReamaining();
+				} else {
+					// is still the same day get todays results
+					score.getFinishedToday();
+					tmf.completeToday();
+					score.clearLists();
+				}
 
+			}
+		} finally {
+			tmf.closeDBConn();
 		}
 	}
 
@@ -106,9 +113,8 @@ public class Strategy {
 		};
 		// System.out.println("Scheduling: " + System.nanoTime());
 
-		int initialDelay = 5;
-		int period = 4;
-		executor.scheduleAtFixedRate(task, initialDelay, period,
-				TimeUnit.SECONDS);
+		int initialDelay = 0;
+		int period = 6;
+		executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.HOURS);
 	}
 }

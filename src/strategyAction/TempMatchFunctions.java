@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import scrap.XscoreUpComing;
 import structures.CountryCompetition;
+import test.MatchGetter;
 import dbtry.Conn;
 import extra.StringSimilarity;
 import extra.Unilang;
@@ -61,7 +62,8 @@ public class TempMatchFunctions {
 		List<String> dbTeams = new ArrayList<>();
 		int compId = -1;
 
-		for (MatchObj m : XscoreUpComing.schedNewMatches) {
+		// for (MatchObj m : XscoreUpComing.schedNewMatches) {
+		for (MatchObj m : MatchGetter.schedNewMatches) {
 			// first search in unilang
 			String t = ul.scoreTeamToCcas(m.getT1());
 			if (t == null) {
@@ -143,12 +145,14 @@ public class TempMatchFunctions {
 		// }
 		//
 
-		// openDBConn();
+		openDBConn();
 		String insert = "insert into tempmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(insert);
 		int i = 0;
 		// @ this point suppose xscore.shcedmatches is converted to punter teams
-		for (MatchObj mobj : XscoreUpComing.schedNewMatches) {
+		// for (MatchObj mobj : XscoreUpComing.schedNewMatches) {
+		for (MatchObj mobj : MatchGetter.schedNewMatches) {// alt line
+
 			// ps.setNull(1, java.sql.Types.INTEGER);
 			ps.setLong(1, mobj.getmId());
 			ps.setInt(2, mobj.getComId());
@@ -178,6 +182,7 @@ public class TempMatchFunctions {
 
 	public void readFromTempMatches(LocalDate dat) throws SQLException {
 		// intended to be used during periodic check for the finished matches
+		openDBConn();
 		Date date = Date.valueOf(dat);
 		ResultSet rs = conn
 				.getConn()
@@ -216,12 +221,15 @@ public class TempMatchFunctions {
 		 * from tempmatches db table. This func should be called after Xcore
 		 * class functions have gathered the scores of the finished matches
 		 */
-
+openDBConn();
+		
+		
 		// fill from db readTempMatchesList List<>, order by t1
 		readFromTempMatches(d);
 
 		List<MatchObj> matches = new ArrayList<MatchObj>();
-		for (MatchObj m : XscoreUpComing.finNewMatches) {
+		// for (MatchObj m : XscoreUpComing.finNewMatches) {
+		for (MatchObj m : MatchGetter.finNewMatches) {
 			String team = ul.scoreTeamToCcas(m.getT1());
 			if (team != null) {
 				int idx = binarySearch(team, 0, readTempMatchesList.size());
@@ -253,7 +261,8 @@ public class TempMatchFunctions {
 			 * keep looping through the remaining matches from the db read to
 			 * delete the postponed or cancelled matches
 			 */
-			for (MatchObj m : XscoreUpComing.errorNewMatches) {
+			// for (MatchObj m : XscoreUpComing.errorNewMatches) {
+			for (MatchObj m : MatchGetter.errorNewMatches) {
 				String team = ul.scoreTeamToCcas(m.getT1());
 				if (team != null) {
 					int idx = binarySearch(team, 0, readTempMatchesList.size());
@@ -296,15 +305,16 @@ public class TempMatchFunctions {
 		return dats;
 	}
 
-	public boolean deleteMatches(LocalDate dat) throws SQLException{
+	public boolean deleteMatches(LocalDate dat) throws SQLException {
 		boolean b = conn
 				.getConn()
 				.createStatement()
 				.execute(
-						"DELETE FROM tempmatches where dat like '"+ Date.valueOf(dat)+"');");
+						"DELETE FROM tempmatches where dat like '"
+								+ Date.valueOf(dat) + "');");
 		return b;
 	}
-	
+
 	private boolean deleteTempMatches(List<MatchObj> ml) throws SQLException {
 		StringBuilder sb = new StringBuilder();
 		for (MatchObj m : ml) {
@@ -389,15 +399,19 @@ public class TempMatchFunctions {
 		return teamsList;
 	}
 
-	public void openDBConn() {
+	public void openDBConn() throws SQLException {
 		if (conn == null) {
 			conn = new Conn();
+			conn.open();
+		} else if (conn.getConn().isClosed()) {
 			conn.open();
 		}
 	}
 
 	public void closeDBConn() {
-		conn.close();
+		if (conn != null) {
+			conn.close();
+		}
 	}
 
 }

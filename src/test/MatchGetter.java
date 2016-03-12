@@ -187,4 +187,11 @@ public class MatchGetter {
 		return mainUrl + date;
 
 	}
+
+	public void clearLists(){
+		schedNewMatches.clear();
+		finNewMatches.clear();
+		errorNewMatches.clear();
+	}
+	
 }

@@ -15,6 +15,9 @@ public class TestFile {
 	private BufferedWriter bw;
 
 	public void inidRB() throws IOException {
+		if(!bastFileFolder.exists()){
+			bastFileFolder.mkdir();
+		}
 		bw = new BufferedWriter(new FileWriter(errorMatches, true));
 	}
 

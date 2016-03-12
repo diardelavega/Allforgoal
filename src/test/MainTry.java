@@ -1,5 +1,6 @@
 package test;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import strategyAction.Strategy;
 import strategyAction.TempMatchFunctions;
 import structures.CountryCompetition;
 import basicStruct.MatchObj;
@@ -27,7 +29,7 @@ public class MainTry {
 		System.out.println("AAAAAAAAAAAAAA");
 	}
 
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws SQLException, IOException {
 		// Demo.initCCAllStruct();
 		// MatchObj mobj = new MatchObj();
 		// mobj.setT1("hua");
@@ -38,10 +40,13 @@ public class MainTry {
 		// tmf.incomeTempMatchesList.add(mobj);
 		// tmf.storeToTempMatchesDB();
 
-	log(	StringSimilarity.levenshteinDistance("championship", "CHAMPIONSHIP")+"");
-	log(	StringSimilarity.levPerWord("champ", "CHAMp")+"");
+//	log(	StringSimilarity.levenshteinDistance("championship", "CHAMPIONSHIP")+"");
+//	log(	StringSimilarity.levPerWord("champ", "CHAMp")+"");
 		// log(CountryCompetition.ccasList.get(5 - 1).getCompetition());
 		// log(CountryCompetition.ccasList.get(5 - 1).getCompId() + "");
+		
+		Strategy strategy = new Strategy();
+		strategy .periodic();
 
 	}
 
