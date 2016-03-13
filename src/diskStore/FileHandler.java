@@ -18,6 +18,7 @@ import com.google.gson.JsonSyntaxException;
 
 import extra.Unilang;
 import basicStruct.MatchObj;
+import basicStruct.TupleCountryCompTermId;
 import basicStruct.TupleIdTerm;
 import basicStruct.TupleTermId;
 
@@ -34,6 +35,7 @@ public class FileHandler {
 	private File unilangCcasTeams = new File(dataFilesFolder + "/ccasTeams");
 	private File unilangScorerTeams = new File(dataFilesFolder + "/scorerTeams");
 	private File allowedComps = new File(dataFilesFolder + "/allowedCompetitions");
+	private File unfoundScoreTerms = new File(dataFilesFolder + "/unfoundScoreTerms");
 
 	private BufferedWriter bw = null;
 
@@ -209,5 +211,11 @@ public class FileHandler {
 		}
 		br.close();
 	}
-
+//-------------
+	public void appendUnfoundTerms(String cnt,String cmp, int i) throws IOException{
+		bw = new BufferedWriter(new FileWriter(unfoundScoreTerms,true));
+		TupleCountryCompTermId ccti = new TupleCountryCompTermId(cnt,cmp,i);
+		bw.write(gson.toJson(ccti) + "\n");
+		bw.close();
+	}
 }

@@ -27,7 +27,7 @@ import test.TestFile;
 public class Strategy {
 
 	public static final Logger logger = LoggerFactory.getLogger(Strategy.class);
-	private LocalDate lastDatCheck;
+	private LocalDate lastDatCheck;// = LocalDate.now().minusDays(1);
 	private TempMatchFunctions tmf = new TempMatchFunctions();
 	MatchGetter score = new MatchGetter();
 	private int periode = 6; // 6 hours
@@ -39,6 +39,24 @@ public class Strategy {
 		 */
 		tmf.openDBConn();
 		try {
+
+			// if (lastDatCheck == null) {
+			// score.getScheduledToday();
+			// tmf.storeToTempMatchesDB();
+			// score.clearLists();
+			// lastDatCheck = LocalDate.now();
+			// logger.info("NULL Last Ceck");
+			// }else
+			// {
+			// // score.getFinishedToday();
+			// score.getFinishedYesterday();
+			// // tmf.storeToTempMatchesDB();
+			// // tmf.completeToday();
+			// tmf.completeYesterday();
+			// score.clearLists();
+			// logger.info("Last Ceck   Finished  TODAY");
+			// }
+
 			if (lastDatCheck == null) {
 				// TODO scrap todays matches & tomorrows
 				score.getScheduledToday();
@@ -46,6 +64,8 @@ public class Strategy {
 				// tmf.corelatePunterXScorerTeams();
 				tmf.storeToTempMatchesDB();
 				score.clearLists();
+				lastDatCheck = LocalDate.now();
+				logger.info("NULL Last Ceck");
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
 					// is new day so get yesterdays results and tomorrows
@@ -58,11 +78,13 @@ public class Strategy {
 					lastDatCheck = LocalDate.now();
 					score.clearLists();
 					checkReamaining();
+					logger.info("Last Ceck   BEFORE TODAY");
 				} else {
 					// is still the same day get todays results
 					score.getFinishedToday();
 					tmf.completeToday();
 					score.clearLists();
+					logger.info("Last Ceck   Finished  TODAY");
 				}
 
 			}
@@ -104,7 +126,6 @@ public class Strategy {
 		ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
 		// Task t = new Task();
 		Runnable task = () -> {
-			// System.out.println(t.getI());
 			try {
 				task();
 			} catch (Exception e) {
@@ -114,7 +135,7 @@ public class Strategy {
 		// System.out.println("Scheduling: " + System.nanoTime());
 
 		int initialDelay = 0;
-		int period = 6;
+		int period = 5;
 		executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.HOURS);
 	}
 }

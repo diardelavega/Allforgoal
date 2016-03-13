@@ -26,8 +26,8 @@ public class TempMatchFunctions {
 
 	public static final Logger logger = LoggerFactory
 			.getLogger(TempMatchFunctions.class);
-	private Unilang ul = new Unilang();
-	// public List<MatchObj> incomeTempMatchesLists = new ArrayList<>();
+	private Unilang ul = new Unilang(); // Original_Line
+	public List<MatchObj> incomeTempMatchesLists = new ArrayList<>();
 	public List<MatchObj> readTempMatchesList = new ArrayList<>();
 
 	private Conn conn;
@@ -62,8 +62,8 @@ public class TempMatchFunctions {
 		List<String> dbTeams = new ArrayList<>();
 		int compId = -1;
 
-		// for (MatchObj m : XscoreUpComing.schedNewMatches) {
-		for (MatchObj m : MatchGetter.schedNewMatches) {
+		for (MatchObj m : XscoreUpComing.schedNewMatches) {// Original_Line
+		// for (MatchObj m : MatchGetter.schedNewMatches) {
 			// first search in unilang
 			String t = ul.scoreTeamToCcas(m.getT1());
 			if (t == null) {
@@ -133,10 +133,11 @@ public class TempMatchFunctions {
 				m.setT2(t);
 			}
 		}
-		// incomeTempMatchesList = ml;
+//		incomeTempMatchesLists = ml;
 	}
 
 	public void storeToTempMatchesDB() throws SQLException {
+		logger.info("--------------: STORE To TEMPMATCHS");
 		// should come after the correlation from newFormat to punter
 		// try {
 		// insertMatches("tempmatches");
@@ -182,6 +183,8 @@ public class TempMatchFunctions {
 
 	public void readFromTempMatches(LocalDate dat) throws SQLException {
 		// intended to be used during periodic check for the finished matches
+		logger.info("--------------: Read From TempMatches");
+
 		openDBConn();
 		Date date = Date.valueOf(dat);
 		ResultSet rs = conn
@@ -209,7 +212,9 @@ public class TempMatchFunctions {
 			mobj.set_u(rs.getFloat(13));
 			mobj.setDat(rs.getDate(14));
 			readTempMatchesList.add(mobj);
+			logger.info("t1-: {}   t1-: {}", rs.getString(3), rs.getString(4));
 		}
+		logger.info("readTempMatchesList size ={}", readTempMatchesList.size());
 	}
 
 	public void complete(LocalDate d) throws SQLException {
@@ -221,21 +226,29 @@ public class TempMatchFunctions {
 		 * from tempmatches db table. This func should be called after Xcore
 		 * class functions have gathered the scores of the finished matches
 		 */
-openDBConn();
-		
-		
+
+		logger.info("--------------: COMPLETE");
+		openDBConn();
+
 		// fill from db readTempMatchesList List<>, order by t1
 		readFromTempMatches(d);
+		logger.info("readTempMatchesList size ={}", readTempMatchesList.size());
 
 		List<MatchObj> matches = new ArrayList<MatchObj>();
-		// for (MatchObj m : XscoreUpComing.finNewMatches) {
+		// for (MatchObj m : XscoreUpComing.finNewMatches) { Original_Line
+		int idx = -1;
 		for (MatchObj m : MatchGetter.finNewMatches) {
-			String team = ul.scoreTeamToCcas(m.getT1());
+			// String team = ul.scoreTeamToCcas(m.getT1()); Original_Line
+			String team = m.getT1();
 			if (team != null) {
-				int idx = binarySearch(team, 0, readTempMatchesList.size());
+				if (readTempMatchesList.size() == 0) {
+					break;
+				}
+				idx = binarySearch(team, 0, readTempMatchesList.size());
 				if (idx < 0) {
 					continue;
 				} else {
+					logger.info("t1 -{}     t1-{}", m.getT1(), m.getT2());
 					MatchObj mobj = readTempMatchesList.get(idx);
 					mobj.setHt1(m.getHt1());
 					mobj.setHt2(m.getHt2());
@@ -250,27 +263,37 @@ openDBConn();
 					// }
 					matches.add(mobj);
 					readTempMatchesList.remove(idx);// for efficiency
+					mobj.printMatch();
+					logger.info("Competed");
 				}
 			}
 		}// for
+
 		deleteTempMatches(matches);// delete finished matches
 		insertMatches(matches);
 
 		if (readTempMatchesList.size() > 0) {
+			logger.info("--------------: LOOP TO find postponed");
 			/*
 			 * keep looping through the remaining matches from the db read to
 			 * delete the postponed or cancelled matches
 			 */
 			// for (MatchObj m : XscoreUpComing.errorNewMatches) {
 			for (MatchObj m : MatchGetter.errorNewMatches) {
-				String team = ul.scoreTeamToCcas(m.getT1());
+				// String team = ul.scoreTeamToCcas(m.getT1()); Original_Line
+				String team = m.getT1();
 				if (team != null) {
-					int idx = binarySearch(team, 0, readTempMatchesList.size());
+					if (readTempMatchesList.size() == 0) {
+						break;
+					}
+					idx = binarySearch(team, 0, readTempMatchesList.size());
 					if (idx < 0) {
 						continue;
 					} else {
 						MatchObj mobj = readTempMatchesList.get(idx);
 						matches.add(mobj);
+						mobj.printMatch();
+						logger.info("Errores");
 					}
 				}
 			}// for
@@ -316,6 +339,7 @@ openDBConn();
 	}
 
 	private boolean deleteTempMatches(List<MatchObj> ml) throws SQLException {
+		logger.info("--------------: DELETE FROM TempMatches");
 		StringBuilder sb = new StringBuilder();
 		for (MatchObj m : ml) {
 			sb.append(m.getmId() + ", ");
@@ -331,6 +355,7 @@ openDBConn();
 	}
 
 	private void insertMatches(List<MatchObj> finMatches) throws SQLException {
+		logger.info("--------------: INSERT to MATCHESS");
 		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(insert);
 		int i = 0;
@@ -362,19 +387,28 @@ openDBConn();
 	}
 
 	private int binarySearch(String team, int min, int max) {
-		if (min > max) {
-			return -1;
-		}
-		int mid = (max + min) / 2;
-
-		if (readTempMatchesList.get(mid).getT1().equals(team)) {
-			return mid;
-		} else if (readTempMatchesList.get(mid).getT1().compareTo(team) > 0) {
-			return binarySearch(team, min, mid - 1);
-		} else {
-			return binarySearch(team, mid + 1, max);
+		try {
+			logger.info("t__{}  min_{}   max__{}", team, min, max);
+			if (min > max) {
+				return -1;
+			}
+			int mid = (max + min) / 2;
+			logger.warn("mid__{}", mid);
+			if (readTempMatchesList.get(mid).getT1().equals(team)) {
+				return mid;
+			} else if (readTempMatchesList.get(mid).getT1().compareTo(team) > 0) {
+				return binarySearch(team, min, mid - 1);
+			} else {
+				return binarySearch(team, mid + 1, max);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.info("t__{}  min_{}   max__{},  readTempMatchesList-:{}",
+					team, min, max, readTempMatchesList.size());
+			e.printStackTrace();
 		}
 		// return -1;
+		return -1;
 	}
 
 	private List<String> queryCompTeams(int compId) {

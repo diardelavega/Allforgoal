@@ -9,16 +9,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import scrap.Soccerpunter_homePage;
+import scrap.XscoreUpComing;
 import strategyAction.Strategy;
 import strategyAction.TempMatchFunctions;
 import structures.CountryCompetition;
 import basicStruct.MatchObj;
 
+import com.google.gson.JsonSyntaxException;
 import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
 
 import dbtry.Conn;
 import demo.Demo;
 import extra.StringSimilarity;
+import extra.Unilang;
 
 public class MainTry {
 	{
@@ -30,6 +34,7 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException {
+		initCCAllStruct();
 		// Demo.initCCAllStruct();
 		// MatchObj mobj = new MatchObj();
 		// mobj.setT1("hua");
@@ -40,22 +45,50 @@ public class MainTry {
 		// tmf.incomeTempMatchesList.add(mobj);
 		// tmf.storeToTempMatchesDB();
 
-//	log(	StringSimilarity.levenshteinDistance("championship", "CHAMPIONSHIP")+"");
-//	log(	StringSimilarity.levPerWord("champ", "CHAMp")+"");
+		// log( StringSimilarity.levenshteinDistance("championship",
+		// "CHAMPIONSHIP")+"");
+		// log( StringSimilarity.levPerWord("champ", "CHAMp")+"");
 		// log(CountryCompetition.ccasList.get(5 - 1).getCompetition());
 		// log(CountryCompetition.ccasList.get(5 - 1).getCompId() + "");
-		
-		Strategy strategy = new Strategy();
-		strategy .periodic();
 
+		// Strategy strategy = new Strategy();
+		// strategy .periodic();
+		corelator();
+	}
+
+	public static void corelator() {
+		/* write the corelated terms found and unfound */
+		// XscoreUpComing score = new XscoreUpComing();
+		MatchGetter score = new MatchGetter();
+		score.getFinishedYesterday();
+		// score
+	}
+
+	public static void initCCAllStruct() throws SQLException,
+			JsonSyntaxException, IOException {
+		/*
+		 * read from the DB the competitions data and keep them in the java
+		 * Competition* structures
+		 */
+		CountryCompetition cp = new CountryCompetition();
+		Conn conn = new Conn();
+		conn.open();
+		cp.readCCAllStruct(conn.getConn());
+		if (cp.ccasList.size() > 0) {
+			System.out.println("Country competition structure is ready");
+		} else {
+			System.out
+					.println("Country competition structure not initialized corectly");
+		}
+		cp.readAllowedComps();
+
+		Unilang ul = new Unilang();
+		ul.init();
+		conn.close();
 	}
 
 	public static void log(String s) {
 		System.out.println(s);
-	}
-
-	class A {
-		// static int x=20;
 	}
 
 	public static void sortArray() {

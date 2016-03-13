@@ -209,7 +209,8 @@ public class Unilang {
 		 * maps we chose the biggest of the two map sizes
 		 */
 
-		logger.info("ccasTeamsize-: {}  scorerTeamSize-: {}",ccasTeamsMap.size(), scoreTeamsMap.size());
+		logger.info("ccasTeamsize-: {}  scorerTeamSize-: {}",
+				ccasTeamsMap.size(), scoreTeamsMap.size());
 		int id = Math.max(ccasTeamsMap.size(), scoreTeamsMap.size());
 		appendCcasTeamTerms(id, ccasTeam);
 		appendScoreTeamTerms(scoreTeam, id);
@@ -226,6 +227,11 @@ public class Unilang {
 		readScoreTeamTerms();
 		readScoreTerms();
 
+	}
+
+	public void appendUnfoundTerms(String country, String comp) throws IOException {
+//		int id = ccasMap.size();
+		fh.appendUnfoundTerms(country, comp,000);
 	}
 
 }
