@@ -6,6 +6,27 @@ public class BasicTableEntity extends HalfTimeExtend implements
 	private String team;
 	private int teamid;
 
+	private int winsIn = 0;
+	private int drawsIn = 0;
+	private int losesIn = 0;
+	private int winsOut = 0;
+	private int drawsOut = 0;
+	private int losesOut = 0;
+
+	// average win continuity (calc sum (continuous results -1)/matches)
+	private float avgWinCont = 0;
+	private float avgDrawCont = 0;
+	private float avgLoseCont = 0;
+	// -----------------------------TO calc avg result continuety
+	// counts how many results of the same kind are so far
+	private int contResCounter = 0;
+	private short prevRes;// keep previous results 1X2
+	// nr of continous wins(3 cont wins, 2 cont wins, 1 cont wins ...)
+	private int winStreams = 0;
+	private int drawStreams = 0;
+	private int loseStreams = 0;
+	// ---------------------------------------------------
+
 	private int points;
 	private int matchesIn = 0;
 	private int matchesOut = 0;
@@ -51,10 +72,108 @@ public class BasicTableEntity extends HalfTimeExtend implements
 	private float formAtack = 0;
 	private float formAtackIn = 0;
 	private float formAtackOut = 0;
-	
+
 	private float formDefence = 0;
 	private float formDefenceIn = 0;
 	private float formDefenceOut = 0;
+
+	
+	
+	public int getWinStreams() {
+		return winStreams;
+	}
+
+	public int getDrawStreams() {
+		return drawStreams;
+	}
+
+	public int getLoseStreams() {
+		return loseStreams;
+	}
+
+	public void addWinStreams() {
+		winStreams++;
+	}
+
+	public void addDrawStreams() {
+		drawStreams++;
+	}
+
+	public void addLoseStreams() {
+		loseStreams++;
+	}
+
+	public int getWinsIn() {
+		return winsIn;
+	}
+
+	public int getDrawsIn() {
+		return drawsIn;
+	}
+
+	public int getLosesIn() {
+		return losesIn;
+	}
+
+	public int getWinsOut() {
+		return winsOut;
+	}
+
+	public int getDrawsOut() {
+		return drawsOut;
+	}
+
+	public int getLosesOut() {
+		return losesOut;
+	}
+
+	public void addWinsIn() {
+		winsIn++;
+	}
+
+	public void addWinsOut() {
+		winsOut++;
+	}
+
+	public void addDrawsIn() {
+		drawsIn++;
+	}
+
+	public void addDrawsOut() {
+		drawsOut++;
+	}
+
+	public void addLosesIn() {
+		losesIn++;
+	}
+
+	public void addLosesOut() {
+		losesOut++;
+	}
+
+	public void setWinsIn(int winsIn) {
+		this.winsIn = winsIn;
+	}
+
+	public void setDrawsIn(int drawsIn) {
+		this.drawsIn = drawsIn;
+	}
+
+	public void setLosesIn(int losesIn) {
+		this.losesIn = losesIn;
+	}
+
+	public void setWinsOut(int winsOut) {
+		this.winsOut = winsOut;
+	}
+
+	public void setDrawsOut(int drawsOut) {
+		this.drawsOut = drawsOut;
+	}
+
+	public void setLosesOut(int losesOut) {
+		this.losesOut = losesOut;
+	}
 
 	public String getTeam() {
 		return team;
@@ -520,8 +639,6 @@ public class BasicTableEntity extends HalfTimeExtend implements
 		return ftConcededIn + ftConcededOut;
 	}
 
-	
-	
 	public float getFormAtackIn() {
 		return formAtackIn;
 	}
@@ -567,7 +684,71 @@ public class BasicTableEntity extends HalfTimeExtend implements
 		}
 	}
 
-	public String line () {
+	public float getAvgWinCont() {
+		return avgWinCont;
+	}
+
+	public float getAvgDrawCont() {
+		return avgDrawCont;
+	}
+
+	public float getAvgLoseCont() {
+		return avgLoseCont;
+	}
+
+	public int getContResCounter() {
+		return contResCounter;
+	}
+
+	public void addContinuanceCounter() {
+		contResCounter++;
+	}
+
+	public void resetContinuanceCounter() {
+		contResCounter = 1;
+	}
+
+	public short getPrevRes() {
+		return prevRes;
+	}
+
+	public void setAvgWinCont(float avgWinCont) {
+		this.avgWinCont = avgWinCont;
+	}
+
+	public void setAvgDrawCont(float avgDrawCont) {
+		this.avgDrawCont = avgDrawCont;
+	}
+
+	public void setAvgLoseCont(float avgLoseCont) {
+		this.avgLoseCont = avgLoseCont;
+	}
+
+	public void setContResCounter(int contResCounter) {
+		this.contResCounter = contResCounter;
+	}
+
+	public void setPrevRes(short  prevRes) {
+		this.prevRes = prevRes;
+	}
+
+	public void setFormAtackIn(float formAtackIn) {
+		this.formAtackIn = formAtackIn;
+	}
+
+	public void setFormAtackOut(float formAtackOut) {
+		this.formAtackOut = formAtackOut;
+	}
+
+	public void setFormDefenceIn(float formDefenceIn) {
+		this.formDefenceIn = formDefenceIn;
+	}
+
+	public void setFormDefenceOut(float formDefenceOut) {
+		this.formDefenceOut = formDefenceOut;
+	}
+
+	public String line() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(team);
 		sb.append(" , ");
@@ -592,6 +773,13 @@ public class BasicTableEntity extends HalfTimeExtend implements
 		sb.append(ftConcededIn);
 		sb.append(" , ");
 		sb.append(ftConcededOut);
+		sb.append(" , ");
+
+		sb.append(avgDrawCont);
+		sb.append(" , ");
+		sb.append(avgWinCont);
+		sb.append(" , ");
+		sb.append(avgLoseCont);
 		sb.append(" , ");
 
 		sb.append(p3MatchesIn);
@@ -694,6 +882,26 @@ public class BasicTableEntity extends HalfTimeExtend implements
 		sb.append(formDefence);
 		sb.append(" , ");
 
-		return  sb.toString();
+		sb.append(winsIn);
+		sb.append(" , ");
+		sb.append(winsOut);
+		sb.append(" , ");
+		sb.append(drawsIn);
+		sb.append(" , ");
+		sb.append(drawsOut);
+		sb.append(" , ");
+		sb.append(losesIn);
+		sb.append(" , ");
+		sb.append(losesOut);
+		sb.append(" , ");
+
+		sb.append(avgWinCont);
+		sb.append(" , ");
+		sb.append(avgDrawCont);
+		sb.append(" , ");
+		sb.append(avgLoseCont);
+		sb.append(" , ");
+
+		return sb.toString();
 	}
 }

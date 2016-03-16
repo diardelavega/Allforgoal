@@ -41,8 +41,8 @@ public class Demo {
 
 	public static void main(String[] args) throws IOException, SQLException {
 		// {// fill ccallstruct from site and store to db
-		// Soccerpunter_homePage sp = new Soccerpunter_homePage();
-		// sp.goGetCompetitions();
+		 Soccerpunter_homePage sp = new Soccerpunter_homePage();
+		 sp.goGetCompetitions();
 		// }
 
 		{
@@ -55,30 +55,30 @@ public class Demo {
 
 		// {
 		// {// TODO this section grabs the matches from the site
-		// SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-		// spm.matchGraber();
-		// spm.competitionResultsGrabbers(link, compId);
+		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+//		 spm.matchGraber();
+//		 spm.competitionResultsGrabbers(link, compId);
 		// // at this point matches garbed and put to list
-		// }
+//		 }
 		//
 		// {// TODO this section reads and writes data to matches table
-		// MatchesList ml = new MatchesList();
-		// ml.insertMatches();
+		 MatchesList ml = new MatchesList();
+		 ml.insertMatches();
 		// if (ml.readMatches.size() == 0) {
-		// ml.readMatchesComp(compId);
+//		 ml.readMatchesComp(compId);
 		// }
 		// }
 		// // TODO store the list in db
 		//
 		// // TODO call MatchToTableRenewual and evaluate attributes
-		// MatchToTableRenewal mttr;
+		 MatchToTableRenewal mttr;
 		//
 		// for (Integer key : MatchesList.readMatches.keySet()) {
-		// mttr = new MatchToTableRenewal(
-		// MatchesList.readMatches.get(key), key);
-		// MatchToTableRenewal.fh.openOutput();
-		// mttr.calculate();
-		// MatchToTableRenewal.fh.closeOutput();
+//		 mttr = new MatchToTableRenewal(
+//		 MatchesList.readMatches.get(key), key);
+//		 MatchToTableRenewal.fh.openOutput();
+//		 mttr.calculate();
+//		 MatchToTableRenewal.fh.closeOutput();
 		// }
 		// }
 

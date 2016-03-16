@@ -7,10 +7,9 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.MatchResult;
 
 import org.slf4j.LoggerFactory;
-
-
 
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
@@ -24,6 +23,7 @@ import diskStore.AnalyticFileHandler;
 import diskStore.FileHandler;
 import extra.ClassifiStatus;
 import extra.MatchOutcome;
+import extra.TeamStatus;
 
 /**
  * @author Administrator
@@ -56,6 +56,7 @@ public class MatchToTableRenewal {
 	private int match_counter = 0;
 	private int totMatches = 0;
 
+	// test purposes, team table to file
 	Path path = Paths.get("C:/Users/Administrator/Desktop/matches.csv");
 	List<String> matchesDF = new ArrayList<>();
 
@@ -83,11 +84,6 @@ public class MatchToTableRenewal {
 		init();// get the db table ready
 		for (int i = 0; i < matchList.size(); i++) {
 			mobj = matchList.get(i);
-			// -------TEST
-//			logger.info("{}  {} vs {}  {}  ", mobj.getT1(), mobj.getFt1(),
-//					mobj.getFt2(), mobj.getT2());
-//			logger.info("tot = {},  N={}", totMatches, N);
-			// --------------
 
 			posT1 = -1;
 			posT2 = -1;
@@ -109,20 +105,28 @@ public class MatchToTableRenewal {
 
 			if (t1.getMatchesIn() + t1.getMatchesOut() > 3
 					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
-				// -----Execute all prediction file asignments
 
+				// --- -----Execute all prediction file asignments------------
 				pf = new PredictionFile();
-				predictionFileAttributeAsignment();
+				predictionFileAttributeAsignment();// set up pred file data
+				/*
+				 * possibilty for calculating the pred file avgs ht, ft scores
+				 * and gg results here qithout calculating variables for
+				 * BasicTableEntity obj.
+				 */
+				// nr of matches per nr of games (half of the teams)
 				pf.setWeek(totMatches / (N / 2));
-				afh.appendCsv(pf.liner());
+				afh.appendCsv(pf.liner());// put on file
+				// -----------------------------------------
 
 				// if teams matches > 3 then start calculating group attributes
 				evalUpdateGroups();
 				/*
-				 * TODO if mobj. has (ft1 || ft2)= null => next match do not
+				 * if mobj. has (ft1 || ft2)= null => next match do not
 				 * "renew()" classification table. use this part of calculation
 				 * method only to get new files for predict outcomes
-				 */renew(true);
+				 */
+				renew(true);
 			} else {
 				renew(false);
 			}
@@ -158,11 +162,15 @@ public class MatchToTableRenewal {
 			ctt.insertTable();
 		}
 
+		// -------------------------------------------
+		// for every teams teamtable data get the printed line
 		mobj = new MatchObj();
 		for (BasicTableEntity t : ctt.getClassificationPos()) {
 			fileIt();
 		}
+		// store all the lines in a file
 		storeIt();
+		// --------------------------------------------------------
 	}
 
 	public void init() throws SQLException {
@@ -190,7 +198,7 @@ public class MatchToTableRenewal {
 	}
 
 	private void renew(boolean flag4matches) {
-		// calculate and change the appropriate values for the second team
+		/* teamtable data */
 
 		t2.addMatchesOut();
 		t2.addHtConcededOut(mobj.getHt1());
@@ -265,16 +273,105 @@ public class MatchToTableRenewal {
 			t2.addP3DownFtScoreOut(mobj.getFt2());
 		}
 
+		// calc outcome streams of(win, draw, lose)
+		continuance();
+
 		// CALCULATE FORM
 		formCalc(flag4matches);
 		// points are added in the end, after form is calculated
 		if (mobj.getFt1() > mobj.getFt2()) {
 			t1.addPoints(3);
+			t1.addWinsIn();
+			t2.addLosesOut();
 		} else if (mobj.getFt1() < mobj.getFt2()) {
 			t2.addPoints(3);
+			t2.addWinsOut();
+			t1.addLosesIn();
 		} else {
 			t1.addPoints(1);
 			t2.addPoints(1);
+			t1.addDrawsIn();
+			t2.addDrawsOut();
+		}
+
+	}
+
+	private void continuance() {
+		/*
+		 * teamtable data. Evaluate the continuance of a teams results. how long
+		 * does it holds a winnig, drawing or loosing stream.
+		 */
+		float avgVal = 0;
+		if (t1.getFtScoreIn() > t1.getFtConcededIn()) {
+			// if home win and preciously home win
+			if (t1.getPrevRes() == TeamStatus.WIN)
+				t1.addContinuanceCounter();
+			else {
+				avgVal = (t1.getAvgWinCont() * t1.getWinStreams() + t1
+						.getContResCounter()) / (t1.getWinStreams() + 1);
+				t1.setAvgWinCont(avgVal);
+				t1.resetContinuanceCounter();
+				t1.addWinStreams();
+			}
+			// curently awayteam lose -> update lose atts
+			if (t2.getPrevRes() == TeamStatus.LOSE) {
+				t2.addContinuanceCounter();
+			} else {
+				avgVal = (t2.getAvgLoseCont() * t2.getLoseStreams() + t2
+						.getContResCounter()) / (t2.getLoseStreams() + 1);
+				t2.setAvgLoseCont(avgVal);
+				t2.resetContinuanceCounter();
+				t2.addLoseStreams();
+			}
+			t1.setPrevRes(TeamStatus.WIN);
+			t2.setPrevRes(TeamStatus.LOSE);
+
+		} else if (t1.getFtScoreIn() < t1.getFtConcededIn()) {
+			// home lose && away win
+			if (t1.getPrevRes() == TeamStatus.LOSE)
+				t1.addContinuanceCounter();
+			else {
+				avgVal = (t1.getAvgLoseCont() * t1.getLoseStreams() + t1
+						.getContResCounter()) / (t1.getLoseStreams() + 1);
+				t1.setAvgLoseCont(avgVal);
+				t1.resetContinuanceCounter();
+				t1.addLoseStreams();
+			}
+
+			// curently awayteam win -> update win atts
+			if (t2.getPrevRes() == TeamStatus.WIN) {
+				t2.addContinuanceCounter();
+			} else {
+				avgVal = (t2.getAvgWinCont() * t2.getWinStreams() + t2
+						.getContResCounter()) / (t2.getWinStreams() + 1);
+				t2.setAvgLoseCont(avgVal);
+				t2.resetContinuanceCounter();
+				t2.addWinStreams();
+			}
+			t2.setPrevRes(TeamStatus.WIN);
+			t1.setPrevRes(TeamStatus.LOSE);
+		} else {// draw
+			if (t1.getPrevRes() == TeamStatus.DRAW)
+				t1.addContinuanceCounter();
+			else {
+				avgVal = (t1.getAvgDrawCont() * t1.getDrawStreams() + t1
+						.getContResCounter()) / (t1.getDrawStreams() + 1);
+				t1.setAvgDrawCont(avgVal);
+				t1.resetContinuanceCounter();
+				t1.addDrawStreams();
+			}
+
+			if (t2.getPrevRes() == TeamStatus.DRAW) {
+				t2.addContinuanceCounter();
+			} else {
+				avgVal = (t2.getAvgDrawCont() * t2.getDrawStreams() + t2
+						.getContResCounter()) / (t2.getDrawStreams() + 1);
+				t2.setAvgDrawCont(avgVal);
+				t2.resetContinuanceCounter();
+				t2.addDrawStreams();
+			}
+			t2.setPrevRes(TeamStatus.DRAW);
+			t1.setPrevRes(TeamStatus.DRAW);
 		}
 
 	}
@@ -478,7 +575,6 @@ public class MatchToTableRenewal {
 	private void predictionFileAttributeAsignment() {
 		// pf.setWeek(totMatches);
 		BasicTableEntity Elem = ctt.getClassificationPos().get(posT1);
-
 		pf.setT1(Elem.getTeam());
 		pf.setT1Points(Elem.getPoints());
 		pf.setT1Form(Elem.getForm());
@@ -493,50 +589,29 @@ public class MatchToTableRenewal {
 		pf.setT1DefenseIn(Elem.getFormDefenceIn());
 		pf.setT1DefenseOut(Elem.getFormDefenceOut());
 
-		// {// logger.info(Elem.getFtScoreIn() + " " + Elem.getFtScoreIn() + " "
-		// // + Elem.getFtConcededIn());
-		// if (Elem.getFtScoreIn() + Elem.getFtConcededIn() == 0) {
-		// pf.setT1AtackIn(0);
-		// pf.setT1DefenseIn(0);
-		// } else {
-		// int scin1 = Elem.getFtScoreIn();
-		// int concin1 = Elem.getFtConcededIn();
-		// {// ------Projection
-		// logger.info("setT1AtackIn :  {}/{} = {}", scin1, scin1
-		// + concin1, ((float) scin1 / (scin1 + concin1)));
-		// logger.info("setT1DefenseIn :  {}/{} = {}", concin1, scin1
-		// + concin1, ((float) concin1 / (scin1 + concin1)));
-		// }
-		// // pf.setT1AtackIn(((float) scin1 / (scin1 + concin1)));
-		// // pf.setT1AtackIn(Elem.gett1);
-		// logger.info("{}", pf.getT1AtackIn());
-		// pf.setT1DefenseIn(((float) concin1 / (scin1 + concin1)));
-		// logger.info("{}", pf.getT1DefenseIn());
-		//
-		// }
-		// if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
-		// pf.setT1AtackOut(0);
-		// pf.setT1DefenseIn(0);
-		// } else {
-		// int scout1 = Elem.getFtScoreOut();
-		// int concout1 = Elem.getFtConcededOut();
-		// {// ------Projection
-		// logger.info("setT1AtackOut :  {} / {} = {}", scout1, scout1
-		// + concout1, ((float) scout1 / (scout1 + concout1)));
-		// logger.info("setT1DefenseOut :  {} / {} = {}", concout1, scout1
-		// + concout1, ((float) concout1 / (scout1 + concout1)));
-		// }
-		//
-		// pf.setT1AtackOut(((float) scout1 / (scout1 + concout1)));
-		// logger.info("{}", pf.getT1AtackOut());
-		//
-		// pf.setT1DefenseOut(((float) concout1 / (scout1 + concout1)));
-		// logger.info("{}", pf.getT1DefenseOut());
-		// }
-		// }
+		float avg;
+		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
+				/ Elem.getMatchesIn();
+		pf.setT1AvgHtScoreIn(avg);
+		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
+				/ Elem.getMatchesOut();
+		pf.setT1AvgHtScoreOut(avg);
+		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
+				/ Elem.getMatchesIn();
+		pf.setT1AvgFtScoreIn(avg);
+		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
+				/ Elem.getMatchesOut();
+		pf.setT1AvgFtScoreOut(avg);
+
+		// private float t1AvgFtGg = 0;
+		// private int t1WinsIn = 0;
+		// private int t1WinsOut = 0;
+		// private int t1DrawsIn = 0;
+		// private int t1DrawsOut = 0;
+		// private int t1LosesIn = 0;
+		// private int t1LosesOut = 0;
 
 		Elem = ctt.getClassificationPos().get(posT2);
-
 		pf.setT2(Elem.getTeam());
 		pf.setT2Points(Elem.getPoints());
 		pf.setT2Form(Elem.getForm());
@@ -551,43 +626,6 @@ public class MatchToTableRenewal {
 		pf.setT2DefenseIn(Elem.getFormDefenceIn());
 		pf.setT2DefenseOut(Elem.getFormDefenceOut());
 
-		// {if (Elem.getFtScoreIn() + Elem.getFtConcededIn() == 0) {
-		// pf.setT2AtackIn(0);
-		// pf.setT2AtackIn(0);
-		// } else {
-		// int scin2 = Elem.getFtScoreIn();
-		// int concin2 = Elem.getFtConcededIn();
-		// {// ------Projection
-		// logger.info("setT2AtackIn :  {} / {} = {}", scin2, scin2
-		// + concin2, ((float) scin2 / (scin2 + concin2)));
-		// logger.info("setT2DefenseIn :  {} / {} = {}", concin2, scin2
-		// + concin2, ((float) concin2 / (scin2 + concin2)));
-		// }
-		// pf.setT2AtackIn(((float) scin2 / (scin2 + concin2)));
-		// logger.info("{}", pf.getT2AtackIn());
-		// pf.setT2DefenseIn(((float) concin2 / (scin2 + concin2)));
-		// logger.info("{}", pf.getT2DefenseIn());
-		// }
-		// if (Elem.getFtScoreOut() + Elem.getFtConcededOut() == 0) {
-		// pf.setT2AtackOut(0);
-		// pf.setT2DefenseOut(0);
-		// } else {
-		// int scout2 = Elem.getFtScoreOut();
-		// int concout2 = Elem.getFtConcededOut();
-		// {// ------Projection
-		// logger.info("setT2AtackOut :  {} / {} = {}", scout2, scout2
-		// + concout2, ((float) scout2 / (scout2 + concout2)));
-		// logger.info("setT2DefenseOut :  {} / {} = {}", concout2, scout2
-		// + concout2, ((float) concout2 / (scout2 + concout2)));
-		// }
-		//
-		// pf.setT2AtackOut(((float) scout2 / (scout2 + concout2)));
-		// logger.info("{}", pf.getT2AtackOut());
-		// pf.setT2DefenseOut(((float) concout2 / (scout2 + concout2)));
-		// logger.info("{}", pf.getT2DefenseOut());
-		// }
-		// }
-
 		classificationGroupsAsignment();// group position
 
 		pf.setBet_1((float) mobj.get_1());
@@ -596,13 +634,6 @@ public class MatchToTableRenewal {
 		pf.setBet_O((float) mobj.get_o());
 		pf.setBet_U((float) mobj.get_u());
 		outcomeAsignment();
-
-		// try {
-		// fh.appendCsv(pf.liner());
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 	private void outcomeAsignment() {
@@ -620,16 +651,33 @@ public class MatchToTableRenewal {
 			pf.setScoreOutcome(MatchOutcome.under);
 		}
 
+		// Goal - Goal
+		if (mobj.getFt1() >= 1 && mobj.getFt2() >= 1) {
+			pf.setGgOutcome(MatchOutcome.yes);
+		} else {
+			pf.setGgOutcome(MatchOutcome.no);
+		}
+
+		try {// half time
+			if (mobj.getHt1() + mobj.getHt2() >= 2) {
+				pf.setHt1pOutcome(MatchOutcome.yes);
+				pf.setHt2pOutcome(MatchOutcome.yes);
+			} else if (mobj.getHt1() + mobj.getHt2() < 2
+					&& mobj.getHt1() + mobj.getHt2() >= 1) {
+				pf.setHt1pOutcome(MatchOutcome.yes);
+				pf.setHt2pOutcome(MatchOutcome.no);
+			} else {
+				pf.setHt1pOutcome(MatchOutcome.no);
+				pf.setHt2pOutcome(MatchOutcome.no);
+			}
+		} catch (Exception e) {
+			pf.setHt1pOutcome(MatchOutcome.missing);
+			pf.setHt2pOutcome(MatchOutcome.missing);
+		}
 	}
 
 	private void classificationGroupsAsignment() {
 		if (N <= 12) {// less than 12 teams
-			// if (posT1 <= Math.floor(N / 3)) {
-			// t2tt = true;
-			// }
-			// if (posT2 <= Math.floor(N / 3)) {
-			// t1tt = true;
-			// }
 			// ------------prediction file elements
 			if (posT1 <= N / 3) {
 				t2tt = true; // statistical data element *top of the table
@@ -653,12 +701,6 @@ public class MatchToTableRenewal {
 			}
 
 		} else {// more than 12 teams in table
-			// if (posT1 <= Math.ceil(N / 4)) {
-			// t2tt = true;
-			// }
-			// if (posT2 <= Math.ceil(N / 4)) {
-			// t1tt = true;
-			// }
 			if (posT1 <= N / 4) {
 				// t2tt = true;// statistical data element
 				pf.setT1Classification(ClassifiStatus.ttable);

@@ -97,7 +97,7 @@ public class XscoreUpComing {
 				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
 				if (compIdx < 0) {
 					// TODO display un-found matches
-					ul.appendUnfoundTerms(clasVal[4]);
+					ul.appendUnfoundTerms(clasVal[0],clasVal[4]);
 					continue;
 				} else {
 					// logger.info("comp-: {}   id-: {}    found_idx-: {}",

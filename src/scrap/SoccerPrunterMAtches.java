@@ -53,6 +53,7 @@ public class SoccerPrunterMAtches {
 	// ------------------MODULATE FUNCTIONS
 
 	private Elements docConnectAndScrap(String url) {
+		/* get page, get elements */
 		Document doc = null;
 		try {
 			logger.info(url + "/results");

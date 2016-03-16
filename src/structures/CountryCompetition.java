@@ -205,7 +205,7 @@ fh.readAllowedCompetitions();
 		int dist = 0; // temporary distance var
 
 		for (int i = 0; i < ccasList.size(); i++) {
-			if (ccasList.get(i).getDb() == 1) {
+//			if (ccasList.get(i).getDb() == 1) {//Original_Line
 				if (b) {
 					dist = StringSimilarity.levenshteinDistance(compName, ccasList.get(i).getCompetition());
 					if (dist <= 2) {
@@ -221,7 +221,7 @@ fh.readAllowedCompetitions();
 						return i;
 					}
 				}
-			} // db ==1
+//			} // db ==1  //Original_Line
 		}// for
 
 		return minDistanceCompIdx;

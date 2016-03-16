@@ -69,7 +69,7 @@ public class MatchGetter {
 				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
 				if (compIdx < 0) {
 					// TODO display un-found matches
-					ul.appendUnfoundTerms(clasVal[4]);
+					ul.appendUnfoundTerms(clasVal[0],clasVal[4]);
 					continue;
 				} else {
 					// int compIdx = 10101;
@@ -226,11 +226,11 @@ public class MatchGetter {
 					if (searchCompIdx > 0) {
 						// ul.addTerm(newCountry, country);
 						// ul.addTerm(newComp, comp);
-						if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
+//						if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
 							cc.addAllowedComp(comp, searchCompIdx + 1);
-						} else {
-							return -1;
-						}
+//						} else {
+//							return -1;
+//						}
 					}
 				} else {// bynarysearch with levistain for competition
 					searchCompIdx = cc.searchCompBinary(newCountry, comp, true);
@@ -238,11 +238,11 @@ public class MatchGetter {
 						// ul.addTerm(newCountry, country);
 						ul.addTerm(cc.ccasList.get(searchCompIdx)
 								.getCompetition(), comp);
-						if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
+//						if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
 							cc.addAllowedComp(comp, searchCompIdx + 1);
-						} else {
-							return -1;
-						}
+//						} else {
+//							return -1;
+//						}
 					}
 				}
 			} else {

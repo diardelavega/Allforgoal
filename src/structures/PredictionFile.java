@@ -9,6 +9,10 @@ public class PredictionFile {
 	private int week = 0;
 	private String headOutcome; // MatchOutcome val 1/x/2
 	private String scoreOutcome; // o/u
+	// new
+	private String ht1pOutcome; // y,n, m-> missing
+	private String ht2pOutcome; // y,n, m-> missing
+	private String ggOutcome; // y,n
 
 	private float bet_1 = 0;
 	private float bet_2 = 0;
@@ -30,6 +34,19 @@ public class PredictionFile {
 	private float t1Defense = 0;
 	private float t1DefenseIn = 0;
 	private float t1DefenseOut = 0;
+	// ---new
+	private float t1AvgHtScoreIn = 0;
+	private float t1AvgHtScoreOut = 0;
+	private float t1AvgFtScoreIn = 0;
+	private float t1AvgFtScoreOut = 0;
+	private float t1AvgHtGgResult = 0;
+	private float t1AvgFtGgResult = 0;
+	private int t1WinsIn = 0;
+	private int t1WinsOut = 0;
+	private int t1DrawsIn = 0;
+	private int t1DrawsOut = 0;
+	private int t1LosesIn = 0;
+	private int t1LosesOut = 0;
 
 	private String t2;
 	private int t2Points = 0;
@@ -45,6 +62,19 @@ public class PredictionFile {
 	private float t2Defense = 0;
 	private float t2DefenseIn = 0;
 	private float t2DefenseOut = 0;
+	// ---new
+	private float t2AvgHtScoreIn = 0;
+	private float t2AvgHtScoreOut = 0;
+	private float t2AvgFtScoreIn = 0;
+	private float t2AvgFtScoreOut = 0;
+	private float t2AvgHtGgResult = 0;
+	private float t2AvgFtGgResult = 0;
+	private int t2WinsIn = 0;
+	private int t2WinsOut = 0;
+	private int t2DrawsIn = 0;
+	private int t2DrawsOut = 0;
+	private int t2LosesIn = 0;
+	private int t2LosesOut = 0;
 
 	public float getBet_1() {
 		return bet_1;
@@ -222,6 +252,223 @@ public class PredictionFile {
 		this.week++;
 	}
 
+	public String getGgOutcome() {
+		return ggOutcome;
+	}
+
+	public int getT1WinsIn() {
+		return t1WinsIn;
+	}
+
+	public int getT1WinsOut() {
+		return t1WinsOut;
+	}
+
+	public int getT1DrawsIn() {
+		return t1DrawsIn;
+	}
+
+	public int getT1DrawsOut() {
+		return t1DrawsOut;
+	}
+
+	public int getT1LosesIn() {
+		return t1LosesIn;
+	}
+
+	public int getT1LosesOut() {
+		return t1LosesOut;
+	}
+
+	public int getT2WinsIn() {
+		return t2WinsIn;
+	}
+
+	public int getT2WinsOut() {
+		return t2WinsOut;
+	}
+
+	public int getT2DrawsIn() {
+		return t2DrawsIn;
+	}
+
+	public int getT2DrawsOut() {
+		return t2DrawsOut;
+	}
+
+	public int getT2LosesIn() {
+		return t2LosesIn;
+	}
+
+	public int getT2LosesOut() {
+		return t2LosesOut;
+	}
+
+	public void setT1WinsIn(int t1WinsIn) {
+		this.t1WinsIn = t1WinsIn;
+	}
+
+	public void setT1WinsOut(int t1WinsOut) {
+		this.t1WinsOut = t1WinsOut;
+	}
+
+	public void setT1DrawsIn(int t1DrawsIn) {
+		this.t1DrawsIn = t1DrawsIn;
+	}
+
+	public void setT1DrawsOut(int t1DrawsOut) {
+		this.t1DrawsOut = t1DrawsOut;
+	}
+
+	public void setT1LosesIn(int t1LosesIn) {
+		this.t1LosesIn = t1LosesIn;
+	}
+
+	public void setT1LosesOut(int t1LosesOut) {
+		this.t1LosesOut = t1LosesOut;
+	}
+
+	public void setT2WinsIn(int t2WinsIn) {
+		this.t2WinsIn = t2WinsIn;
+	}
+
+	public void setT2WinsOut(int t2WinsOut) {
+		this.t2WinsOut = t2WinsOut;
+	}
+
+	public void setT2DrawsIn(int t2DrawsIn) {
+		this.t2DrawsIn = t2DrawsIn;
+	}
+
+	public void setT2DrawsOut(int t2DrawsOut) {
+		this.t2DrawsOut = t2DrawsOut;
+	}
+
+	public void setT2LosesIn(int t2LosesIn) {
+		this.t2LosesIn = t2LosesIn;
+	}
+
+	public void setT2LosesOut(int t2LosesOut) {
+		this.t2LosesOut = t2LosesOut;
+	}
+
+	public void setGgOutcome(String ggOutcome) {
+		this.ggOutcome = ggOutcome;
+	}
+
+	public String getHt1pOutcome() {
+		return ht1pOutcome;
+	}
+
+	public String getHt2pOutcome() {
+		return ht2pOutcome;
+	}
+
+
+	public float getT1AvgHtScoreIn() {
+		return t1AvgHtScoreIn;
+	}
+
+	public float getT1AvgHtScoreOut() {
+		return t1AvgHtScoreOut;
+	}
+
+	public float getT1AvgFtScoreIn() {
+		return t1AvgFtScoreIn;
+	}
+
+	public float getT1AvgFtScoreOut() {
+		return t1AvgFtScoreOut;
+	}
+
+	public float getT1AvgHtGgResult() {
+		return t1AvgHtGgResult;
+	}
+
+	public float getT1AvgFtGgResult() {
+		return t1AvgFtGgResult;
+	}
+
+	public float getT2AvgHtScoreIn() {
+		return t2AvgHtScoreIn;
+	}
+
+	public float getT2AvgHtScoreOut() {
+		return t2AvgHtScoreOut;
+	}
+
+	public float getT2AvgFtScoreIn() {
+		return t2AvgFtScoreIn;
+	}
+
+	public float getT2AvgFtScoreOut() {
+		return t2AvgFtScoreOut;
+	}
+
+	public float getT2AvgHtGgResult() {
+		return t2AvgHtGgResult;
+	}
+
+	public float getT2AvgFtGgResult() {
+		return t2AvgFtGgResult;
+	}
+
+	public void setHt1pOutcome(String ht1pOutcome) {
+		this.ht1pOutcome = ht1pOutcome;
+	}
+
+	public void setHt2pOutcome(String ht2pOutcome) {
+		this.ht2pOutcome = ht2pOutcome;
+	}
+
+	public void setT1AvgHtScoreIn(float t1AvgHtScoreIn) {
+		this.t1AvgHtScoreIn = t1AvgHtScoreIn;
+	}
+
+	public void setT1AvgHtScoreOut(float t1AvgHtScoreOut) {
+		this.t1AvgHtScoreOut = t1AvgHtScoreOut;
+	}
+
+	public void setT1AvgFtScoreIn(float t1AvgFtScoreIn) {
+		this.t1AvgFtScoreIn = t1AvgFtScoreIn;
+	}
+
+	public void setT1AvgFtScoreOut(float t1AvgFtScoreOut) {
+		this.t1AvgFtScoreOut = t1AvgFtScoreOut;
+	}
+
+	public void setT1AvgHtGgResult(float t1AvgHtGgResult) {
+		this.t1AvgHtGgResult = t1AvgHtGgResult;
+	}
+
+	public void setT1AvgFtGgResult(float t1AvgFtGgResult) {
+		this.t1AvgFtGgResult = t1AvgFtGgResult;
+	}
+
+	public void setT2AvgHtScoreIn(float t2AvgHtScoreIn) {
+		this.t2AvgHtScoreIn = t2AvgHtScoreIn;
+	}
+
+	public void setT2AvgHtScoreOut(float t2AvgHtScoreOut) {
+		this.t2AvgHtScoreOut = t2AvgHtScoreOut;
+	}
+
+	public void setT2AvgFtScoreIn(float t2AvgFtScoreIn) {
+		this.t2AvgFtScoreIn = t2AvgFtScoreIn;
+	}
+
+	public void setT2AvgFtScoreOut(float t2AvgFtScoreOut) {
+		this.t2AvgFtScoreOut = t2AvgFtScoreOut;
+	}
+
+	public void setT2AvgHtGgResult(float t2AvgHtGgResult) {
+		this.t2AvgHtGgResult = t2AvgHtGgResult;
+	}
+
+	public void setT2AvgFtGgResult(float t2AvgFtGgResult) {
+		this.t2AvgFtGgResult = t2AvgFtGgResult;
+	}
+
 	public void setT1(String t1) {
 		this.t1 = t1;
 	}
@@ -342,78 +589,132 @@ public class PredictionFile {
 		// return a string to be stored in a file
 		StringBuilder sb = new StringBuilder();
 		sb.append(week);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(headOutcome);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(scoreOutcome);
-		sb.append(" ,");
+		sb.append(",");
+		sb.append(ht1pOutcome);
+		sb.append(",");
+		sb.append(ht2pOutcome);
+		sb.append(",");
+		sb.append(ggOutcome);
+		sb.append(",");
 
 		sb.append(t1);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1Points);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1Classification);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1Form);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1Form1Diff);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1Form2Diff);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1Form3Diff);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1Form4Diff);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1Atack);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1AtackIn);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1AtackOut);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1Defense);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1DefenseIn);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t1DefenseOut);
-		sb.append(" ,");
+		sb.append(",");
+		sb.append(t1AvgHtScoreIn);// avg score ht in
+		sb.append(",");
+		sb.append(t1AvgHtScoreOut);
+		sb.append(",");
+		sb.append(t1AvgFtScoreIn);
+		sb.append(",");
+		sb.append(t1AvgFtScoreOut);
+		sb.append(",");
+		sb.append(t1AvgHtGgResult);// gg in ht /{per all matches}
+		sb.append(",");
+		sb.append(t1AvgFtGgResult);
+		sb.append(",");
+		sb.append(t1WinsIn);
+		sb.append(",");
+		sb.append(t1WinsOut);
+		sb.append(",");
+		sb.append(t1DrawsIn);
+		sb.append(",");
+		sb.append(t1DrawsOut);
+		sb.append(",");
+		sb.append(t1LosesIn);
+		sb.append(",");
+		sb.append(t1LosesOut);
+		sb.append(",");
 
 		sb.append(t2);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2Points);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2Classification);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2Form);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2Form1Diff);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2Form2Diff);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2Form3Diff);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2Form4Diff);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2Atack);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2AtackIn);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2AtackOut);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2Defense);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2DefenseIn);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(t2DefenseOut);
-		sb.append(" ,");
+		sb.append(",");
+		sb.append(t2AvgHtScoreIn);// avg score ht in
+		sb.append(",");
+		sb.append(t2AvgHtScoreOut);
+		sb.append(",");
+		sb.append(t2AvgFtScoreIn);
+		sb.append(",");
+		sb.append(t2AvgFtScoreOut);
+		sb.append(",");
+		sb.append(t2AvgHtGgResult);// gg in ht /{per all matches}
+		sb.append(",");
+		sb.append(t2AvgFtGgResult);
+		sb.append(",");
+		sb.append(t2WinsIn);
+		sb.append(",");
+		sb.append(t2WinsOut);
+		sb.append(",");
+		sb.append(t2DrawsIn);
+		sb.append(",");
+		sb.append(t2DrawsOut);
+		sb.append(",");
+		sb.append(t2LosesIn);
+		sb.append(",");
+		sb.append(t2LosesOut);
+		sb.append(",");
 
 		sb.append(bet_1);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(bet_X);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(bet_2);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(bet_O);
-		sb.append(" ,");
+		sb.append(",");
 		sb.append(bet_U);
 
 		logger.info(sb.toString());
