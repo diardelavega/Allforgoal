@@ -232,6 +232,9 @@ public class SoccerPrunterMAtches {
 			temp = ht.split("-");
 			match.setHt1(Integer.parseInt(temp[0]));
 			match.setHt2(Integer.parseInt(temp[1]));
+		} else {
+			match.setHt1(-1);
+			match.setHt2(-1);
 		}
 		if (!oddUrl.equals("")) {
 			String matchId = oddUrl.split("_id=|&home")[1];

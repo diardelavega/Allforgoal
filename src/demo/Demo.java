@@ -56,8 +56,8 @@ public class Demo {
 		// {
 		// {// TODO this section grabs the matches from the site
 		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-//		 spm.matchGraber();
-//		 spm.competitionResultsGrabbers(link, compId);
+		 spm.matchGraber();
+		 spm.competitionResultsGrabbers(link, compId);
 		// // at this point matches garbed and put to list
 //		 }
 		//
@@ -75,7 +75,7 @@ public class Demo {
 		//
 		// for (Integer key : MatchesList.readMatches.keySet()) {
 //		 mttr = new MatchToTableRenewal(
-//		 MatchesList.readMatches.get(key), key);
+		 MatchesList.readMatches.get(key), key);
 //		 MatchToTableRenewal.fh.openOutput();
 //		 mttr.calculate();
 //		 MatchToTableRenewal.fh.closeOutput();

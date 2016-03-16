@@ -109,11 +109,6 @@ public class MatchToTableRenewal {
 				// --- -----Execute all prediction file asignments------------
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment();// set up pred file data
-				/*
-				 * possibilty for calculating the pred file avgs ht, ft scores
-				 * and gg results here qithout calculating variables for
-				 * BasicTableEntity obj.
-				 */
 				// nr of matches per nr of games (half of the teams)
 				pf.setWeek(totMatches / (N / 2));
 				afh.appendCsv(pf.liner());// put on file
@@ -164,12 +159,12 @@ public class MatchToTableRenewal {
 
 		// -------------------------------------------
 		// for every teams teamtable data get the printed line
-		mobj = new MatchObj();
-		for (BasicTableEntity t : ctt.getClassificationPos()) {
-			fileIt();
-		}
-		// store all the lines in a file
-		storeIt();
+//		mobj = new MatchObj();
+//		for (BasicTableEntity t : ctt.getClassificationPos()) {
+//			fileIt();
+//		}
+//		// store all the lines in a file
+//		storeIt();
 		// --------------------------------------------------------
 	}
 
@@ -292,6 +287,15 @@ public class MatchToTableRenewal {
 			t2.addPoints(1);
 			t1.addDrawsIn();
 			t2.addDrawsOut();
+		}
+
+		if (mobj.getFt1() >= 1 && mobj.getFt2() >= 1) {
+			t1.addFtGg();
+			t2.addFtGg();
+		}
+		if (mobj.getHt1() >= 1 && mobj.getHt2() >= 1) {
+			t1.addHtGg();
+			t2.addHtGg();
 		}
 
 	}
@@ -590,26 +594,24 @@ public class MatchToTableRenewal {
 		pf.setT1DefenseOut(Elem.getFormDefenceOut());
 
 		float avg;
-		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
-				/ Elem.getMatchesIn();
+		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn()) / Elem.getMatchesIn();
 		pf.setT1AvgHtScoreIn(avg);
-		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
-				/ Elem.getMatchesOut();
+		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())/ Elem.getMatchesOut();
 		pf.setT1AvgHtScoreOut(avg);
-		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
-				/ Elem.getMatchesIn();
+		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())/ Elem.getMatchesIn();
 		pf.setT1AvgFtScoreIn(avg);
-		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
-				/ Elem.getMatchesOut();
+		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())	/ Elem.getMatchesOut();
 		pf.setT1AvgFtScoreOut(avg);
+		pf.setT1AvgFtGgResult(Elem.getFtGg()/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		pf.setT1AvgHtGgResult(Elem.getHtGg()/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		
+		pf.setT1WinsIn(Elem.getWinsIn());
+		pf.setT1WinsOut(Elem.getWinsOut());
+		pf.setT1DrawsIn(Elem.getDrawsIn());
+		pf.setT1DrawsOut(Elem.getDrawsOut());
+		pf.setT1LosesIn(Elem.getLosesIn());
+		pf.setT1LosesOut(Elem.getLosesOut());
 
-		// private float t1AvgFtGg = 0;
-		// private int t1WinsIn = 0;
-		// private int t1WinsOut = 0;
-		// private int t1DrawsIn = 0;
-		// private int t1DrawsOut = 0;
-		// private int t1LosesIn = 0;
-		// private int t1LosesOut = 0;
 
 		Elem = ctt.getClassificationPos().get(posT2);
 		pf.setT2(Elem.getTeam());
@@ -625,6 +627,24 @@ public class MatchToTableRenewal {
 		pf.setT2Defense(Elem.getFormDefence());
 		pf.setT2DefenseIn(Elem.getFormDefenceIn());
 		pf.setT2DefenseOut(Elem.getFormDefenceOut());
+
+		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())/ Elem.getMatchesIn();
+		pf.setT2AvgHtScoreIn(avg);
+		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())/ Elem.getMatchesOut();
+		pf.setT2AvgHtScoreOut(avg);
+		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())/ Elem.getMatchesIn();
+		pf.setT2AvgFtScoreIn(avg);
+		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())/ Elem.getMatchesOut();
+		pf.setT2AvgFtScoreOut(avg);
+		pf.setT2AvgFtGgResult(Elem.getFtGg()/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		pf.setT2AvgHtGgResult(Elem.getHtGg()/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		
+		pf.setT2WinsIn(Elem.getWinsIn());
+		pf.setT2WinsOut(Elem.getWinsOut());
+		pf.setT2DrawsIn(Elem.getDrawsIn());
+		pf.setT2DrawsOut(Elem.getDrawsOut());
+		pf.setT2LosesIn(Elem.getLosesIn());
+		pf.setT2LosesOut(Elem.getLosesOut());
 
 		classificationGroupsAsignment();// group position
 

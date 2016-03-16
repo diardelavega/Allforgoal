@@ -12,6 +12,8 @@ public class BasicTableEntity extends HalfTimeExtend implements
 	private int winsOut = 0;
 	private int drawsOut = 0;
 	private int losesOut = 0;
+	private int htGg = 0;
+	private int ftGg = 0;
 
 	// average win continuity (calc sum (continuous results -1)/matches)
 	private float avgWinCont = 0;
@@ -77,8 +79,22 @@ public class BasicTableEntity extends HalfTimeExtend implements
 	private float formDefenceIn = 0;
 	private float formDefenceOut = 0;
 
-	
-	
+	public int getHtGg() {
+		return htGg;
+	}
+
+	public int getFtGg() {
+		return ftGg;
+	}
+
+	public void addHtGg() {
+		htGg++;
+	}
+
+	public void addFtGg() {
+		ftGg++;
+	}
+
 	public int getWinStreams() {
 		return winStreams;
 	}
@@ -728,7 +744,7 @@ public class BasicTableEntity extends HalfTimeExtend implements
 		this.contResCounter = contResCounter;
 	}
 
-	public void setPrevRes(short  prevRes) {
+	public void setPrevRes(short prevRes) {
 		this.prevRes = prevRes;
 	}
 

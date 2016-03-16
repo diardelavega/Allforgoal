@@ -166,31 +166,6 @@ public class CompetitionTeamTable {
 
 	public void createFullTable() throws SQLException {
 		String create = "create Table " + tableName + "FullTable ( ";
-		// String attributes = " team varchar(25) not null unique, "
-		// +
-		// "teamid int, points int not null, matchesin int not null, matchesout int not null, "
-		// +
-		// " htscorein int, htscoreout int, htconcedein int, htconcedeout int, "
-		// +
-		// " ftscorein int not null, ftscoreout int not null, ftconcedein int, ftconcedeout int, "
-		// +
-		// "p3_matchesin int,  p3_matchesout int,  p3_htscorein int not null,  p3_htscoreout int not null, p3_htconcedein int, p3_htconcedeout int, "
-		// +
-		// "p3_ftscorein int not null,  p3_ftscoreout int not null, p3_ftconcedein int, p3_ftconcedeout int, "
-		// +
-		// " tt_matchesin int,  tt_matchesout int, tt_htscorein int not null, tt_htscoreout int not null, tt_htconcedein int, tt_htconcedeout int, "
-		// +
-		// "tt_ftscorein int not null, tt_ftscoreout int not null, tt_ftconcedein int, tt_ftconcedeout int, "
-		// +
-		// " p3up_matchesin int,  p3up_matchesout int, p3up_htscorein int not null, p3up_htscoreout int not null, p3up_htconcedein int, p3up_htconcedeout int, "
-		// +
-		// "p3up_ftscorein int not null, p3up_ftscoreout int not null, p3up_ftconcedein int, p3up_ftconcedeout int, "
-		// +
-		// "p3down_matchesin int,  p3down_matchesout int, p3down_htscorein int not null, p3down_htscoreout int not null, p3down_htconcedein int, p3down_htconcedeout int, "
-		// +
-		// "p3down_ftscorein int not null, p3down_ftscoreout int not null, p3down_ftconcedein int, p3down_ftconcedeout int, "
-		// +
-		// " form numeric(5,3) , form1 numeric(5,3) , form2 numeric(5,3), form3 numeric(5,3), form4 numeric(5,3), formAtack numeric(5,3), formDefence numeric(5,3) ";
 
 		String attributes = " team varchar(25) not null unique, "
 				+ "teamid int, points int not null, matchesin int not null, matchesout int not null, "
@@ -207,7 +182,7 @@ public class CompetitionTeamTable {
 				+ " form numeric(5,3) , form1 numeric(5,3) , form2 numeric(5,3) , form3 numeric(5,3) , form4 numeric(5,3) , formAtack numeric(5,3) , formAtackIn numeric(5,3) , formAtackOut numeric(5,3) , "
 				+ " formDefence numeric(5,3) , formDefenceIn numeric(5,3) , formDefenceOut numeric(5,3),"
 				+ " avgWinCont numeric(5,3), avgDrawCont numeric(5,3), avgLoseCont numeric(5,3), winsIn int(2), winsOut int(2),"
-				+ " drawsIn int(2), drawsOut int(2), losesIn int(2), losesOut int(2) ";
+				+ " drawsIn int(2), drawsOut int(2), losesIn int(2), losesOut int(2), ftgg int(2), htgg int(2) ";
 
 		logger.info(create);
 
@@ -224,7 +199,7 @@ public class CompetitionTeamTable {
 				+ "FullTable values (?,?,?,?,?,?,?,?,?,?,"
 				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?,"
 				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?,"
-				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,"+"?,?,?,?,?,?";
+				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?";
 
 		// logger.info(sql);
 		Conn conn = new Conn();
@@ -306,14 +281,17 @@ public class CompetitionTeamTable {
 			ps.setFloat(65, o.getAvgWinCont());
 			ps.setFloat(66, o.getAvgLoseCont());
 			ps.setFloat(67, o.getAvgDrawCont());
-			
+
 			ps.setFloat(68, o.getWinsIn());
 			ps.setFloat(69, o.getWinsOut());
 			ps.setFloat(70, o.getDrawsIn());
 			ps.setFloat(71, o.getDrawsOut());
 			ps.setFloat(72, o.getLosesIn());
 			ps.setFloat(73, o.getLosesOut());
-			
+
+			ps.setInt(74, o.getFtGg());
+			ps.setInt(75, o.getHtGg());
+
 			ps.addBatch();
 		}
 		ps.executeBatch();
@@ -323,30 +301,6 @@ public class CompetitionTeamTable {
 	}
 
 	public void updateTable() throws SQLException {
-		// String sql = "update "
-		// + tableName
-		// +
-		// "FullTable set points=?, matchesin=?, matchesout=?, htscorein = ?, htscoreout = ?, htconcedein = ?, "
-		// +
-		// "htconcedeout = ?, ftscorein =?, ftscoreout =?, ftconcedein = ?, ftconcedeout = ?, "
-		// +
-		// " p3_matchesin = ?,  p3_matchesout = ?,  p3_htscorein =?,  p3_htscoreout =?, p3_htconcedein = ?, p3_htconcedeout = ?,"
-		// +
-		// " p3_ftscorein =?,  p3_ftscoreout =?, p3_ftconcedein = ?, p3_ftconcedeout = ?, "
-		// +
-		// "  tt_matchesin = ?,  tt_matchesout = ?, tt_htscorein =?, tt_htscoreout =?, tt_htconcedein = ?, tt_htconcedeout = ?,"
-		// +
-		// " tt_ftscorein =?, tt_ftscoreout =?, tt_ftconcedein = ?, tt_ftconcedeout = ?, "
-		// +
-		// "  p3up_matchesin = ?,  p3up_matchesout = ?, p3up_htscorein =?, p3up_htscoreout =?, p3up_htconcedein = ?, p3up_htconcedeout = ?,"
-		// +
-		// " p3up_ftscorein =?, p3up_ftscoreout =?, p3up_ftconcedein = ?, p3up_ftconcedeout = ?, "
-		// +
-		// " p3down_matchesin = ?,  p3down_matchesout = ?, p3down_htscorein =?, p3down_htscoreout =?, p3down_htconcedein = ?, p3down_htconcedeout = ?,"
-		// +
-		// " p3down_ftscorein =?, p3down_ftscoreout =?, p3down_ftconcedein = ?, p3down_ftconcedeout = ?, "
-		// +
-		// "  form  = ? , form1  = ? , form2  = ?, form3  = ?, form4  = ?, formAtack  = ?, formDefence  = ?";
 
 		String sql = "update "
 				+ tableName
@@ -362,7 +316,7 @@ public class CompetitionTeamTable {
 				+ " p3down_ftscorein =?, p3down_ftscoreout =?, p3down_ftconcedein = ?, p3down_ftconcedeout = ?, "
 				+ "  form  = ? , form1  = ? , form2  = ?, form3  = ?, form4  = ?, formAtack  = ?, formAtackIn  = ?,formAtackOut  = ?,"
 				+ "  formDefence  = ?, formDefenceIn  = ?, formDefenceOut  = ?, avgWinCont = ? avgDrawCont = ?, avgLoseCont = ?, "
-				+ " winsIn = ?, winsOut = ?, drawsIn = ?, drawsOut = ?, losesIn = ?, losesOut = ? ";
+				+ " winsIn = ?, winsOut = ?, drawsIn = ?, drawsOut = ?, losesIn = ?, losesOut = ?, ftgg = ?, htgg = ? ";
 
 		Conn conn = new Conn();
 		conn.open();
@@ -440,13 +394,16 @@ public class CompetitionTeamTable {
 			ps.setFloat(63, o.getAvgWinCont());
 			ps.setFloat(64, o.getAvgLoseCont());
 			ps.setFloat(65, o.getAvgDrawCont());
-			
+
 			ps.setFloat(63, o.getWinsIn());
 			ps.setFloat(63, o.getWinsOut());
 			ps.setFloat(63, o.getDrawsIn());
 			ps.setFloat(63, o.getDrawsOut());
 			ps.setFloat(63, o.getLosesIn());
 			ps.setFloat(63, o.getLosesOut());
+			
+			ps.setInt(74, o.getFtGg());
+			ps.setInt(75, o.getHtGg());
 
 			ps.addBatch();
 		}
@@ -455,7 +412,7 @@ public class CompetitionTeamTable {
 		conn.close();
 
 	}
-  
+
 	public void orderClassificationTable() {
 		// TODO sort the classificationPos based on the points of eachteam
 		Collections.sort(classificationPos);
@@ -634,5 +591,3 @@ public class CompetitionTeamTable {
 	}
 
 }
-
-
