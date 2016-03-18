@@ -364,7 +364,6 @@ public class PredictionFile {
 		return ht2pOutcome;
 	}
 
-
 	public float getT1AvgHtScoreIn() {
 		return t1AvgHtScoreIn;
 	}
@@ -722,4 +721,144 @@ public class PredictionFile {
 		return sb.toString();
 	}
 
+	public String csvHeader() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("week,");
+		sb.append("headOutcome,");
+		sb.append("scoreOutcome,");
+		sb.append("ht1pOutcome,");
+		sb.append("ht2pOutcome,");
+		sb.append("ggOutcome,");
+		sb.append("t1,");
+		sb.append("t1Points,");
+		sb.append("t1Classification,");
+		sb.append("t1Form,");
+		sb.append("t1Form1Diff,");
+		sb.append("t1Form2Diff,");
+		sb.append("t1Form3Diff,");
+		sb.append("t1Form4Diff,");
+		sb.append("t1Atack,");
+		sb.append("t1AtackIn,");
+		sb.append("t1AtackOut,");
+		sb.append("t1Defense,");
+		sb.append("t1DefenseIn,");
+		sb.append("t1DefenseOut,");
+		sb.append("t1AvgHtScoreIn,");// avg score ht in
+		sb.append("t1AvgHtScoreOut,");
+		sb.append("t1AvgFtScoreIn,");
+		sb.append("t1AvgFtScoreOut,");
+		sb.append("t1AvgHtGgResult,");// gg in ht /{per all matches}
+		sb.append("t1AvgFtGgResult,");
+		sb.append("t1WinsIn,");
+		sb.append("t1WinsOut,");
+		sb.append("t1DrawsIn,");
+		sb.append("t1DrawsOut,");
+		sb.append("t1LosesIn,");
+		sb.append("t1LosesOut,");
+		
+		sb.append("t2,");
+		sb.append("t2Points,");
+		sb.append("t2Classification,");
+		sb.append("t2Form,");
+		sb.append("t2Form1Diff,");
+		sb.append("t2Form2Diff,");
+		sb.append("t2Form3Diff,");
+		sb.append("t2Form4Diff,");
+		sb.append("t2Atack,");
+		sb.append("t2AtackIn,");
+		sb.append("t2AtackOut,");
+		sb.append("t2Defense,");
+		sb.append("t2DefenseIn,");
+		sb.append("t2DefenseOut,");
+		sb.append("t2AvgHtScoreIn,");// avg score ht in
+		sb.append("t2AvgHtScoreOut,");
+		sb.append("t2AvgFtScoreIn,");
+		sb.append("t2AvgFtScoreOut,");
+		sb.append("t2AvgHtGgResult,");// gg in ht /{per all matches}
+		sb.append("t2AvgFtGgResult,");
+		sb.append("t2WinsIn,");
+		sb.append("t2WinsOut,");
+		sb.append("t2DrawsIn,");
+		sb.append("t2DrawsOut,");
+		sb.append("t2LosesIn,");
+		sb.append("t2LosesOut,");
+		sb.append("bet_1,");
+		sb.append("bet_X,");
+		sb.append("bet_2,");
+		sb.append("bet_O,");
+		sb.append("bet_U");
+
+		return sb.toString();
+	}
+
+	
+	public String arffHeader() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("week,");
+		sb.append("headOutcome,");
+		sb.append("scoreOutcome,");
+		sb.append("ht1pOutcome,");
+		sb.append("ht2pOutcome,");
+		sb.append("ggOutcome,");
+		sb.append("t1,");
+		sb.append("t1Points,");
+		sb.append("t1Classification,");
+		sb.append("t1Form,");
+		sb.append("t1Form1Diff,");
+		sb.append("t1Form2Diff,");
+		sb.append("t1Form3Diff,");
+		sb.append("t1Form4Diff,");
+		sb.append("t1Atack,");
+		sb.append("t1AtackIn,");
+		sb.append("t1AtackOut,");
+		sb.append("t1Defense,");
+		sb.append("t1DefenseIn,");
+		sb.append("t1DefenseOut,");
+		sb.append("t1AvgHtScoreIn,");// avg score ht in
+		sb.append("t1AvgHtScoreOut,");
+		sb.append("t1AvgFtScoreIn,");
+		sb.append("t1AvgFtScoreOut,");
+		sb.append("t1AvgHtGgResult,");// gg in ht /{per all matches}
+		sb.append("t1AvgFtGgResult,");
+		sb.append("t1WinsIn,");
+		sb.append("t1WinsOut,");
+		sb.append("t1DrawsIn,");
+		sb.append("t1DrawsOut,");
+		sb.append("t1LosesIn,");
+		sb.append("t1LosesOut,");
+		
+		sb.append("t2,");
+		sb.append("t2Points,");
+		sb.append("t2Classification,");
+		sb.append("t2Form,");
+		sb.append("t2Form1Diff,");
+		sb.append("t2Form2Diff,");
+		sb.append("t2Form3Diff,");
+		sb.append("t2Form4Diff,");
+		sb.append("t2Atack,");
+		sb.append("t2AtackIn,");
+		sb.append("t2AtackOut,");
+		sb.append("t2Defense,");
+		sb.append("t2DefenseIn,");
+		sb.append("t2DefenseOut,");
+		sb.append("t2AvgHtScoreIn,");// avg score ht in
+		sb.append("t2AvgHtScoreOut,");
+		sb.append("t2AvgFtScoreIn,");
+		sb.append("t2AvgFtScoreOut,");
+		sb.append("t2AvgHtGgResult,");// gg in ht /{per all matches}
+		sb.append("t2AvgFtGgResult,");
+		sb.append("t2WinsIn,");
+		sb.append("t2WinsOut,");
+		sb.append("t2DrawsIn,");
+		sb.append("t2DrawsOut,");
+		sb.append("t2LosesIn,");
+		sb.append("t2LosesOut,");
+		sb.append("bet_1,");
+		sb.append("bet_X,");
+		sb.append("bet_2,");
+		sb.append("bet_O,");
+		sb.append("bet_U");
+
+		return sb.toString();
+	}
 }

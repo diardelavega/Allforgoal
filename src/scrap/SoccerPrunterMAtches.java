@@ -3,6 +3,8 @@ package scrap;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -19,6 +21,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dbtry.Conn;
 import diskStore.AnalyticFileHandler;
 import diskStore.FileHandler;
 import extra.NameCleaner;
@@ -48,7 +51,8 @@ public class SoccerPrunterMAtches {
 	private String errorStatus = "OK"; // a simple way to report problems
 	private List<MatchObj> matchlist = new ArrayList<>();
 	private NameCleaner nc = new NameCleaner();
-	AnalyticFileHandler afh;
+//	AnalyticFileHandler afh;
+	private String baseUrl ="http://www.soccerpunter.com";
 
 	// ------------------MODULATE FUNCTIONS
 
@@ -56,9 +60,9 @@ public class SoccerPrunterMAtches {
 		/* get page, get elements */
 		Document doc = null;
 		try {
-			logger.info(url + "/results");
+			logger.info(baseUrl+url + "/results");
 			doc = Jsoup
-					.connect(url + "/results")
+					.connect(baseUrl+url + "/results")
 					// doc = Jsoup.parse(new File(
 					// "C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
 					.userAgent(
@@ -104,8 +108,8 @@ public class SoccerPrunterMAtches {
 		if (trs == null) {
 			return -1;
 		}
-		afh = new AnalyticFileHandler();// append matches to a json file
-		afh.opendataWrite();
+		// afh = new AnalyticFileHandler();// append matches to a json file
+		// afh.opendataWrite();
 		for (Element tr : trs) {
 			if (tr.hasClass("even") || tr.hasClass("odd")) {
 				Element scoretd = tr.children().get(3).getElementsByTag("div")
@@ -123,7 +127,7 @@ public class SoccerPrunterMAtches {
 						if (matchDat.isEqual(supplyDate)) {
 							// we already have the matches earlier than
 							// supplied date
-							afh.closeOutput();
+//							afh.closeOutput();
 							return 0;
 						}
 					}
@@ -135,7 +139,7 @@ public class SoccerPrunterMAtches {
 				}
 			}
 		} // for
-		afh.closeOutput();
+			// afh.closeOutput();
 
 		return 0;
 	}
@@ -148,9 +152,9 @@ public class SoccerPrunterMAtches {
 		 */
 		Document doc = null;
 		try {
-			logger.info(url + "/results");
+			logger.info(baseUrl+url + "/results");
 			doc = Jsoup
-					.connect(url + "/results")
+					.connect(baseUrl+url + "/results")
 					// doc = Jsoup.parse(new File(
 					// "C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
 					.userAgent(
@@ -171,8 +175,8 @@ public class SoccerPrunterMAtches {
 			errorStatus = "Unfound Element";
 		} else {
 			// set file ready to be writen
-			afh = new AnalyticFileHandler();
-			afh.opendataWrite();
+//			afh = new AnalyticFileHandler();
+//			afh.opendataWrite();
 
 			Elements trs = resultTable.getElementsByTag("tr");
 			for (Element tr : trs) {
@@ -196,7 +200,7 @@ public class SoccerPrunterMAtches {
 					}
 				}
 			} // for
-			afh.closeOutput();
+//			afh.closeOutput();
 		}
 		logger.info("STATUS is {}", errorStatus);
 		return 0;
@@ -256,7 +260,7 @@ public class SoccerPrunterMAtches {
 		// match.printMatch();
 
 		// append to file;
-		afh.appendMatchData(match);
+		// afh.appendMatchData(match);
 		// put the matches to the appropriate list structure
 		if (MatchesList.readMatches.get(compId) == null) {
 			MatchesList.readMatches.put(compId, new ArrayList<>());
@@ -292,4 +296,22 @@ public class SoccerPrunterMAtches {
 		this.matchlist = matchlist;
 	}
 
+	public LocalDate getLatestMatchesDate(int compId) throws SQLException {
+		Conn conn = new Conn();
+		conn.open();
+		ResultSet rs = conn
+				.getConn()
+				.createStatement()
+				.executeQuery(
+						"SELECT dat FROM matches WHERE compid = " + compId
+								+ " GROUP BY dat ORDER BY dat desc LIMIT 1;");
+//		String date = null;
+		LocalDate ld = null;
+		while (rs.next()) {
+			ld = LocalDate.parse(rs.getString(1));
+		}
+		rs.close();
+		conn.close();
+		return ld;
+	}
 }

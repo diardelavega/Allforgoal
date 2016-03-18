@@ -34,7 +34,7 @@ public class MatchesList {
 
 	public void readMatchesCompTeamDateFromTo(int compId, String teamName,
 			Date date1, Date date2) throws SQLException {
-		
+
 		conn.open();
 		boolean flag = false;
 		StringBuilder sb = new StringBuilder();
@@ -72,38 +72,44 @@ public class MatchesList {
 	}
 
 	public void insertMatches() throws SQLException {
-		conn.open();
 
-		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		PreparedStatement ps = conn.getConn().prepareStatement(insert);
-		int i = 0;
-		for (Integer k : readMatches.keySet()) {
-			for (MatchObj mobj : readMatches.get(k)) {
-				ps.setLong(1, mobj.getmId());
-				ps.setInt(2, mobj.getComId());
-				ps.setString(3, mobj.getT1());
-				ps.setString(4, mobj.getT2());
-				ps.setInt(5, mobj.getFt1());
-				ps.setInt(6, mobj.getFt2());
-				ps.setInt(7, mobj.getHt1());
-				ps.setInt(8, mobj.getHt2());
-				ps.setDouble(9, mobj.get_1());
-				ps.setDouble(10, mobj.get_x());
-				ps.setDouble(11, mobj.get_2());
-				ps.setDouble(12, mobj.get_o());
-				ps.setDouble(13, mobj.get_u());
-				ps.setDate(14, mobj.getDat());
-				ps.addBatch();
-				i++;
-				if (i % 500 == 0) {
-					ps.executeBatch();
-					i = 0;
+		if (readMatches.size() == 0) {
+			logger.warn("readMatches list is empty");
+		} else {
+			conn.open();
+
+			String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			PreparedStatement ps = conn.getConn().prepareStatement(insert);
+			int i = 0;
+			for (Integer k : readMatches.keySet()) {
+				for (MatchObj mobj : readMatches.get(k)) {
+					ps.setLong(1, mobj.getmId());
+					ps.setInt(2, mobj.getComId());
+					ps.setString(3, mobj.getT1());
+					ps.setString(4, mobj.getT2());
+					ps.setInt(5, mobj.getFt1());
+					ps.setInt(6, mobj.getFt2());
+					ps.setInt(7, mobj.getHt1());
+					ps.setInt(8, mobj.getHt2());
+					ps.setDouble(9, mobj.get_1());
+					ps.setDouble(10, mobj.get_x());
+					ps.setDouble(11, mobj.get_2());
+					ps.setDouble(12, mobj.get_o());
+					ps.setDouble(13, mobj.get_u());
+					ps.setDate(14, mobj.getDat());
+					ps.addBatch();
+					i++;
+					if (i % 500 == 0) {
+						ps.executeBatch();
+						i = 0;
+					}
 				}
 			}
+			ps.executeBatch();
+			ps.close();
+			conn.close();
+			logger.info("All {} matches inserted to db",readMatches.size());
 		}
-		ps.executeBatch();
-		ps.close();
-		conn.close();
 
 	}
 
@@ -138,7 +144,7 @@ public class MatchesList {
 			mobj.setDat(rs.getDate(14));
 			ml.add(mobj);
 		}
-//		logger.info("MAthes list are  {}", ml.size());
+		// logger.info("MAthes list are  {}", ml.size());
 		readMatches.put(mobj.getComId(), ml);
 	}
 

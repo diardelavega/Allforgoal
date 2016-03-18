@@ -41,63 +41,71 @@ public class Demo {
 
 	public static void main(String[] args) throws IOException, SQLException {
 		// {// fill ccallstruct from site and store to db
-		 Soccerpunter_homePage sp = new Soccerpunter_homePage();
-		 sp.goGetCompetitions();
+		// Soccerpunter_homePage sp = new Soccerpunter_homePage();
+		// sp.goGetCompetitions();
 		// }
 
 		{
 			initCCAllStruct();
 			//
-			// String link = CountryCompetition.ccasList.get(37).getCompLink();
-			// int compId = CountryCompetition.ccasList.get(37).getCompId();
-			// System.out.println(link);
+			String link = CountryCompetition.ccasList.get(52).getCompLink();
+			int compId = CountryCompetition.ccasList.get(52).getCompId();
+			System.out.println(link);
+
+			// ----------------TEST-----------
+			SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+			LocalDate dd = spm.getLatestMatchesDate(compId);
+			spm.remainingResultsGraber(link, compId, dd, true);
+			log( dd.toString());
+			// -------------------------------
+
 		}
 
 		// {
 		// {// TODO this section grabs the matches from the site
-		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-		 spm.matchGraber();
-		 spm.competitionResultsGrabbers(link, compId);
+//		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+//		 spm.matchGraber();
+//		 spm.competitionResultsGrabbers(link, compId);
 		// // at this point matches garbed and put to list
-//		 }
+		// }
 		//
 		// {// TODO this section reads and writes data to matches table
 		 MatchesList ml = new MatchesList();
 		 ml.insertMatches();
 		// if (ml.readMatches.size() == 0) {
-//		 ml.readMatchesComp(compId);
+		// ml.readMatchesComp(compId);
 		// }
 		// }
 		// // TODO store the list in db
 		//
 		// // TODO call MatchToTableRenewual and evaluate attributes
-		 MatchToTableRenewal mttr;
+		// MatchToTableRenewal mttr;
 		//
 		// for (Integer key : MatchesList.readMatches.keySet()) {
-//		 mttr = new MatchToTableRenewal(
-		 MatchesList.readMatches.get(key), key);
-//		 MatchToTableRenewal.fh.openOutput();
-//		 mttr.calculate();
-//		 MatchToTableRenewal.fh.closeOutput();
+		// mttr = new MatchToTableRenewal(
+		// MatchesList.readMatches.get(key), key);
+		// MatchToTableRenewal.fh.openOutput();
+		// mttr.calculate();
+		// MatchToTableRenewal.fh.closeOutput();
 		// }
 		// }
 
-		XscoreUpComing sc = new XscoreUpComing();
-		
-		TempMatchFunctions tmf = new TempMatchFunctions();
-
-		sc.getScheduledToday();
-		tmf.openDBConn();
-		tmf.corelatePunterXScorerTeams();
-		tmf.storeToTempMatchesDB();
+		// XscoreUpComing sc = new XscoreUpComing();
+		//
+		// TempMatchFunctions tmf = new TempMatchFunctions();
+		//
+		// sc.getScheduledToday();
+		// tmf.openDBConn();
+		// tmf.corelatePunterXScorerTeams();
+		// tmf.storeToTempMatchesDB();
 		{
 			// when the periodic check for finished matches is on
-//			sc.getFinishedToday();
-//			tmf.complete(LocalDate.now());
+			// sc.getFinishedToday();
+			// tmf.complete(LocalDate.now());
 
 		}
-		tmf.closeDBConn();
-		sc.clearLists();
+		// tmf.closeDBConn();
+		// sc.clearLists();
 
 		// Unilang ul = new Unilang();
 		// log(ul.scoreTeamsMap.size() + "");
@@ -198,7 +206,11 @@ public class Demo {
 
 		// DateTimeFormatter formatter =
 		// DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		LocalDate mDat = LocalDate.parse("01/03/2016", DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		logger.info(mDat.toString());
+		// LocalDate mDat = LocalDate.parse("01/03/2016",
+		// DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		// logger.info(mDat.toString());
+
+		LocalDate mDat = LocalDate.parse("2016-01-12");
+		logger.info(mDat.plusDays(2).toString());
 	}
 }

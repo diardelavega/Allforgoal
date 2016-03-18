@@ -3,12 +3,16 @@ package diskStore;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import structures.CountryCompetition;
+import basicStruct.CCAllStruct;
 import basicStruct.MatchObj;
 
 import com.google.gson.Gson;
@@ -16,14 +20,37 @@ import com.google.gson.Gson;
 public class AnalyticFileHandler {
 	Gson gson = new Gson();
 	private File bastFileFolder = new File("C:/BastData");
+	private File predDataFolder = new File(bastFileFolder + "/Pred/Data");
+	private File predTestFolder = new File(bastFileFolder + "/Pred/Test");
 	private File csvFile = new File(bastFileFolder + "/matches.csv");
 	private File mDataFile = new File(bastFileFolder + "/matchData.csv");
-	
-	private BufferedWriter bw = null;
-	
 
-	public void openOutput() throws IOException {
-		bw = new BufferedWriter(new FileWriter(csvFile, true));
+	private BufferedWriter bw = null;
+
+	public AnalyticFileHandler() {
+		super();
+		if (!bastFileFolder.exists()) {
+			bastFileFolder.mkdirs();
+		}
+		if (!predDataFolder.exists()) {
+			predDataFolder.mkdirs();
+		}
+		if (!predTestFolder.exists()) {
+			predTestFolder.mkdirs();
+		}
+	}
+
+	public void appendCsv(String line) throws IOException {
+		bw.write(line + "\n");
+	}
+
+	public void openOutput(int compId) throws IOException {
+		/*
+		 * from the compId get country and competition and create a country
+		 * folder with competition_compId name for the prediction datafile
+		 */
+
+//		bw = new BufferedWriter(new FileWriter(dFile, true));
 	}
 
 	public void closeOutput() throws IOException {
@@ -32,34 +59,35 @@ public class AnalyticFileHandler {
 		}
 	}
 
-	public void appendCsv(String line) throws IOException {
-		bw.write(line + "\n");
-	}
-
-	// -----------------------------------------
-	public void opendataWrite() throws IOException {
-		// inits the buffer
-		bw = new BufferedWriter(new FileWriter(mDataFile, true));
-	}
-
-	public void appendMatchData(MatchObj match) throws IOException {
-		match.printMatch();
-		String line = gson.toJson(match);
-
-		bw.write(line + "\n");
-	}
-
-	public List<MatchObj> readMatchData() throws IOException {
-		
-		BufferedReader br = new BufferedReader(new FileReader(mDataFile));
+	// ----------------------------------
+	public void readPredMatchData(int compId) throws IOException {
+		CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
+		File dFile = new File(cc.getCountry() + "/" + cc.getCompetition() + "_"
+				+ cc.getCompId());
+		BufferedReader br = new BufferedReader(new FileReader(dFile));
 		String line;
-		List<MatchObj> matchesList = new ArrayList<>();
-		MatchObj match;
 		while ((line = br.readLine()) != null) {
-			match = gson.fromJson(line, MatchObj.class);
-			matchesList.add(match);
+
 		}
-		return matchesList;
+	}
+
+	private String getTestFileName(int compId, LocalDate dat) {
+		CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
+		File cFolder = new File(predTestFolder + "/" + cc.getCountry());
+		if (!cFolder.exists()) {
+			cFolder.mkdirs();
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separator);
+		sb.append(cc.getCompetition());
+		sb.append("_");
+		sb.append(cc.getCompId());
+		sb.append("_");
+		sb.append("Test");
+		sb.append("_");
+		sb.append(dat.toString());
+
+		return null;
 	}
 
 }

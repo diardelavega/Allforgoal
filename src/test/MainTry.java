@@ -1,5 +1,8 @@
 package test;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -18,6 +21,7 @@ import basicStruct.MatchObj;
 
 import com.google.gson.JsonSyntaxException;
 import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
+import com.sun.xml.ws.rx.util.FiberExecutor;
 
 import dbtry.Conn;
 import demo.Demo;
@@ -34,7 +38,7 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException {
-		initCCAllStruct();
+		// initCCAllStruct();
 		// Demo.initCCAllStruct();
 		// MatchObj mobj = new MatchObj();
 		// mobj.setT1("hua");
@@ -53,7 +57,8 @@ public class MainTry {
 
 		// Strategy strategy = new Strategy();
 		// strategy .periodic();
-		corelator();
+		// corelator();
+		filer();
 	}
 
 	public static void corelator() {
@@ -122,4 +127,22 @@ public class MainTry {
 		}
 	}
 
+	public static void filer() throws IOException {
+		String base = "C:/TestFileFolder";
+		File fo = new File(base + "/MyFolder/c34");
+		if (!fo.exists()) {
+			fo.mkdirs();
+		}
+
+		File f = new File(fo + "/marakaibo.txt");
+		 if(!f.exists()){
+		 f.createNewFile();
+		 }
+		BufferedWriter br = new BufferedWriter(new FileWriter(f, true));
+		br.append("Marakaibo \n");
+		br.append("Baila baracude \n");
+		br.append("Si ma bailar nuda \n");
+		br.append("Cha cah! \n");
+		br.close();
+	}
 }

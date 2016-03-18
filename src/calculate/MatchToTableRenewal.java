@@ -76,6 +76,22 @@ public class MatchToTableRenewal {
 		super();
 	}
 
+	public void predFileCreate(List<MatchObj> ml) {
+		AnalyticFileHandler afh = new AnalyticFileHandler();
+		int curCompId =-1;// ml.get(0).getComId();
+		for (int i = 0; i < ml.size(); i++) {
+			if (ml.get(i).getComId() == curCompId) {
+				// we should put all the matches of same comptition in the same
+				// predictionfile
+
+			} else {
+				curCompId=ml.get(i).getComId();
+				// create a new competition prediction file
+				// put the first presdfile obj line in it
+			}
+		}
+	}
+
 	public void calculate() throws SQLException, IOException {
 
 		t1 = null;
@@ -107,6 +123,7 @@ public class MatchToTableRenewal {
 					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
 
 				// --- -----Execute all prediction file asignments------------
+				// TODO a new predDataFile for every new competition
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment();// set up pred file data
 				// nr of matches per nr of games (half of the teams)
@@ -159,12 +176,12 @@ public class MatchToTableRenewal {
 
 		// -------------------------------------------
 		// for every teams teamtable data get the printed line
-//		mobj = new MatchObj();
-//		for (BasicTableEntity t : ctt.getClassificationPos()) {
-//			fileIt();
-//		}
-//		// store all the lines in a file
-//		storeIt();
+		// mobj = new MatchObj();
+		// for (BasicTableEntity t : ctt.getClassificationPos()) {
+		// fileIt();
+		// }
+		// // store all the lines in a file
+		// storeIt();
 		// --------------------------------------------------------
 	}
 
@@ -582,10 +599,10 @@ public class MatchToTableRenewal {
 		pf.setT1(Elem.getTeam());
 		pf.setT1Points(Elem.getPoints());
 		pf.setT1Form(Elem.getForm());
-		pf.setT1Form1Diff(Elem.getForm1());
-		pf.setT1Form2Diff(Elem.getForm2());
-		pf.setT1Form3Diff(Elem.getForm3());
-		pf.setT1Form4Diff(Elem.getForm4());
+		pf.setT1Form1Diff(Elem.getForm() - Elem.getForm1());
+		pf.setT1Form2Diff(Elem.getForm1() - Elem.getForm2());
+		pf.setT1Form3Diff(Elem.getForm2() - Elem.getForm3());
+		pf.setT1Form4Diff(Elem.getForm3() - Elem.getForm4());
 		pf.setT1Atack(Elem.getFormAtack());
 		pf.setT1AtackIn(Elem.getFormAtackIn());
 		pf.setT1AtackOut(Elem.getFormAtackOut());
@@ -594,17 +611,23 @@ public class MatchToTableRenewal {
 		pf.setT1DefenseOut(Elem.getFormDefenceOut());
 
 		float avg;
-		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn()) / Elem.getMatchesIn();
+		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
+				/ Elem.getMatchesIn();
 		pf.setT1AvgHtScoreIn(avg);
-		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())/ Elem.getMatchesOut();
+		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
+				/ Elem.getMatchesOut();
 		pf.setT1AvgHtScoreOut(avg);
-		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())/ Elem.getMatchesIn();
+		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
+				/ Elem.getMatchesIn();
 		pf.setT1AvgFtScoreIn(avg);
-		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())	/ Elem.getMatchesOut();
+		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
+				/ Elem.getMatchesOut();
 		pf.setT1AvgFtScoreOut(avg);
-		pf.setT1AvgFtGgResult(Elem.getFtGg()/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
-		pf.setT1AvgHtGgResult(Elem.getHtGg()/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
-		
+		pf.setT1AvgFtGgResult(Elem.getFtGg()
+				/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		pf.setT1AvgHtGgResult(Elem.getHtGg()
+				/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+
 		pf.setT1WinsIn(Elem.getWinsIn());
 		pf.setT1WinsOut(Elem.getWinsOut());
 		pf.setT1DrawsIn(Elem.getDrawsIn());
@@ -612,15 +635,14 @@ public class MatchToTableRenewal {
 		pf.setT1LosesIn(Elem.getLosesIn());
 		pf.setT1LosesOut(Elem.getLosesOut());
 
-
 		Elem = ctt.getClassificationPos().get(posT2);
 		pf.setT2(Elem.getTeam());
 		pf.setT2Points(Elem.getPoints());
 		pf.setT2Form(Elem.getForm());
-		pf.setT2Form1Diff(Elem.getForm1());
-		pf.setT2Form2Diff(Elem.getForm2());
-		pf.setT2Form3Diff(Elem.getForm3());
-		pf.setT2Form4Diff(Elem.getForm4());
+		pf.setT1Form1Diff(Elem.getForm() - Elem.getForm1());
+		pf.setT1Form2Diff(Elem.getForm1() - Elem.getForm2());
+		pf.setT1Form3Diff(Elem.getForm2() - Elem.getForm3());
+		pf.setT1Form4Diff(Elem.getForm3() - Elem.getForm4());
 		pf.setT2Atack(Elem.getFormAtack());
 		pf.setT2AtackIn(Elem.getFormAtackIn());
 		pf.setT2AtackOut(Elem.getFormAtackOut());
@@ -628,17 +650,23 @@ public class MatchToTableRenewal {
 		pf.setT2DefenseIn(Elem.getFormDefenceIn());
 		pf.setT2DefenseOut(Elem.getFormDefenceOut());
 
-		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())/ Elem.getMatchesIn();
+		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
+				/ Elem.getMatchesIn();
 		pf.setT2AvgHtScoreIn(avg);
-		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())/ Elem.getMatchesOut();
+		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
+				/ Elem.getMatchesOut();
 		pf.setT2AvgHtScoreOut(avg);
-		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())/ Elem.getMatchesIn();
+		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
+				/ Elem.getMatchesIn();
 		pf.setT2AvgFtScoreIn(avg);
-		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())/ Elem.getMatchesOut();
+		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
+				/ Elem.getMatchesOut();
 		pf.setT2AvgFtScoreOut(avg);
-		pf.setT2AvgFtGgResult(Elem.getFtGg()/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
-		pf.setT2AvgHtGgResult(Elem.getHtGg()/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
-		
+		pf.setT2AvgFtGgResult(Elem.getFtGg()
+				/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		pf.setT2AvgHtGgResult(Elem.getHtGg()
+				/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+
 		pf.setT2WinsIn(Elem.getWinsIn());
 		pf.setT2WinsOut(Elem.getWinsOut());
 		pf.setT2DrawsIn(Elem.getDrawsIn());
