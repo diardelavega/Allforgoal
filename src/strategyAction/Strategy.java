@@ -40,23 +40,7 @@ public class Strategy {
 		tmf.openDBConn();
 		try {
 
-			// if (lastDatCheck == null) {
-			// score.getScheduledToday();
-			// tmf.storeToTempMatchesDB();
-			// score.clearLists();
-			// lastDatCheck = LocalDate.now();
-			// logger.info("NULL Last Ceck");
-			// }else
-			// {
-			// // score.getFinishedToday();
-			// score.getFinishedYesterday();
-			// // tmf.storeToTempMatchesDB();
-			// // tmf.completeToday();
-			// tmf.completeYesterday();
-			// score.clearLists();
-			// logger.info("Last Ceck   Finished  TODAY");
-			// }
-
+			// TODO integrate the test file and data file for prediction
 			if (lastDatCheck == null) {
 				// TODO scrap todays matches & tomorrows
 				score.getScheduledToday();

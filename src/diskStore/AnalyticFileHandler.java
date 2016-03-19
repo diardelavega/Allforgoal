@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,17 +41,18 @@ public class AnalyticFileHandler {
 		}
 	}
 
-	public void appendCsv(String line) throws IOException {
-		bw.write(line + "\n");
+	public void openDataOutput(int compId) throws IOException {
+		bw = new BufferedWriter(new FileWriter(getDataFileName(compId), true));
 	}
 
-	public void openOutput(int compId) throws IOException {
+	public void openTestOutput(int compId, Date date) throws IOException {
 		/*
 		 * from the compId get country and competition and create a country
 		 * folder with competition_compId name for the prediction datafile
 		 */
 
-//		bw = new BufferedWriter(new FileWriter(dFile, true));
+		bw = new BufferedWriter(new FileWriter(getTestFileName(compId, date),
+				true));
 	}
 
 	public void closeOutput() throws IOException {
@@ -59,19 +61,14 @@ public class AnalyticFileHandler {
 		}
 	}
 
-	// ----------------------------------
-	public void readPredMatchData(int compId) throws IOException {
-		CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
-		File dFile = new File(cc.getCountry() + "/" + cc.getCompetition() + "_"
-				+ cc.getCompId());
-		BufferedReader br = new BufferedReader(new FileReader(dFile));
-		String line;
-		while ((line = br.readLine()) != null) {
-
-		}
+	public void appendCsv(String line) throws IOException {
+		bw.write(line + "\n");
 	}
 
-	private String getTestFileName(int compId, LocalDate dat) {
+	private File getTestFileName(int compId, Date dat) {
+		// create the folder file and a new test file of format
+		// folder/CompName_compId_Test_2016-10-10
+
 		CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
 		File cFolder = new File(predTestFolder + "/" + cc.getCountry());
 		if (!cFolder.exists()) {
@@ -87,7 +84,30 @@ public class AnalyticFileHandler {
 		sb.append("_");
 		sb.append(dat.toString());
 
-		return null;
+		File tFile = new File(cFolder + sb.toString());
+
+		return tFile;
 	}
 
+	private File getDataFileName(int compId) {
+		// create the folder file and a new test file of format
+		// folder/CompName_compId_Data
+
+		CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
+		File cFolder = new File(predDataFolder + "/" + cc.getCountry());
+		if (!cFolder.exists()) {
+			cFolder.mkdirs();
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separator);
+		sb.append(cc.getCompetition());
+		sb.append("_");
+		sb.append(cc.getCompId());
+		sb.append("_");
+		sb.append("Data");
+
+		File tFile = new File(cFolder + sb.toString());
+
+		return tFile;
+	}
 }

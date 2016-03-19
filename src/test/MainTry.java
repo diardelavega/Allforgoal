@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -134,10 +136,12 @@ public class MainTry {
 			fo.mkdirs();
 		}
 
-		File f = new File(fo + "/marakaibo.txt");
-		 if(!f.exists()){
-		 f.createNewFile();
-		 }
+		Date date = new Date(15, 3, 2);
+		
+		File f = new File(fo + "/" + /*LocalDate.now()*/date.toString().toString());
+		if (!f.exists()) {
+			f.createNewFile();
+		}
 		BufferedWriter br = new BufferedWriter(new FileWriter(f, true));
 		br.append("Marakaibo \n");
 		br.append("Baila baracude \n");

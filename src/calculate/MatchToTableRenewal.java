@@ -76,20 +76,61 @@ public class MatchToTableRenewal {
 		super();
 	}
 
-	public void predFileCreate(List<MatchObj> ml) {
-		AnalyticFileHandler afh = new AnalyticFileHandler();
-		int curCompId =-1;// ml.get(0).getComId();
+	public void predFileCreate(List<MatchObj> ml) throws IOException,
+			SQLException {
+
+		int curCompId = -1;// ml.get(0).getComId();
 		for (int i = 0; i < ml.size(); i++) {
 			if (ml.get(i).getComId() == curCompId) {
-				// we should put all the matches of same comptition in the same
-				// predictionfile
-
+				// matches of same comptition in the same predictionfile
+				if (testPredTeamData()) {
+					afh.appendCsv(pf.liner());
+				}
 			} else {
-				curCompId=ml.get(i).getComId();
 				// create a new competition prediction file
 				// put the first presdfile obj line in it
+				afh.closeOutput();
+				curCompId = ml.get(i).getComId();
+				afh.openTestOutput(curCompId, ml.get(i).getDat());
+				if (testPredTeamData()) {
+					afh.appendCsv(pf.liner());
+				}
 			}
 		}
+		afh.closeOutput();
+	}
+
+	private boolean testPredTeamData() throws SQLException {
+		// from teamTable data extract prediction file data
+		init();
+		if (N == 0) {
+			// table not found in db
+			return false;
+		}
+
+		posT1 = -1;
+		posT2 = -1;
+		if (!getTablePosition()) {
+			return false;
+		}
+
+		if (posT1 >= 0) {
+			t1 = ctt.getClassificationPos().get(posT1);
+		} else {
+			logger.warn("Not found   team {}", mobj.getT1());
+			return false;
+		}
+		if (posT2 >= 0) {
+			t2 = ctt.getClassificationPos().get(posT2);
+		} else {
+			logger.warn("Not found  team {}", mobj.getT2());
+			return false;
+		}
+		predictionFileAttributeAsignment();
+		pf.setWeek(Math.max((t1.getMatchesIn() + t1.getMatchesOut()),
+				(t2.getMatchesIn() + t2.getMatchesOut())));
+		// afh.appendCsv(pf.liner());
+		return true;
 	}
 
 	public void calculate() throws SQLException, IOException {
@@ -124,6 +165,7 @@ public class MatchToTableRenewal {
 
 				// --- -----Execute all prediction file asignments------------
 				// TODO a new predDataFile for every new competition
+				// the afh data file is opened outside of tjis class
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment();// set up pred file data
 				// nr of matches per nr of games (half of the teams)
@@ -685,42 +727,51 @@ public class MatchToTableRenewal {
 	}
 
 	private void outcomeAsignment() {
-		if (mobj.getFt1() > mobj.getFt2()) {
-			pf.setHeadOutcome(MatchOutcome.home);
-		} else if (mobj.getFt1() < mobj.getFt2()) {
-			pf.setHeadOutcome(MatchOutcome.away);
-		} else {
-			pf.setHeadOutcome(MatchOutcome.deaw);
-		}
-
-		if (mobj.getFt1() + mobj.getFt2() >= 3) {
-			pf.setScoreOutcome(MatchOutcome.over);
-		} else {
-			pf.setScoreOutcome(MatchOutcome.under);
-		}
-
-		// Goal - Goal
-		if (mobj.getFt1() >= 1 && mobj.getFt2() >= 1) {
-			pf.setGgOutcome(MatchOutcome.yes);
-		} else {
-			pf.setGgOutcome(MatchOutcome.no);
-		}
-
-		try {// half time
-			if (mobj.getHt1() + mobj.getHt2() >= 2) {
-				pf.setHt1pOutcome(MatchOutcome.yes);
-				pf.setHt2pOutcome(MatchOutcome.yes);
-			} else if (mobj.getHt1() + mobj.getHt2() < 2
-					&& mobj.getHt1() + mobj.getHt2() >= 1) {
-				pf.setHt1pOutcome(MatchOutcome.yes);
-				pf.setHt2pOutcome(MatchOutcome.no);
+		if (mobj != null) {
+			if (mobj.getFt1() > mobj.getFt2()) {
+				pf.setHeadOutcome(MatchOutcome.home);
+			} else if (mobj.getFt1() < mobj.getFt2()) {
+				pf.setHeadOutcome(MatchOutcome.away);
 			} else {
-				pf.setHt1pOutcome(MatchOutcome.no);
-				pf.setHt2pOutcome(MatchOutcome.no);
+				pf.setHeadOutcome(MatchOutcome.deaw);
 			}
-		} catch (Exception e) {
+
+			if (mobj.getFt1() + mobj.getFt2() >= 3) {
+				pf.setScoreOutcome(MatchOutcome.over);
+			} else {
+				pf.setScoreOutcome(MatchOutcome.under);
+			}
+
+			// Goal - Goal
+			if (mobj.getFt1() >= 1 && mobj.getFt2() >= 1) {
+				pf.setGgOutcome(MatchOutcome.yes);
+			} else {
+				pf.setGgOutcome(MatchOutcome.no);
+			}
+
+			try {// half time
+				if (mobj.getHt1() + mobj.getHt2() >= 2) {
+					pf.setHt1pOutcome(MatchOutcome.yes);
+					pf.setHt2pOutcome(MatchOutcome.yes);
+				} else if (mobj.getHt1() + mobj.getHt2() < 2
+						&& mobj.getHt1() + mobj.getHt2() >= 1) {
+					pf.setHt1pOutcome(MatchOutcome.yes);
+					pf.setHt2pOutcome(MatchOutcome.no);
+				} else {
+					pf.setHt1pOutcome(MatchOutcome.no);
+					pf.setHt2pOutcome(MatchOutcome.no);
+				}
+			} catch (Exception e) {
+				pf.setHt1pOutcome(MatchOutcome.missing);
+				pf.setHt2pOutcome(MatchOutcome.missing);
+			}
+		} else {
+			// it should come here for the test pred file
 			pf.setHt1pOutcome(MatchOutcome.missing);
 			pf.setHt2pOutcome(MatchOutcome.missing);
+			pf.setGgOutcome(MatchOutcome.missing);
+			pf.setScoreOutcome(MatchOutcome.missing);
+			pf.setHeadOutcome(MatchOutcome.missing);
 		}
 	}
 
