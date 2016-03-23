@@ -165,7 +165,7 @@ public class MatchToTableRenewal {
 
 				// --- -----Execute all prediction file asignments------------
 				// TODO a new predDataFile for every new competition
-				// the afh data file is opened outside of tjis class
+				// the afh data file is opened outside of this class
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment();// set up pred file data
 				// nr of matches per nr of games (half of the teams)
@@ -728,6 +728,7 @@ public class MatchToTableRenewal {
 
 	private void outcomeAsignment() {
 		if (mobj != null) {
+			// head outcome 1X2
 			if (mobj.getFt1() > mobj.getFt2()) {
 				pf.setHeadOutcome(MatchOutcome.home);
 			} else if (mobj.getFt1() < mobj.getFt2()) {
@@ -736,11 +737,15 @@ public class MatchToTableRenewal {
 				pf.setHeadOutcome(MatchOutcome.deaw);
 			}
 
+			// over under outcome
 			if (mobj.getFt1() + mobj.getFt2() >= 3) {
 				pf.setScoreOutcome(MatchOutcome.over);
 			} else {
 				pf.setScoreOutcome(MatchOutcome.under);
 			}
+			// tot score
+			pf.setTotHtScore(mobj.getHt1() + mobj.getHt2());
+			pf.setTotFtScore(mobj.getFt1() + mobj.getFt2());
 
 			// Goal - Goal
 			if (mobj.getFt1() >= 1 && mobj.getFt2() >= 1) {

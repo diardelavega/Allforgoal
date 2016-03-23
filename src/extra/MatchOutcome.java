@@ -10,7 +10,7 @@ public class MatchOutcome {
 	
 	public static String yes = "Y";
 	public static String no = "N";
-	public static String missing = "M";
+	public static String missing = "NA";
 	
 	
 }

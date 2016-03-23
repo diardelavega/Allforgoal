@@ -13,6 +13,8 @@ public class PredictionFile {
 	private String ht1pOutcome; // y,n, m-> missing
 	private String ht2pOutcome; // y,n, m-> missing
 	private String ggOutcome; // y,n
+	private int totHtScore = 0;
+	private int totFtScore = 0;
 
 	private float bet_1 = 0;
 	private float bet_2 = 0;
@@ -75,6 +77,25 @@ public class PredictionFile {
 	private int t2DrawsOut = 0;
 	private int t2LosesIn = 0;
 	private int t2LosesOut = 0;
+
+	
+	
+	
+	public int getTotHtScore() {
+		return totHtScore;
+	}
+
+	public int getTotFtScore() {
+		return totFtScore;
+	}
+
+	public void setTotHtScore(int totHtScore) {
+		this.totHtScore = totHtScore;
+	}
+
+	public void setTotFtScore(int totFtScore) {
+		this.totFtScore = totFtScore;
+	}
 
 	public float getBet_1() {
 		return bet_1;
@@ -599,6 +620,10 @@ public class PredictionFile {
 		sb.append(",");
 		sb.append(ggOutcome);
 		sb.append(",");
+		sb.append(totHtScore);
+		sb.append(",");
+		sb.append(totFtScore);
+		sb.append(",");
 
 		sb.append(t1);
 		sb.append(",");
@@ -729,6 +754,9 @@ public class PredictionFile {
 		sb.append("ht1pOutcome,");
 		sb.append("ht2pOutcome,");
 		sb.append("ggOutcome,");
+		sb.append("totHtScore,");
+		sb.append("totHtScore,");
+		
 		sb.append("t1,");
 		sb.append("t1Points,");
 		sb.append("t1Classification,");
@@ -755,7 +783,7 @@ public class PredictionFile {
 		sb.append("t1DrawsOut,");
 		sb.append("t1LosesIn,");
 		sb.append("t1LosesOut,");
-		
+
 		sb.append("t2,");
 		sb.append("t2Points,");
 		sb.append("t2Classification,");
@@ -791,7 +819,6 @@ public class PredictionFile {
 		return sb.toString();
 	}
 
-	
 	public String arffHeader() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("week,");
@@ -826,7 +853,7 @@ public class PredictionFile {
 		sb.append("t1DrawsOut,");
 		sb.append("t1LosesIn,");
 		sb.append("t1LosesOut,");
-		
+
 		sb.append("t2,");
 		sb.append("t2Points,");
 		sb.append("t2Classification,");
