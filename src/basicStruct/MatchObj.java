@@ -12,12 +12,12 @@ public class MatchObj {
 	private int ft2;
 	private int ht1;
 	private int ht2;
-	private double _1;
-	private double _2;
-	private double _x;
+	private double _1=1;
+	private double _2=1;
+	private double _x=1;
 
-	private double _o;
-	private double _u;
+	private double _o=1;
+	private double _u=1;
 	private Date dat;
 
 	public MatchObj(long mId, int comId, String t1, String t2, int ft1,

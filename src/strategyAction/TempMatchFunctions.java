@@ -62,89 +62,88 @@ public class TempMatchFunctions {
 		List<String> dbTeams = new ArrayList<>();
 		int compId = -1;
 
-		for (MatchObj m : XscoreUpComing.schedNewMatches) {// Original_Line
-		// for (MatchObj m : MatchGetter.schedNewMatches) {
-			// first search in unilang
-			String t = ul.scoreTeamToCcas(m.getT1());
-			if (t == null) {
-				if (m.getComId() != compId) {
-					// if a new competition appears delete the previous teams
-					dbTeams.clear();
-					dbTeams = queryCompTeams(m.getComId());
-					compId = m.getComId();
-				}
-				int minDist = 100;
-				int chosenDbIdx = -1;
-				int curDist;
-				for (int i = 0; i < dbTeams.size(); i++) {
-					curDist = StringSimilarity.levenshteinDistance(m.getT1(),
-							dbTeams.get(i));
-					logger.info(
-							"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
-							m.getT1(), dbTeams.get(i), curDist, minDist);
-					if (curDist >= m.getT2().length())
-						continue;
-					if (curDist < minDist) {
-						minDist = curDist;
-						chosenDbIdx = i;
+		for (Integer key : XscoreUpComing.schedNewMatches.keySet()) {
+			for (MatchObj m : XscoreUpComing.schedNewMatches.get(key)) {// Original_Line
+				// for (MatchObj m : MatchGetter.schedNewMatches) {
+				// first search in unilang
+				String t = ul.scoreTeamToCcas(m.getT1());
+				if (t == null) {
+					if (m.getComId() != compId) {
+						// if a new competition appears delete the previous
+						// teams
+						dbTeams.clear();
+						dbTeams = queryCompTeams(m.getComId());
+						compId = m.getComId();
 					}
+					int minDist = 100;
+					int chosenDbIdx = -1;
+					int curDist;
+					for (int i = 0; i < dbTeams.size(); i++) {
+						curDist = StringSimilarity.levenshteinDistance(
+								m.getT1(), dbTeams.get(i));
+						logger.info(
+								"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
+								m.getT1(), dbTeams.get(i), curDist, minDist);
+						if (curDist >= m.getT2().length())
+							continue;
+						if (curDist < minDist) {
+							minDist = curDist;
+							chosenDbIdx = i;
+						}
+					}
+					// find the most similar terms; add the to Unilang; delete
+					// them
+					// from dbTeamsList so to be more efficient in the next
+					// search.
+					// change the team names on the list
+					logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
+							dbTeams.get(chosenDbIdx));
+					ul.addTeam(dbTeams.get(chosenDbIdx), m.getT1());
+					m.setT1(dbTeams.get(chosenDbIdx));
+					dbTeams.remove(chosenDbIdx);
+				} else {
+					m.setT1(t);
 				}
-				// find the most similar terms; add the to Unilang; delete them
-				// from dbTeamsList so to be more efficient in the next search.
-				// change the team names on the list
-				logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
-						dbTeams.get(chosenDbIdx));
-				ul.addTeam(dbTeams.get(chosenDbIdx), m.getT1());
-				m.setT1(dbTeams.get(chosenDbIdx));
-				dbTeams.remove(chosenDbIdx);
-			} else {
-				m.setT1(t);
-			}
 
-			t = ul.scoreTeamToCcas(m.getT2());
-			if (t == null) {
-				if (m.getComId() != compId) {
-					dbTeams.clear();
-					dbTeams = queryCompTeams(m.getComId());
-					compId = m.getComId();
-				}
-				int minDist = 100;
-				int chosenIdx = -1;
-				int curDist;
-				for (int i = 0; i < dbTeams.size(); i++) {
-					curDist = StringSimilarity.levenshteinDistance(m.getT2(),
-							dbTeams.get(i));
-					logger.info(
-							"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
-							m.getT2(), dbTeams.get(i), curDist, minDist);
-					if (curDist >= m.getT2().length())
-						continue;
-					if (curDist < minDist) {
-						minDist = curDist;
-						chosenIdx = i;
+				t = ul.scoreTeamToCcas(m.getT2());
+				if (t == null) {
+					if (m.getComId() != compId) {
+						dbTeams.clear();
+						dbTeams = queryCompTeams(m.getComId());
+						compId = m.getComId();
 					}
+					int minDist = 100;
+					int chosenIdx = -1;
+					int curDist;
+					for (int i = 0; i < dbTeams.size(); i++) {
+						curDist = StringSimilarity.levenshteinDistance(
+								m.getT2(), dbTeams.get(i));
+						logger.info(
+								"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
+								m.getT2(), dbTeams.get(i), curDist, minDist);
+						if (curDist >= m.getT2().length())
+							continue;
+						if (curDist < minDist) {
+							minDist = curDist;
+							chosenIdx = i;
+						}
+					}
+					logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
+							dbTeams.get(chosenIdx));
+					ul.addTeam(dbTeams.get(chosenIdx), m.getT2());
+					m.setT2(dbTeams.get(chosenIdx));
+					dbTeams.remove(chosenIdx);
+				} else {
+					m.setT2(t);
 				}
-				logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
-						dbTeams.get(chosenIdx));
-				ul.addTeam(dbTeams.get(chosenIdx), m.getT2());
-				m.setT2(dbTeams.get(chosenIdx));
-				dbTeams.remove(chosenIdx);
-			} else {
-				m.setT2(t);
 			}
 		}
-//		incomeTempMatchesLists = ml;
+		// incomeTempMatchesLists = ml;
 	}
 
 	public void storeToTempMatchesDB() throws SQLException {
 		logger.info("--------------: STORE To TEMPMATCHS");
 		// should come after the correlation from newFormat to punter
-		// try {
-		// insertMatches("tempmatches");
-		// } catch (SQLException e) {
-		// e.printStackTrace();
-		// }
-		//
 
 		openDBConn();
 		String insert = "insert into tempmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -152,28 +151,31 @@ public class TempMatchFunctions {
 		int i = 0;
 		// @ this point suppose xscore.shcedmatches is converted to punter teams
 		// for (MatchObj mobj : XscoreUpComing.schedNewMatches) {
-		for (MatchObj mobj : MatchGetter.schedNewMatches) {// alt line
+		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
+			for (MatchObj mobj : MatchGetter.schedNewMatches.get(key)) {// alt
+																		// line
 
-			// ps.setNull(1, java.sql.Types.INTEGER);
-			ps.setLong(1, mobj.getmId());
-			ps.setInt(2, mobj.getComId());
-			ps.setString(3, mobj.getT1());
-			ps.setString(4, mobj.getT2());
-			ps.setInt(5, mobj.getFt1());
-			ps.setInt(6, mobj.getFt2());
-			ps.setInt(7, mobj.getHt1());
-			ps.setInt(8, mobj.getHt2());
-			ps.setDouble(9, mobj.get_1());
-			ps.setDouble(10, mobj.get_x());
-			ps.setDouble(11, mobj.get_2());
-			ps.setDouble(12, mobj.get_o());
-			ps.setDouble(13, mobj.get_u());
-			ps.setDate(14, mobj.getDat());
-			ps.addBatch();
-			i++;
-			if (i % 500 == 0) {
-				ps.executeBatch();
-				i = 0;
+				// ps.setNull(1, java.sql.Types.INTEGER);
+				ps.setLong(1, mobj.getmId());
+				ps.setInt(2, mobj.getComId());
+				ps.setString(3, mobj.getT1());
+				ps.setString(4, mobj.getT2());
+				ps.setInt(5, mobj.getFt1());
+				ps.setInt(6, mobj.getFt2());
+				ps.setInt(7, mobj.getHt1());
+				ps.setInt(8, mobj.getHt2());
+				ps.setDouble(9, mobj.get_1());
+				ps.setDouble(10, mobj.get_x());
+				ps.setDouble(11, mobj.get_2());
+				ps.setDouble(12, mobj.get_o());
+				ps.setDouble(13, mobj.get_u());
+				ps.setDate(14, mobj.getDat());
+				ps.addBatch();
+				i++;
+				if (i % 500 == 0) {
+					ps.executeBatch();
+					i = 0;
+				}
 			}
 		}
 		ps.executeBatch();

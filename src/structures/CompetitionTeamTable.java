@@ -395,15 +395,15 @@ public class CompetitionTeamTable {
 			ps.setFloat(64, o.getAvgLoseCont());
 			ps.setFloat(65, o.getAvgDrawCont());
 
-			ps.setFloat(63, o.getWinsIn());
-			ps.setFloat(63, o.getWinsOut());
-			ps.setFloat(63, o.getDrawsIn());
-			ps.setFloat(63, o.getDrawsOut());
-			ps.setFloat(63, o.getLosesIn());
-			ps.setFloat(63, o.getLosesOut());
+			ps.setFloat(66, o.getWinsIn());
+			ps.setFloat(67, o.getWinsOut());
+			ps.setFloat(68, o.getDrawsIn());
+			ps.setFloat(69, o.getDrawsOut());
+			ps.setFloat(70, o.getLosesIn());
+			ps.setFloat(71, o.getLosesOut());
 			
-			ps.setInt(74, o.getFtGg());
-			ps.setInt(75, o.getHtGg());
+			ps.setInt(72, o.getFtGg());
+			ps.setInt(73, o.getHtGg());
 
 			ps.addBatch();
 		}

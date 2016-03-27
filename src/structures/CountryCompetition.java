@@ -44,7 +44,7 @@ public class CountryCompetition {
 	public static List<CCAllStruct> ccasList = new ArrayList<>();
 	public static Map<String, Integer> allowedcomps = new HashMap<>();
 
-	public CountryCompetition() throws SQLException {
+	public CountryCompetition() {
 		super();
 	}
 
@@ -94,8 +94,8 @@ public class CountryCompetition {
 	}
 
 	public void readAllowedComps() throws JsonSyntaxException, IOException {
-FileHandler fh = new FileHandler();
-fh.readAllowedCompetitions();
+		FileHandler fh = new FileHandler();
+		fh.readAllowedCompetitions();
 	}
 
 	// ----------------------------------------
@@ -120,6 +120,26 @@ fh.readAllowedCompetitions();
 			return idx;
 
 		}
+	}
+
+	public int searchCompBinaryLevel(String country, int level) {
+		int idx = binarySearchCountry(country, 0, ccasList.size());
+
+		int i = idx;
+		while (ccasList.get(i).getCountry().equals(country)) {
+			if (ccasList.get(i).getLevel() == level) {
+				return i;
+			}
+			i++;
+		}
+		i = idx;
+		while (ccasList.get(i).getCountry().equals(country)) {
+			if (ccasList.get(i).getLevel() == level) {
+				return i;
+			}
+			i--;
+		}
+		return -1;
 	}
 
 	private int smallCompSearch(int initial, String country, String comp,
@@ -165,19 +185,27 @@ fh.readAllowedCompetitions();
 		 * for. Keep in mind the countries are alphabetically sorted and present
 		 * more than once (one country many competitions)
 		 */
+		try {
+//		int mid ;
+		
+			if (min > max) {
+				return -1;
+			}
+			int mid= (max + min) / 2;
 
-		if (min > max) {
-			return -1;
+			if (ccasList.get(mid).getCountry().equals(country)) {
+				return mid;
+			} else if (ccasList.get(mid).getCountry().compareTo(country) > 0) {
+				return binarySearchCountry(country, min, mid - 1);
+			} else {
+				return binarySearchCountry(country, mid + 1, max);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.info("ERROR {}");
+			e.printStackTrace();
 		}
-		int mid = (max + min) / 2;
-
-		if (ccasList.get(mid).getCountry().equals(country)) {
-			return mid;
-		} else if (ccasList.get(mid).getCountry().compareTo(country) > 0) {
-			return binarySearchCountry(country, min, mid - 1);
-		} else {
-			return binarySearchCountry(country, mid + 1, max);
-		}
+		return -1;
 	}
 
 	// ---------------------------------
@@ -205,26 +233,26 @@ fh.readAllowedCompetitions();
 		int dist = 0; // temporary distance var
 
 		for (int i = 0; i < ccasList.size(); i++) {
-//			if (ccasList.get(i).getDb() == 1) {//Original_Line
-				if (b) {
-					dist = StringSimilarity.levenshteinDistance(compName, ccasList.get(i).getCompetition());
-					if (dist <= 2) {
-						return i;
-					} else {
-						if (dist < minDist) {
-							minDist = dist;
-							minDistanceCompIdx = i;
-						}
-					} // else
+			// if (ccasList.get(i).getDb() == 1) {//Original_Line
+			if (b) {
+				dist = StringSimilarity.levenshteinDistance(compName, ccasList .get(i).getCompetition());
+				if (dist <= 2) {
+					return i;
 				} else {
-					if (compName.equalsIgnoreCase(ccasList.get(i) .getCompetition())) {
-						return i;
+					if (dist < minDist) {
+						minDist = dist;
+						minDistanceCompIdx = i;
 					}
+				} // else
+			} else {
+				if (compName.equalsIgnoreCase(ccasList.get(i).getCompetition())) {
+					return i; //IDX
 				}
-//			} // db ==1  //Original_Line
+			}
+			// } // db ==1 //Original_Line
 		}// for
 
-		return minDistanceCompIdx;
+		return minDistanceCompIdx;//IDX
 	}
 
 	public int fullSearch(String country, String compName) {
@@ -242,7 +270,7 @@ fh.readAllowedCompetitions();
 
 	public void addAllowedComp(String comp, int idx) {
 		allowedcomps.put(comp, idx);
-		FileHandler fh= new FileHandler();
+		FileHandler fh = new FileHandler();
 		try {
 			fh.appendAllowedCompetitions(comp, idx);
 		} catch (IOException e) {

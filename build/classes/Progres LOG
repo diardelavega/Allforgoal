@@ -78,10 +78,20 @@ taking in consideration the match in hand.
 	Generally working ... ** problem with deleteing data from tempMAtchesDb  __****__  Fixed*** {wasn't reading mId from tempMatches-> considering all mids =0 => could not delete any tempt match with actual mIds != 0}
 
 	*** handle cancelled and postponed matches (delete from temp matches but dont store to matches)
-	*** TODO clear all the maps and lists of data after the periodic function has ended
+	*** TODO clear all the maps and lists of data after the periodic function has ended *{done in clearlists}
+	 			
+	 			------------------------------------------
+	 **@ class MatchToTableRenewal there is a method used to create the test file for the prediction opperation.
+	 predFileCreate(it supposedly calculates the attributes  up untill now by reading from the db the values. if
+	  mobj is == null, which in temp matches case it is then it does not calculate the outcome vars like, 
+	  head, score, 1+, 2+, golgol, totscore). UnTested
+	  
+	 *** Add implementation for odds for the tempMatches from bari91.com  also for the Over from soccerpunter 	 	  
 	 				 	  
-	 				 	  
-	 				 	  
+@@** FUTURE******WORK
+@ Class MAtchToTableRenewal eliminate the list of Mobj and read directly from  MatchesList Class Mobj Map	 				 	  
+	 	
+** all DB TeamTables have to be creatred from the begining because we added attributes whis were not present before in the bd 
 	 				 	  
 	 				 	  
 	 				 	  

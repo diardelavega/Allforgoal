@@ -41,8 +41,8 @@ public class AnalyticFileHandler {
 		}
 	}
 
-	public void openDataOutput(int compId) throws IOException {
-		bw = new BufferedWriter(new FileWriter(getDataFileName(compId), true));
+	public void openTrainOutput(int compId) throws IOException {
+		bw = new BufferedWriter(new FileWriter(getTrainFileName(compId), true));
 	}
 
 	public void openTestOutput(int compId, Date date) throws IOException {
@@ -62,7 +62,7 @@ public class AnalyticFileHandler {
 	}
 
 	public void appendCsv(String line) throws IOException {
-		bw.write(line + "\n");
+		bw.append(line + "\n");
 	}
 
 	private File getTestFileName(int compId, Date dat) {
@@ -89,7 +89,7 @@ public class AnalyticFileHandler {
 		return tFile;
 	}
 
-	private File getDataFileName(int compId) {
+	private File getTrainFileName(int compId) {
 		// create the folder file and a new test file of format
 		// folder/CompName_compId_Data
 

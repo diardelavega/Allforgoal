@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import basicStruct.MatchObj;
+import scrap.Bari91UpCommingOdds;
 import scrap.XscoreUpComing;
 import test.MatchGetter;
 import test.TestFile;
@@ -42,7 +43,8 @@ public class Strategy {
 
 			// TODO integrate the test file and data file for prediction
 			if (lastDatCheck == null) {
-				// TODO scrap todays matches & tomorrows
+				// first time ever to check for temp matches
+				// scrap todays matches & tomorrows
 				score.getScheduledToday();
 				score.getScheduledTomorrow();
 				// tmf.corelatePunterXScorerTeams();
@@ -71,6 +73,30 @@ public class Strategy {
 					logger.info("Last Ceck   Finished  TODAY");
 				}
 
+			}
+		} finally {
+			tmf.closeDBConn();
+		}
+	}
+
+	public void tryTask() throws SQLException {
+//		 tmf.openDBConn();
+		try {
+
+			// TODO integrate the test file and data file for prediction
+			if (lastDatCheck == null) {
+				// first time ever to check for temp matches
+				// scrap todays matches & tomorrows
+				score.getScheduledToday();
+//				score.getScheduledTomorrow();
+				Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+				b91.scrapBariPage(LocalDate.now());
+//				b91.scrapBariPage(LocalDate.now().plusDays(1));
+				// tmf.corelatePunterXScorerTeams();
+//				 tmf.storeToTempMatchesDB();
+				score.clearLists();
+				lastDatCheck = LocalDate.now();
+				logger.info("NULL Last Ceck");
 			}
 		} finally {
 			tmf.closeDBConn();

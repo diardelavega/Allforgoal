@@ -78,7 +78,12 @@ public class MatchToTableRenewal {
 
 	public void predFileCreate(List<MatchObj> ml) throws IOException,
 			SQLException {
-
+		/*
+		 * For the tempMatches fill the attributes for the prediction file. In
+		 * the afh when we open it we can decide if it is going to be for
+		 * writing to TrainDataFile or to TestDataFile.
+		 */
+		// TODO instanciate the pf class attribute
 		int curCompId = -1;// ml.get(0).getComId();
 		for (int i = 0; i < ml.size(); i++) {
 			if (ml.get(i).getComId() == curCompId) {
@@ -101,6 +106,11 @@ public class MatchToTableRenewal {
 	}
 
 	private boolean testPredTeamData() throws SQLException {
+		/*
+		 * gives value to the attributes of the teams (two teams of a
+		 * match),needed for the testFile for the prediction operations. (i
+		 * think)
+		 */
 		// from teamTable data extract prediction file data
 		init();
 		if (N == 0) {
@@ -229,7 +239,7 @@ public class MatchToTableRenewal {
 
 	public void init() throws SQLException {
 		/*
-		 * in nit we check if the db table exists and then we read it else we
+		 * in int we check if the db table exists and then we read it else we
 		 * create it. In any case we set a teamtable for a specific competition
 		 * ready
 		 */

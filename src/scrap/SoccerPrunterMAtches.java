@@ -51,8 +51,8 @@ public class SoccerPrunterMAtches {
 	private String errorStatus = "OK"; // a simple way to report problems
 	private List<MatchObj> matchlist = new ArrayList<>();
 	private NameCleaner nc = new NameCleaner();
-//	AnalyticFileHandler afh;
-	private String baseUrl ="http://www.soccerpunter.com";
+	// AnalyticFileHandler afh;
+	private String baseUrl = "http://www.soccerpunter.com";
 
 	// ------------------MODULATE FUNCTIONS
 
@@ -60,9 +60,9 @@ public class SoccerPrunterMAtches {
 		/* get page, get elements */
 		Document doc = null;
 		try {
-			logger.info(baseUrl+url + "/results");
+			logger.info("getting page : {}{}/results", baseUrl, url);
 			doc = Jsoup
-					.connect(baseUrl+url + "/results")
+					.connect(baseUrl + url + "/results")
 					// doc = Jsoup.parse(new File(
 					// "C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
 					.userAgent(
@@ -74,7 +74,7 @@ public class SoccerPrunterMAtches {
 			logger.warn("---------:Connection not possible  {}", errorStatus);
 			return null;
 		}
-
+		logger.info("Page aquired");
 		Element resultTable = doc.getElementsByClass("roundsResultDisplay")
 				.get(0);
 		doc = null;// free scpace
@@ -101,7 +101,9 @@ public class SoccerPrunterMAtches {
 		 * a portion of matches(from a specific date up until now). The boolean
 		 * partial variable specifies whether or not will be the second case. if
 		 * it is the second case a valid date must also be provided to complete
-		 * the required research factors
+		 * the required research factors.
+		 * ***************************************8 in the end the matches read
+		 * are added to the @MatchesList.readMatches Map as <compId,List<Mobj>>.
 		 */
 
 		Elements trs = docConnectAndScrap(url);// resultTable.getElementsByTag("tr");
@@ -127,7 +129,7 @@ public class SoccerPrunterMAtches {
 						if (matchDat.isEqual(supplyDate)) {
 							// we already have the matches earlier than
 							// supplied date
-//							afh.closeOutput();
+							// afh.closeOutput();
 							return 0;
 						}
 					}
@@ -152,9 +154,9 @@ public class SoccerPrunterMAtches {
 		 */
 		Document doc = null;
 		try {
-			logger.info(baseUrl+url + "/results");
+			logger.info(baseUrl + url + "/results");
 			doc = Jsoup
-					.connect(baseUrl+url + "/results")
+					.connect(baseUrl + url + "/results")
 					// doc = Jsoup.parse(new File(
 					// "C:/Users/Administrator/Desktop/Albania.html"), "UTF-8");
 					.userAgent(
@@ -175,8 +177,8 @@ public class SoccerPrunterMAtches {
 			errorStatus = "Unfound Element";
 		} else {
 			// set file ready to be writen
-//			afh = new AnalyticFileHandler();
-//			afh.opendataWrite();
+			// afh = new AnalyticFileHandler();
+			// afh.opendataWrite();
 
 			Elements trs = resultTable.getElementsByTag("tr");
 			for (Element tr : trs) {
@@ -200,7 +202,7 @@ public class SoccerPrunterMAtches {
 					}
 				}
 			} // for
-//			afh.closeOutput();
+				// afh.closeOutput();
 		}
 		logger.info("STATUS is {}", errorStatus);
 		return 0;
@@ -251,9 +253,7 @@ public class SoccerPrunterMAtches {
 				match.set_1(ag.get_1());
 				match.set_2(ag.get_2());
 				match.set_x(ag.get_x());
-				if (ag.getOver() <= 0) {
-					match.set_o(ag.getOver());
-				}
+				match.set_o(ag.getOver());
 				match.set_u(ag.getUnder());
 			}
 		}
@@ -297,6 +297,10 @@ public class SoccerPrunterMAtches {
 	}
 
 	public LocalDate getLatestMatchesDate(int compId) throws SQLException {
+		/*
+		 * get from the db the date of the last match of that competition. To be
+		 * used to get the remaining matches of a competition from soccerpunter
+		 */
 		Conn conn = new Conn();
 		conn.open();
 		ResultSet rs = conn
@@ -305,7 +309,7 @@ public class SoccerPrunterMAtches {
 				.executeQuery(
 						"SELECT dat FROM matches WHERE compid = " + compId
 								+ " GROUP BY dat ORDER BY dat desc LIMIT 1;");
-//		String date = null;
+		// String date = null;
 		LocalDate ld = null;
 		while (rs.next()) {
 			ld = LocalDate.parse(rs.getString(1));

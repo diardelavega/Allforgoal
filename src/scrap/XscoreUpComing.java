@@ -17,6 +17,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.jsoup.select.Evaluator.MatchesOwn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +43,8 @@ import basicStruct.MatchObj;
 public class XscoreUpComing {
 	public static final Logger logger = LoggerFactory
 			.getLogger(XscoreUpComing.class);
-	public static List<MatchObj> schedNewMatches = new ArrayList<>();
 	public static List<MatchObj> finNewMatches = new ArrayList<>();
+	public static Map<Integer, List<MatchObj>> schedNewMatches = new HashMap<>();
 	public static List<MatchObj> errorNewMatches = new ArrayList<>();
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";// <-
 	private Unilang ul = new Unilang();
@@ -58,13 +59,13 @@ public class XscoreUpComing {
 		Document doc = null;
 		try {
 			logger.info(url);
-//			doc = Jsoup.parse(new File(
-//					"C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
-			 doc = Jsoup
-			 .connect(url)
-			 .userAgent(
-			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			 .maxBodySize(0).timeout(600000).get();
+			// doc = Jsoup.parse(new File(
+			// "C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
+			doc = Jsoup
+					.connect(url)
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+					.maxBodySize(0).timeout(600000).get();
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
 			e.printStackTrace();
@@ -94,10 +95,10 @@ public class XscoreUpComing {
 					continue;
 				}
 
-				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
-				if (compIdx < 0) {
+				int compId = searchForCompId(clasVal[0], clasVal[4]);
+				if (compId < 0) {
 					// TODO display un-found matches
-					ul.appendUnfoundTerms(clasVal[0],clasVal[4]);
+					ul.appendUnfoundTerms(clasVal[0], clasVal[4]);
 					continue;
 				} else {
 					// logger.info("comp-: {}   id-: {}    found_idx-: {}",
@@ -118,8 +119,16 @@ public class XscoreUpComing {
 							&& (status.equals(Status.SCHEDULED) || status
 									.equals(Status.FTR))) {
 						mobj.setDat(Date.valueOf(dat));
-						mobj.setComId(compIdx + 1);
-						schedNewMatches.add(mobj);
+						mobj.setComId(compId);
+						
+						if (schedNewMatches.get(compId) == null) {
+							List<MatchObj> mol = new ArrayList<>();
+							mol.add(mobj);
+							schedNewMatches.put(compId, mol);
+						} else {
+							schedNewMatches.get(compId).add(mobj);
+						}
+
 						logger.info("scheduled ---  t1-{}  t2-{}", t1, t2);
 						continue;
 					}
@@ -216,8 +225,11 @@ public class XscoreUpComing {
 
 	// ----------------------------------
 
-	private int searchForCompIdx(String country, String comp)
-			throws IOException {
+	private int searchForCompId(String country, String comp) throws IOException {
+		/*
+		 * This function gets the index in the ccas structure for the
+		 * competition we are searching and returns the id of that competition
+		 */
 		// search in allowed competitions map and CCAS
 		CountryCompetition cc = null;
 		try {
@@ -238,7 +250,7 @@ public class XscoreUpComing {
 				if (newComp != null) {// binarysearch newComp no levistein
 					searchCompIdx = cc.searchCompBinary(newCountry, newComp,
 							false);
-					if (searchCompIdx > 0) {
+					if (searchCompIdx >= 0) {
 						// ul.addTerm(newCountry, country);
 						// ul.addTerm(newComp, comp);
 						if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
@@ -249,7 +261,7 @@ public class XscoreUpComing {
 					}
 				} else {// bynarysearch with levistain for competition
 					searchCompIdx = cc.searchCompBinary(newCountry, comp, true);
-					if (searchCompIdx > 0) {
+					if (searchCompIdx >= 0) {
 						// ul.addTerm(newCountry, country);
 						ul.addTerm(cc.ccasList.get(searchCompIdx)
 								.getCompetition(), comp);
@@ -263,7 +275,7 @@ public class XscoreUpComing {
 			} else {
 				if (newComp != null) { // search usable (DB)newComp no levistein
 					searchCompIdx = cc.searchUsableComp(newComp, false);
-					if (searchCompIdx > 0) {
+					if (searchCompIdx >= 0) {
 						// in case the leagues have the same name but belong to
 						// different countries, check the country too
 						if (StringSimilarity.levenshteinDistance(country,
@@ -278,7 +290,7 @@ public class XscoreUpComing {
 					}
 				} else {
 					searchCompIdx = cc.searchUsableComp(comp, true);
-					if (searchCompIdx > 0) {
+					if (searchCompIdx >= 0) {
 						if (StringSimilarity.levenshteinDistance(country,
 								CountryCompetition.ccasList.get(searchCompIdx)
 										.getCountry()) > 3) {

@@ -14,6 +14,7 @@ import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -51,6 +52,7 @@ public class AjaxGrabber {
 		 * t y p e I d = 4 7
 		 */
 		URL url = new URL(ajaxUrl + mid + "&typeId=47");
+		 logger.info("url -: {}", url);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Accept", "application/json");
@@ -76,35 +78,24 @@ public class AjaxGrabber {
 		}
 
 		try {// controls in case the values we require are missing
-			int i = 0;
-			if (jobj.has("1")) {// bookie 1
-				over += jobj.get("1").getAsJsonObject().get("Over")
-						.getAsJsonObject().get("odds").getAsFloat();
-				under += jobj.get("1").getAsJsonObject().get("Under")
-						.getAsJsonObject().get("odds").getAsFloat();
-				i++;
+			int j = 0;
+			for (int i = 1; i < 20; i++) {
+				if (jobj.has(i + "")) {
+					over += jobj.get(i + "").getAsJsonObject().get("Over")
+							.getAsJsonObject().get("odds").getAsFloat();
+					under += jobj.get(i + "").getAsJsonObject().get("Under")
+							.getAsJsonObject().get("odds").getAsFloat();
+					j++;
+				}
 			}
-			if (jobj.has("2")) {// bookie 2
-				over += jobj.get("2").getAsJsonObject().get("Over")
-						.getAsJsonObject().get("odds").getAsFloat();
-				under += jobj.get("2").getAsJsonObject().get("Under")
-						.getAsJsonObject().get("odds").getAsFloat();
-				i++;
-			}
-			if (jobj.has("3")) {// bookie 3
-				over += jobj.get("3").getAsJsonObject().get("Over")
-						.getAsJsonObject().get("odds").getAsFloat();
-				under += jobj.get("3").getAsJsonObject().get("Under")
-						.getAsJsonObject().get("odds").getAsFloat();
-				i++;
-			}
+
 			// as value we get the average of the three bookies
-			if (i == 0) {
-				over = 0;
-				under = 0;
+			if (j == 0) {
+				over = 1;
+				under = 1;
 			} else {
-				over /= i;
-				under /= i;
+				over /= j;
+				under /= j;
 			}
 		} catch (Exception e) {
 			logger.info("No odds for this match");
@@ -121,6 +112,7 @@ public class AjaxGrabber {
 	public boolean f69(String mid) throws IOException {
 		/* read the 1x2 odds from the json data */
 		URL url = new URL(ajaxUrl + mid + "&typeId=69");
+		 logger.info("url -: {}", url);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Accept", "application/json");
@@ -145,44 +137,27 @@ public class AjaxGrabber {
 		}
 
 		try {
-			int i = 0;
-
-			if (jobj.has("1")) {
-				_1 = jobj.get("1").getAsJsonObject().get("1").getAsJsonObject()
-						.get("odds").getAsFloat();
-				_2 = jobj.get("1").getAsJsonObject().get("2").getAsJsonObject()
-						.get("odds").getAsFloat();
-				_x = jobj.get("1").getAsJsonObject().get("X").getAsJsonObject()
-						.get("odds").getAsFloat();
-				i++;
-			}
-			if (jobj.has("2")) {
-				_1 += jobj.get("2").getAsJsonObject().get("1")
-						.getAsJsonObject().get("odds").getAsFloat();
-				_2 += jobj.get("2").getAsJsonObject().get("2")
-						.getAsJsonObject().get("odds").getAsFloat();
-				_x += jobj.get("2").getAsJsonObject().get("X")
-						.getAsJsonObject().get("odds").getAsFloat();
-				i++;
-			}
-			if (jobj.has("3")) {
-				_1 += jobj.get("3").getAsJsonObject().get("1")
-						.getAsJsonObject().get("odds").getAsFloat();
-				_2 += jobj.get("3").getAsJsonObject().get("2")
-						.getAsJsonObject().get("odds").getAsFloat();
-				_x += jobj.get("3").getAsJsonObject().get("X")
-						.getAsJsonObject().get("odds").getAsFloat();
-				i++;
+			int j = 0;
+			for (int i = 1; i < 20; i++) {
+				if (jobj.has(i + "")) {
+					_1 = jobj.get(i + "").getAsJsonObject().get("1")
+							.getAsJsonObject().get("odds").getAsFloat();
+					_2 = jobj.get(i + "").getAsJsonObject().get("2")
+							.getAsJsonObject().get("odds").getAsFloat();
+					_x = jobj.get(i + "").getAsJsonObject().get("X")
+							.getAsJsonObject().get("odds").getAsFloat();
+					j++;
+				}
 			}
 			// as value we get the average of the three bookies
-			if (i == 0) {
-				_1 = 0;
-				_x = 0;
-				_2 = 0;
+			if (j == 0) {
+				_1 = 1;
+				_x = 1;
+				_2 = 1;
 			} else {
-				_1 /= i;
-				_x /= i;
-				_2 /= i;
+				_1 /= j;
+				_x /= j;
+				_2 /= j;
 			}
 
 			// logger.info("1 is = {}, x is ={}, 2 is ={} ", _1, _x, _2);

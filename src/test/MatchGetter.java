@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,10 +22,14 @@ import extra.Status;
 import extra.StringSimilarity;
 import extra.Unilang;
 
+/**
+ * @author Administrator Test Class simulating xscore
+ */
 public class MatchGetter {
 	public static Logger logger = LoggerFactory.getLogger(MatchGetter.class);
 
-	public static List<MatchObj> schedNewMatches = new ArrayList<>();
+//	public static List<MatchObj> schedNewMatches = new ArrayList<>();
+	public static Map<Integer, List<MatchObj>> schedNewMatches = new HashMap<>();
 	public static List<MatchObj> finNewMatches = new ArrayList<>();
 	public static List<MatchObj> errorNewMatches = new ArrayList<>();
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";
@@ -39,13 +45,14 @@ public class MatchGetter {
 		Document doc = null;
 		try {
 			logger.info(url);
-			// doc = Jsoup.parse(new File(
-			// "C:/Users/Administrator/Desktop/Scores.html"), "UTF-8");
-			doc = Jsoup
-					.connect(url)
-					.userAgent(
-							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-					.maxBodySize(0).timeout(600000).get();
+			 doc = Jsoup.parse(new File(
+			 "C:/Users/Administrator/Desktop/xScores27_03.html"), "UTF-8");
+//			doc = Jsoup
+//					.connect(url)
+//					.userAgent(
+//							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+//					.maxBodySize(0).timeout(600000).get();
+			 logger.info("Page Aquired!!");
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
 			e.printStackTrace();
@@ -59,9 +66,18 @@ public class MatchGetter {
 				String[] clasVal = row.attr("class").split("#");
 				// logger.info("country {},   comp {}", clasVal[0], clasVal[4]);
 
-				if (clasVal[0].contains("WORLD")|| clasVal[0].contains("AFRICA")|| clasVal[0].contains("AMERICA")
-						|| clasVal[0].contains("EUROPE")|| clasVal[0].contains("ASIA")|| clasVal[4].contains("CUP")|| clasVal[4].contains("KUPA")
-						|| clasVal[4].contains("COPPA")|| clasVal[4].contains("COPA")|| clasVal[4].contains("OFF")|| clasVal[4].contains("TROPHY")|| clasVal[4].contains("COUPE")
+				if (clasVal[0].contains("WORLD")
+						|| clasVal[0].contains("AFRICA")
+						|| clasVal[0].contains("AMERICA")
+						|| clasVal[0].contains("EUROPE")
+						|| clasVal[0].contains("ASIA")
+						|| clasVal[4].contains("CUP")
+						|| clasVal[4].contains("KUPA")
+						|| clasVal[4].contains("COPPA")
+						|| clasVal[4].contains("COPA")
+						|| clasVal[4].contains("OFF")
+						|| clasVal[4].contains("TROPHY")
+						|| clasVal[4].contains("COUPE")
 						|| clasVal[4].contains("EURO")) {
 					continue;
 				}
@@ -69,7 +85,7 @@ public class MatchGetter {
 				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
 				if (compIdx < 0) {
 					// TODO display un-found matches
-					ul.appendUnfoundTerms(clasVal[0],clasVal[4]);
+					ul.appendUnfoundTerms(clasVal[0], clasVal[4]);
 					continue;
 				} else {
 					// int compIdx = 10101;
@@ -86,17 +102,28 @@ public class MatchGetter {
 					// schedNewMatches.add(mobj);
 					// logger.info("t1-{}  t2-{}", t1, t2);
 
-					if (_status.equals(Status.SCHEDULED) && (status.equals(Status.SCHEDULED) || status
+					if (_status.equals(Status.SCHEDULED)
+							&& (status.equals(Status.SCHEDULED) || status
 									.equals(Status.FTR))) {
 						mobj.setDat(Date.valueOf(dat));
-						mobj.setComId(compIdx + 1);
-						schedNewMatches.add(mobj);
+						mobj.setComId(compIdx );
+//						schedNewMatches.add(mobj);
+						if (schedNewMatches.get(compIdx) == null) {
+							List<MatchObj> mol = new ArrayList<>();
+							mol.add(mobj);
+							schedNewMatches.put(compIdx, mol);
+						} else {
+							schedNewMatches.get(compIdx).add(mobj);
+						}
+
 						// logger.info("scheduled ---  t1-{}  t2-{}", t1, t2);
 						continue;
 					}
 
 					if (_status == Status.FINISHED) {
-						if (status.equals(Status.ABANDONED) || status.equals(Status.CANCELED) || status.equals(Status.POSTPONED)) {
+						if (status.equals(Status.ABANDONED)
+								|| status.equals(Status.CANCELED)
+								|| status.equals(Status.POSTPONED)) {
 							// find interrupted matches to delete them
 							errorNewMatches.add(mobj);
 							logger.info("ABANDONED ---  t1-{}  t2-{}", t1, t2);
@@ -226,11 +253,11 @@ public class MatchGetter {
 					if (searchCompIdx > 0) {
 						// ul.addTerm(newCountry, country);
 						// ul.addTerm(newComp, comp);
-//						if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
-							cc.addAllowedComp(comp, searchCompIdx + 1);
-//						} else {
-//							return -1;
-//						}
+						// if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
+						cc.addAllowedComp(comp, searchCompIdx + 1);
+						// } else {
+						// return -1;
+						// }
 					}
 				} else {// bynarysearch with levistain for competition
 					searchCompIdx = cc.searchCompBinary(newCountry, comp, true);
@@ -238,11 +265,11 @@ public class MatchGetter {
 						// ul.addTerm(newCountry, country);
 						ul.addTerm(cc.ccasList.get(searchCompIdx)
 								.getCompetition(), comp);
-//						if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
-							cc.addAllowedComp(comp, searchCompIdx + 1);
-//						} else {
-//							return -1;
-//						}
+						// if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
+						cc.addAllowedComp(comp, searchCompIdx + 1);
+						// } else {
+						// return -1;
+						// }
 					}
 				}
 			} else {

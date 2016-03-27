@@ -12,7 +12,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import scrap.Soccerpunter_homePage;
 import scrap.XscoreUpComing;
@@ -40,7 +42,7 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException {
-		// initCCAllStruct();
+		 initCCAllStruct();
 		// Demo.initCCAllStruct();
 		// MatchObj mobj = new MatchObj();
 		// mobj.setT1("hua");
@@ -57,10 +59,37 @@ public class MainTry {
 		// log(CountryCompetition.ccasList.get(5 - 1).getCompetition());
 		// log(CountryCompetition.ccasList.get(5 - 1).getCompId() + "");
 
-		// Strategy strategy = new Strategy();
+		 Strategy strategy = new Strategy();
+		 strategy.tryTask();
 		// strategy .periodic();
 		// corelator();
-		filer();
+		// LocalDate ld =LocalDate.now();
+		// log(ld.toString());
+		// Soccerpunter_homePage sch = new Soccerpunter_homePage();
+		// sch.goGetCompetitions();
+		// filer();
+
+//		Map<Integer, List<Integer>> nn = new HashMap<>();
+//
+//		List<Integer> il = new ArrayList<Integer>();
+//		il.add(1);
+//		il.add(1);
+//		il.add(1);
+//		nn.put(1, il);
+//
+//		il = new ArrayList<Integer>();
+//		il.add(2);
+//		il.add(2);
+//		il.add(2);
+//		nn.put(2, il);
+//
+//		for (int key : nn.keySet()) {
+//			for (Integer i : nn.get(key))
+//				System.out.println(i);
+//		}
+//		System.out.println(nn.get("c"));
+		// log(nn.get("c")+"");
+
 	}
 
 	public static void corelator() {
@@ -137,8 +166,9 @@ public class MainTry {
 		}
 
 		Date date = new Date(15, 3, 2);
-		
-		File f = new File(fo + "/" + /*LocalDate.now()*/date.toString().toString());
+
+		File f = new File(fo + "/"
+				+ /* LocalDate.now() */date.toString().toString());
 		if (!f.exists()) {
 			f.createNewFile();
 		}

@@ -60,7 +60,7 @@ public class Soccerpunter_homePage {
 					|| s.contains("Coupe") || s.contains("World")
 					|| s.contains("Africa") || s.contains("America")
 					|| s.contains("Europe") || s.contains("Asia")
-					|| s.endsWith("2015")) {
+					/*|| s.endsWith("2015")*/) {
 				continue;
 			} else {
 				String[] temp = s.split("/");
