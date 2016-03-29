@@ -19,6 +19,7 @@ import extra.StandartResponses;
 import extra.StringSimilarity;
 import basicStruct.MatchObj;
 import structures.CountryCompetition;
+import test.MatchGetter;
 
 /**
  * @author Administrator GO to bari91 website and with the specific date (today
@@ -77,7 +78,7 @@ public class Bari91UpCommingOdds {
 			int compId = getCompId(cc);
 
 			if (compId >= 0) {// valid comp id; search Scprer matches & add odds
-				if (XscoreUpComing.schedNewMatches.get(compId) == null) {
+				if (MatchGetter.schedNewMatches.get(compId) == null) {
 					// there is no such competition matches @ scorer
 					rejects.add(cc);
 					continue;
@@ -86,45 +87,46 @@ public class Bari91UpCommingOdds {
 				String[] teams = tr.getElementsByTag("td").get(2).text()
 						.split(" - ");
 
-				for (int i = 0; i < XscoreUpComing.schedNewMatches.get(compId)
+				//TODO find the most somilar matches not the ones that are within the parameters
+				for (int i = 0; i < MatchGetter.schedNewMatches.get(compId)
 						.size(); i++) {
 					if ((StringSimilarity.levenshteinDistance(
-							XscoreUpComing.schedNewMatches.get(compId).get(i)
+							MatchGetter.schedNewMatches.get(compId).get(i)
 									.getT1(), teams[0]) <= StandartResponses.LEV_DISTANCE)
 							&& (StringSimilarity.levenshteinDistance(
-									XscoreUpComing.schedNewMatches.get(compId)
+									MatchGetter.schedNewMatches.get(compId)
 											.get(i).getT2(), teams[1]) <= StandartResponses.LEV_DISTANCE)) {
 						logger.info("T2 Is found similar");
 
 						float _1 = 1, _x = 1, _2 = 1, _o = 1, _u = 1;
 						if (tr.getElementsByTag("td").get(3).text() != " ") {
-							_1 = Integer.parseInt(tr.getElementsByTag("td")
+							_1 = Float.parseFloat(tr.getElementsByTag("td")
 									.get(3).text());
-							XscoreUpComing.schedNewMatches.get(compId).get(i)
+							MatchGetter.schedNewMatches.get(compId).get(i)
 									.set_1(_1);
 						}
 						if (tr.getElementsByTag("td").get(4).text() != " ") {
-							_x = Integer.parseInt(tr.getElementsByTag("td")
+							_x = Float.parseFloat(tr.getElementsByTag("td")
 									.get(4).text());
-							XscoreUpComing.schedNewMatches.get(compId).get(i)
+							MatchGetter.schedNewMatches.get(compId).get(i)
 									.set_1(_x);
 						}
 						if (tr.getElementsByTag("td").get(5).text() != " ") {
-							_2 = Integer.parseInt(tr.getElementsByTag("td")
+							_2 = Float.parseFloat(tr.getElementsByTag("td")
 									.get(5).text());
-							XscoreUpComing.schedNewMatches.get(compId).get(i)
+							MatchGetter.schedNewMatches.get(compId).get(i)
 									.set_1(_2);
 						}
 						if (tr.getElementsByTag("td").get(6).text() != " ") {
-							_o = Integer.parseInt(tr.getElementsByTag("td")
+							_o = Float.parseFloat(tr.getElementsByTag("td")
 									.get(6).text());
-							XscoreUpComing.schedNewMatches.get(compId).get(i)
+							MatchGetter.schedNewMatches.get(compId).get(i)
 									.set_1(_o);
 						}
 						if (tr.getElementsByTag("td").get(7).text() != " ") {
-							_u = Integer.parseInt(tr.getElementsByTag("td")
+							_u = Float.parseFloat(tr.getElementsByTag("td")
 									.get(7).text());
-							XscoreUpComing.schedNewMatches.get(compId).get(i)
+							MatchGetter.schedNewMatches.get(compId).get(i)
 									.set_1(_u);
 						}
 

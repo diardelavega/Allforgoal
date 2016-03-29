@@ -81,7 +81,7 @@ public class MatchGetter {
 						|| clasVal[4].contains("EURO")) {
 					continue;
 				}
-
+logger.info("{}  {}",clasVal[0],clasVal[4]);
 				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
 				if (compIdx < 0) {
 					// TODO display un-found matches
@@ -100,11 +100,9 @@ public class MatchGetter {
 					// mobj.setDat(Date.valueOf(dat));
 					// mobj.setComId(compIdx + 1);
 					// schedNewMatches.add(mobj);
-					// logger.info("t1-{}  t2-{}", t1, t2);
+					 logger.info("country {}  competition {} t1-{}  t2-{}",clasVal[0], clasVal[4], t1, t2);
 
-					if (_status.equals(Status.SCHEDULED)
-							&& (status.equals(Status.SCHEDULED) || status
-									.equals(Status.FTR))) {
+					if (_status.equals(Status.SCHEDULED)&& (status.equals(Status.SCHEDULED) || status .equals(Status.FTR))) {
 						mobj.setDat(Date.valueOf(dat));
 						mobj.setComId(compIdx );
 //						schedNewMatches.add(mobj);
@@ -231,84 +229,29 @@ public class MatchGetter {
 	private int searchForCompIdx(String country, String comp)
 			throws IOException {
 		// search in allowed competitions map and CCAS
-		CountryCompetition cc = null;
-		try {
-			cc = new CountryCompetition();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Integer searchCompIdx = cc.allowedcomps.get(comp);
+		CountryCompetition cc = new CountryCompetition();
+		/*
+		 * cc allowed competitions should take a combination of name and
+		 * competition because many competitions have the same name but allways
+		 * a unique combination of name&competition
+		 */
+		Integer searchCompIdx = cc.allowedcomps.get(couComComb(country, comp));
 		if (searchCompIdx != null) {
-			return searchCompIdx - 1;
+			return cc.ccasList.get(searchCompIdx).getCompId();
 		} else {
-
-			// Unilang ul = new Unilang();
-			String newCountry = ul.scoreToCcas(country);
-			String newComp = ul.scoreToCcas(comp);
-
-			if (newCountry != null) {
-				if (newComp != null) {// binarysearch newComp no levistein
-					searchCompIdx = cc.searchCompBinary(newCountry, newComp,
-							false);
-					if (searchCompIdx > 0) {
-						// ul.addTerm(newCountry, country);
-						// ul.addTerm(newComp, comp);
-						// if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
-						cc.addAllowedComp(comp, searchCompIdx + 1);
-						// } else {
-						// return -1;
-						// }
-					}
-				} else {// bynarysearch with levistain for competition
-					searchCompIdx = cc.searchCompBinary(newCountry, comp, true);
-					if (searchCompIdx > 0) {
-						// ul.addTerm(newCountry, country);
-						ul.addTerm(cc.ccasList.get(searchCompIdx)
-								.getCompetition(), comp);
-						// if (cc.ccasList.get(searchCompIdx).getDb() == 1) {
-						cc.addAllowedComp(comp, searchCompIdx + 1);
-						// } else {
-						// return -1;
-						// }
-					}
-				}
-			} else {
-				if (newComp != null) { // search usable (DB)newComp no levistein
-					searchCompIdx = cc.searchUsableComp(newComp, false);
-					if (searchCompIdx > 0) {
-						// in case the leagues have the same name but belong to
-						// different countries, check the country too
-						if (StringSimilarity.levenshteinDistance(country,
-								CountryCompetition.ccasList.get(searchCompIdx)
-										.getCountry()) > 3) {
-							return -1;
-						}
-						ul.addTerm(
-								CountryCompetition.ccasList.get(searchCompIdx)
-										.getCountry(), country);
-						cc.addAllowedComp(comp, searchCompIdx + 1);
-					}
-				} else {
-					searchCompIdx = cc.searchUsableComp(comp, true);
-					if (searchCompIdx > 0) {
-						if (StringSimilarity.levenshteinDistance(country,
-								CountryCompetition.ccasList.get(searchCompIdx)
-										.getCountry()) > 3) {
-							return -1;
-						}
-						ul.addTerm(
-								CountryCompetition.ccasList.get(searchCompIdx)
-										.getCountry(), country);
-						ul.addTerm(cc.ccasList.get(searchCompIdx)
-								.getCompetition(), comp);
-						cc.addAllowedComp(comp, searchCompIdx + 1);
-					}
+			// search for country&comp in scorerDataStruct
+			searchCompIdx = cc.scorerCompIdSearch(country, comp);
+			if (searchCompIdx > -1) {
+				if (cc.sdsList.get(searchCompIdx).getDb() == 1) {
+					cc.allowedcomps.put(couComComb(country, comp),cc.sdsList
+							.get(searchCompIdx).getCompId());
+					return cc.sdsList.get(searchCompIdx).getCompId();
 				}
 			}
-
 			return searchCompIdx;
 		}
-		//
 	}
-
+	private String couComComb(String country, String competition) {
+		return country + "_" + competition;
+	}
 }

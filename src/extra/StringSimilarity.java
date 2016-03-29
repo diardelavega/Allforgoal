@@ -1,6 +1,12 @@
 package extra;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StringSimilarity {
+
+	public static final Logger logger = LoggerFactory
+			.getLogger(StringSimilarity.class);
 
 	public static int levPerWord(String a, String b) {
 		// a = a.toUpperCase();
@@ -32,41 +38,117 @@ public class StringSimilarity {
 
 		String[] aa = a.split(" ");
 		String[] bb = b.split(" ");
-		int distance = 0, curdist = 0;
-		int i = 0;
+		int distance = 0, curdist = 0, totdist = 0;
+		int k = 0;
+		int simNumbers = 0;// in case they have numbers in comon
+		Integer af = null, bf = null;
 
-		for (String sa : aa) {
-			if (sa.length() > StandartResponses.DISMIS_WORD) {
-				for (String sb : bb) {
-					if (sb.length() > StandartResponses.DISMIS_WORD) {
-						curdist = levPerWord(sa, sb);
+		// for (String sa : aa) {
+		// if (sa.length() > StandartResponses.DISMIS_WORD) {
+		// for (String sb : bb) {
+		// if (sb.length() > StandartResponses.DISMIS_WORD) {
+		// curdist = levPerWord(sa, sb);
+		// if (curdist < StandartResponses.LEV_DISTANCE) {
+		// i++;
+		// }
+		// distance += curdist;
+		// }}}}
+
+		/*
+		 * for every word of aa compare it with all words from bb. If one of
+		 * them curdist<2 -> equal; then dismis all distances else add them to
+		 * the total. Set the found word to null so that it will not be counted
+		 * twice.**************************************************************
+		 * atention should be payed to nrs with digits s<= (dismis word length
+		 * {2 letters}). If they are present they are stored and compared
+		 */
+		boolean aflag = false, bflag = false;
+		for (int i = 0; i < aa.length; i++) {
+			if (aa[i].length() < StandartResponses.DISMIS_WORD) {
+				continue;
+			}
+			for (int j = 0; j < bb.length; j++) {
+				if (bb[j] != null)
+					if (bb[j].length() < StandartResponses.DISMIS_WORD) {
+						continue;
+					} else {
+						curdist = levPerWord(aa[i], bb[j]);
 						if (curdist < StandartResponses.LEV_DISTANCE) {
-							i++;
+							k++;
+							bb[j] = null;
+							distance = 0;
+							// break;
 						}
 						distance += curdist;
-
 					}
-				}
+			}// for j
+			totdist += distance;
+		}
+
+		for (int i = 0; i < aa.length; i++) {
+			if (aa[i].length() < StandartResponses.DISMIS_WORD) {
+				logger.info(aa[i]);
+				af = dismisCheck(aa[i]);
+			} else {
+				continue;
+			}
+			for (int j = 0; j < bb.length; j++) {
+				if (bb[j] != null)
+					if (bb[j].length() < StandartResponses.DISMIS_WORD) {
+						logger.info(bb[i]);
+						bf=dismisCheck(bb[i]);
+						try {
+							if (af != null && null != bf) {
+								if (af == bf) {
+									simNumbers++;
+								} else {
+									simNumbers--;
+								}
+							}
+						} catch (Exception e) {
+							// e.printStackTrace();
+						}
+					}
 			}
 		}
+
+		// make usage of similar or diverse numbers
+		if (simNumbers < 0) {
+			totdist += 10;
+		}
+		if (simNumbers > 0) {
+			k += 1;
+		}
+
 		// total errors divided by sum of +3 letter words that are <2 simmilar
-		if (i < 1) {
-			return distance +StandartResponses.LEV_DISTANCE;
+		if (k < 1) {
+			return totdist + StandartResponses.LEV_DISTANCE;
 		} else {
-			return (distance / (2*i));
+			return (totdist / (2 * k));
 		}
 	}
 
-	// an option for searching terms with more than one word
-	// compare only the more near length word ??
-	// cartesian compare of the terms ???
-
-	// public static void main(String [] args) {
-	// String [] data = { "kitten", "sitting", "saturday", "sunday",
-	// "rosettacode", "raisethysword" };
-	// for (int i = 0; i < data.length; i += 2)
-	// System.out.println("distance(" + data[i] + ", " + data[i+1] + ") = " +
-	// distance(data[i], data[i+1]));
-	// }
-
+	private static Integer dismisCheck(String s) {
+		Integer af = null;
+		s = s.replace(".", "");
+		logger.info("--------------:special {}",s);
+		try {
+			af = Integer.parseInt(s);
+		} catch (Exception e) {
+			logger.warn("Not a valid string {}", s);
+		}
+		if (s.contains("I")) {
+			af = 1;
+		}
+		if (s.contains("II")) {
+			af = 2;
+		}
+		if (s.contains("III")) {
+			af = 3;
+		}
+		if (s.equals("V")) {
+			af = 5;
+		}
+		return af;
+	}
 }

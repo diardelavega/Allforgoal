@@ -43,6 +43,8 @@ public class MainTry {
 
 	public static void main(String[] args) throws SQLException, IOException {
 		 initCCAllStruct();
+		 
+		 
 		// Demo.initCCAllStruct();
 		// MatchObj mobj = new MatchObj();
 		// mobj.setT1("hua");
@@ -89,6 +91,11 @@ public class MainTry {
 //		}
 //		System.out.println(nn.get("c"));
 		// log(nn.get("c")+"");
+		
+//		Integer a=null,b=null;
+//		if(a==b){
+//			log("AAAAAA");
+//		}
 
 	}
 
@@ -115,6 +122,13 @@ public class MainTry {
 		} else {
 			System.out
 					.println("Country competition structure not initialized corectly");
+		}
+		cp.readsdStruct(conn.getConn());
+		if (cp.sdsList.size() > 0) {
+			System.out.println("Country competition Scorer Data structure is ready");
+		} else {
+			System.out
+					.println("Country competition scorer data structure not initialized corectly");
 		}
 		cp.readAllowedComps();
 

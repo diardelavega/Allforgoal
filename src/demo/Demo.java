@@ -21,6 +21,7 @@ import calculate.MatchToTableRenewal;
 import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
 import basicStruct.MatchObj;
+import basicStruct.ScorerDataStruct;
 import dbtry.Conn;
 import extra.Status;
 import extra.StringSimilarity;
@@ -43,34 +44,40 @@ public class Demo {
 		// {// fill ccallstruct from site and store to db
 		// Soccerpunter_homePage sp = new Soccerpunter_homePage();
 		// sp.goGetCompetitions();
+//		CountryCompetition cc = new CountryCompetition();
+		// cc.storeCCAllStruct();
 		// }
 
 		{
-			initCCAllStruct();
+//			initCCAllStruct();
+//			for (int i=0;i<cc.sdsList.size();i++){
+//				System.out.print(i+"\t");
+//				cc.sdsList.get(i).printer();
+//			}
 			//
-			String link = CountryCompetition.ccasList.get(52).getCompLink();
-			int compId = CountryCompetition.ccasList.get(52).getCompId();
-			System.out.println(link);
-			MatchesList ml = new MatchesList();
-
-			// ----------------TEST-----------
-			SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-			LocalDate dd = spm.getLatestMatchesDate(compId);
-			spm.remainingResultsGraber(link, compId, dd, true);
-			log(dd.toString());
-
-			// -------------AFTER GRAB Calcualate & Put to Predfile
-			MatchToTableRenewal mttr;
-			for (Integer key : MatchesList.readMatches.keySet()) {
-				mttr = new MatchToTableRenewal(
-						MatchesList.readMatches.get(key), key);
-				MatchToTableRenewal.afh.openTrainOutput(compId);
-				mttr.calculate();
-				MatchToTableRenewal.afh.closeOutput();
-			}
-			// --------------- insert matches to db
-			
-			ml.insertMatches();
+			// String link = CountryCompetition.ccasList.get(52).getCompLink();
+			// int compId = CountryCompetition.ccasList.get(52).getCompId();
+			// System.out.println(link);
+			// MatchesList ml = new MatchesList();
+			//
+			// // ----------------TEST-----------
+			// SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+			// LocalDate dd = spm.getLatestMatchesDate(compId);
+			// spm.remainingResultsGraber(link, compId, dd, true);
+			// log(dd.toString());
+			//
+			// // -------------AFTER GRAB Calcualate & Put to Predfile
+			// MatchToTableRenewal mttr;
+			// for (Integer key : MatchesList.readMatches.keySet()) {
+			// mttr = new MatchToTableRenewal(
+			// MatchesList.readMatches.get(key), key);
+			// MatchToTableRenewal.afh.openTrainOutput(compId);
+			// mttr.calculate();
+			// MatchToTableRenewal.afh.closeOutput();
+			// }
+			// // --------------- insert matches to db
+			//
+			// ml.insertMatches();
 
 		}
 
@@ -147,6 +154,8 @@ public class Demo {
 		// ajaxGrabber();
 
 		// bar();
+		printest();
+		
 	}
 
 	private static void log(String s) {
@@ -184,6 +193,14 @@ public class Demo {
 			System.out
 					.println("Country competition structure not initialized corectly");
 		}
+		cp.readsdStruct(conn.getConn());
+		if (cp.sdsList.size() > 0) {
+			System.out
+					.println("Country competition Scorer Data structure is ready");
+		} else {
+			System.out
+					.println("Country competition scorer data structure not initialized corectly");
+		}
 		cp.readAllowedComps();
 
 		Unilang ul = new Unilang();
@@ -191,6 +208,13 @@ public class Demo {
 		conn.close();
 	}
 
+	public static void printest(){
+		String s="aas.1";
+		log(s.replace(".", ""));
+		log(s.replaceAll("a", "1"));
+		log(s.replaceFirst("?", "2"));
+	}
+	
 	public static void foo() {
 		LocalDate d1 = LocalDate.now();
 		LocalDate pd = LocalDate.of(2016, Month.JANUARY, 12);
@@ -203,16 +227,16 @@ public class Demo {
 	}
 
 	public static void bar() {
-		 Map<String, Integer> mm = new HashMap<>();
-		 mm.put("A", 0);
-		 mm.put("a", 1);
-		 mm.put("b", 2);
-//		 mm.put("c", 3);
-//		 mm.put("e", 4);
-//		 mm.put("f", 5);
-		log(mm.get("c")+"");
-//		Map<String,I>
-		
+		Map<String, Integer> mm = new HashMap<>();
+		mm.put("A", 0);
+		mm.put("a", 1);
+		mm.put("b", 2);
+		// mm.put("c", 3);
+		// mm.put("e", 4);
+		// mm.put("f", 5);
+		log(mm.get("c") + "");
+		// Map<String,I>
+
 		//
 		// String c = null;
 		// System.out.println(mm.get(c));
@@ -229,7 +253,7 @@ public class Demo {
 		// DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		// logger.info(mDat.toString());
 
-//		LocalDate mDat = LocalDate.parse("2016-01-12");
-//		logger.info(mDat.plusDays(2).toString());
+		// LocalDate mDat = LocalDate.parse("2016-01-12");
+		// logger.info(mDat.plusDays(2).toString());
 	}
 }

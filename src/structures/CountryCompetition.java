@@ -20,6 +20,7 @@ import com.sun.org.apache.bcel.internal.generic.ALOAD;
 import basicStruct.CCAllStruct;
 import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
+import basicStruct.ScorerDataStruct;
 import dbtry.Conn;
 import demo.Demo;
 import diskStore.FileHandler;
@@ -42,10 +43,33 @@ public class CountryCompetition {
 
 	public static final String baseUrl = "http://www.soccerpunter.com";
 	public static List<CCAllStruct> ccasList = new ArrayList<>();
+	public static List<ScorerDataStruct> sdsList = new ArrayList<>();
+
 	public static Map<String, Integer> allowedcomps = new HashMap<>();
 
 	public CountryCompetition() {
 		super();
+	}
+
+	public void readsdStruct(Connection conn) throws SQLException {
+		Statement st = conn.createStatement();
+		ResultSet rs = st
+				.executeQuery("SELECT * FROM scoreDataStruct ORDER BY country ;");
+		ScorerDataStruct sds;
+		while (rs.next()) {
+			sds = new ScorerDataStruct();
+			sds.setCompId(rs.getInt("compid"));
+			sds.setCountry(rs.getString("country"));
+			sds.setCompetition(rs.getString("competition"));
+			sds.setDb(rs.getInt("db"));
+			sdsList.add(sds);
+		}
+		try {
+			st.close();
+			rs.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void readCCAllStruct(Connection conn) throws SQLException {
@@ -76,7 +100,7 @@ public class CountryCompetition {
 		// write the comp country to the db
 		Conn conn = new Conn();
 		conn.open();
-		String sql = "INSERT INTO ccallstruct VALUES (?,?,?,?,?,?)";
+		String sql = "INSERT INTO ccallstruct2 VALUES (?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(sql);
 
 		for (CCAllStruct obj : ccasList) {
@@ -111,7 +135,7 @@ public class CountryCompetition {
 		 * without it (with equality)
 		 */
 
-		int idx = binarySearchCountry(country, 0, ccasList.size());
+		int idx = binarySearchCountry(country, 0, ccasList.size() - 1);
 		if (idx < 0) {// country not found
 			return idx;
 		} else {// country found, search for competition
@@ -123,7 +147,9 @@ public class CountryCompetition {
 	}
 
 	public int searchCompBinaryLevel(String country, int level) {
-		int idx = binarySearchCountry(country, 0, ccasList.size());
+		int idx = binarySearchCountry(country, 0, ccasList.size() - 1);
+		if (idx < 0)
+			return idx;
 
 		int i = idx;
 		while (ccasList.get(i).getCountry().equals(country)) {
@@ -185,30 +211,104 @@ public class CountryCompetition {
 		 * for. Keep in mind the countries are alphabetically sorted and present
 		 * more than once (one country many competitions)
 		 */
-		try {
-//		int mid ;
-		
-			if (min > max) {
-				return -1;
-			}
-			int mid= (max + min) / 2;
 
-			if (ccasList.get(mid).getCountry().equals(country)) {
-				return mid;
-			} else if (ccasList.get(mid).getCountry().compareTo(country) > 0) {
-				return binarySearchCountry(country, min, mid - 1);
-			} else {
-				return binarySearchCountry(country, mid + 1, max);
+		if (min > max) {
+			return -1;
+		}
+		int mid = (max + min) / 2;
+
+		logger.info("{} - {} ", ccasList.get(mid).getCountry(), country);
+		if (ccasList.get(mid).getCountry().equals(country)) {
+			return mid;
+		} else if (ccasList.get(mid).getCountry().compareTo(country) > 0) {
+			return binarySearchCountry(country, min, mid - 1);
+		} else {
+			return binarySearchCountry(country, mid + 1, max);
+		}
+	}
+
+	// ---------SCORER SEARCH------------------------
+	public int scorerCompIdSearch(String country, String competition) {
+		int idx = binaryScorerSearchCountry(country, 0, sdsList.size());
+		if (idx < 0) {// country not found
+			return idx;
+		} else {// country found, search for competition
+			idx = smallScorerCompidxSearch(idx, country, competition);
+			// allowedcomps.put(compName, idx);
+			return idx;
+
+		}
+	}
+
+	public int scorerFullSearch(String country, String competition) {
+		/*
+		 * search the whole db table to find the competition. Since the Xscore
+		 * has many competitions with the same name, and some competitions with
+		 * alternative names wi use the country aswell to uniquely specify the
+		 * competition. Also we use the levenstain distance for all the
+		 * alternative competitions names a competition might have
+		 */
+		for (int i = 0; i < sdsList.size(); i++) {
+			if (StringSimilarity.levenshteinDistance(sdsList.get(i)
+					.getCountry(), country) <= StandartResponses.LEV_DISTANCE) {
+				for (String s : sdsList.get(i).altComps()) {
+					if (StringSimilarity.levenshteinDistance(s, competition) <= StandartResponses.LEV_DISTANCE) {
+
+					}
+				}
+
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.info("ERROR {}");
-			e.printStackTrace();
+
 		}
 		return -1;
 	}
 
-	// ---------------------------------
+	private int binaryScorerSearchCountry(String country, int min, int max) {
+		/*
+		 * the idx might bee a few positions away from compId because we renamed
+		 * the republic korea to south korea keeping the compid similar to the
+		 * soccer punter comp id for the analog competition
+		 */
+		if (min > max) {
+			return -1;
+		}
+		int mid = (max + min) / 2;
+		logger.info("{} - {} ", sdsList.get(mid).getCountry(), country);
+		if (sdsList.get(mid).getCountry().equals(country)) {
+			return mid;
+		} else if (sdsList.get(mid).getCountry().compareTo(country) > 0) {
+			return binaryScorerSearchCountry(country, min, mid - 1);
+		} else {
+			return binaryScorerSearchCountry(country, mid + 1, max);
+		}
+	}
+
+	private int smallScorerCompidxSearch(int initial, String country,
+			String comp) {
+		/* a small loob for all the competitions a country might have */
+		int i = initial;
+		// with levistein
+		while (sdsList.get(i).getCountry().equals(country)) {
+			for (String s : sdsList.get(i).altComps()) {
+				if (StringSimilarity.levenshteinDistance(s, comp) <= StandartResponses.LEV_DISTANCE) {
+					return i;
+				}
+			}
+			i++;
+		}
+		i = initial;
+		while (sdsList.get(i).getCountry().equals(country)) {
+			for (String s : sdsList.get(i).altComps()) {
+				if (StringSimilarity.levenshteinDistance(s, comp) <= StandartResponses.LEV_DISTANCE) {
+					return i;
+				}
+			}
+			i--;
+		}
+		return -1;
+	}
+
+	// -----------------------------------------------------------
 	public int searchComp(String compName) {
 		/*
 		 * search the competitions list and from the name return its id & index
@@ -235,7 +335,8 @@ public class CountryCompetition {
 		for (int i = 0; i < ccasList.size(); i++) {
 			// if (ccasList.get(i).getDb() == 1) {//Original_Line
 			if (b) {
-				dist = StringSimilarity.levenshteinDistance(compName, ccasList .get(i).getCompetition());
+				dist = StringSimilarity.levenshteinDistance(compName, ccasList
+						.get(i).getCompetition());
 				if (dist <= 2) {
 					return i;
 				} else {
@@ -246,26 +347,13 @@ public class CountryCompetition {
 				} // else
 			} else {
 				if (compName.equalsIgnoreCase(ccasList.get(i).getCompetition())) {
-					return i; //IDX
+					return i; // IDX
 				}
 			}
 			// } // db ==1 //Original_Line
 		}// for
 
-		return minDistanceCompIdx;//IDX
-	}
-
-	public int fullSearch(String country, String compName) {
-		// int retId = searchBinaryComp(country, compName);
-		// if (retId > 0) {
-		// if (ccasList.get(retId).getDb() == 1) {
-		// return retId;
-		// }
-		// return -1;
-		// } else {
-		// return searchCompUsable(compName);
-		// }
-		return -1;
+		return minDistanceCompIdx;// IDX
 	}
 
 	public void addAllowedComp(String comp, int idx) {

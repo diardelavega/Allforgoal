@@ -31,6 +31,7 @@ public class Strategy {
 	private LocalDate lastDatCheck;// = LocalDate.now().minusDays(1);
 	private TempMatchFunctions tmf = new TempMatchFunctions();
 	MatchGetter score = new MatchGetter();
+//	XscoreUpComing score =new XscoreUpComing();
 	private int periode = 6; // 6 hours
 
 	public void task() throws SQLException, IOException {
