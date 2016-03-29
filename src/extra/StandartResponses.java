@@ -5,4 +5,5 @@ public class StandartResponses {
 
 	public static int LEV_DISTANCE = 2;
 	public static int DISMIS_WORD = 2;
+	public static int TEAM_DIST = 3;
 }

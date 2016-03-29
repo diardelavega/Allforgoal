@@ -81,7 +81,7 @@ public class Strategy {
 	}
 
 	public void tryTask() throws SQLException {
-//		 tmf.openDBConn();
+		 tmf.openDBConn();
 		try {
 
 			// TODO integrate the test file and data file for prediction
@@ -94,7 +94,7 @@ public class Strategy {
 				b91.scrapBariPage(LocalDate.now());
 //				b91.scrapBariPage(LocalDate.now().plusDays(1));
 				// tmf.corelatePunterXScorerTeams();
-//				 tmf.storeToTempMatchesDB();
+				 tmf.storeToTempMatchesDB();
 				score.clearLists();
 				lastDatCheck = LocalDate.now();
 				logger.info("NULL Last Ceck");

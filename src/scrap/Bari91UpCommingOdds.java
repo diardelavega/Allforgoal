@@ -75,8 +75,9 @@ public class Bari91UpCommingOdds {
 			}
 
 			countryCompLevel(cc);// get country, comp, level
+			logger.info("{} {} {}",country,compName,level);
+			
 			int compId = getCompId(cc);
-
 			if (compId >= 0) {// valid comp id; search Scprer matches & add odds
 				if (MatchGetter.schedNewMatches.get(compId) == null) {
 					// there is no such competition matches @ scorer
@@ -84,52 +85,73 @@ public class Bari91UpCommingOdds {
 					continue;
 				}
 
-				String[] teams = tr.getElementsByTag("td").get(2).text()
-						.split(" - ");
+				String[] teams = tr.getElementsByTag("td").get(2).text().split(" - ");
+				// clean nonbreakable space
+				teams[0] = teams[0].replaceFirst("\u00A0", "");
+				teams[1] = teams[1].replaceFirst("\u00A0", "");
 
-				//TODO find the most somilar matches not the ones that are within the parameters
+				// TODO find the most somilar matches not the ones that are
+				// within the parameters
 				for (int i = 0; i < MatchGetter.schedNewMatches.get(compId)
 						.size(); i++) {
 					if ((StringSimilarity.levenshteinDistance(
-							MatchGetter.schedNewMatches.get(compId).get(i)
-									.getT1(), teams[0]) <= StandartResponses.LEV_DISTANCE)
+							MatchGetter.schedNewMatches.get(compId).get(i).getT1(), teams[0]) <= StandartResponses.TEAM_DIST)
 							&& (StringSimilarity.levenshteinDistance(
-									MatchGetter.schedNewMatches.get(compId)
-											.get(i).getT2(), teams[1]) <= StandartResponses.LEV_DISTANCE)) {
+									MatchGetter.schedNewMatches.get(compId) .get(i).getT2(), teams[1]) <= StandartResponses.TEAM_DIST)) {
 						logger.info("T2 Is found similar");
 
 						float _1 = 1, _x = 1, _2 = 1, _o = 1, _u = 1;
+
 						if (tr.getElementsByTag("td").get(3).text() != " ") {
-							_1 = Float.parseFloat(tr.getElementsByTag("td")
-									.get(3).text());
-							MatchGetter.schedNewMatches.get(compId).get(i)
-									.set_1(_1);
+							try {
+								_1 = Float.parseFloat(tr.getElementsByTag("td")
+										.get(3).text());
+							} catch (NumberFormatException e) {
+							}
+
 						}
 						if (tr.getElementsByTag("td").get(4).text() != " ") {
-							_x = Float.parseFloat(tr.getElementsByTag("td")
-									.get(4).text());
-							MatchGetter.schedNewMatches.get(compId).get(i)
-									.set_1(_x);
+							try {
+								_x = Float.parseFloat(tr.getElementsByTag("td")
+										.get(4).text());
+							} catch (NumberFormatException e) {
+							}
+
 						}
 						if (tr.getElementsByTag("td").get(5).text() != " ") {
-							_2 = Float.parseFloat(tr.getElementsByTag("td")
-									.get(5).text());
-							MatchGetter.schedNewMatches.get(compId).get(i)
-									.set_1(_2);
+							try {
+								_2 = Float.parseFloat(tr.getElementsByTag("td")
+										.get(5).text());
+							} catch (NumberFormatException e) {
+							}
+
 						}
 						if (tr.getElementsByTag("td").get(6).text() != " ") {
-							_o = Float.parseFloat(tr.getElementsByTag("td")
-									.get(6).text());
-							MatchGetter.schedNewMatches.get(compId).get(i)
-									.set_1(_o);
+							try {
+								_o = Float.parseFloat(tr.getElementsByTag("td")
+										.get(6).text());
+							} catch (NumberFormatException e) {
+							}
+
 						}
 						if (tr.getElementsByTag("td").get(7).text() != " ") {
-							_u = Float.parseFloat(tr.getElementsByTag("td")
-									.get(7).text());
-							MatchGetter.schedNewMatches.get(compId).get(i)
-									.set_1(_u);
-						}
+							try {
+								_u = Float.parseFloat(tr.getElementsByTag("td")
+										.get(7).text());
+							} catch (NumberFormatException e) {
+							}
 
+						}
+						MatchGetter.schedNewMatches.get(compId).get(i)
+								.set_1(_1);
+						MatchGetter.schedNewMatches.get(compId).get(i)
+								.set_1(_x);
+						MatchGetter.schedNewMatches.get(compId).get(i)
+								.set_1(_2);
+						MatchGetter.schedNewMatches.get(compId).get(i)
+								.set_1(_o);
+						MatchGetter.schedNewMatches.get(compId).get(i)
+								.set_1(_u);
 					}// if levinsteins
 				}// for
 			}// if compId >=0
@@ -142,22 +164,25 @@ public class Bari91UpCommingOdds {
 		 * the index id. If already found before it should be stored in the MAP
 		 * tempBariToCompId for a quick search.
 		 */
-		Integer compId = tempBariToCompId.get(ss);
-		if (compId != null) {
-			return compId;
+		Integer compIdx = tempBariToCompId.get(ss);
+		
+		if (compIdx != null) {
+			return compIdx;
 		}
-
+		
 		if (level != -1) {
 			// binary search for country then partial search for level
-			compId = cc.searchCompBinaryLevel(country, level);
+			compIdx = cc.searchCompBinaryLevel(country, level);
 		} else {
-			compId = cc.searchCompBinary(country, compName, true);
+			compIdx = cc.searchCompBinary(country, compName, true);
 		}
-		if (compId >= 0) {
-			tempBariToCompId.put(ss, compId + 1);
+		if (compIdx >= 0) {
+			tempBariToCompId.put(ss, cc.ccasList.get(compIdx).getCompId());
+			return cc.ccasList.get(compIdx).getCompId();
+		} else {
+			return compIdx;//-1
 		}
 
-		return compId + 1;
 	}
 
 	private void countryCompLevel(String s) {

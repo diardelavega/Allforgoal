@@ -229,7 +229,7 @@ public class CountryCompetition {
 
 	// ---------SCORER SEARCH------------------------
 	public int scorerCompIdSearch(String country, String competition) {
-		int idx = binaryScorerSearchCountry(country, 0, sdsList.size());
+		int idx = binaryScorerSearchCountry(country, 0, sdsList.size()-1);
 		if (idx < 0) {// country not found
 			return idx;
 		} else {// country found, search for competition

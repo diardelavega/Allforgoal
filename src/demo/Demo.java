@@ -209,10 +209,14 @@ public class Demo {
 	}
 
 	public static void printest(){
-		String s="aas.1";
-		log(s.replace(".", ""));
-		log(s.replaceAll("a", "1"));
-		log(s.replaceFirst("?", "2"));
+		String s="aa sa. 1";
+		log(s);
+		log(s.replace(' ', '_'));
+		log(s.replace(" ", "_"));
+		log(s.replace(" ", "_"));
+		log(s. replaceAll(" ", "_"));
+		log(s.replaceFirst(" ", "_"));
+		
 	}
 	
 	public static void foo() {
