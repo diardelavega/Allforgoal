@@ -43,26 +43,10 @@ public class MainTry {
 
 	public static void main(String[] args) throws SQLException, IOException {
 		 initCCAllStruct();
-		 
-		 
-		// Demo.initCCAllStruct();
-		// MatchObj mobj = new MatchObj();
-		// mobj.setT1("hua");
-		// mobj.setT2("borxh");
-		// mobj.setComId(3);
-		//
-		// TempMatchFunctions tmf= new TempMatchFunctions();
-		// tmf.incomeTempMatchesList.add(mobj);
-		// tmf.storeToTempMatchesDB();
-
-		// log( StringSimilarity.levenshteinDistance("championship",
-		// "CHAMPIONSHIP")+"");
-		// log( StringSimilarity.levPerWord("champ", "CHAMp")+"");
-		// log(CountryCompetition.ccasList.get(5 - 1).getCompetition());
-		// log(CountryCompetition.ccasList.get(5 - 1).getCompId() + "");
-
 		 Strategy strategy = new Strategy();
 		 strategy.tryTask();
+		 
+		 
 		// strategy .periodic();
 		// corelator();
 		// LocalDate ld =LocalDate.now();
@@ -70,32 +54,8 @@ public class MainTry {
 		// Soccerpunter_homePage sch = new Soccerpunter_homePage();
 		// sch.goGetCompetitions();
 		// filer();
-
-//		Map<Integer, List<Integer>> nn = new HashMap<>();
-//
-//		List<Integer> il = new ArrayList<Integer>();
-//		il.add(1);
-//		il.add(1);
-//		il.add(1);
-//		nn.put(1, il);
-//
-//		il = new ArrayList<Integer>();
-//		il.add(2);
-//		il.add(2);
-//		il.add(2);
-//		nn.put(2, il);
-//
-//		for (int key : nn.keySet()) {
-//			for (Integer i : nn.get(key))
-//				System.out.println(i);
-//		}
-//		System.out.println(nn.get("c"));
-		// log(nn.get("c")+"");
-		
-//		Integer a=null,b=null;
-//		if(a==b){
-//			log("AAAAAA");
-//		}
+//		System.out.println("Uganda".compareTo("Usa"));
+//	
 
 	}
 

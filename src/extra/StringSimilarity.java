@@ -34,7 +34,9 @@ public class StringSimilarity {
 		// distances
 
 		a = a.toLowerCase();
+		a = a.replaceAll("\u00A0", "");
 		b = b.toLowerCase();
+		b = b.replaceAll("\u00A0", "");
 
 		String[] aa = a.split(" ");
 		String[] bb = b.split(" ");
@@ -64,12 +66,15 @@ public class StringSimilarity {
 		 */
 		boolean aflag = false, bflag = false;
 		for (int i = 0; i < aa.length; i++) {
-			if (aa[i].length() < StandartResponses.DISMIS_WORD) {
+			logger.info("'aa[i]' {}",aa[i]);
+			if (aa[i].length() <= StandartResponses.DISMIS_WORD) {
 				continue;
 			}
 			for (int j = 0; j < bb.length; j++) {
+				logger.info("'bb[i]' {}",bb[j]);
 				if (bb[j] != null)
-					if (bb[j].length() < StandartResponses.DISMIS_WORD) {
+					
+					if (bb[j].length() <= StandartResponses.DISMIS_WORD) {
 						continue;
 					} else {
 						curdist = levPerWord(aa[i], bb[j]);
@@ -86,17 +91,15 @@ public class StringSimilarity {
 		}
 
 		for (int i = 0; i < aa.length; i++) {
-			if (aa[i].length() < StandartResponses.DISMIS_WORD) {
-				logger.info(aa[i]);
+			if (aa[i].length() <= StandartResponses.DISMIS_WORD) {
 				af = dismisCheck(aa[i]);
 			} else {
 				continue;
 			}
 			for (int j = 0; j < bb.length; j++) {
 				if (bb[j] != null)
-					if (bb[j].length() < StandartResponses.DISMIS_WORD) {
-						logger.info(bb[i]);
-						bf=dismisCheck(bb[i]);
+					if (bb[j].length() <= StandartResponses.DISMIS_WORD) {
+						bf = dismisCheck(bb[j]);
 						try {
 							if (af != null && null != bf) {
 								if (af == bf) {
@@ -124,29 +127,29 @@ public class StringSimilarity {
 		if (k < 1) {
 			return totdist + StandartResponses.LEV_DISTANCE;
 		} else {
-			return (totdist / (2 * k));
+			return (totdist / (2 * (k+1)));
 		}
 	}
 
 	private static Integer dismisCheck(String s) {
 		Integer af = null;
 		s = s.replace(".", "");
-		logger.info("--------------:special {}",s);
+		// logger.info("--------------:special {}",s);
 		try {
 			af = Integer.parseInt(s);
 		} catch (Exception e) {
-			logger.warn("Not a valid string {}", s);
+			// logger.warn("Not a valid string {}", s);
 		}
-		if (s.contains("I")) {
+		if (s.contains("i")) {
 			af = 1;
 		}
-		if (s.contains("II")) {
+		if (s.contains("ii")) {
 			af = 2;
 		}
-		if (s.contains("III")) {
+		if (s.contains("iii")) {
 			af = 3;
 		}
-		if (s.equals("V")) {
+		if (s.equals("v")) {
 			af = 5;
 		}
 		return af;

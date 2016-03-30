@@ -1,7 +1,16 @@
 package test;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +24,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.corba.se.impl.orbutil.ObjectWriter;
 
 import structures.CountryCompetition;
 import basicStruct.MatchObj;
@@ -37,10 +48,10 @@ public class MatchGetter {
 
 	private void scrapMatchesDate(LocalDate dat, String _status)
 			throws IOException {
-		// get matches of the date from xScored.soccer; collect only matches
-		// based on the specified status. The matches are stored into their
-		// respective arrays
-
+		 /*get matches of the date from xScored.soccer; collect only matches
+		 based on the specified status. The matches are stored into their
+		 respective arrays
+*/
 		String url = allDateFormater(dat);
 		Document doc = null;
 		try {
@@ -100,9 +111,10 @@ logger.info("{}  {}",clasVal[0],clasVal[4]);
 					// mobj.setDat(Date.valueOf(dat));
 					// mobj.setComId(compIdx + 1);
 					// schedNewMatches.add(mobj);
-					 logger.info("country {}  competition {} t1-{}  t2-{}",clasVal[0], clasVal[4], t1, t2);
+					 
 
 					if (_status.equals(Status.SCHEDULED)&& (status.equals(Status.SCHEDULED) || status .equals(Status.FTR))) {
+						logger.info("country {}  competition {}  compId {}  t1-{}  t2-{}",clasVal[0], clasVal[4],compIdx, t1, t2);
 						mobj.setDat(Date.valueOf(dat));
 						mobj.setComId(compIdx );
 //						schedNewMatches.add(mobj);
@@ -237,7 +249,7 @@ logger.info("{}  {}",clasVal[0],clasVal[4]);
 		 */
 		Integer searchCompIdx = cc.allowedcomps.get(couComComb(country, comp));
 		if (searchCompIdx != null) {
-			return cc.ccasList.get(searchCompIdx).getCompId();
+			return searchCompIdx;
 		} else {
 			// search for country&comp in scorerDataStruct
 			searchCompIdx = cc.scorerCompIdSearch(country, comp);
@@ -254,4 +266,42 @@ logger.info("{}  {}",clasVal[0],clasVal[4]);
 	private String couComComb(String country, String competition) {
 		return country + "_" + competition;
 	}
+
+	//////////////STORE & READ//////////////////
+	public void storeSched(){
+		File dir =new File("C:/m/");
+		File sch=new File(dir+"/sch");
+		if(!dir.exists()){
+			dir.mkdir();
+		}
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(sch));
+			oos.writeObject(schedNewMatches);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void readSched(){
+		File dir =new File("C:/m/");
+		File sch=new File(dir+"/sch");
+		if(!dir.exists()){
+			dir.mkdir();
+		}
+		
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(sch));
+			schedNewMatches= (Map<Integer, List<MatchObj>>) ois.readObject();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }

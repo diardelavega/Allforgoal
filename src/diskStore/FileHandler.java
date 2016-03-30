@@ -11,12 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import scrap.Bari91UpCommingOdds;
 import structures.CountryCompetition;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import extra.Unilang;
+import basicStruct.BariToScorerTuple;
 import basicStruct.MatchObj;
 import basicStruct.TupleCountryCompTermId;
 import basicStruct.TupleIdTerm;
@@ -26,16 +28,20 @@ public class FileHandler {
 
 	Gson gson = new Gson();
 	private File bastFileFolder = new File("C:/BastData");
-//	private File csvFile = new File(bastFileFolder + "/matches.csv");
-//	private File mDataFile = new File(bastFileFolder + "/matchData.csv");
+	// private File csvFile = new File(bastFileFolder + "/matches.csv");
+	// private File mDataFile = new File(bastFileFolder + "/matchData.csv");
 
 	private File dataFilesFolder = new File(bastFileFolder + "/data_files");
 	private File unilangCcasTerms = new File(dataFilesFolder + "/ccasTerms");
 	private File unilangScorerTerms = new File(dataFilesFolder + "/scorerTerms");
 	private File unilangCcasTeams = new File(dataFilesFolder + "/ccasTeams");
 	private File unilangScorerTeams = new File(dataFilesFolder + "/scorerTeams");
-	private File allowedComps = new File(dataFilesFolder + "/allowedCompetitions");
-	private File unfoundScoreTerms = new File(dataFilesFolder + "/unfoundScoreTerms");
+	private File allowedComps = new File(dataFilesFolder
+			+ "/allowedCompetitions");
+	private File unfoundScoreTerms = new File(dataFilesFolder
+			+ "/unfoundScoreTerms");
+	private File bariToScorerTerms = new File(dataFilesFolder
+			+ "/bariToScorerTerms");
 
 	private BufferedWriter bw = null;
 
@@ -66,7 +72,7 @@ public class FileHandler {
 	public void readUnilangAllCcasTerms() throws JsonSyntaxException,
 			IOException {
 		// read from file and put directly to Unilang map
-		if(!unilangCcasTerms.exists()){
+		if (!unilangCcasTerms.exists()) {
 			unilangCcasTerms.createNewFile();
 			return;
 		}
@@ -101,7 +107,7 @@ public class FileHandler {
 	public void readUnilangAllCcasTeams() throws JsonSyntaxException,
 			IOException {
 		// read from file and put directly to Unilang map
-		if(!unilangCcasTeams.exists()){
+		if (!unilangCcasTeams.exists()) {
 			unilangCcasTeams.createNewFile();
 			return;
 		}
@@ -136,11 +142,12 @@ public class FileHandler {
 	public void readUnilangAllScorerTerms() throws JsonSyntaxException,
 			IOException {
 		// read from file and put directly to Unilang map
-		if(!unilangScorerTerms.exists()){
+		if (!unilangScorerTerms.exists()) {
 			unilangScorerTerms.createNewFile();
 			return;
 		}
-		BufferedReader br = new BufferedReader(new FileReader(unilangScorerTerms));
+		BufferedReader br = new BufferedReader(new FileReader(
+				unilangScorerTerms));
 		String line;
 		while ((line = br.readLine()) != null) {
 			TupleTermId ti = gson.fromJson(line, TupleTermId.class);
@@ -170,7 +177,7 @@ public class FileHandler {
 
 	public void readUnilangAllScorerTeams() throws JsonSyntaxException,
 			IOException {
-		if(!unilangScorerTeams.exists()){
+		if (!unilangScorerTeams.exists()) {
 			unilangScorerTeams.createNewFile();
 			return;
 		}
@@ -188,9 +195,8 @@ public class FileHandler {
 	public void appendAllowedCompetitions(String compName, int compId)
 			throws IOException {
 		// the compName comes from xscorer and compId is from cca_structure
-//		format Map<xscoreCompName, ccasCompId>
-		
-		
+		// format Map<xscoreCompName, ccasCompId>
+
 		bw = new BufferedWriter(new FileWriter(allowedComps, true));
 		TupleTermId ti = new TupleTermId(compName, compId);
 		bw.write(gson.toJson(ti) + "\n");
@@ -199,7 +205,7 @@ public class FileHandler {
 
 	public void readAllowedCompetitions() throws JsonSyntaxException,
 			IOException {
-		if(!allowedComps.exists()){
+		if (!allowedComps.exists()) {
 			allowedComps.createNewFile();
 			return;
 		}
@@ -211,11 +217,39 @@ public class FileHandler {
 		}
 		br.close();
 	}
-//-------------
-	public void appendUnfoundTerms(String cnt,String cmp, int i) throws IOException{
-		bw = new BufferedWriter(new FileWriter(unfoundScoreTerms,true));
-		TupleCountryCompTermId ccti = new TupleCountryCompTermId(cnt,cmp,i);
+
+	// -------------
+	public void appendUnfoundTerms(String cnt, String cmp, int i)
+			throws IOException {
+		bw = new BufferedWriter(new FileWriter(unfoundScoreTerms, true));
+		TupleCountryCompTermId ccti = new TupleCountryCompTermId(cnt, cmp, i);
 		bw.write(gson.toJson(ccti) + "\n");
 		bw.close();
 	}
+
+	// -------------BariToScorer
+	public void apendBariToScorer(String b, String s) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(
+				bariToScorerTerms, true));
+		BariToScorerTuple bts = new BariToScorerTuple(b, s);
+		bw.write(gson.toJson(bts) + "\n");
+		bw.close();
+	}
+
+	public void readBariToScorer() throws IOException {
+		if (!bariToScorerTerms.exists()) {
+			bariToScorerTerms.createNewFile();
+			return;
+		}
+		BufferedReader br = new BufferedReader(
+				new FileReader(bariToScorerTerms));
+		String line;
+		while ((line = br.readLine()) != null) {
+			BariToScorerTuple bts = gson
+					.fromJson(line, BariToScorerTuple.class);
+			Bari91UpCommingOdds.bts.put(bts.getBt(), bts.getSt());
+		}
+		br.close();
+	}
+
 }

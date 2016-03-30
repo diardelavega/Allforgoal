@@ -217,10 +217,10 @@ public class CountryCompetition {
 		}
 		int mid = (max + min) / 2;
 
-		logger.info("{} - {} ", ccasList.get(mid).getCountry(), country);
-		if (ccasList.get(mid).getCountry().equals(country)) {
+		logger.info("{} - {} ", ccasList.get(mid).getCountry().toLowerCase(), country.toLowerCase());
+		if (ccasList.get(mid).getCountry().equalsIgnoreCase(country)) {
 			return mid;
-		} else if (ccasList.get(mid).getCountry().compareTo(country) > 0) {
+		} else if (ccasList.get(mid).getCountry().toLowerCase().compareTo(country.toLowerCase()) > 0) {
 			return binarySearchCountry(country, min, mid - 1);
 		} else {
 			return binarySearchCountry(country, mid + 1, max);
@@ -273,7 +273,7 @@ public class CountryCompetition {
 			return -1;
 		}
 		int mid = (max + min) / 2;
-		logger.info("{} - {} ", sdsList.get(mid).getCountry(), country);
+//		logger.info("{} - {} ", sdsList.get(mid).getCountry(), country);
 		if (sdsList.get(mid).getCountry().equals(country)) {
 			return mid;
 		} else if (sdsList.get(mid).getCountry().compareTo(country) > 0) {
@@ -296,7 +296,7 @@ public class CountryCompetition {
 			}
 			i++;
 		}
-		i = initial;
+		i = initial-1;
 		while (sdsList.get(i).getCountry().equals(country)) {
 			for (String s : sdsList.get(i).altComps()) {
 				if (StringSimilarity.levenshteinDistance(s, comp) <= StandartResponses.LEV_DISTANCE) {
@@ -308,6 +308,9 @@ public class CountryCompetition {
 		return -1;
 	}
 
+	
+	//------Alternative score search-----
+	
 	// -----------------------------------------------------------
 	public int searchComp(String compName) {
 		/*

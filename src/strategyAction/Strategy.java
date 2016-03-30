@@ -31,7 +31,7 @@ public class Strategy {
 	private LocalDate lastDatCheck;// = LocalDate.now().minusDays(1);
 	private TempMatchFunctions tmf = new TempMatchFunctions();
 	MatchGetter score = new MatchGetter();
-//	XscoreUpComing score =new XscoreUpComing();
+	// XscoreUpComing score =new XscoreUpComing();
 	private int periode = 6; // 6 hours
 
 	public void task() throws SQLException, IOException {
@@ -81,26 +81,49 @@ public class Strategy {
 	}
 
 	public void tryTask() throws SQLException {
-		 tmf.openDBConn();
+		// tmf.openDBConn();
 		try {
 
 			// TODO integrate the test file and data file for prediction
 			if (lastDatCheck == null) {
 				// first time ever to check for temp matches
 				// scrap todays matches & tomorrows
-				score.getScheduledToday();
-//				score.getScheduledTomorrow();
+//				 score.getScheduledToday();
+//				 score.storeSched();
+//				 score.clearLists();
+				// logger.info("sched size {}",score.schedNewMatches.size());
+				score.readSched();
+
+//				for (Integer key : score.schedNewMatches.keySet()) {
+//					System.out.println(key+"--------------->");
+//					for (int i = 0; i < score.schedNewMatches.get(key).size(); i++)
+//						score.schedNewMatches.get(key).get(i).printMatch();
+//					System.out.println("-----------------------------\n");
+//				}
+
+				// score.getScheduledTomorrow();
 				Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+				b91.initBari91UpCommingOdds();
 				b91.scrapBariPage(LocalDate.now());
-//				b91.scrapBariPage(LocalDate.now().plusDays(1));
+				// b91.scrapBariPage(LocalDate.now().plusDays(1));
 				// tmf.corelatePunterXScorerTeams();
-				 tmf.storeToTempMatchesDB();
+
+				System.out
+						.println("------------------------------------\n\n\n");
+				for (Integer key : score.schedNewMatches.keySet())
+					for (int i = 0; i < score.schedNewMatches.get(key).size(); i++)
+						score.schedNewMatches.get(key).get(i).printMatch();
+
+				// tmf.storeToTempMatchesDB();
 				score.clearLists();
 				lastDatCheck = LocalDate.now();
 				logger.info("NULL Last Ceck");
 			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} finally {
-			tmf.closeDBConn();
+			// tmf.closeDBConn();
 		}
 	}
 
