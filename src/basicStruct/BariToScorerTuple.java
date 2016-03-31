@@ -31,4 +31,7 @@ public class BariToScorerTuple {
 		this.st = st;
 	}
 
+	public void printer(){
+		System.out.println(bt+"-"+st);
+	}
 }

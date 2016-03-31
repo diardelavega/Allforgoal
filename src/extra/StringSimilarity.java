@@ -33,28 +33,23 @@ public class StringSimilarity {
 		// izraeli teams area all macabi and hapoel ... return a list of
 		// distances
 
-		a = a.toLowerCase();
-		a = a.replaceAll("\u00A0", "");
-		b = b.toLowerCase();
-		b = b.replaceAll("\u00A0", "");
+		a = a.replaceAll("\u00A0", "").toLowerCase();
+		b = b.replaceAll("\u00A0", "").toLowerCase();
 
 		String[] aa = a.split(" ");
 		String[] bb = b.split(" ");
+		String[] cc = null;
+		if (bb.length < aa.length) {
+			// longest on top
+			cc = aa;
+			aa = bb;
+			bb = cc;
+		}
+
 		int distance = 0, curdist = 0, totdist = 0;
 		int k = 0;
 		int simNumbers = 0;// in case they have numbers in comon
 		Integer af = null, bf = null;
-
-		// for (String sa : aa) {
-		// if (sa.length() > StandartResponses.DISMIS_WORD) {
-		// for (String sb : bb) {
-		// if (sb.length() > StandartResponses.DISMIS_WORD) {
-		// curdist = levPerWord(sa, sb);
-		// if (curdist < StandartResponses.LEV_DISTANCE) {
-		// i++;
-		// }
-		// distance += curdist;
-		// }}}}
 
 		/*
 		 * for every word of aa compare it with all words from bb. If one of
@@ -64,16 +59,15 @@ public class StringSimilarity {
 		 * atention should be payed to nrs with digits s<= (dismis word length
 		 * {2 letters}). If they are present they are stored and compared
 		 */
-		boolean aflag = false, bflag = false;
+		// boolean aflag = false, bflag = false;
 		for (int i = 0; i < aa.length; i++) {
-			logger.info("'aa[i]' {}",aa[i]);
+			// logger.info("'{}'",aa[i]);
 			if (aa[i].length() <= StandartResponses.DISMIS_WORD) {
 				continue;
 			}
 			for (int j = 0; j < bb.length; j++) {
-				logger.info("'bb[i]' {}",bb[j]);
+				// logger.info("'{}'",bb[j]);
 				if (bb[j] != null)
-					
 					if (bb[j].length() <= StandartResponses.DISMIS_WORD) {
 						continue;
 					} else {
@@ -103,9 +97,12 @@ public class StringSimilarity {
 						try {
 							if (af != null && null != bf) {
 								if (af == bf) {
+									bb[j] = null;
+									aa[i] = null;
 									simNumbers++;
+									break;
 								} else {
-									simNumbers--;
+									simNumbers -= 2;
 								}
 							}
 						} catch (Exception e) {
@@ -117,7 +114,7 @@ public class StringSimilarity {
 
 		// make usage of similar or diverse numbers
 		if (simNumbers < 0) {
-			totdist += 10;
+			totdist += 20;
 		}
 		if (simNumbers > 0) {
 			k += 1;
@@ -127,7 +124,7 @@ public class StringSimilarity {
 		if (k < 1) {
 			return totdist + StandartResponses.LEV_DISTANCE;
 		} else {
-			return (totdist / (2 * (k+1)));
+			return (totdist / (2 * (k + 1)));
 		}
 	}
 

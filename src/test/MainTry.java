@@ -8,7 +8,9 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,11 +44,10 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException {
-		 initCCAllStruct();
-		 Strategy strategy = new Strategy();
-		 strategy.tryTask();
-		 
-		 
+		initCCAllStruct();
+		Strategy strategy = new Strategy();
+		strategy.tryTask();
+
 		// strategy .periodic();
 		// corelator();
 		// LocalDate ld =LocalDate.now();
@@ -54,9 +55,17 @@ public class MainTry {
 		// Soccerpunter_homePage sch = new Soccerpunter_homePage();
 		// sch.goGetCompetitions();
 		// filer();
-//		System.out.println("Uganda".compareTo("Usa"));
-//	
+		// System.out.println("Uganda".compareTo("Usa"));
+		//
 
+		// dater();
+//		distancer() ;
+	}
+
+	public static void distancer() {
+		String s1 ="LIGA II SERIE 1", s2="LIGA I";
+//		String s1 ="GERMANY  BUNDESLIGA WOMEN", s2="GERMANY  BUNDESLIGA";
+		log(StringSimilarity.levenshteinDistance(s1, s2)+"");
 	}
 
 	public static void corelator() {
@@ -85,7 +94,8 @@ public class MainTry {
 		}
 		cp.readsdStruct(conn.getConn());
 		if (cp.sdsList.size() > 0) {
-			System.out.println("Country competition Scorer Data structure is ready");
+			System.out
+					.println("Country competition Scorer Data structure is ready");
 		} else {
 			System.out
 					.println("Country competition scorer data structure not initialized corectly");
@@ -153,4 +163,13 @@ public class MainTry {
 		br.append("Cha cah! \n");
 		br.close();
 	}
+
+	public static void dater() {
+		LocalDate ld = LocalDate.now();
+		LocalDate ld2 = LocalDate.now().plusDays(3);
+
+		log(Period.between(ld, ld2).getDays() + "");
+
+	}
+
 }

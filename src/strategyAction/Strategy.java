@@ -88,11 +88,11 @@ public class Strategy {
 			if (lastDatCheck == null) {
 				// first time ever to check for temp matches
 				// scrap todays matches & tomorrows
-//				 score.getScheduledToday();
-//				 score.storeSched();
+				 score.getScheduledToday();
+				 score.storeSched();
 //				 score.clearLists();
 				// logger.info("sched size {}",score.schedNewMatches.size());
-				score.readSched();
+//				score.readSched();
 
 //				for (Integer key : score.schedNewMatches.keySet()) {
 //					System.out.println(key+"--------------->");
@@ -116,8 +116,8 @@ public class Strategy {
 
 				// tmf.storeToTempMatchesDB();
 				score.clearLists();
-				lastDatCheck = LocalDate.now();
-				logger.info("NULL Last Ceck");
+//				lastDatCheck = LocalDate.now();
+//				logger.info("NULL Last Ceck");
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

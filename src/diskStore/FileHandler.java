@@ -3,13 +3,19 @@ package diskStore;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.jsoup.nodes.Document;
 
 import scrap.Bari91UpCommingOdds;
 import structures.CountryCompetition;
@@ -18,6 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import extra.Unilang;
+import basicStruct.BariToPunterTuple;
 import basicStruct.BariToScorerTuple;
 import basicStruct.MatchObj;
 import basicStruct.TupleCountryCompTermId;
@@ -42,6 +49,10 @@ public class FileHandler {
 			+ "/unfoundScoreTerms");
 	private File bariToScorerTerms = new File(dataFilesFolder
 			+ "/bariToScorerTerms");
+	private File bariToPunterTerms = new File(dataFilesFolder
+			+ "/bariToPunterTerms");
+	private File bariRemainingMatches = new File(dataFilesFolder
+			+ "/bariRemainingMatches");
 
 	private BufferedWriter bw = null;
 
@@ -227,6 +238,7 @@ public class FileHandler {
 		bw.close();
 	}
 
+	// ============================================================
 	// -------------BariToScorer
 	public void apendBariToScorer(String b, String s) throws IOException {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
@@ -250,6 +262,73 @@ public class FileHandler {
 			Bari91UpCommingOdds.bts.put(bts.getBt(), bts.getSt());
 		}
 		br.close();
+	}
+
+	// -------------BariToPunter
+	public void apendBariToPunter(String b, String p) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(
+				bariToPunterTerms, true));
+		BariToPunterTuple btp = new BariToPunterTuple(b, p);
+		bw.write(gson.toJson(btp) + "\n");
+		bw.close();
+	}
+
+	public void readBariToPunter() {
+		try {
+			if (!bariToPunterTerms.exists()) {
+				bariToPunterTerms.createNewFile();
+				return;
+			}
+			BufferedReader br = new BufferedReader(new FileReader(
+					bariToPunterTerms));
+			String line;
+			while ((line = br.readLine()) != null) {
+				BariToPunterTuple bts = gson.fromJson(line,
+						BariToPunterTuple.class);
+				Bari91UpCommingOdds.btp.put(bts.getBt(), bts.getPt());
+			}
+			br.close();
+		} catch (JsonSyntaxException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	// ---------BariRemainingMatches
+	public void writeBariRemaining(List<MatchObj> rm)
+			throws FileNotFoundException, IOException {
+		if (!dataFilesFolder.exists()) {
+			dataFilesFolder.mkdirs();
+		}
+		ObjectOutputStream oos = null;
+		try {
+			oos = new ObjectOutputStream(new FileOutputStream(
+					bariRemainingMatches));
+			oos.writeObject(rm);
+			oos.close();
+		} catch (IOException e) {
+			oos.close();
+			e.printStackTrace();
+		}
+	}
+
+	public void readBariRemaining() {
+		ObjectInputStream ois = null;
+		try {
+			if (!dataFilesFolder.exists()) {
+				dataFilesFolder.mkdirs();
+			}
+			if (!bariRemainingMatches.exists()) {
+				bariRemainingMatches.createNewFile();
+				return;
+			}
+			ois = new ObjectInputStream(new FileInputStream(bariRemainingMatches));
+			Bari91UpCommingOdds.remainings = (List<MatchObj>) ois.readObject();
+			ois.close();
+		} catch (ClassNotFoundException | IOException e) {
+			
+			e.printStackTrace();
+		}
 	}
 
 }

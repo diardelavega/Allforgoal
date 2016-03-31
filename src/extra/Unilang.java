@@ -223,9 +223,9 @@ public class Unilang {
 	public void init() throws JsonSyntaxException, IOException {
 		// init unilang structures
 		readCcasTeamTerms();
-		readCcasTerms();
+//		readCcasTerms();
 		readScoreTeamTerms();
-		readScoreTerms();
+//		readScoreTerms();
 
 	}
 

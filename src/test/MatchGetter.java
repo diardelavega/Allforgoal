@@ -255,8 +255,7 @@ logger.info("{}  {}",clasVal[0],clasVal[4]);
 			searchCompIdx = cc.scorerCompIdSearch(country, comp);
 			if (searchCompIdx > -1) {
 				if (cc.sdsList.get(searchCompIdx).getDb() == 1) {
-					cc.allowedcomps.put(couComComb(country, comp),cc.sdsList
-							.get(searchCompIdx).getCompId());
+					cc.allowedcomps.put(couComComb(country, comp),cc.sdsList.get(searchCompIdx).getCompId());
 					return cc.sdsList.get(searchCompIdx).getCompId();
 				}
 			}
