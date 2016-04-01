@@ -15,9 +15,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
+import scrap.OddsNStats;
 import scrap.Soccerpunter_homePage;
 import scrap.XscoreUpComing;
 import strategyAction.Strategy;
@@ -44,9 +47,9 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException {
-		initCCAllStruct();
-		Strategy strategy = new Strategy();
-		strategy.tryTask();
+//		initCCAllStruct();
+//		Strategy strategy = new Strategy();
+//		strategy.tryTask();
 
 		// strategy .periodic();
 		// corelator();
@@ -60,12 +63,29 @@ public class MainTry {
 
 		// dater();
 //		distancer() ;
+		odder();
 	}
 
+	public static void odder(){
+		OddsNStats odns=new OddsNStats();
+		odns.getOddsPage(LocalDate.now());
+	}
+	 
 	public static void distancer() {
-		String s1 ="LIGA II SERIE 1", s2="LIGA I";
-//		String s1 ="GERMANY  BUNDESLIGA WOMEN", s2="GERMANY  BUNDESLIGA";
+//		String s1 ="LIGA II SERIE 1", s2="LIGA I";
+		String s1 ="GERMANY  BUNDESLIGA WOMEN", s2="GERMANY  BUNDESLIGA";
 		log(StringSimilarity.levenshteinDistance(s1, s2)+"");
+	}
+	
+	public static void seter(){
+//		HashSet<String> set = new HashSet<>();
+		TreeSet<String> set = new TreeSet<String>();
+		set.add("Amarija");
+		set.add("bojano");
+		set.add("tercerta");
+		
+//		set.g
+		
 	}
 
 	public static void corelator() {
@@ -101,6 +121,7 @@ public class MainTry {
 					.println("Country competition scorer data structure not initialized corectly");
 		}
 		cp.readAllowedComps();
+		cp.readNotAllowedComps();
 
 		Unilang ul = new Unilang();
 		ul.init();

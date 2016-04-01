@@ -39,31 +39,34 @@ import extra.Unilang;
 public class MatchGetter {
 	public static Logger logger = LoggerFactory.getLogger(MatchGetter.class);
 
-//	public static List<MatchObj> schedNewMatches = new ArrayList<>();
+	// public static List<MatchObj> schedNewMatches = new ArrayList<>();
 	public static Map<Integer, List<MatchObj>> schedNewMatches = new HashMap<>();
 	public static List<MatchObj> finNewMatches = new ArrayList<>();
 	public static List<MatchObj> errorNewMatches = new ArrayList<>();
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";
 	private Unilang ul = new Unilang();
+	private CountryCompetition cc = new CountryCompetition();
 
 	private void scrapMatchesDate(LocalDate dat, String _status)
 			throws IOException {
-		 /*get matches of the date from xScored.soccer; collect only matches
-		 based on the specified status. The matches are stored into their
-		 respective arrays
-*/
+		/*
+		 * get matches of the date from xScored.soccer; collect only matches
+		 * based on the specified status. The matches are stored into their
+		 * respective arrays
+		 */
 		String url = allDateFormater(dat);
 		Document doc = null;
 		try {
 			logger.info(url);
-			 doc = Jsoup.parse(new File(
-			 "C:/Users/Administrator/Desktop/xScores27_03.html"), "UTF-8");
-//			doc = Jsoup
-//					.connect(url)
-//					.userAgent(
-//							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-//					.maxBodySize(0).timeout(600000).get();
-			 logger.info("Page Aquired!!");
+//			doc = Jsoup.parse(new File(
+//					"C:/Users/Administrator/Desktop/xScores27_03.html"),
+//					"UTF-8");
+			 doc = Jsoup
+			 .connect(url)
+			 .userAgent(
+			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+			 .maxBodySize(0).timeout(600000).get();
+			logger.info("Page Aquired!!");
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
 			e.printStackTrace();
@@ -92,7 +95,7 @@ public class MatchGetter {
 						|| clasVal[4].contains("EURO")) {
 					continue;
 				}
-logger.info("{}  {}",clasVal[0],clasVal[4]);
+				logger.info("{}  {}", clasVal[0], clasVal[4]);
 				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
 				if (compIdx < 0) {
 					// TODO display un-found matches
@@ -111,13 +114,16 @@ logger.info("{}  {}",clasVal[0],clasVal[4]);
 					// mobj.setDat(Date.valueOf(dat));
 					// mobj.setComId(compIdx + 1);
 					// schedNewMatches.add(mobj);
-					 
 
-					if (_status.equals(Status.SCHEDULED)&& (status.equals(Status.SCHEDULED) || status .equals(Status.FTR))) {
-						logger.info("country {}  competition {}  compId {}  t1-{}  t2-{}",clasVal[0], clasVal[4],compIdx, t1, t2);
+					if (_status.equals(Status.SCHEDULED)
+							&& (status.equals(Status.SCHEDULED) || status
+									.equals(Status.FTR))) {
+						logger.info(
+								"country {}  competition {}  compId {}  t1-{}  t2-{}",
+								clasVal[0], clasVal[4], compIdx, t1, t2);
 						mobj.setDat(Date.valueOf(dat));
-						mobj.setComId(compIdx );
-//						schedNewMatches.add(mobj);
+						mobj.setComId(compIdx);
+						// schedNewMatches.add(mobj);
 						if (schedNewMatches.get(compIdx) == null) {
 							List<MatchObj> mol = new ArrayList<>();
 							mol.add(mobj);
@@ -172,7 +178,7 @@ logger.info("{}  {}",clasVal[0],clasVal[4]);
 					}
 				}
 			}
-		}
+		}// for td
 
 	}
 
@@ -241,7 +247,7 @@ logger.info("{}  {}",clasVal[0],clasVal[4]);
 	private int searchForCompIdx(String country, String comp)
 			throws IOException {
 		// search in allowed competitions map and CCAS
-		CountryCompetition cc = new CountryCompetition();
+	
 		/*
 		 * cc allowed competitions should take a combination of name and
 		 * competition because many competitions have the same name but allways
@@ -251,46 +257,57 @@ logger.info("{}  {}",clasVal[0],clasVal[4]);
 		if (searchCompIdx != null) {
 			return searchCompIdx;
 		} else {
+			if(cc.notAllowedcomps.contains(couComComb(country, comp))){
+				//if is one of the not allowed comps
+				return -1;
+			}
+			
 			// search for country&comp in scorerDataStruct
 			searchCompIdx = cc.scorerCompIdSearch(country, comp);
 			if (searchCompIdx > -1) {
 				if (cc.sdsList.get(searchCompIdx).getDb() == 1) {
-					cc.allowedcomps.put(couComComb(country, comp),cc.sdsList.get(searchCompIdx).getCompId());
+					cc.addAllowedComp(couComComb(country, comp), cc.sdsList.get(searchCompIdx).getCompId());
 					return cc.sdsList.get(searchCompIdx).getCompId();
 				}
 			}
+			// a rejected comp goes to the not allowed ones
+			cc.addNotAllowedComp(couComComb(country, comp));
 			return searchCompIdx;
 		}
 	}
+
 	private String couComComb(String country, String competition) {
 		return country + "_" + competition;
 	}
 
-	//////////////STORE & READ//////////////////
-	public void storeSched(){
-		File dir =new File("C:/m/");
-		File sch=new File(dir+"/sch");
-		if(!dir.exists()){
+	// ////////////STORE & READ//////////////////
+	public void storeSched() {
+		File dir = new File("C:/m/");
+		File sch = new File(dir + "/sch");
+		if (!dir.exists()) {
 			dir.mkdir();
 		}
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(sch));
+			ObjectOutputStream oos = new ObjectOutputStream(
+					new FileOutputStream(sch));
 			oos.writeObject(schedNewMatches);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public void readSched(){
-		File dir =new File("C:/m/");
-		File sch=new File(dir+"/sch");
-		if(!dir.exists()){
+
+	public void readSched() {
+		File dir = new File("C:/m/");
+		File sch = new File(dir + "/sch");
+		if (!dir.exists()) {
 			dir.mkdir();
 		}
-		
+
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(sch));
-			schedNewMatches= (Map<Integer, List<MatchObj>>) ois.readObject();
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
+					sch));
+			schedNewMatches = (Map<Integer, List<MatchObj>>) ois.readObject();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -45,6 +45,8 @@ public class FileHandler {
 	private File unilangScorerTeams = new File(dataFilesFolder + "/scorerTeams");
 	private File allowedComps = new File(dataFilesFolder
 			+ "/allowedCompetitions");
+	private File notAllowedComps = new File(dataFilesFolder
+			+ "/notAllowedCompetitions");
 	private File unfoundScoreTerms = new File(dataFilesFolder
 			+ "/unfoundScoreTerms");
 	private File bariToScorerTerms = new File(dataFilesFolder
@@ -229,6 +231,30 @@ public class FileHandler {
 		br.close();
 	}
 
+	// --------not allowed ones
+	public void readNotAllowedCompetitions() throws IOException {
+		if (!notAllowedComps.exists()) {
+			notAllowedComps.createNewFile();
+			return;
+		}
+		BufferedReader br = new BufferedReader(new FileReader(notAllowedComps));
+		String line;
+		while ((line = br.readLine()) != null) {
+			CountryCompetition.notAllowedcomps.add(line);
+		}
+		br.close();
+	}
+
+	public void appendNotAllowedCompetitions(String compName)
+			throws IOException {
+		// the compName comes from xscorer and compId is from cca_structure
+		// format Map<xscoreCompName, ccasCompId>
+
+		bw = new BufferedWriter(new FileWriter(notAllowedComps, true));
+		bw.append(compName + "\n");
+		bw.close();
+	}
+
 	// -------------
 	public void appendUnfoundTerms(String cnt, String cmp, int i)
 			throws IOException {
@@ -326,7 +352,7 @@ public class FileHandler {
 			Bari91UpCommingOdds.remainings = (List<MatchObj>) ois.readObject();
 			ois.close();
 		} catch (ClassNotFoundException | IOException e) {
-			
+
 			e.printStackTrace();
 		}
 	}

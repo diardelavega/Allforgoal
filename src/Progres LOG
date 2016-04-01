@@ -93,5 +93,9 @@ taking in consideration the match in hand.
 	 	
 ** all DB TeamTables have to be creatred from the begining because we added attributes whis were not present before in the bd 
 	 				 	  
+----------------------------------------------
+----------------------------------------------------
+Implemented allowsed & not allowed files & map/list with competitions based on the xScorer syntax ()
+
 	 				 	  
 	 				 	  

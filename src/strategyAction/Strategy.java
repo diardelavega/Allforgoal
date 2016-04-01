@@ -88,7 +88,8 @@ public class Strategy {
 			if (lastDatCheck == null) {
 				// first time ever to check for temp matches
 				// scrap todays matches & tomorrows
-				 score.getScheduledToday();
+//				 score.getScheduledToday();
+				score.getScheduledTomorrow();
 				 score.storeSched();
 //				 score.clearLists();
 				// logger.info("sched size {}",score.schedNewMatches.size());
@@ -104,8 +105,8 @@ public class Strategy {
 				// score.getScheduledTomorrow();
 				Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
 				b91.initBari91UpCommingOdds();
-				b91.scrapBariPage(LocalDate.now());
-				// b91.scrapBariPage(LocalDate.now().plusDays(1));
+//				b91.scrapBariPage(LocalDate.now());
+				 b91.scrapBariPage(LocalDate.now().plusDays(1));
 				// tmf.corelatePunterXScorerTeams();
 
 				System.out
