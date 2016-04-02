@@ -58,14 +58,14 @@ public class MatchGetter {
 		Document doc = null;
 		try {
 			logger.info(url);
-//			doc = Jsoup.parse(new File(
-//					"C:/Users/Administrator/Desktop/xScores27_03.html"),
-//					"UTF-8");
-			 doc = Jsoup
-			 .connect(url)
-			 .userAgent(
-			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			 .maxBodySize(0).timeout(600000).get();
+			doc = Jsoup.parse(new File(
+					"C:/Users/Administrator/Desktop/skedina/xScores_01.html"),
+					"UTF-8");
+//			 doc = Jsoup
+//			 .connect(url)
+//			 .userAgent(
+//			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+//			 .maxBodySize(0).timeout(600000).get();
 			logger.info("Page Aquired!!");
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
@@ -95,7 +95,7 @@ public class MatchGetter {
 						|| clasVal[4].contains("EURO")) {
 					continue;
 				}
-				logger.info("{}  {}", clasVal[0], clasVal[4]);
+//				logger.info("{}  {}", clasVal[0], clasVal[4]);
 				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
 				if (compIdx < 0) {
 					// TODO display un-found matches
@@ -253,25 +253,31 @@ public class MatchGetter {
 		 * competition because many competitions have the same name but allways
 		 * a unique combination of name&competition
 		 */
+//		logger.info("{} {} {}",country,comp,couComComb(country, comp));
+		if(country.equals("REP. OF IRELAND")){
+			logger.info("");
+		}
+		if(cc.notAllowedcomps.contains(couComComb(country, comp))){
+			//if is one of the not allowed comps
+			return -1;
+		}
+		
 		Integer searchCompIdx = cc.allowedcomps.get(couComComb(country, comp));
 		if (searchCompIdx != null) {
 			return searchCompIdx;
 		} else {
-			if(cc.notAllowedcomps.contains(couComComb(country, comp))){
-				//if is one of the not allowed comps
-				return -1;
-			}
-			
 			// search for country&comp in scorerDataStruct
 			searchCompIdx = cc.scorerCompIdSearch(country, comp);
 			if (searchCompIdx > -1) {
 				if (cc.sdsList.get(searchCompIdx).getDb() == 1) {
-					cc.addAllowedComp(couComComb(country, comp), cc.sdsList.get(searchCompIdx).getCompId());
+//					cc.addAllowedComp(couComComb(country, comp), cc.sdsList.get(searchCompIdx).getCompId());
+//					logger.info("{}  {}",couComComb(country, comp),cc.sdsList.get(searchCompIdx).getCompId());
 					return cc.sdsList.get(searchCompIdx).getCompId();
 				}
 			}
 			// a rejected comp goes to the not allowed ones
-			cc.addNotAllowedComp(couComComb(country, comp));
+//			cc.addNotAllowedComp(couComComb(country, comp));
+			logger.info("----{}  ",couComComb(country, comp));
 			return searchCompIdx;
 		}
 	}

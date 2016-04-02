@@ -18,6 +18,7 @@ import java.util.Map;
 import org.jsoup.nodes.Document;
 
 import scrap.Bari91UpCommingOdds;
+import scrap.OddsNStats;
 import structures.CountryCompetition;
 
 import com.google.gson.Gson;
@@ -27,6 +28,8 @@ import extra.Unilang;
 import basicStruct.BariToPunterTuple;
 import basicStruct.BariToScorerTuple;
 import basicStruct.MatchObj;
+import basicStruct.StrIntTuple;
+import basicStruct.StrStrTuple;
 import basicStruct.TupleCountryCompTermId;
 import basicStruct.TupleIdTerm;
 import basicStruct.TupleTermId;
@@ -49,14 +52,26 @@ public class FileHandler {
 			+ "/notAllowedCompetitions");
 	private File unfoundScoreTerms = new File(dataFilesFolder
 			+ "/unfoundScoreTerms");
-	private File bariToScorerTerms = new File(dataFilesFolder
-			+ "/bariToScorerTerms");
-	private File bariToPunterTerms = new File(dataFilesFolder
-			+ "/bariToPunterTerms");
-	private File bariRemainingMatches = new File(dataFilesFolder
-			+ "/bariRemainingMatches");
+
+	private File bariToScorerTeams = new File(dataFilesFolder
+			+ "/bariToScorerTeams");
+	private File bariAllowedTerms = new File(dataFilesFolder
+			+ "/bariAllowedTerms");
+	private File bariNotAllowedTerms = new File(dataFilesFolder
+			+ "/bariNotAllowedTerms");
+	// private File bariRemainingMatches = new File(dataFilesFolder
+	// + "/bariRemainingMatches");
+
+	private File odderToScorerTeams = new File(dataFilesFolder
+			+ "/odderToScorerTeams");
+	private File odderAllowedComps = new File(dataFilesFolder
+			+ "/odderAllowedComps");
+	private File odderNotAllowedComps = new File(dataFilesFolder
+			+ "/odderNotAllowedComps");
 
 	private BufferedWriter bw = null;
+
+	// ------------
 
 	// ==================UNILANG=========================================
 	/*
@@ -268,50 +283,79 @@ public class FileHandler {
 	// -------------BariToScorer
 	public void apendBariToScorer(String b, String s) throws IOException {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
-				bariToScorerTerms, true));
+				bariToScorerTeams, true));
 		BariToScorerTuple bts = new BariToScorerTuple(b, s);
 		bw.write(gson.toJson(bts) + "\n");
 		bw.close();
 	}
 
-	public void readBariToScorer() throws IOException {
-		if (!bariToScorerTerms.exists()) {
-			bariToScorerTerms.createNewFile();
-			return;
+	public void readBariToScorer()  {
+		try {
+			if (!bariToScorerTeams.exists()) {
+				bariToScorerTeams.createNewFile();
+				return;
+			}
+			BufferedReader br = new BufferedReader(
+					new FileReader(bariToScorerTeams));
+			String line;
+			while ((line = br.readLine()) != null) {
+				BariToScorerTuple bts = gson
+						.fromJson(line, BariToScorerTuple.class);
+				Bari91UpCommingOdds.btsTeams.put(bts.getBt(), bts.getSt());
+			}
+			br.close();
+		} catch (JsonSyntaxException | IOException e) {
+			e.printStackTrace();
 		}
-		BufferedReader br = new BufferedReader(
-				new FileReader(bariToScorerTerms));
-		String line;
-		while ((line = br.readLine()) != null) {
-			BariToScorerTuple bts = gson
-					.fromJson(line, BariToScorerTuple.class);
-			Bari91UpCommingOdds.bts.put(bts.getBt(), bts.getSt());
-		}
-		br.close();
 	}
 
-	// -------------BariToPunter
-	public void apendBariToPunter(String b, String p) throws IOException {
-		BufferedWriter bw = new BufferedWriter(new FileWriter(
-				bariToPunterTerms, true));
-		BariToPunterTuple btp = new BariToPunterTuple(b, p);
-		bw.write(gson.toJson(btp) + "\n");
+	// -------------BariToPunterAllowed
+	public void apendAllowedBariToPunter(String b, int i) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(bariAllowedTerms,
+				true));
+		StrIntTuple sit = new StrIntTuple(b, i);
+		bw.write(gson.toJson(sit) + "\n");
 		bw.close();
 	}
 
-	public void readBariToPunter() {
+	public void readAllowedBariToPunter() {
 		try {
-			if (!bariToPunterTerms.exists()) {
-				bariToPunterTerms.createNewFile();
+			if (!bariAllowedTerms.exists()) {
+				bariAllowedTerms.createNewFile();
 				return;
 			}
 			BufferedReader br = new BufferedReader(new FileReader(
-					bariToPunterTerms));
+					bariAllowedTerms));
 			String line;
 			while ((line = br.readLine()) != null) {
-				BariToPunterTuple bts = gson.fromJson(line,
-						BariToPunterTuple.class);
-				Bari91UpCommingOdds.btp.put(bts.getBt(), bts.getPt());
+				StrIntTuple sit = gson.fromJson(line, StrIntTuple.class);
+				Bari91UpCommingOdds.btpAllowed.put(sit.getC(), sit.getI());
+			}
+			br.close();
+		} catch (JsonSyntaxException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// ---------------BariNotAllowed
+	public void apendNotAllowedBariToPunter(String b) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(
+				bariNotAllowedTerms, true));
+		bw.write(gson.toJson(b) + "\n");
+		bw.close();
+	}
+
+	public void readNotAllowedBariToPunter() {
+		try {
+			if (!bariNotAllowedTerms.exists()) {
+				bariNotAllowedTerms.createNewFile();
+				return;
+			}
+			BufferedReader br = new BufferedReader(new FileReader(
+					bariNotAllowedTerms));
+			String line;
+			while ((line = br.readLine()) != null) {
+				Bari91UpCommingOdds.btpNotAllowed.add(line);
 			}
 			br.close();
 		} catch (JsonSyntaxException | IOException e) {
@@ -328,9 +372,9 @@ public class FileHandler {
 		}
 		ObjectOutputStream oos = null;
 		try {
-			oos = new ObjectOutputStream(new FileOutputStream(
-					bariRemainingMatches));
-			oos.writeObject(rm);
+			// oos = new ObjectOutputStream(new FileOutputStream(
+			// bariRemainingMatches));
+			// oos.writeObject(rm);
 			oos.close();
 		} catch (IOException e) {
 			oos.close();
@@ -344,17 +388,112 @@ public class FileHandler {
 			if (!dataFilesFolder.exists()) {
 				dataFilesFolder.mkdirs();
 			}
-			if (!bariRemainingMatches.exists()) {
-				bariRemainingMatches.createNewFile();
-				return;
-			}
-			ois = new ObjectInputStream(new FileInputStream(bariRemainingMatches));
-			Bari91UpCommingOdds.remainings = (List<MatchObj>) ois.readObject();
+			// if (!bariRemainingMatches.exists()) {
+			// bariRemainingMatches.createNewFile();
+			// return;
+			// }
+			// ois = new ObjectInputStream(new FileInputStream(
+			// bariRemainingMatches));
+			// Bari91UpCommingOdds.remainings = (List<MatchObj>)
+			// ois.readObject();
 			ois.close();
-		} catch (ClassNotFoundException | IOException e) {
+		} catch (IOException e) {
 
 			e.printStackTrace();
 		}
 	}
 
+	// ============================================
+	// ---------------OdderTOScorer matches
+	public void appendOdderToScorerTeams(String o, String s) throws IOException {
+		// odder-scorer
+		BufferedWriter bw = new BufferedWriter(new FileWriter(
+				odderToScorerTeams, true));
+		StrStrTuple sst = new StrStrTuple(o, s);
+		bw.write(gson.toJson(sst) + "\n");
+		bw.close();
+	}
+
+	public void readOdderToScorerTeams() {
+		try {
+			if (!odderToScorerTeams.exists()) {
+				odderToScorerTeams.createNewFile();
+				return;
+			}
+			BufferedReader br = new BufferedReader(new FileReader(
+					odderToScorerTeams));
+			String line;
+			while ((line = br.readLine()) != null) {
+				StrStrTuple sst = gson.fromJson(line, StrStrTuple.class);
+				OddsNStats.oddsToScorer.put(sst.getS1(), sst.getS2());
+			}
+			br.close();
+		} catch (JsonSyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	// ----------- odderAllowedComps
+	public void apendOdderToPunterAllowedComps(String o, int i)
+			throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(
+				odderAllowedComps, true));
+		// BariToPunterTuple btp = new BariToPunterTuple(b, p);
+//		StrStrTuple sst = new StrStrTuple(o, p);
+		StrIntTuple sit = new StrIntTuple(o,i);
+		bw.write(gson.toJson(sit) + "\n");
+		bw.close();
+	}
+
+	public void readOdderToPunterAllowedComps() {
+		try {
+			if (!odderAllowedComps.exists()) {
+				odderAllowedComps.createNewFile();
+				return;
+			}
+			BufferedReader br = new BufferedReader(new FileReader(
+					odderAllowedComps));
+			String line;
+			while ((line = br.readLine()) != null) {
+				StrIntTuple sit = gson.fromJson(line, StrIntTuple.class);
+				OddsNStats.oddsToPunterAllowedComps.put(sit.getC(),sit.getI());
+			}
+			br.close();
+		} catch (JsonSyntaxException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// ----------- odderNotAllowedComps
+	public void apendOdderToPunterNotAllowedComps(String t) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(
+				odderNotAllowedComps, true));
+		bw.write(gson.toJson(t) + "\n");
+		bw.close();
+	}
+
+	public void readOdderToPunterNotAllowedComps() {
+		try {
+			if (!odderNotAllowedComps.exists()) {
+				odderNotAllowedComps.createNewFile();
+				return;
+			}
+			BufferedReader br = new BufferedReader(new FileReader(
+					odderNotAllowedComps));
+			String line;
+			while ((line = br.readLine()) != null) {
+				OddsNStats.oddsToPunterNotAllowedComps.add(line);
+			}
+			br.close();
+		} catch (JsonSyntaxException | IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -43,15 +43,42 @@ import test.MatchGetter;
  *         matches from xscore. From that map we corelate the matches comparing
  *         the home and away team
  */
+/**
+ * @author Administrator
+ *
+ *         A class to scrap collect and assigne 1x2 and O/U odds to the matches
+ *         that we got from scorer. Once we get a td element the country,
+ *         competition and level(category) are extractet from it. with this 3
+ *         attributes begins the search for the competition id. As a aid for a
+ *         faster search or elimination of a match during the search the we use
+ *         some structures that show the allowed and not allowed competitions.
+ *         Also some similarities between teams that are hard to be combined.
+ *         The search for the compId is done in the ccallstruct with the
+ *         compNames from SoccerPunter. The search is done there because of the
+ *         level attribute. ***************************************************
+ *         The usage of remainig matches, matches that were present in bari but
+ *         not scorer is depricates since the usage of the new odds page
+ *         oodsandstats.********************************8***************** In
+ *         the btsTeams we keep a combination of bari-scorer teams that are
+ *         quite distant to be combined automatically******************** For
+ *         analogy here we should use the countryCompetitionCombination method
+ *         but since we not allways have a competition name we use directly the
+ *         string we scraped
+ * 
+ */
 public class Bari91UpCommingOdds {
-
+	// public class Bari91UpCommingOdds {
 	public static final Logger logger = LoggerFactory
 			.getLogger(Bari91UpCommingOdds.class);
 	// http://www.bari91.com/previews/2016-03-30
 	public static final String bariUrl = "http://www.bari91.com/previews/";
-	public static Map<String, String> bts = new HashMap<String, String>();
-	public static Map<String, String> btp = new HashMap<>();// bari to punter
-	public static List<MatchObj> remainings = new ArrayList<>();
+	// bts bari to scorer : matches distant to be found
+	public static Map<String, String> btsTeams = new HashMap<String, String>();
+	// bari to punter: competitions hard to be found
+	public static Map<String, Integer> btpAllowed = new HashMap<>();
+	public static List<String> btpNotAllowed = new ArrayList<>();
+	// remaining matches
+	// public static List<MatchObj> remainings = new ArrayList<>();
 
 	private String errorStatus = "OK"; // a simple way to report problems
 	private Map<String, Integer> tempBariToCompId = new HashMap<>();
@@ -68,33 +95,27 @@ public class Bari91UpCommingOdds {
 	private FileHandler fh = new FileHandler();
 
 	public void initBari91UpCommingOdds() {
-
-		try {
-			// automatically fills the map
-			fh.readBariToScorer();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		// TODO int bari to punter terms
-		fh.readBariToPunter();
-
-		// int bari remaining matches
-		fh.readBariRemaining();
+		fh.readBariToScorer();
+		fh.readAllowedBariToPunter();
+		fh.readNotAllowedBariToPunter();
 	}
 
 	public void scrapBariPage(LocalDate ld) throws IOException {
+		initBari91UpCommingOdds();
+
 		String url = bariUrl + ld.toString();
 		Document doc = null;
 		try {
 			logger.info("getting page : {}", url);
-//			doc = Jsoup.parse(new File(
-//					"C:/Users/Administrator/Desktop/bari91_27.html"), "UTF-8");
+			doc = Jsoup.parse(new File(
+					"C:/Users/Administrator/Desktop/skedina/bari91_1.html"),
+					"UTF-8");
 
-			 doc = Jsoup
-			 .connect(url)
-			 .userAgent(
-			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			 .maxBodySize(0).timeout(600000).get();
+			// doc = Jsoup
+			// .connect(url)
+			// .userAgent(
+			// "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+			// .maxBodySize(0).timeout(600000).get();
 			logger.info("Page aquired");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,56 +123,16 @@ public class Bari91UpCommingOdds {
 			logger.warn("---------:Connection not possible  {}", errorStatus);
 			return;
 		}
-		// storeSched(doc);
-		oddAdder(doc, ld);
-	}
-
-	private void oddAdder(Document doc, LocalDate ld) throws IOException {
-
-		// first search if the remaining matches can be combined with
-		// scorer matches
-		for (MatchObj m : remainings) {
-			if (Period.between(m.getDat().toLocalDate(), ld).getDays() > 1) {
-				remainings.remove(m);
-			} else {
-				if (MatchGetter.schedNewMatches.get(m.getComId()) != null) {
-					int kk = teamCombinationScorerBari(m.getT1(), m.getT2(),
-							m.getComId());
-					if (kk == StandartResponses.DEFAULT_NULL)
-						continue;
-					if (kk == StandartResponses.ALL_MATCHES_TAKEN) {
-						// store remaining matches for next odds add loop
-						remainings.add(m);
-						continue;
-					}
-					MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-							.set_1(m.get_1());
-					MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-							.set_2(m.get_2());
-					MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-							.set_x(m.get_x());
-					MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-							.set_o(m.get_o());
-					MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-							.set_u(m.get_u());
-					MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-							.setDat(Date.valueOf(ld));
-				}// if compId;
-					//
-			}
-		}
 
 		Elements trs = doc.getElementsByClass("vrsta");
 		for (Element tr : trs) {
-			String cc = tr.getElementsByTag("td").get(1).text();
-			if (skipComp(cc)) {
+			String ss = tr.getElementsByTag("td").get(1).text();
+			if (skipComp(ss)) {
 				continue;
 			}
 
-			countryCompLevel(cc);// get country, comp, level
-
-			int compId = getCompId(cc);
-			// if(comp)
+			countryCompLevel(ss);// get country, comp, level
+			int compId = getCompId(ss);
 			if (compId >= 0) {// valid comp id; search Scprer matches & add odds
 				if (MatchGetter.schedNewMatches.get(compId) == null) {
 					// there is no such competition matches @ scorer
@@ -166,7 +147,8 @@ public class Bari91UpCommingOdds {
 					continue;
 				if (k == StandartResponses.ALL_MATCHES_TAKEN) {
 					// store remaining matches for next odds add loop
-					remainingFlag = true;
+					continue;
+					// remainingFlag = true;
 				}
 
 				// logger.info("{} {} {}", country, compName, level);
@@ -208,27 +190,27 @@ public class Bari91UpCommingOdds {
 					}
 				}
 
-				if (remainingFlag) {// handle extra match
-					for (int i = 0; i < remainings.size(); i++) {
-						if (remainings.get(i).getT1() == teams[0]) {
-							remainingFlag = true; // if it is alreadythere
-						}
-					}
-					if (!remainingFlag) {
-						MatchObj mobj = new MatchObj(-1, compId, teams[0],
-								teams[1], 0, 0, 0, 0, _1, _2, _x, _o, _u,
-								Date.valueOf(ld));
-						remainings.add(mobj);
-					}
-					remainingFlag = false;
-				} else {
+				// if (remainingFlag) {// handle extra match
+				// for (int i = 0; i < remainings.size(); i++) {
+				// if (remainings.get(i).getT1() == teams[0]) {
+				// remainingFlag = true; // if it is alreadythere
+				// }
+				// }
+				// if (!remainingFlag) {
+				// MatchObj mobj = new MatchObj(-1, compId, teams[0],
+				// teams[1], 0, 0, 0, 0, _1, _2, _x, _o, _u,
+				// Date.valueOf(ld));
+				// remainings.add(mobj);
+				// }
+				// remainingFlag = false;
+				// } else {
 
-					MatchGetter.schedNewMatches.get(compId).get(k).set_1(_1);
-					MatchGetter.schedNewMatches.get(compId).get(k).set_x(_x);
-					MatchGetter.schedNewMatches.get(compId).get(k).set_2(_2);
-					MatchGetter.schedNewMatches.get(compId).get(k).set_o(_o);
-					MatchGetter.schedNewMatches.get(compId).get(k).set_u(_u);
-				}
+				MatchGetter.schedNewMatches.get(compId).get(k).set_1(_1);
+				MatchGetter.schedNewMatches.get(compId).get(k).set_x(_x);
+				MatchGetter.schedNewMatches.get(compId).get(k).set_2(_2);
+				MatchGetter.schedNewMatches.get(compId).get(k).set_o(_o);
+				MatchGetter.schedNewMatches.get(compId).get(k).set_u(_u);
+				// }
 			}// if compId >=0
 		}// for elements
 
@@ -236,29 +218,27 @@ public class Bari91UpCommingOdds {
 		// logger.info("RRRRRRRRRRRRRRR{}", s);
 		// }
 
-		fh.writeBariRemaining(remainings);
-		for (MatchObj m : remainings) {
-			logger.info("remainings Size ----{}", remainings.size());
-			m.printMatch();
-		}
+		// }
 	}
 
-	public int teamCombinationScorerBari(String t1, String t2, int compId)
+	private int teamCombinationScorerBari(String t1, String t2, int compId)
 			throws IOException {
 		/*
 		 * for the match we found in bari we search the analog match (team1 &
-		 * team2) from the list of scorer matches with the same compId
+		 * team2) from the list of matches from scorer with the same compId. The
+		 * match which is closer to the curent match in hand is selected to have
+		 * its odds altered with the scraped odds.
 		 */
+
+		if (btsTeams.get(t1) != null) {
+			t1 = btsTeams.get(t1);
+		}
+		if (btsTeams.get(t2) != null) {
+			t2 = btsTeams.get(t2);
+		}
 
 		int d1 = 0, d2 = 0, td = 1000, k = -1;
 		int mind1 = 1000, mind2 = 1000;
-
-		if (bts.get(t1) != null) {
-			t1 = bts.get(t1);
-		}
-		if (bts.get(t2) != null) {
-			t2 = bts.get(t2);
-		}
 
 		for (int i = 0; i < MatchGetter.schedNewMatches.get(compId).size(); i++) {
 			// dismis previously combined matches -1 the taken ones
@@ -294,29 +274,38 @@ public class Bari91UpCommingOdds {
 			return StandartResponses.ALL_MATCHES_TAKEN;
 		}
 
-		if (k == -1) {
-			// test debug val
-			logger.info("UUUUUUU");
-		}
-
+		/*
+		 * after the closest match is been chosen, we check that it is whithin
+		 * our chosen parameters. also we use the fact that have found one of
+		 * the teams to store a combination of the other team in both versions;
+		 * bari & scorer
+		 */
 		if (mind1 <= StandartResponses.TEAM_DIST) {
 			if (mind2 <= StandartResponses.TEAM_DIST) {
 				MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 				return k;
 			} else {
-				fh.apendBariToScorer(t2, MatchGetter.schedNewMatches.get(compId).get(k).getT2());
+				btsTeams.put(t2, MatchGetter.schedNewMatches.get(compId).get(k)
+						.getT2());
+				fh.apendBariToScorer(t2, MatchGetter.schedNewMatches
+						.get(compId).get(k).getT2());
 				MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 				return k;
 			}
 		} else if (mind2 <= StandartResponses.TEAM_DIST) {
 			// t1 is already proved bigger than team_dist
-			fh.apendBariToScorer(t1, MatchGetter.schedNewMatches.get(compId).get(k).getT1());
+			btsTeams.put(t1, MatchGetter.schedNewMatches.get(compId).get(k)
+					.getT1());
+			fh.apendBariToScorer(t1, MatchGetter.schedNewMatches.get(compId)
+					.get(k).getT1());
 			MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 			return k;
 		} else {
-			BariToScorerTuple btst = new BariToScorerTuple(t1,MatchGetter.schedNewMatches.get(compId).get(k).getT1());
-			 logger.info("remaining {}__ {},{},{}    {}-{}",compId,country,compName, level, t1,t2);
-			 
+			// BariToScorerTuple btst = new
+			// BariToScorerTuple(t1,MatchGetter.schedNewMatches.get(compId).get(k).getT1());
+			logger.info("unCombined {}__ {},{},{}    {}-{}", compId, country,
+					compName, level, t1, t2);
+
 			return -1;
 		}
 	}
@@ -328,11 +317,18 @@ public class Bari91UpCommingOdds {
 		 * tempBariToCompId for a quick search it is stored as it came from the
 		 * bari page scrap.
 		 */
-
+		Integer compIdx;
 		if (country == null) {
 			return -1;
 		}
-		Integer compIdx = tempBariToCompId.get(ss);
+		if (btpNotAllowed.contains(ss) == true) {
+			return -1;
+		}
+		if (btpAllowed.get(ss) != null) {
+			compIdx = btpAllowed.get(ss);
+			return compIdx;
+		}
+		compIdx = tempBariToCompId.get(ss);
 		if (compIdx != null) {
 			return compIdx;
 		}
@@ -347,8 +343,8 @@ public class Bari91UpCommingOdds {
 			tempBariToCompId.put(ss, cc.ccasList.get(compIdx).getCompId());
 			return cc.ccasList.get(compIdx).getCompId();
 		} else {
-			// // TODO show teams that didint make it
-			// logger.info("NO CUT COUNTRIES & COMPETITIONS  {}", ss);
+
+			logger.info("unaccepted ---- {}", ss);
 			return compIdx;// -1
 		}
 
@@ -378,9 +374,6 @@ public class Bari91UpCommingOdds {
 						level = Integer.parseInt(ss[i]);
 						compName = null;
 						country = sb.toString();
-						if (btp.get(country) != null) {
-							country = btp.get(country);
-						}
 						return;
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -389,13 +382,9 @@ public class Bari91UpCommingOdds {
 					sb.append(ss[i]);
 					if (i < ss.length - 2)
 						sb.append(" ");
-
 				}
 			}
 			country = sb.toString();
-			if (btp.get(country) != null) {
-				country = btp.get(country);
-			}
 		}
 	}
 
@@ -434,6 +423,40 @@ public class Bari91UpCommingOdds {
 	}
 
 	// -----------------------
+
+	// public void remainingHandler() {
+	// for (MatchObj m : remainings) {
+	// if (Period.between(m.getDat().toLocalDate(), ld).getDays() > 1) {
+	// remainings.remove(m);
+	// } else {
+	// if (MatchGetter.schedNewMatches.get(m.getComId()) != null) {
+	// int kk = teamCombinationScorerBari(m.getT1(), m.getT2(),
+	// m.getComId());
+	// if (kk == StandartResponses.DEFAULT_NULL)
+	// continue;
+	// if (kk == StandartResponses.ALL_MATCHES_TAKEN) {
+	// // store remaining matches for next odds add loop
+	// remainings.add(m);
+	// continue;
+	// }
+	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
+	// .set_1(m.get_1());
+	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
+	// .set_2(m.get_2());
+	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
+	// .set_x(m.get_x());
+	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
+	// .set_o(m.get_o());
+	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
+	// .set_u(m.get_u());
+	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
+	// .setDat(Date.valueOf(ld));
+	// }// if compId;
+	// //
+	// }
+	// }
+	// }
+
 	// ////////////STORE & READ//////////////////
 	public void storeSched(Document d) {
 		File dir = new File("C:/m/");

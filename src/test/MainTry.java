@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import scrap.OddsNStats;
+import scrap.OddsNStatsMatchOdd;
 import scrap.Soccerpunter_homePage;
 import scrap.XscoreUpComing;
 import strategyAction.Strategy;
@@ -47,9 +48,9 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException {
-//		initCCAllStruct();
-//		Strategy strategy = new Strategy();
-//		strategy.tryTask();
+		initCCAllStruct();
+		Strategy strategy = new Strategy();
+		strategy.tryTask();
 
 		// strategy .periodic();
 		// corelator();
@@ -63,12 +64,17 @@ public class MainTry {
 
 		// dater();
 //		distancer() ;
-		odder();
+//		odder();
 	}
 
 	public static void odder(){
-		OddsNStats odns=new OddsNStats();
-		odns.getOddsPage(LocalDate.now());
+//		OddsNStats odns=new OddsNStats();
+//		odns.getOddsPage(LocalDate.now());
+		
+		OddsNStatsMatchOdd ood = new OddsNStatsMatchOdd("http://oddsandstats.com/as-latina-vs-us-avellino/e/5116387/");
+		ood.pageGraber();
+		log(ood.getOver()+"");
+		log(ood.getUnder()+"");
 	}
 	 
 	public static void distancer() {

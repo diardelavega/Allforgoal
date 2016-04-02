@@ -306,7 +306,7 @@ public class CountryCompetition {
 			if (sdsList.get(i).getDb() == 1)
 				for (String s : sdsList.get(i).altComps()) {
 					int d=StringSimilarity.levenshteinDistance(s, comp);
-					logger.info("----------------{} - {}, {}",s,comp,d);
+//					logger.info("----------------{} - {}, {}",s,comp,d);
 					if (d <= StandartResponses.LEV_DISTANCE) {
 						return i;
 					}
@@ -318,7 +318,7 @@ public class CountryCompetition {
 			if (sdsList.get(i).getDb() == 1)
 				for (String s : sdsList.get(i).altComps()) {
 					int d=StringSimilarity.levenshteinDistance(s, comp);
-					logger.info("---------------{} - {}, {}",s,comp,d);
+//					logger.info("---------------{} - {}, {}",s,comp,d);
 					if (d <= StandartResponses.LEV_DISTANCE) {
 						return i;
 					}

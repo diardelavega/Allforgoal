@@ -39,12 +39,17 @@ public class StringSimilarity {
 		String[] aa = a.split(" ");
 		String[] bb = b.split(" ");
 		String[] cc = null;
-		if (bb.length < aa.length) {
-			// longest on top
-			cc = aa;
-			aa = bb;
-			bb = cc;
-		}
+		// if (bb.length < aa.length) {
+		// cc = aa;
+		// aa = bb;
+		// bb = cc;
+		// }
+
+		// if (bb.length > aa.length) {
+		// cc = aa;
+		// aa = bb;
+		// bb = cc;
+		// }
 
 		int distance = 0, curdist = 0, totdist = 0;
 		int k = 0;
@@ -59,7 +64,6 @@ public class StringSimilarity {
 		 * atention should be payed to nrs with digits s<= (dismis word length
 		 * {2 letters}). If they are present they are stored and compared
 		 */
-		// boolean aflag = false, bflag = false;
 		for (int i = 0; i < aa.length; i++) {
 			// logger.info("'{}'",aa[i]);
 			if (aa[i].length() <= StandartResponses.DISMIS_WORD) {
@@ -75,8 +79,9 @@ public class StringSimilarity {
 						if (curdist < StandartResponses.LEV_DISTANCE) {
 							k++;
 							bb[j] = null;
-							distance = 0;
-							// break;
+							aa[i] = null;
+							// distance = 0;
+							break;
 						}
 						distance += curdist;
 					}
@@ -85,10 +90,12 @@ public class StringSimilarity {
 		}
 
 		for (int i = 0; i < aa.length; i++) {
-			if (aa[i].length() <= StandartResponses.DISMIS_WORD) {
-				af = dismisCheck(aa[i]);
-			} else {
-				continue;
+			if (aa[i] != null) {
+				if (aa[i].length() <= StandartResponses.DISMIS_WORD) {
+					af = dismisCheck(aa[i]);
+				} else {
+					continue;
+				}
 			}
 			for (int j = 0; j < bb.length; j++) {
 				if (bb[j] != null)
@@ -106,10 +113,17 @@ public class StringSimilarity {
 								}
 							}
 						} catch (Exception e) {
-							// e.printStackTrace();
 						}
 					}
 			}
+		}
+		for (int i = 0; i < aa.length; i++) {
+			if (aa[i] != null)
+				totdist++;
+		}
+		for (int i = 0; i < bb.length; i++) {
+			if (bb[i] != null)
+				totdist++;
 		}
 
 		// make usage of similar or diverse numbers
