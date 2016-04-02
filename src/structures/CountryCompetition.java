@@ -77,7 +77,7 @@ public class CountryCompetition {
 		// read from db and insert to list;
 		// possible necessity of some ordering; COUNTRIES are already ordered
 		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery("SELECT * FROM ccallstruct ;");
+		ResultSet rs = st.executeQuery("SELECT * FROM ccallstruct ORDER BY country;");
 		CCAllStruct ccas;
 		while (rs.next()) {
 			ccas = new CCAllStruct();

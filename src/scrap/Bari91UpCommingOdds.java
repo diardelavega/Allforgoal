@@ -100,22 +100,22 @@ public class Bari91UpCommingOdds {
 		fh.readNotAllowedBariToPunter();
 	}
 
-	public void scrapBariPage(LocalDate ld) throws IOException {
+	public void scrapBariPage(LocalDate ld) {
 		initBari91UpCommingOdds();
 
 		String url = bariUrl + ld.toString();
 		Document doc = null;
 		try {
 			logger.info("getting page : {}", url);
-			doc = Jsoup.parse(new File(
-					"C:/Users/Administrator/Desktop/skedina/bari91_1.html"),
-					"UTF-8");
+//			doc = Jsoup.parse(new File(
+//					"C:/Users/Administrator/Desktop/skedina/bari91_1.html"),
+//					"UTF-8");
 
-			// doc = Jsoup
-			// .connect(url)
-			// .userAgent(
-			// "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			// .maxBodySize(0).timeout(600000).get();
+			 doc = Jsoup
+			 .connect(url)
+			 .userAgent(
+			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+			 .maxBodySize(0).timeout(600000).get();
 			logger.info("Page aquired");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -125,14 +125,31 @@ public class Bari91UpCommingOdds {
 		}
 
 		Elements trs = doc.getElementsByClass("vrsta");
+		int compId = 1;
 		for (Element tr : trs) {
 			String ss = tr.getElementsByTag("td").get(1).text();
 			if (skipComp(ss)) {
 				continue;
 			}
 
-			countryCompLevel(ss);// get country, comp, level
-			int compId = getCompId(ss);
+			ss = ss.replaceFirst("\u00A0", "");
+			logger.info("'{}'",ss);
+			// --------------------Check if already stored-------
+			if (tempBariToCompId.get(ss) == null) {
+				if (btpNotAllowed.contains(ss) == true) {
+					continue;
+				}
+				if (btpAllowed.get(ss) != null) {
+					compId = btpAllowed.get(ss);
+				} else {
+					countryCompLevel(ss);// get country, comp, level
+					compId = getCompId(ss);
+				}
+			} else {
+				compId = tempBariToCompId.get(ss);
+			}
+			// -----------------------------
+
 			if (compId >= 0) {// valid comp id; search Scprer matches & add odds
 				if (MatchGetter.schedNewMatches.get(compId) == null) {
 					// there is no such competition matches @ scorer
@@ -221,8 +238,7 @@ public class Bari91UpCommingOdds {
 		// }
 	}
 
-	private int teamCombinationScorerBari(String t1, String t2, int compId)
-			throws IOException {
+	private int teamCombinationScorerBari(String t1, String t2, int compId) {
 		/*
 		 * for the match we found in bari we search the analog match (team1 &
 		 * team2) from the list of matches from scorer with the same compId. The
@@ -321,17 +337,17 @@ public class Bari91UpCommingOdds {
 		if (country == null) {
 			return -1;
 		}
-		if (btpNotAllowed.contains(ss) == true) {
-			return -1;
-		}
-		if (btpAllowed.get(ss) != null) {
-			compIdx = btpAllowed.get(ss);
-			return compIdx;
-		}
-		compIdx = tempBariToCompId.get(ss);
-		if (compIdx != null) {
-			return compIdx;
-		}
+		// if (btpNotAllowed.contains(ss) == true) {
+		// return -1;
+		// }
+		// if (btpAllowed.get(ss) != null) {
+		// compIdx = btpAllowed.get(ss);
+		// return compIdx;
+		// }
+		// compIdx = tempBariToCompId.get(ss);
+		// if (compIdx != null) {
+		// return compIdx;
+		// }
 
 		if (level != -1) {
 			// binary search for country then partial search for level
@@ -344,7 +360,7 @@ public class Bari91UpCommingOdds {
 			return cc.ccasList.get(compIdx).getCompId();
 		} else {
 
-			logger.info("unaccepted ---- {}", ss);
+			logger.info("unaccepted ---- '{}'", ss);
 			return compIdx;// -1
 		}
 
@@ -355,7 +371,7 @@ public class Bari91UpCommingOdds {
 		 * exctract the name of the country and copetition or country and
 		 * division level
 		 */
-		s = s.replaceFirst("\u00A0", "");
+//		s = s.replaceFirst("\u00A0", "");
 		String[] ss;
 		if (s.contains(",")) {
 			ss = s.split(", ");

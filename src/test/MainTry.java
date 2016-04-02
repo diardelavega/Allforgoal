@@ -48,10 +48,13 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException {
-		initCCAllStruct();
-		Strategy strategy = new Strategy();
-		strategy.tryTask();
+//		initCCAllStruct();
+//		Strategy strategy = new Strategy();
+//		strategy.tryTask();
 
+		Soccerpunter_homePage sch= new Soccerpunter_homePage();
+		sch.goGetCompetitions();
+		
 		// strategy .periodic();
 		// corelator();
 		// LocalDate ld =LocalDate.now();

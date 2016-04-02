@@ -57,15 +57,15 @@ public class MatchGetter {
 		String url = allDateFormater(dat);
 		Document doc = null;
 		try {
-			logger.info(url);
-			doc = Jsoup.parse(new File(
-					"C:/Users/Administrator/Desktop/skedina/xScores_01.html"),
-					"UTF-8");
-//			 doc = Jsoup
-//			 .connect(url)
-//			 .userAgent(
-//			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-//			 .maxBodySize(0).timeout(600000).get();
+//			logger.info(url);
+//			doc = Jsoup.parse(new File(
+//					"C:/Users/Administrator/Desktop/skedina/xScores_01.html"),
+//					"UTF-8");
+			 doc = Jsoup
+			 .connect(url)
+			 .userAgent(
+			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+			 .maxBodySize(0).timeout(600000).get();
 			logger.info("Page Aquired!!");
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
@@ -99,7 +99,7 @@ public class MatchGetter {
 				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
 				if (compIdx < 0) {
 					// TODO display un-found matches
-					ul.appendUnfoundTerms(clasVal[0], clasVal[4]);
+//					ul.appendUnfoundTerms(clasVal[0], clasVal[4]);
 					continue;
 				} else {
 					// int compIdx = 10101;

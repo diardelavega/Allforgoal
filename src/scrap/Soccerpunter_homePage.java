@@ -79,16 +79,17 @@ public class Soccerpunter_homePage {
 				ccas.setCompetition(ret);
 				ccas.setCompLink(s);
 
-				CountryCompetition.ccasList.add(ccas);
+				ccas.printer();
+//				CountryCompetition.ccasList.add(ccas);
 				// System.out.println(i + " " + s);
 			}
 		}
-		try {
-			CountryCompetition cc = new CountryCompetition();
-			cc.storeCCAllStruct();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			CountryCompetition cc = new CountryCompetition();
+//			cc.storeCCAllStruct();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public String getComp(int c, String strComp) {

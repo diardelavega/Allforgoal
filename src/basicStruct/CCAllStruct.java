@@ -71,4 +71,20 @@ public class CCAllStruct {
 		this._level = _level;
 	}
 
+	public void printer(){
+		StringBuilder sb = new StringBuilder();
+		sb.append(compId);
+		sb.append(",");
+		sb.append(country);
+		sb.append(",");
+		sb.append(competition);
+		sb.append(",");
+		sb.append(compLink);
+		sb.append(",");
+		sb.append(db);
+		sb.append(",");
+		sb.append(_level);
+		sb.append(",");
+		System.out.println(sb.toString());
+	}
 }

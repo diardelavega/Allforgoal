@@ -54,28 +54,26 @@ public class OddsNStats {
 	private String competition;
 	private int level = -1;
 
-	
-	
-	private void initOdds(){
+	private void initOdds() {
 		fh.readOdderToPunterAllowedComps();
 		fh.readOdderToPunterNotAllowedComps();
 		fh.readOdderToScorerTeams();
 	}
-	
+
 	public void getOddsPage(LocalDate ld) {
 		initOdds();
 		String url = mainUrl + urlFormater(ld);
 		Document doc = null;
 		try {
-			logger.info("getting page : {}", url);
-			doc = Jsoup.parse(new File(
-					"C:/Users/Administrator/Desktop/odds_1.html"), "UTF-8");
+			// logger.info("getting page : {}", url);
+			// doc = Jsoup.parse(new File(
+			// "C:/Users/Administrator/Desktop/odds_1.html"), "UTF-8");
 
-			// doc = Jsoup
-			// .connect(url)
-			// .userAgent(
-			// "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			// .maxBodySize(0).timeout(600000).get();
+			doc = Jsoup
+					.connect(url)
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+					.maxBodySize(0).timeout(600000).get();
 			logger.info("Page aquired");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,43 +81,51 @@ public class OddsNStats {
 			logger.warn("---------:Connection not possible  {}", errorStatus);
 			return;
 		}
-//		Element dataDiv = doc.getElementsByClass("odds-holder").first();
-		Elements trs = doc.getElementsByClass("odds-holder").first().select("table tbody tr");
+		// Element dataDiv = doc.getElementsByClass("odds-holder").first();
+		Elements trs = doc.getElementsByClass("odds-holder").first()
+				.select("table tbody tr");
 
 		// storeSched(trs);
 		oddAdder(trs, ld);
 	}
 
-	
 	private void oddAdder(Elements trs, LocalDate ld) {
-		
+
 		int compId = -1;
 		for (int i = 0; i < trs.size(); i++) {
 			Element td = trs.get(i).getElementsByTag("td").get(1);
 			if (!td.hasClass("slc")) {
-
 				String title = td.getElementsByTag("a").get(0).attr("title");
-				String span = td.getElementsByTag("a").get(0)
-						.getElementsByTag("span").get(0).text();
-				attributeFiller(title, span);// country, comp, level creation
+				String span = td.getElementsByTag("a").get(0).getElementsByTag("span").get(0).text();
 
-				compId = getCompId(title);
-				// all matches of compId are filled with odds
-				if (tempAllReviewedComps.contains(compId))
+				if (skipComp(title))
 					continue;
 
+				logger.info("match  {}",trs.get(i).getElementsByTag("td").get(2).text());
+				attributeFiller(title, span);// country, comp, level creation
+				compId = getCompId(title);
+				
 			}
+			if (compId < 0) {
+				continue;
+			}
+			// all matches of compId are filled with odds
+			if (tempAllReviewedComps.contains(compId))
+				continue;
 			logger.info("{},  '{}',  {}", country, competition, level);
 
 			if (compId > -1) // wonted competition
 				if (MatchGetter.schedNewMatches.get(compId) == null) {
-					continue;
+					continue;// no matches of this competition
 				}
 			String[] teams = trs.get(i).getElementsByTag("td").get(2).text()
 					.split(" - ");
 
 			int k = teamCombinationScorerOdder(teams[0], teams[1], compId);
 			// @ map with compId, @ the idx k of the list the match is it.
+			if (k < 0) {
+				continue;
+			}
 
 			// get odds 1x2 & go to link & get o/u ods
 			double _1 = 1, _x = 1, _2 = 1, _o = 1, _u = 1;
@@ -172,7 +178,6 @@ public class OddsNStats {
 			t2 = oddsToScorer.get(t2);
 		}
 
-		
 		// Loop through the scheduled matches of competition
 		// TODO change it Xscorer vs MatchGetter
 		boolean finishReviewingFlag = true;
@@ -220,32 +225,24 @@ public class OddsNStats {
 				MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 				return k;
 			} else {
-
-				try {
-				oddsToScorer.put(t2, MatchGetter.schedNewMatches.get(compId).get(k).getT2());
-					fh.appendOdderToScorerTeams(t2,
-							MatchGetter.schedNewMatches.get(compId).get(k)
-									.getT2());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				oddsToScorer.put(t2, MatchGetter.schedNewMatches.get(compId)
+						.get(k).getT2());
+				fh.appendOdderToScorerTeams(t2, MatchGetter.schedNewMatches
+						.get(compId).get(k).getT2());
 				MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 				return k;
 			}
 		} else if (mind2 <= StandartResponses.TEAM_DIST) {
 			// t1 is already proved bigger than team_dist
-			try {
-				oddsToScorer.put(t1, MatchGetter.schedNewMatches.get(compId).get(k).getT1());
-				fh.appendOdderToScorerTeams(t1,
-						MatchGetter.schedNewMatches.get(compId).get(k).getT1());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			oddsToScorer.put(t1, MatchGetter.schedNewMatches.get(compId).get(k)
+					.getT1());
+			fh.appendOdderToScorerTeams(t1,
+					MatchGetter.schedNewMatches.get(compId).get(k).getT1());
 			MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 			return k;
 		} else {
-//			BariToScorerTuple btst = new BariToScorerTuple(t1,
-//					MatchGetter.schedNewMatches.get(compId).get(k).getT1());
+			// BariToScorerTuple btst = new BariToScorerTuple(t1,
+			// MatchGetter.schedNewMatches.get(compId).get(k).getT1());
 			logger.info("remaining {}__ {},{},{}    {}-{}", compId, country,
 					competition, level, t1, t2);
 
@@ -254,7 +251,9 @@ public class OddsNStats {
 	}
 
 	private int getCompId(String title) {
-
+		if (country.equals("Wales")) {
+			logger.info("");
+		}
 		if (country == null) {
 			return -1;
 		}
@@ -266,7 +265,7 @@ public class OddsNStats {
 			return id;
 		} else {
 			if (oddsToPunterAllowedComps.get(ccc()) != null) {
-				id = tempOddsNStatsToCompId.get(title);
+				id = oddsToPunterAllowedComps.get(ccc());
 				return id;
 			}
 		}
@@ -281,7 +280,7 @@ public class OddsNStats {
 			return cc.ccasList.get(id).getCompId();
 		} else {
 			// show teams that didint make it
-			logger.info("rejects {}", ccc());
+			logger.info("rejects '{}'", ccc());
 			return id;
 		}
 	}
@@ -301,7 +300,9 @@ public class OddsNStats {
 		}
 		if (splitHelper(st[0])) {
 			country = st[0] + " " + st[1];
-			for (int i = 2; i < st.length; i++) {
+			competition = st[2];
+			;
+			for (int i = 3; i < st.length; i++) {
 				competition += st[i];
 				if (i < st.length - 1)
 					competition += " ";
@@ -309,9 +310,15 @@ public class OddsNStats {
 			leveler(span);
 			return;
 		}
+		if (st[0].equals("Bosnia")) {
+			country = "Bosnia and Herzegovina";
+			competition = "Premier Liga";
+			level = -1;
+		}
 
 		country = st[0];
-		competition = title.substring(country.length(), title.length());
+		competition = title.substring(country.length() + 1, title.length());
+		leveler(span);
 
 	}
 
@@ -326,7 +333,7 @@ public class OddsNStats {
 
 	private boolean splitHelper(String s) {
 		if (s.equals("Northen") || s.equals("Rep.") || s.equals("Czech")
-				|| s.equals("Korea")) {
+				|| s.equals("Korea")|| s.equals("Costa") ) {
 			return true;
 		}
 		return false;
@@ -360,4 +367,20 @@ public class OddsNStats {
 		this.errorStatus = errorStatus;
 	}
 
+	private boolean skipComp(String s) {
+		if (s.contains("World")
+				|| s.contains("Africa")
+				|| s.contains("ACN")// africa cup of nations
+				|| s.contains("America") || s.contains("Europe")
+				|| s.contains("Europa") || s.contains("Asia")
+				|| s.contains("Friendly") || s.contains("Cup")
+				|| s.contains("Kup") || s.contains("Kupa")
+				|| s.contains("Coppa") || s.contains("Copa")
+				|| s.contains("Off") || s.contains("Trophy")
+				|| s.contains("Coupe") || s.contains("Euro")
+				|| s.contains("po")) {
+			return true;
+		}
+		return false;
+	}
 }

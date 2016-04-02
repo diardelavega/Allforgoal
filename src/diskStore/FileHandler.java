@@ -281,12 +281,17 @@ public class FileHandler {
 
 	// ============================================================
 	// -------------BariToScorer
-	public void apendBariToScorer(String b, String s) throws IOException {
-		BufferedWriter bw = new BufferedWriter(new FileWriter(
-				bariToScorerTeams, true));
-		BariToScorerTuple bts = new BariToScorerTuple(b, s);
-		bw.write(gson.toJson(bts) + "\n");
-		bw.close();
+	public void apendBariToScorer(String b, String s)  {
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(
+					bariToScorerTeams, true));
+			BariToScorerTuple bts = new BariToScorerTuple(b, s);
+			bw.write(gson.toJson(bts) + "\n");
+			bw.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void readBariToScorer()  {
@@ -405,13 +410,17 @@ public class FileHandler {
 
 	// ============================================
 	// ---------------OdderTOScorer matches
-	public void appendOdderToScorerTeams(String o, String s) throws IOException {
+	public void appendOdderToScorerTeams(String o, String s) {
 		// odder-scorer
-		BufferedWriter bw = new BufferedWriter(new FileWriter(
-				odderToScorerTeams, true));
-		StrStrTuple sst = new StrStrTuple(o, s);
-		bw.write(gson.toJson(sst) + "\n");
-		bw.close();
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(
+					odderToScorerTeams, true));
+			StrStrTuple sst = new StrStrTuple(o, s);
+			bw.write(gson.toJson(sst) + "\n");
+			bw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void readOdderToScorerTeams() {
