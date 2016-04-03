@@ -22,6 +22,7 @@ import java.util.TreeSet;
 
 import scrap.OddsNStats;
 import scrap.OddsNStatsMatchOdd;
+import scrap.SoccerPunterOdds;
 import scrap.Soccerpunter_homePage;
 import scrap.XscoreUpComing;
 import strategyAction.Strategy;
@@ -52,8 +53,10 @@ public class MainTry {
 //		Strategy strategy = new Strategy();
 //		strategy.tryTask();
 
-		Soccerpunter_homePage sch= new Soccerpunter_homePage();
-		sch.goGetCompetitions();
+//		Soccerpunter_homePage sch= new Soccerpunter_homePage();
+//		sch.goGetCompetitions();
+		SoccerPunterOdds spo = new SoccerPunterOdds();
+		spo.getDailyOdds(LocalDate.now());
 		
 		// strategy .periodic();
 		// corelator();
