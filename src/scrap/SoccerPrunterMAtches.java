@@ -249,14 +249,15 @@ public class SoccerPrunterMAtches {
 			String matchId = oddUrl.split("_id=|&home")[1];
 			AjaxGrabber ag = new AjaxGrabber();
 			if(ag.f47(matchId)){
-				match.set_1(ag.get_1());
-				match.set_2(ag.get_2());
-				match.set_x(ag.get_x());
+				match.set_o(ag.getOver());
+				match.set_u(ag.getUnder());
 			}
 		
 			if(ag.f69(matchId)){
-				match.set_o(ag.getOver());
-				match.set_u(ag.getUnder());
+				match.set_1(ag.get_1());
+				match.set_2(ag.get_2());
+				match.set_x(ag.get_x());
+				
 			}
 			errorStatus = ag.errorStatus;
 			logger.warn("STATUS--:{}",errorStatus);

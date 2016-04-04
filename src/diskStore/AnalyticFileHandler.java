@@ -43,6 +43,7 @@ public class AnalyticFileHandler {
 
 	public void openTrainOutput(int compId,String compName,String country) throws IOException {
 		bw = new BufferedWriter(new FileWriter(getTrainFileName(compId,compName,country), true));
+		
 	}
 
 	public void openTestOutput(int compId, Date date) throws IOException {

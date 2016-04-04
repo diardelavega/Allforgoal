@@ -149,6 +149,9 @@ public class MatchToTableRenewal {
 
 	public void calculate() throws SQLException, IOException {
 		afh.openTrainOutput(compId, compName, country);
+		pf = new PredictionFile();
+		afh.appendCsv(pf.csvHeader());
+		
 		t1 = null;
 		t2 = null;
 

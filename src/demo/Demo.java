@@ -63,10 +63,10 @@ public class Demo {
 		MatchesList ml = new MatchesList();
 		//
 		// // ----------------TEST-----------
-//		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-//		 spm.competitionResultsGrabbers(compIdx);
-//		 ml.storeSched();
-		ml.readSched();
+		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+		 spm.competitionResultsGrabbers(compIdx);
+		 ml.storeSched();
+//		ml.readSched();
 		
 //		for (Integer key : MatchesList.readMatches.keySet()) {
 ////			mttr = new MatchToTableRenewal(key);
@@ -74,6 +74,7 @@ public class Demo {
 //			log(m.printMatch());
 //		}
 		// // -------------AFTER GRAB Calcualate & Put to Predfile
+		 //TODO handle db tables with the same banes
 		MatchToTableRenewal mttr;
 		for (Integer key : MatchesList.readMatches.keySet()) {
 			mttr = new MatchToTableRenewal(key);
