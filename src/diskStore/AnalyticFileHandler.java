@@ -41,8 +41,8 @@ public class AnalyticFileHandler {
 		}
 	}
 
-	public void openTrainOutput(int compId) throws IOException {
-		bw = new BufferedWriter(new FileWriter(getTrainFileName(compId), true));
+	public void openTrainOutput(int compId,String compName,String country) throws IOException {
+		bw = new BufferedWriter(new FileWriter(getTrainFileName(compId,compName,country), true));
 	}
 
 	public void openTestOutput(int compId, Date date) throws IOException {
@@ -89,20 +89,20 @@ public class AnalyticFileHandler {
 		return tFile;
 	}
 
-	private File getTrainFileName(int compId) {
+	private File getTrainFileName(int compId, String compName,String country) {
 		// create the folder file and a new test file of format
 		// folder/CompName_compId_Data
 
 		CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
-		File cFolder = new File(predDataFolder + "/" + cc.getCountry());
+		File cFolder = new File(predDataFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
-		sb.append(cc.getCompetition());
+		sb.append(compName);
 		sb.append("_");
-		sb.append(cc.getCompId());
+		sb.append(compId);
 		sb.append("_");
 		sb.append("Data");
 

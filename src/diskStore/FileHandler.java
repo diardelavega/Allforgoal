@@ -436,7 +436,7 @@ public class FileHandler {
 					odderToScorerTeams));
 			String line;
 			while ((line = br.readLine()) != null) {
-				System.out.println(line);
+//				System.out.println(line);
 				StrStrTuple sst = gson.fromJson(line, StrStrTuple.class);
 				OddsNStats.oddsToScorer.put(sst.getS1(), sst.getS2());
 			}

@@ -62,9 +62,10 @@ public class TempMatchFunctions {
 		List<String> dbTeams = new ArrayList<>();
 		int compId = -1;
 
-		for (Integer key : XscoreUpComing.schedNewMatches.keySet()) {
-			for (MatchObj m : XscoreUpComing.schedNewMatches.get(key)) {// Original_Line
-				// for (MatchObj m : MatchGetter.schedNewMatches) {
+//		for (Integer key : XscoreUpComing.schedNewMatches.keySet()) {
+//			for (MatchObj m : XscoreUpComing.schedNewMatches.get(key)) {// Original_Line
+		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
+				 for (MatchObj m : MatchGetter.schedNewMatches.get(key)) {
 				// first search in unilang
 				String t = ul.scoreTeamToCcas(m.getT1());
 				if (t == null) {
@@ -79,11 +80,8 @@ public class TempMatchFunctions {
 					int chosenDbIdx = -1;
 					float curDist;
 					for (int i = 0; i < dbTeams.size(); i++) {
-						curDist = StringSimilarity.levenshteinDistance(
-								m.getT1(), dbTeams.get(i));
-						logger.info(
-								"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
-								m.getT1(), dbTeams.get(i), curDist, minDist);
+						curDist = StringSimilarity.levenshteinDistance(m.getT1(), dbTeams.get(i));
+						logger.info("m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",m.getT1(), dbTeams.get(i), curDist, minDist);
 						if (curDist >= m.getT2().length())
 							continue;
 						if (curDist < minDist) {
@@ -128,8 +126,7 @@ public class TempMatchFunctions {
 							chosenIdx = i;
 						}
 					}
-					logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
-							dbTeams.get(chosenIdx));
+					logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),dbTeams.get(chosenIdx));
 					ul.addTeam(dbTeams.get(chosenIdx), m.getT2());
 					m.setT2(dbTeams.get(chosenIdx));
 					dbTeams.remove(chosenIdx);
@@ -428,7 +425,6 @@ public class TempMatchFunctions {
 				teamsList.add(rs.getString("team"));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -764,6 +764,16 @@ public class BasicTableEntity extends HalfTimeExtend implements
 		this.formDefenceOut = formDefenceOut;
 	}
 
+	
+	
+	public void setHtGg(int htGg) {
+		this.htGg = htGg;
+	}
+
+	public void setFtGg(int ftGg) {
+		this.ftGg = ftGg;
+	}
+
 	public String line() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(team);

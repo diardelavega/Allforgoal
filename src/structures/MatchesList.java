@@ -1,5 +1,12 @@
 package structures;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -169,5 +176,45 @@ public class MatchesList {
 	public void readMatchesTeamDateTo(String teamName, Date date)
 			throws SQLException {
 		readMatchesCompTeamDateFromTo(0, teamName, null, date);
+	}
+
+//----------------------------
+	public void storeSched() {
+		File dir = new File("C:/m/");
+		File sch = new File(dir + "/ml");
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(
+					new FileOutputStream(sch));
+			oos.writeObject(readMatches);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void readSched() {
+		File dir = new File("C:/m/");
+		File sch = new File(dir + "/ml");
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
+					sch));
+			readMatches =  (Map<Integer, List<MatchObj>>) ois.readObject();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

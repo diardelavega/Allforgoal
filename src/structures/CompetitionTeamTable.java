@@ -37,6 +37,7 @@ public class CompetitionTeamTable {
 	private boolean isFullTable = false;
 	private boolean isTable = false;
 	private String tableName;
+	private int rowSize;
 
 	public CompetitionTeamTable(String tableName) {
 		super();
@@ -52,11 +53,19 @@ public class CompetitionTeamTable {
 		conn.open();
 		DatabaseMetaData metadata = conn.getConn().getMetaData();
 		ResultSet resultSet = metadata.getTables(null, null, tableName
-				+ "FullTable", null);
+				+ "_FullTable", null);
 		if (resultSet.next()) {
 			isTable = true;
 			// resultSet = metadata.getColumns(null, null, dbName, "htScoreIn");
+			
+			resultSet=conn.getConn().createStatement().executeQuery("select count(*) from "+ tableName
+					+ "_FullTable;");
+			if (resultSet.next()) {
+				rowSize=resultSet.getInt(1);
+			}
 		}
+		
+		
 		resultSet.close();
 		conn.close();
 	}
@@ -66,14 +75,11 @@ public class CompetitionTeamTable {
 		String query;
 		// if (isFullTable) {
 		query = "SELECT * FROM " + tableName
-				+ "FullTable ORDER BY points DESC;";
-		// } else {
-		// query = "SELECT * FROM " + compName + "Table ORDER BY points DESC;";
-		// }
+				+ "_FullTable ORDER BY points DESC;";
 		Conn conn = new Conn();
 		conn.open();
 		ResultSet rs = conn.getConn().createStatement().executeQuery(query);
-		tableEntity(rs);
+		// tableEntity(rs);
 		rs.close();
 		conn.close();
 	}
@@ -95,6 +101,10 @@ public class CompetitionTeamTable {
 
 			tm.setMatchesIn(rs.getInt("matchesin"));
 			tm.setMatchesOut(rs.getInt("matchesout"));
+			tm.setHtScoreIn(rs.getInt("htscorein"));
+			tm.setHtScoreOut(rs.getInt("htscoreout"));
+			tm.setHtConcededIn(rs.getInt("htconcedein"));
+			tm.setHtConcededOut(rs.getInt("htconcedeout"));
 			tm.setFtScoreOut(rs.getInt("ftscoreout"));
 			tm.setFtScoreIn(rs.getInt("ftscorein"));
 			tm.setFtConcededOut(rs.getInt("ftconcedeout"));
@@ -102,6 +112,10 @@ public class CompetitionTeamTable {
 
 			tm.setP3MatchesIn(rs.getInt("p3_matchesin"));
 			tm.setP3MatchesOut(rs.getInt("p3_matchesout"));
+			tm.setP3HtScoreIn(rs.getInt("p3_htscorein"));
+			tm.setP3HtScoreOut(rs.getInt("p3_htscoreout"));
+			tm.setP3HtConcededIn(rs.getInt("p3_htconcedein"));
+			tm.setP3HtConcededOut(rs.getInt("p3_htconcedeout"));
 			tm.setP3FtScoreOut(rs.getInt("p3_ftscoreout"));
 			tm.setP3FtScoreIn(rs.getInt("p3_ftscorein"));
 			tm.setP3FtConcededOut(rs.getInt("p3_ftconcedeout"));
@@ -109,6 +123,10 @@ public class CompetitionTeamTable {
 
 			tm.setTtMatchesIn(rs.getInt("tt_matchesin"));
 			tm.setTtMatchesOut(rs.getInt("tt_matchesout"));
+			tm.setTtHtScoreIn(rs.getInt("tt_htscorein"));
+			tm.setTtHtScoreOut(rs.getInt("tt_htscoreout"));
+			tm.setTtHtConcededIn(rs.getInt("tt_htconcedein"));
+			tm.setTtHtConcededOut(rs.getInt("tt_htconcedeout"));
 			tm.setTtFtScoreOut(rs.getInt("tt_ftscoreout"));
 			tm.setTtFtScoreIn(rs.getInt("tt_ftscorein"));
 			tm.setTtFtConcededOut(rs.getInt("tt_ftconcedeout"));
@@ -116,6 +134,10 @@ public class CompetitionTeamTable {
 
 			tm.setP3DownMatchesIn(rs.getInt("p3down_matchesin"));
 			tm.setP3DownMatchesOut(rs.getInt("p3down_matchesout"));
+			tm.setP3DownHtScoreIn(rs.getInt("p3down_htscorein"));
+			tm.setP3DownHtScoreOut(rs.getInt("p3down_htscoreout"));
+			tm.setP3DownHtConcededIn(rs.getInt("p3down_htconcedein"));
+			tm.setP3DownHtConcededOut(rs.getInt("p3down_htconcedeout"));
 			tm.setP3DownFtScoreOut(rs.getInt("p3down_ftscoreout"));
 			tm.setP3DownFtScoreIn(rs.getInt("p3down_ftscorein"));
 			tm.setP3DownFtConcededOut(rs.getInt("p3down_ftconcedeout"));
@@ -123,6 +145,10 @@ public class CompetitionTeamTable {
 
 			tm.setP3UpMatchesIn(rs.getInt("p3up_matchesin"));
 			tm.setP3UpMatchesOut(rs.getInt("p3up_matchesout"));
+			tm.setP3UpHtScoreIn(rs.getInt("p3up_htscorein"));
+			tm.setP3UpHtScoreOut(rs.getInt("p3up_htscoreout"));
+			tm.setP3UpHtConcededIn(rs.getInt("p3up_htconcedein"));
+			tm.setP3UpHtConcededOut(rs.getInt("p3up_htconcedeout"));
 			tm.setP3UpFtScoreOut(rs.getInt("p3up_ftscoreout"));
 			tm.setP3UpFtScoreIn(rs.getInt("p3up_ftscorein"));
 			tm.setP3UpFtConcededOut(rs.getInt("p3up_ftconcedeout"));
@@ -132,32 +158,52 @@ public class CompetitionTeamTable {
 			tm.setForm1(rs.getFloat("form1"));
 			tm.setForm2(rs.getFloat("form2"));
 			tm.setForm3(rs.getFloat("form3"));
+			tm.setFormAtack(rs.getFloat("formAtack"));
+			tm.setFormAtackIn(rs.getFloat("formAtackIn"));
+			tm.setFormAtackOut(rs.getFloat("formAtackOut"));
+
+			tm.setFormDefence(rs.getFloat("formDefence"));
+			tm.setFormDefenceIn(rs.getFloat("formDefenceIn"));
+			tm.setFormDefenceOut(rs.getFloat("formDefenceOut"));
+
+			tm.setAvgWinCont(rs.getInt("winsIn"));
+			tm.setAvgDrawCont(rs.getInt("avgDrawCont"));
+			tm.setAvgLoseCont(rs.getInt("avgLoseCont"));
+
+			tm.setWinsIn(rs.getInt("winsIn"));
+			tm.setWinsOut(rs.getInt("winsOut"));
+			tm.setDrawsIn(rs.getInt("drawsIn"));
+			tm.setDrawsOut(rs.getInt("drawsOut"));
+			tm.setLosesIn(rs.getInt("losesIn"));
+			tm.setLosesOut(rs.getInt("losesOut"));
+			tm.setFtGg(rs.getInt("ftgg"));
+			tm.setHtGg(rs.getInt("htgg"));
 
 			// if (isFullTable) {
-			tm.setHtScoreIn(rs.getInt("htscorein"));
-			tm.setHtScoreOut(rs.getInt("htscoreout"));
-			tm.setHtConcededOut(rs.getInt("htconcedeout"));
-			tm.setHtConcededIn(rs.getInt("htconcedein"));
-
-			tm.setP3HtScoreOut(rs.getInt("p3_htscoreout"));
-			tm.setP3HtScoreIn(rs.getInt("p3_htscorein"));
-			tm.setP3HtConcededOut(rs.getInt("p3_htconcedeout"));
-			tm.setP3HtConcededIn(rs.getInt("p3_htconcedein"));
-
-			tm.setTtHtScoreOut(rs.getInt("tt_htscoreout"));
-			tm.setTtHtScoreIn(rs.getInt("tt_htscorein"));
-			tm.setTtHtConcededOut(rs.getInt("tt_htconcedeout"));
-			tm.setTtHtConcededIn(rs.getInt("tt_htconcedein"));
-
-			tm.setP3DownHtScoreOut(rs.getInt("p3down_htscoreout"));
-			tm.setP3DownHtScoreIn(rs.getInt("p3down_htscorein"));
-			tm.setP3DownHtConcededOut(rs.getInt("p3down_htconcedeout"));
-			tm.setP3DownHtConcededIn(rs.getInt("p3down_htconcedein"));
-
-			tm.setP3UpHtScoreOut(rs.getInt("p3up_htscoreout"));
-			tm.setP3UpHtScoreIn(rs.getInt("p3up_htscorein"));
-			tm.setP3UpHtConcededOut(rs.getInt("p3up_htconcedeout"));
-			tm.setP3UpHtConcededIn(rs.getInt("p3up_htconcedein"));
+			// tm.setHtScoreIn(rs.getInt("htscorein"));
+			// tm.setHtScoreOut(rs.getInt("htscoreout"));
+			// tm.setHtConcededOut(rs.getInt("htconcedeout"));
+			// tm.setHtConcededIn(rs.getInt("htconcedein"));
+			//
+			// tm.setP3HtScoreOut(rs.getInt("p3_htscoreout"));
+			// tm.setP3HtScoreIn(rs.getInt("p3_htscorein"));
+			// tm.setP3HtConcededOut(rs.getInt("p3_htconcedeout"));
+			// tm.setP3HtConcededIn(rs.getInt("p3_htconcedein"));
+			//
+			// tm.setTtHtScoreOut(rs.getInt("tt_htscoreout"));
+			// tm.setTtHtScoreIn(rs.getInt("tt_htscorein"));
+			// tm.setTtHtConcededOut(rs.getInt("tt_htconcedeout"));
+			// tm.setTtHtConcededIn(rs.getInt("tt_htconcedein"));
+			//
+			// tm.setP3DownHtScoreOut(rs.getInt("p3down_htscoreout"));
+			// tm.setP3DownHtScoreIn(rs.getInt("p3down_htscorein"));
+			// tm.setP3DownHtConcededOut(rs.getInt("p3down_htconcedeout"));
+			// tm.setP3DownHtConcededIn(rs.getInt("p3down_htconcedein"));
+			//
+			// tm.setP3UpHtScoreOut(rs.getInt("p3up_htscoreout"));
+			// tm.setP3UpHtScoreIn(rs.getInt("p3up_htscorein"));
+			// tm.setP3UpHtConcededOut(rs.getInt("p3up_htconcedeout"));
+			// tm.setP3UpHtConcededIn(rs.getInt("p3up_htconcedein"));
 			// }
 
 			classificationPos.add(tm);
@@ -165,20 +211,20 @@ public class CompetitionTeamTable {
 	}
 
 	public void createFullTable() throws SQLException {
-		String create = "create Table " + tableName + "FullTable ( ";
+		String create = "create table " + tableName + "_fullTable ( ";
 
 		String attributes = " team varchar(25) not null unique, "
 				+ "teamid int, points int not null, matchesin int not null, matchesout int not null, "
 				+ " htscorein int, htscoreout int, htconcedein int, htconcedeout int, "
 				+ " ftscorein int not null, ftscoreout int not null, ftconcedein int, ftconcedeout int, "
-				+ "p3_matchesin int,  p3_matchesout int,  p3_htscorein int not null,  p3_htscoreout int not null, p3_htconcedein int, p3_htconcedeout int, "
-				+ "p3_ftscorein int not null,  p3_ftscoreout int not null, p3_ftconcedein int, p3_ftconcedeout int, "
+				+ " p3_matchesin int,  p3_matchesout int,  p3_htscorein int not null,  p3_htscoreout int not null, p3_htconcedein int, p3_htconcedeout int, "
+				+ " p3_ftscorein int not null,  p3_ftscoreout int not null, p3_ftconcedein int, p3_ftconcedeout int, "
 				+ " tt_matchesin int,  tt_matchesout int, tt_htscorein int not null, tt_htscoreout int not null, tt_htconcedein int, tt_htconcedeout int, "
-				+ "tt_ftscorein int not null, tt_ftscoreout int not null, tt_ftconcedein int, tt_ftconcedeout int, "
+				+ " tt_ftscorein int not null, tt_ftscoreout int not null, tt_ftconcedein int, tt_ftconcedeout int, "
 				+ " p3up_matchesin int,  p3up_matchesout int, p3up_htscorein int not null, p3up_htscoreout int not null, p3up_htconcedein int, p3up_htconcedeout int, "
-				+ "p3up_ftscorein int not null, p3up_ftscoreout int not null, p3up_ftconcedein int, p3up_ftconcedeout int, "
-				+ "p3down_matchesin int,  p3down_matchesout int, p3down_htscorein int not null, p3down_htscoreout int not null, p3down_htconcedein int, p3down_htconcedeout int, "
-				+ "p3down_ftscorein int not null, p3down_ftscoreout int not null, p3down_ftconcedein int, p3down_ftconcedeout int, "
+				+ " p3up_ftscorein int not null, p3up_ftscoreout int not null, p3up_ftconcedein int, p3up_ftconcedeout int, "
+				+ " p3down_matchesin int,  p3down_matchesout int, p3down_htscorein int not null, p3down_htscoreout int not null, p3down_htconcedein int, p3down_htconcedeout int, "
+				+ " p3down_ftscorein int not null, p3down_ftscoreout int not null, p3down_ftconcedein int, p3down_ftconcedeout int, "
 				+ " form numeric(5,3) , form1 numeric(5,3) , form2 numeric(5,3) , form3 numeric(5,3) , form4 numeric(5,3) , formAtack numeric(5,3) , formAtackIn numeric(5,3) , formAtackOut numeric(5,3) , "
 				+ " formDefence numeric(5,3) , formDefenceIn numeric(5,3) , formDefenceOut numeric(5,3),"
 				+ " avgWinCont numeric(5,3), avgDrawCont numeric(5,3), avgLoseCont numeric(5,3), winsIn int(2), winsOut int(2),"
@@ -196,15 +242,16 @@ public class CompetitionTeamTable {
 
 	public void insertTable() throws SQLException {
 		String sql = "insert into " + tableName
-				+ "FullTable values (?,?,?,?,?,?,?,?,?,?,"
+				+ "_FullTable values (?,?,?,?,?,?,?,?,?,?,"
 				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?,"
 				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?,"
-				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?";
+				+ "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?,?,?,?,?,?," + "?,?,?,?,?);";
 
 		// logger.info(sql);
 		Conn conn = new Conn();
 		conn.open();
 		PreparedStatement ps = conn.getConn().prepareStatement(sql);
+		int i = 0;
 		for (BasicTableEntity o : classificationPos) {
 			ps.setString(1, o.getTeam());
 			ps.setInt(2, 0);
@@ -293,6 +340,11 @@ public class CompetitionTeamTable {
 			ps.setInt(75, o.getHtGg());
 
 			ps.addBatch();
+			i++;
+			if (i % 200 == 0) {
+				ps.executeBatch();
+			}
+
 		}
 		ps.executeBatch();
 		ps.close();
@@ -304,17 +356,17 @@ public class CompetitionTeamTable {
 
 		String sql = "update "
 				+ tableName
-				+ "FullTable set points=?, matchesin=?, matchesout=?, htscorein = ?, htscoreout = ?, htconcedein = ?, "
+				+ "_FullTable set points=?, matchesin=?, matchesout=?, htscorein = ?, htscoreout = ?, htconcedein = ?, "
 				+ "htconcedeout = ?, ftscorein =?, ftscoreout =?, ftconcedein = ?, ftconcedeout = ?, "
-				+ " p3_matchesin = ?,  p3_matchesout = ?,  p3_htscorein =?,  p3_htscoreout =?, p3_htconcedein = ?, p3_htconcedeout = ?,"
+				+ " p3_matchesin = ?,  p3_matchesout = ?,  p3_htscorein =?,  p3_htscoreout =?, p3_htconcedein = ?, p3_htconcedeout = ?, "
 				+ " p3_ftscorein =?,  p3_ftscoreout =?, p3_ftconcedein = ?, p3_ftconcedeout = ?, "
-				+ "  tt_matchesin = ?,  tt_matchesout = ?, tt_htscorein =?, tt_htscoreout =?, tt_htconcedein = ?, tt_htconcedeout = ?,"
+				+ "  tt_matchesin = ?,  tt_matchesout = ?, tt_htscorein =?, tt_htscoreout =?, tt_htconcedein = ?, tt_htconcedeout = ?, "
 				+ " tt_ftscorein =?, tt_ftscoreout =?, tt_ftconcedein = ?, tt_ftconcedeout = ?, "
-				+ "  p3up_matchesin = ?,  p3up_matchesout = ?, p3up_htscorein =?, p3up_htscoreout =?, p3up_htconcedein = ?, p3up_htconcedeout = ?,"
+				+ "  p3up_matchesin = ?,  p3up_matchesout = ?, p3up_htscorein =?, p3up_htscoreout =?, p3up_htconcedein = ?, p3up_htconcedeout = ?, "
 				+ " p3up_ftscorein =?, p3up_ftscoreout =?, p3up_ftconcedein = ?, p3up_ftconcedeout = ?, "
-				+ " p3down_matchesin = ?,  p3down_matchesout = ?, p3down_htscorein =?, p3down_htscoreout =?, p3down_htconcedein = ?, p3down_htconcedeout = ?,"
+				+ " p3down_matchesin = ?,  p3down_matchesout = ?, p3down_htscorein =?, p3down_htscoreout =?, p3down_htconcedein = ?, p3down_htconcedeout = ?, "
 				+ " p3down_ftscorein =?, p3down_ftscoreout =?, p3down_ftconcedein = ?, p3down_ftconcedeout = ?, "
-				+ "  form  = ? , form1  = ? , form2  = ?, form3  = ?, form4  = ?, formAtack  = ?, formAtackIn  = ?,formAtackOut  = ?,"
+				+ "  form  = ? , form1  = ? , form2  = ?, form3  = ?, form4  = ?, formAtack  = ?, formAtackIn  = ?,formAtackOut  = ?, "
 				+ "  formDefence  = ?, formDefenceIn  = ?, formDefenceOut  = ?, avgWinCont = ? avgDrawCont = ?, avgLoseCont = ?, "
 				+ " winsIn = ?, winsOut = ?, drawsIn = ?, drawsOut = ?, losesIn = ?, losesOut = ?, ftgg = ?, htgg = ? ";
 
@@ -401,7 +453,7 @@ public class CompetitionTeamTable {
 			ps.setFloat(69, o.getDrawsOut());
 			ps.setFloat(70, o.getLosesIn());
 			ps.setFloat(71, o.getLosesOut());
-			
+
 			ps.setInt(72, o.getFtGg());
 			ps.setInt(73, o.getHtGg());
 
@@ -590,4 +642,10 @@ public class CompetitionTeamTable {
 		 */
 	}
 
+	public int getRowSize() {
+		return rowSize;
+	}
+
+	
+	
 }

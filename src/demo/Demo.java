@@ -44,47 +44,49 @@ public class Demo {
 		// {// fill ccallstruct from site and store to db
 		// Soccerpunter_homePage sp = new Soccerpunter_homePage();
 		// sp.goGetCompetitions();
-//		CountryCompetition cc = new CountryCompetition();
+		// CountryCompetition cc = new CountryCompetition();
 		// cc.storeCCAllStruct();
 		// }
 
-		{
-//			initCCAllStruct();
-//			for (int i=0;i<cc.sdsList.size();i++){
-//				System.out.print(i+"\t");
-//				cc.sdsList.get(i).printer();
-//			}
-			//
-			// String link = CountryCompetition.ccasList.get(52).getCompLink();
-			// int compId = CountryCompetition.ccasList.get(52).getCompId();
-			// System.out.println(link);
-			// MatchesList ml = new MatchesList();
-			//
-			// // ----------------TEST-----------
-			// SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-			// LocalDate dd = spm.getLatestMatchesDate(compId);
-			// spm.remainingResultsGraber(link, compId, dd, true);
-			// log(dd.toString());
-			//
-			// // -------------AFTER GRAB Calcualate & Put to Predfile
-			// MatchToTableRenewal mttr;
-			// for (Integer key : MatchesList.readMatches.keySet()) {
-			// mttr = new MatchToTableRenewal(
-			// MatchesList.readMatches.get(key), key);
-			// MatchToTableRenewal.afh.openTrainOutput(compId);
-			// mttr.calculate();
-			// MatchToTableRenewal.afh.closeOutput();
-			// }
-			// // --------------- insert matches to db
-			//
-			// ml.insertMatches();
+		initCCAllStruct();
+		// for (int i=0;i<cc.sdsList.size();i++){
+		// System.out.print(i+"\t");
+		// cc.sdsList.get(i).printer();
+		// }
+		//
+		int compIdx = 134;
+		// String link = CountryCompetition.ccasList.get(111).getCompLink();
+		// int compId = CountryCompetition.ccasList.get(111).getCompId();
 
+		logger.info("{}", CountryCompetition.ccasList.get(compIdx).printer());
+		// System.out.println(link);
+		MatchesList ml = new MatchesList();
+		//
+		// // ----------------TEST-----------
+//		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+//		 spm.competitionResultsGrabbers(compIdx);
+//		 ml.storeSched();
+		ml.readSched();
+		
+//		for (Integer key : MatchesList.readMatches.keySet()) {
+////			mttr = new MatchToTableRenewal(key);
+//			for(MatchObj m:MatchesList.readMatches.get(key))
+//			log(m.printMatch());
+//		}
+		// // -------------AFTER GRAB Calcualate & Put to Predfile
+		MatchToTableRenewal mttr;
+		for (Integer key : MatchesList.readMatches.keySet()) {
+			mttr = new MatchToTableRenewal(key);
+			mttr.calculate();
 		}
+		// --------------- insert matches to db
+
+		ml.insertMatches();
 
 		// {
 		// {// TODO this section grabs the matches from the site
 		// SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-		// spm.matchGraber();
+		// // spm.matchGraber();
 		// spm.competitionResultsGrabbers(link, compId);
 		// // at this point matches garbed and put to list
 		// }
@@ -154,8 +156,8 @@ public class Demo {
 		// ajaxGrabber();
 
 		// bar();
-		printest();
-		
+		// printest();
+
 	}
 
 	private static void log(String s) {
@@ -208,17 +210,17 @@ public class Demo {
 		conn.close();
 	}
 
-	public static void printest(){
-		String s="aa sa. 1";
+	public static void printest() {
+		String s = "aa sa. 1";
 		log(s);
 		log(s.replace(' ', '_'));
 		log(s.replace(" ", "_"));
 		log(s.replace(" ", "_"));
-		log(s. replaceAll(" ", "_"));
+		log(s.replaceAll(" ", "_"));
 		log(s.replaceFirst(" ", "_"));
-		
+
 	}
-	
+
 	public static void foo() {
 		LocalDate d1 = LocalDate.now();
 		LocalDate pd = LocalDate.of(2016, Month.JANUARY, 12);

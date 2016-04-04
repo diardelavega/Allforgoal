@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
+import structures.MatchesList;
 import structures.PredictionFile;
 import basicStruct.ClasifficationStruct;
 import basicStruct.MatchObj;
@@ -43,9 +44,9 @@ public class MatchToTableRenewal {
 			.getLogger(MatchToTableRenewal.class);
 
 	private PredictionFile pf;
-	public static AnalyticFileHandler afh = new AnalyticFileHandler();
+	private AnalyticFileHandler afh = new AnalyticFileHandler();
 
-	private List<MatchObj> matchList;
+	// private List<MatchObj> matchList;
 	private int compId;
 	private MatchObj mobj;
 	private CompetitionTeamTable ctt;
@@ -56,20 +57,23 @@ public class MatchToTableRenewal {
 	private int match_counter = 0;
 	private int totMatches = 0;
 
+	private String compName;
+	private String country;
+
 	// test purposes, team table to file
 	Path path = Paths.get("C:/Users/Administrator/Desktop/matches.csv");
 	List<String> matchesDF = new ArrayList<>();
 
-	// vars to know which sets of db update to execute
 	private boolean t1tt = false, t1p3 = false, t1p3up = false,
 			t1p3down = false;
 	private boolean t2tt = false, t2p3 = false, t2p3up = false,
 			t2p3down = false;
 
-	public MatchToTableRenewal(List<MatchObj> list, int compId2) {
+	public MatchToTableRenewal(int compId2) {
 		super();
-		this.matchList = list;
+		// this.matchList = list;
 		this.compId = compId2;
+		compNameGetter();
 	}
 
 	public MatchToTableRenewal() {
@@ -144,13 +148,13 @@ public class MatchToTableRenewal {
 	}
 
 	public void calculate() throws SQLException, IOException {
-
+		afh.openTrainOutput(compId, compName, country);
 		t1 = null;
 		t2 = null;
 
 		init();// get the db table ready
-		for (int i = 0; i < matchList.size(); i++) {
-			mobj = matchList.get(i);
+		for (int i = 0; i < MatchesList.readMatches.get(compId).size(); i++) {
+			mobj = MatchesList.readMatches.get(compId).get(i);
 
 			posT1 = -1;
 			posT2 = -1;
@@ -170,12 +174,12 @@ public class MatchToTableRenewal {
 				t2.setTeam(mobj.getT2());
 			}
 
+			logger.info("{}", mobj.printMatch());
+
 			if (t1.getMatchesIn() + t1.getMatchesOut() > 3
 					|| t2.getMatchesIn() + t2.getMatchesOut() > 3) {
 
-				// --- -----Execute all prediction file asignments------------
-				// TODO a new predDataFile for every new competition
-				// the afh data file is opened outside of this class
+				// ********Execute all prediction file asignments*********
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment();// set up pred file data
 				// nr of matches per nr of games (half of the teams)
@@ -218,10 +222,12 @@ public class MatchToTableRenewal {
 		}
 		// at the end
 		if (ctt.isTable()) {
-			logger.info(
-					"*******************************classification size ={}",
-					ctt.getClassificationPos().size());
-			ctt.updateTable();
+			if (ctt.getRowSize() >= 1) {
+				logger.info(
+						"*******************************classification size ={}",
+						ctt.getClassificationPos().size());
+				ctt.updateTable();
+			}
 		} else {
 			ctt.insertTable();
 		}
@@ -235,6 +241,7 @@ public class MatchToTableRenewal {
 		// // store all the lines in a file
 		// storeIt();
 		// --------------------------------------------------------
+		afh.closeOutput();
 	}
 
 	public void init() throws SQLException {
@@ -244,8 +251,8 @@ public class MatchToTableRenewal {
 		 * ready
 		 */
 
-		String compName = CountryCompetition.ccasList.get(compId - 1)
-				.getCompetition();
+		// String compName = CountryCompetition.ccasList.get(compId - 1)
+		// .getCompetition();
 		compName = compName.replaceAll(" ", "_");
 		ctt = new CompetitionTeamTable(compName);
 
@@ -663,22 +670,28 @@ public class MatchToTableRenewal {
 		pf.setT1DefenseOut(Elem.getFormDefenceOut());
 
 		float avg;
-		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
-				/ Elem.getMatchesIn();
-		pf.setT1AvgHtScoreIn(avg);
-		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
-				/ Elem.getMatchesOut();
-		pf.setT1AvgHtScoreOut(avg);
-		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
-				/ Elem.getMatchesIn();
-		pf.setT1AvgFtScoreIn(avg);
-		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
-				/ Elem.getMatchesOut();
-		pf.setT1AvgFtScoreOut(avg);
-		pf.setT1AvgFtGgResult(Elem.getFtGg()
-				/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
-		pf.setT1AvgHtGgResult(Elem.getHtGg()
-				/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		if (Elem.getMatchesIn() > 0) {
+			avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
+					/ Elem.getMatchesIn();
+			pf.setT1AvgHtScoreIn(avg);
+			avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
+					/ Elem.getMatchesIn();
+			pf.setT1AvgFtScoreIn(avg);
+		}
+		if (Elem.getMatchesOut() > 0) {
+			avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
+					/ Elem.getMatchesOut();
+			pf.setT1AvgHtScoreOut(avg);
+			avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
+					/ Elem.getMatchesOut();
+			pf.setT1AvgFtScoreOut(avg);
+		}
+		if (Elem.getMatchesIn() + Elem.getMatchesOut() > 0) {
+			pf.setT1AvgFtGgResult(Elem.getFtGg()
+					/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+			pf.setT1AvgHtGgResult(Elem.getHtGg()
+					/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		}
 
 		pf.setT1WinsIn(Elem.getWinsIn());
 		pf.setT1WinsOut(Elem.getWinsOut());
@@ -702,22 +715,28 @@ public class MatchToTableRenewal {
 		pf.setT2DefenseIn(Elem.getFormDefenceIn());
 		pf.setT2DefenseOut(Elem.getFormDefenceOut());
 
-		avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
-				/ Elem.getMatchesIn();
-		pf.setT2AvgHtScoreIn(avg);
-		avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
-				/ Elem.getMatchesOut();
-		pf.setT2AvgHtScoreOut(avg);
-		avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
-				/ Elem.getMatchesIn();
-		pf.setT2AvgFtScoreIn(avg);
-		avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
-				/ Elem.getMatchesOut();
-		pf.setT2AvgFtScoreOut(avg);
-		pf.setT2AvgFtGgResult(Elem.getFtGg()
-				/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
-		pf.setT2AvgHtGgResult(Elem.getHtGg()
-				/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		if (Elem.getMatchesIn() > 0) {
+			avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
+					/ Elem.getMatchesIn();
+			pf.setT2AvgHtScoreIn(avg);
+			avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
+					/ Elem.getMatchesIn();
+			pf.setT2AvgFtScoreIn(avg);
+		}
+		if (Elem.getMatchesOut() > 0) {
+			avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
+					/ Elem.getMatchesOut();
+			pf.setT2AvgHtScoreOut(avg);
+			avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
+					/ Elem.getMatchesOut();
+			pf.setT2AvgFtScoreOut(avg);
+		}
+		if (Elem.getMatchesIn() + Elem.getMatchesOut() > 0) {
+			pf.setT2AvgFtGgResult(Elem.getFtGg()
+					/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+			pf.setT2AvgHtGgResult(Elem.getHtGg()
+					/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+		}
 
 		pf.setT2WinsIn(Elem.getWinsIn());
 		pf.setT2WinsOut(Elem.getWinsOut());
@@ -837,6 +856,40 @@ public class MatchToTableRenewal {
 			}
 		}
 
+	}
+
+	// ----------------------------
+	private void compNameGetter() {
+		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
+			if (CountryCompetition.ccasList.get(i).getCompId() == compId) {
+				country = CountryCompetition.ccasList.get(i).getCountry();
+				compName = CountryCompetition.ccasList.get(i).getCompetition();
+			}
+		}
+	}
+
+	public int getCompId() {
+		return compId;
+	}
+
+	public String getCompName() {
+		return compName;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCompId(int compId) {
+		this.compId = compId;
+	}
+
+	public void setCompName(String compName) {
+		this.compName = compName;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 }

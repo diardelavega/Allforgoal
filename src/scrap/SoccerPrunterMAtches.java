@@ -51,7 +51,7 @@ public class SoccerPrunterMAtches {
 	private String errorStatus = "OK"; // a simple way to report problems
 	private List<MatchObj> matchlist = new ArrayList<>();
 	private NameCleaner nc = new NameCleaner();
-	// AnalyticFileHandler afh;
+	private AnalyticFileHandler afh = new AnalyticFileHandler();
 	private String baseUrl = "http://www.soccerpunter.com";
 
 	// ------------------MODULATE FUNCTIONS
@@ -146,12 +146,15 @@ public class SoccerPrunterMAtches {
 		return 0;
 	}
 
-	public int competitionResultsGrabbers(String url, int compId)
+	public int competitionResultsGrabbers( int compIdx)
 			throws IOException {
 		/*
 		 * go to the page with the results table and gather the match data we
 		 * want report error in case something goes wrong
 		 */
+		
+		String url=CountryCompetition.ccasList.get(compIdx).getCompLink();
+		int compId=CountryCompetition.ccasList.get(compIdx).getCompId();
 		Document doc = null;
 		try {
 			logger.info(baseUrl + url + "/results");
@@ -176,9 +179,8 @@ public class SoccerPrunterMAtches {
 			logger.warn("---------:Element not found");
 			errorStatus = "Unfound Element";
 		} else {
-			// set file ready to be writen
-			// afh = new AnalyticFileHandler();
-			// afh.opendataWrite();
+			// set file ready to be writen----*********
+//			afh.openTrainOutput(compId);
 
 			Elements trs = resultTable.getElementsByTag("tr");
 			for (Element tr : trs) {
@@ -202,7 +204,8 @@ public class SoccerPrunterMAtches {
 					}
 				}
 			} // for
-				// afh.closeOutput();
+			//----*******
+//			afh.closeOutput();
 		}
 		logger.info("STATUS is {}", errorStatus);
 		return 0;
@@ -245,22 +248,24 @@ public class SoccerPrunterMAtches {
 		if (!oddUrl.equals("")) {
 			String matchId = oddUrl.split("_id=|&home")[1];
 			AjaxGrabber ag = new AjaxGrabber();
-			ag.f47(matchId);
-			ag.f69(matchId);
-			errorStatus = ag.errorStatus;
-			logger.warn(errorStatus);
-			if (errorStatus == "OK") {
+			if(ag.f47(matchId)){
 				match.set_1(ag.get_1());
 				match.set_2(ag.get_2());
 				match.set_x(ag.get_x());
+			}
+		
+			if(ag.f69(matchId)){
 				match.set_o(ag.getOver());
 				match.set_u(ag.getUnder());
 			}
+			errorStatus = ag.errorStatus;
+			logger.warn("STATUS--:{}",errorStatus);
 		}
 		// match.printMatch();
 
-		// append to file;
-		// afh.appendMatchData(match);
+		// append to file;----*******
+//		 afh.appendCsv(match.printMatch());
+//		 appendMatchData(match);
 		// put the matches to the appropriate list structure
 		if (MatchesList.readMatches.get(compId) == null) {
 			MatchesList.readMatches.put(compId, new ArrayList<>());

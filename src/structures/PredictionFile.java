@@ -11,7 +11,7 @@ public class PredictionFile {
 	private String scoreOutcome; // o/u
 	// new
 	private String ht1pOutcome; // y,n, m-> missing
-	private String ht2pOutcome; // y,n, m-> missing
+	private String ht2pOutcome; // y,n, NA-> missing
 	private String ggOutcome; // y,n
 	private int totHtScore = 0;
 	private int totFtScore = 0;

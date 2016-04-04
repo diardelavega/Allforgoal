@@ -131,7 +131,9 @@ public class Bari91UpCommingOdds {
 			if (skipComp(ss)) {
 				continue;
 			}
-
+if(ss.contains("Scotland")){
+	logger.warn("");
+}
 			ss = ss.replaceFirst("\u00A0", "");
 			logger.info("'{}'",ss);
 			// --------------------Check if already stored-------
@@ -156,8 +158,7 @@ public class Bari91UpCommingOdds {
 					continue;
 				}
 
-				String[] teams = tr.getElementsByTag("td").get(2).text()
-						.replaceFirst("\u00A0", "").split(" - ");
+				String[] teams = tr.getElementsByTag("td").get(2).text().replaceFirst("\u00A0", "").split(" - ");
 
 				int k = teamCombinationScorerBari(teams[0], teams[1], compId);
 				if (k == StandartResponses.DEFAULT_NULL)
@@ -223,6 +224,17 @@ public class Bari91UpCommingOdds {
 		 * its odds altered with the scraped odds.
 		 */
 
+		//-------------------TEST
+//		for (Integer key : MatchGetter.schedNewMatches.keySet())
+//		Integer key =		compId;
+//			for (int i = 0; i < MatchGetter.schedNewMatches.get(key).size(); i++) {
+//				if (MatchGetter.schedNewMatches.get(key).get(i).getFt1() != -1) {
+//					logger.info("{},  {} - {}",key,MatchGetter.schedNewMatches.get(compId).get(i).getT2(),MatchGetter.schedNewMatches.get(compId).get(i).getT1());
+//				}
+//			}
+//		-------------
+		
+		
 		if (btsTeams.get(t1) != null) {
 			t1 = btsTeams.get(t1);
 		}
@@ -237,12 +249,9 @@ public class Bari91UpCommingOdds {
 		for (int i = 0; i < MatchGetter.schedNewMatches.get(compId).size(); i++) {
 			// dismis previously combined matches -1 the taken ones
 			if (MatchGetter.schedNewMatches.get(compId).get(i).getFt1() != -1) {
-				d1 = StringSimilarity.levenshteinDistance(
-						MatchGetter.schedNewMatches.get(compId).get(i).getT1(),
-						t1);
-				d2 = StringSimilarity.levenshteinDistance(
-						MatchGetter.schedNewMatches.get(compId).get(i).getT2(),
-						t2);
+				logger.info("{}  {}",MatchGetter.schedNewMatches.get(compId).get(i).getT1(),MatchGetter.schedNewMatches.get(compId).get(i).getT2());
+				d1 = StringSimilarity.levenshteinDistance(MatchGetter.schedNewMatches.get(compId).get(i).getT1(),t1);
+				d2 = StringSimilarity.levenshteinDistance(MatchGetter.schedNewMatches.get(compId).get(i).getT2(),t2);
 				if (d1 + d2 < td) {
 					k = i;
 					td = d1 + d2;

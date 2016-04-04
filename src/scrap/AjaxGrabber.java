@@ -57,9 +57,11 @@ public class AjaxGrabber {
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Accept", "application/json");
 		if (conn.getResponseCode() != 200) {
-			errorStatus = "Faulty connection 47";
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ conn.getResponseCode());
+			errorStatus = "Faulty connection 69";
+			logger.info("{}    HTTP error code :{} ",errorStatus,conn.getResponseCode());
+//			throw new RuntimeException("Failed : HTTP error code : "
+//					+ conn.getResponseCode());
+			return false;
 		}
 
 		JsonParser jp = new JsonParser();
@@ -118,8 +120,10 @@ public class AjaxGrabber {
 		conn.setRequestProperty("Accept", "application/json");
 		if (conn.getResponseCode() != 200) {
 			errorStatus = "Faulty connection 69";
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ conn.getResponseCode());
+			logger.info("{}    HTTP error code :{} ",errorStatus,conn.getResponseCode());
+//			throw new RuntimeException("Failed : HTTP error code : "
+//					+ conn.getResponseCode());
+			return false;
 		}
 
 		JsonParser jp = new JsonParser();
