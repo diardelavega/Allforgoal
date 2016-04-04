@@ -49,14 +49,14 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException {
-//		initCCAllStruct();
-//		Strategy strategy = new Strategy();
-//		strategy.tryTask();
+		initCCAllStruct();
+		Strategy strategy = new Strategy();
+		strategy.tryTask();
 
 //		Soccerpunter_homePage sch= new Soccerpunter_homePage();
 //		sch.goGetCompetitions();
-		SoccerPunterOdds spo = new SoccerPunterOdds();
-		spo.getDailyOdds(LocalDate.now());
+//		SoccerPunterOdds spo = new SoccerPunterOdds();
+//		spo.getDailyOdds(LocalDate.now());
 		
 		// strategy .periodic();
 		// corelator();
@@ -84,9 +84,11 @@ public class MainTry {
 	}
 	 
 	public static void distancer() {
-//		String s1 ="LIGA II SERIE 1", s2="LIGA I";
-		String s1 ="GERMANY  BUNDESLIGA WOMEN", s2="GERMANY  BUNDESLIGA";
-		log(StringSimilarity.levenshteinDistance(s1, s2)+"");
+////		String s1 ="LIGA II SERIE 1", s2="LIGA I";
+//		String s1 ="GERMANY  BUNDESLIGA WOMEN", s2="GERMANY  BUNDESLIGA";
+//		log(StringSimilarity.levenshteinDistance(s1, s2)+"");
+		String s="1,23";
+		log(s.replace(",", "."));
 	}
 	
 	public static void seter(){

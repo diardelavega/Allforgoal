@@ -44,7 +44,7 @@ public class OddsNStats {
 
 	private Map<String, Integer> tempOddsNStatsToCompId = new HashMap<>();
 	// keep the all matches reviewed competitions as to avoid them later
-	private List<Integer> tempAllReviewedComps = new ArrayList<>();
+	private List<Integer> empAllReviewedComps = new ArrayList<>();
 
 	private CountryCompetition cc = new CountryCompetition();
 	private FileHandler fh = new FileHandler();
@@ -81,7 +81,6 @@ public class OddsNStats {
 			logger.warn("---------:Connection not possible  {}", errorStatus);
 			return;
 		}
-		// Element dataDiv = doc.getElementsByClass("odds-holder").first();
 		Elements trs = doc.getElementsByClass("odds-holder").first()
 				.select("table tbody tr");
 
@@ -101,7 +100,7 @@ public class OddsNStats {
 				if (skipComp(title))
 					continue;
 
-				logger.info("match  {}",trs.get(i).getElementsByTag("td").get(2).text());
+//				logger.info("match  {}",trs.get(i).getElementsByTag("td").get(2).text());
 				attributeFiller(title, span);// country, comp, level creation
 				compId = getCompId(title);
 				
@@ -110,9 +109,9 @@ public class OddsNStats {
 				continue;
 			}
 			// all matches of compId are filled with odds
-			if (tempAllReviewedComps.contains(compId))
+			if (MatchGetter.reviewedAndEmptyOdds.contains(compId))
 				continue;
-			logger.info("{},  '{}',  {}", country, competition, level);
+//			logger.info("{},  '{}',  {}", country, competition, level);
 
 			if (compId > -1) // wonted competition
 				if (MatchGetter.schedNewMatches.get(compId) == null) {
@@ -133,32 +132,37 @@ public class OddsNStats {
 			if (trs.get(i).getElementsByTag("td").get(7).text() != " ") {
 				try {
 					_1 = Double.parseDouble(trs.get(i).getElementsByTag("td")
-							.get(7).text());
+							.get(7).text().replace(",", "."));
 				} catch (NumberFormatException e) {
 				}
 			}
 			if (trs.get(i).getElementsByTag("td").get(9).text() != " ") {
 				try {
 					_x = Double.parseDouble(trs.get(i).getElementsByTag("td")
-							.get(9).text());
+							.get(9).text().replace(",", "."));
 				} catch (NumberFormatException e) {
 				}
 			}
 			if (trs.get(i).getElementsByTag("td").get(11).text() != " ") {
 				try {
 					_2 = Double.parseDouble(trs.get(i).getElementsByTag("td")
-							.get(11).text());
+							.get(11).text().replace(",", "."));
 				} catch (NumberFormatException e) {
 				}
 			}
 
-			String oddLink = trs.get(i).getElementsByTag("td").get(14)
-					.getElementsByTag("a").get(0).attr("href");
+			String oddLink = trs.get(i).getElementsByTag("td").get(14).getElementsByTag("a").get(0).attr("href");
 			// go to the new Page and grab O/U odds
 			OddsNStatsMatchOdd moos = new OddsNStatsMatchOdd(oddUrl + oddLink);
 			moos.pageGraber();
 			_o = moos.getOver();
 			_u = moos.getUnder();
+			
+			MatchGetter.schedNewMatches.get(compId).get(k).set_1(_1);
+			MatchGetter.schedNewMatches.get(compId).get(k).set_x(_x);
+			MatchGetter.schedNewMatches.get(compId).get(k).set_2(_2);
+			MatchGetter.schedNewMatches.get(compId).get(k).set_o(_o);
+			MatchGetter.schedNewMatches.get(compId).get(k).set_u(_u);
 		}
 	}
 
@@ -168,8 +172,9 @@ public class OddsNStats {
 		 * team2) from the list of scorer matches with the same compId
 		 */
 
-		int d1 = 0, d2 = 0, td = 1000, k = -1;
-		int mind1 = 1000, mind2 = 1000;
+		float d1 = 0, d2 = 0, td = 1000 ;
+		float mind1 = 1000, mind2 = 1000;
+		int k=-1;
 
 		if (oddsToScorer.get(t1) != null) {
 			t1 = oddsToScorer.get(t1);
@@ -185,18 +190,8 @@ public class OddsNStats {
 			// dismis previously combined matches -1 the taken ones
 			if (MatchGetter.schedNewMatches.get(compId).get(i).getFt1() != -1) {
 				finishReviewingFlag = false;
-				// logger.info(" {} - {}",
-				// MatchGetter.schedNewMatches.get(compId)
-				// .get(i).getT1(), MatchGetter.schedNewMatches
-				// .get(compId).get(i).getT2());
-				// logger.info(" {} - {}", t1, t2);
-
-				d1 = StringSimilarity.levenshteinDistance(
-						MatchGetter.schedNewMatches.get(compId).get(i).getT1(),
-						t1);
-				d2 = StringSimilarity.levenshteinDistance(
-						MatchGetter.schedNewMatches.get(compId).get(i).getT2(),
-						t2);
+				d1 = StringSimilarity.levenshteinDistance(MatchGetter.schedNewMatches.get(compId).get(i).getT1(),t1);
+				d2 = StringSimilarity.levenshteinDistance(MatchGetter.schedNewMatches.get(compId).get(i).getT2(),t2);
 				if (d1 + d2 < td) {
 					k = i;
 					td = d1 + d2;
@@ -207,7 +202,8 @@ public class OddsNStats {
 		}
 		if (finishReviewingFlag) {
 			// if it has no pending matches
-			tempAllReviewedComps.add(compId);
+			MatchGetter.reviewedAndEmptyOdds.add(compId);
+//			tempAllReviewedComps.add(compId);
 			return -1;
 		}
 
@@ -225,35 +221,24 @@ public class OddsNStats {
 				MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 				return k;
 			} else {
-				oddsToScorer.put(t2, MatchGetter.schedNewMatches.get(compId)
-						.get(k).getT2());
-				fh.appendOdderToScorerTeams(t2, MatchGetter.schedNewMatches
-						.get(compId).get(k).getT2());
+				oddsToScorer.put(t2, MatchGetter.schedNewMatches.get(compId).get(k).getT2());
+				fh.appendOdderToScorerTeams(t2, MatchGetter.schedNewMatches.get(compId).get(k).getT2());
 				MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 				return k;
 			}
 		} else if (mind2 <= StandartResponses.TEAM_DIST) {
 			// t1 is already proved bigger than team_dist
-			oddsToScorer.put(t1, MatchGetter.schedNewMatches.get(compId).get(k)
-					.getT1());
-			fh.appendOdderToScorerTeams(t1,
-					MatchGetter.schedNewMatches.get(compId).get(k).getT1());
+			oddsToScorer.put(t1, MatchGetter.schedNewMatches.get(compId).get(k).getT1());
+			fh.appendOdderToScorerTeams(t1,MatchGetter.schedNewMatches.get(compId).get(k).getT1());
 			MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 			return k;
 		} else {
-			// BariToScorerTuple btst = new BariToScorerTuple(t1,
-			// MatchGetter.schedNewMatches.get(compId).get(k).getT1());
-			logger.info("remaining {}__ {},{},{}    {}-{}", compId, country,
-					competition, level, t1, t2);
-
+			logger.info("escaped {} {}",t1,t2);
 			return -1;
 		}
 	}
 
 	private int getCompId(String title) {
-		if (country.equals("Wales")) {
-			logger.info("");
-		}
 		if (country == null) {
 			return -1;
 		}
@@ -280,7 +265,7 @@ public class OddsNStats {
 			return cc.ccasList.get(id).getCompId();
 		} else {
 			// show teams that didint make it
-			logger.info("rejects '{}'", ccc());
+//			logger.info("rejects '{}'", ccc());
 			return id;
 		}
 	}

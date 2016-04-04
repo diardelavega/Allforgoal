@@ -31,14 +31,14 @@ public class OddsNStatsMatchOdd {
 		}
 		Document doc = null;
 		try {
-//			logger.info("getting page : {}", matchOddUrl);
-//			doc = Jsoup.parse(new File(
-//					"C:/Users/Administrator/Desktop/odds_0_1.html"), "UTF-8");
-			 doc = Jsoup
-			 .connect(matchOddUrl)
-			 .userAgent(
-			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			 .maxBodySize(0).timeout(600000).get();
+			logger.info("getting page : {}", matchOddUrl);
+			// doc = Jsoup.parse(new File(
+			// "C:/Users/Administrator/Desktop/odds_0_1.html"), "UTF-8");
+			doc = Jsoup
+					.connect(matchOddUrl)
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+					.maxBodySize(0).timeout(600000).get();
 			logger.info("Page aquired");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -46,9 +46,15 @@ public class OddsNStatsMatchOdd {
 			logger.warn("---------:Connection not possible  {}", errorStatus);
 			return;
 		}
+		Elements trs;
+		try {
+			trs = doc.getElementsByClass("odds-holder").get(1)
+					.select("table tbody tr");
+		} catch (Exception e1) {
 
-		Elements trs = doc.getElementsByClass("odds-holder").get(1)
-				.select("table tbody tr");
+			e1.printStackTrace();
+			return;
+		}
 
 		int j = 0, k = 0;
 		for (int i = 0; i < trs.size(); i++) {

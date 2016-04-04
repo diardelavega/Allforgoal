@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import basicStruct.MatchObj;
 import scrap.Bari91UpCommingOdds;
 import scrap.OddsNStats;
+import scrap.SoccerPunterOdds;
 import scrap.XscoreUpComing;
 import test.MatchGetter;
 import test.TestFile;
@@ -87,17 +88,28 @@ public class Strategy {
 
 			// TODO integrate the test file and data file for prediction
 			if (lastDatCheck == null) {
+				lastDatCheck = LocalDate.now().plusDays(1);
 				// first time ever to check for temp matches
 				// scrap todays matches & tomorrows
-//				score.getScheduledToday();
-				 score.getScheduledTomorrow();
-//				 score.storeSched();
+//				 score.getScheduledToday();
+				score.getScheduledOnDate(lastDatCheck);
+//				score.getFinishedOnDate(lastDatCheck);
+				// score.getScheduledTomorrow();
+				// score.storeSched();
 				// score.clearLists();
 				// logger.info("sched size {}",score.schedNewMatches.size());
-//				 score.readSched();
-
-				// for (Integer key : score.schedNewMatches.keySet()) {
-				// System.out.println(key+"--------------->");
+				// score.readSched();
+				
+				System.out.println( MatchGetter.schedNewMatches.size());
+				System.out.println( MatchGetter.schedNewMatches.keySet().size());
+				
+				int j=0;
+//				System.out.println("-----------------------------\n\n\n");
+//				for (Integer key : MatchGetter.schedNewMatches.keySet()){
+//					System.out.println(j+ "_---------------> "+key);
+//					j++;
+//				}
+				System.out.println("--------------------------\n\n\n");
 				// for (int i = 0; i < score.schedNewMatches.get(key).size();
 				// i++)
 				// score.schedNewMatches.get(key).get(i).printMatch();
@@ -108,29 +120,67 @@ public class Strategy {
 				Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
 				// b91.initBari91UpCommingOdds();
 				// b91.scrapBariPage(LocalDate.now());
-				b91.scrapBariPage(LocalDate.now().plusDays(1));
+				b91.scrapBariPage(lastDatCheck);
 				// tmf.corelatePunterXScorerTeams();
-
+				
 				System.out
 						.println("------------------------------------\n\n\n");
-				for (Integer key : score.schedNewMatches.keySet())
-					for (int i = 0; i < score.schedNewMatches.get(key).size(); i++) {
-//						if (score.schedNewMatches.get(key).get(i).getFt1() == 0)
-							score.schedNewMatches.get(key).get(i).printMatch();
+				 j = 0;
+				for (Integer key : MatchGetter.schedNewMatches.keySet())
+					for (int i = 0; i < MatchGetter.schedNewMatches.get(key).size(); i++) {
+						if (MatchGetter.schedNewMatches.get(key).get(i).getFt1() == -1) {
+							logger.info("{}_{}  {}", key, j,
+									MatchGetter.schedNewMatches.get(key).get(i)
+											.printMatch());
+							j++;
+						}
 					}
 
 				//
 				OddsNStats ons = new OddsNStats();
-				ons.getOddsPage(LocalDate.now().plusDays(1));
+				ons.getOddsPage(lastDatCheck);
 				//
 				System.out
 						.println("------------------------------------\n\n\n");
-				for (Integer key : score.schedNewMatches.keySet())
-					for (int i = 0; i < score.schedNewMatches.get(key).size(); i++) {
-						if (score.schedNewMatches.get(key).get(i).getFt1() == 0)
-							score.schedNewMatches.get(key).get(i).printMatch();
+				j = 0;
+				for (Integer key : MatchGetter.schedNewMatches.keySet())
+					for (int i = 0; i < MatchGetter.schedNewMatches.get(key).size(); i++) {
+						if (MatchGetter.schedNewMatches.get(key).get(i).getFt1() == -1) {
+							logger.info("{}_{}  {}", key, j,
+									MatchGetter.schedNewMatches.get(key).get(i)
+											.printMatch());
+							j++;
+						}
 					}
 
+				SoccerPunterOdds spo = new SoccerPunterOdds();
+				spo.getDailyOdds(lastDatCheck);
+
+				System.out
+						.println("------------------------------------\n\n\n");
+				j = 0;
+				for (Integer key : MatchGetter.schedNewMatches.keySet())
+					for (int i = 0; i < MatchGetter.schedNewMatches.get(key).size(); i++) {
+						if (MatchGetter.schedNewMatches.get(key).get(i).getFt1() == -1) {
+							logger.info("{}_{}  {}", key, j,
+									MatchGetter.schedNewMatches.get(key).get(i)
+											.printMatch());
+							j++;
+						}
+					}
+
+				System.out
+						.println("------------------------------------\n\n\n");
+				j = 0;
+				for (Integer key : MatchGetter.schedNewMatches.keySet())
+					for (int i = 0; i < MatchGetter.schedNewMatches.get(key).size(); i++) {
+						// if (MatchGetter.schedNewMatches.get(key).get(i).getFt1() ==
+						// 0){
+						logger.info("{}_{}  {}", key, j, MatchGetter.schedNewMatches
+								.get(key).get(i).printMatch());
+						j++;
+						// }
+					}
 				// System.out
 				// .println("------------------------------------\n\n\n");
 				// for (Integer key : score.schedNewMatches.keySet())

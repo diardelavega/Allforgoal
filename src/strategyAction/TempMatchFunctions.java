@@ -75,9 +75,9 @@ public class TempMatchFunctions {
 						dbTeams = queryCompTeams(m.getComId());
 						compId = m.getComId();
 					}
-					int minDist = 100;
+					float minDist = 100;
 					int chosenDbIdx = -1;
-					int curDist;
+					float curDist;
 					for (int i = 0; i < dbTeams.size(); i++) {
 						curDist = StringSimilarity.levenshteinDistance(
 								m.getT1(), dbTeams.get(i));
@@ -112,9 +112,9 @@ public class TempMatchFunctions {
 						dbTeams = queryCompTeams(m.getComId());
 						compId = m.getComId();
 					}
-					int minDist = 100;
+					float minDist = 100;
 					int chosenIdx = -1;
-					int curDist;
+					float curDist;
 					for (int i = 0; i < dbTeams.size(); i++) {
 						curDist = StringSimilarity.levenshteinDistance(
 								m.getT2(), dbTeams.get(i));

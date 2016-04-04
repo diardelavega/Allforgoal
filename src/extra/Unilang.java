@@ -20,7 +20,8 @@ import diskStore.FileHandler;
  *         be the same for the same entity, where-as the "term" will be the text
  *         of the entity in its different forms. *******************************
  *         To facilitate the searches we will have for xscore: MAP<term,id>,
- *         term = key & id=value.
+ *         term = key & id=value. From the xscorer team we get a int value (id)
+ *         which is the key for the same team in punter.
  * 
  *
  */
@@ -223,15 +224,16 @@ public class Unilang {
 	public void init() throws JsonSyntaxException, IOException {
 		// init unilang structures
 		readCcasTeamTerms();
-//		readCcasTerms();
+		// readCcasTerms();
 		readScoreTeamTerms();
-//		readScoreTerms();
+		// readScoreTerms();
 
 	}
 
-	public void appendUnfoundTerms(String country, String comp) throws IOException {
-//		int id = ccasMap.size();
-		fh.appendUnfoundTerms(country, comp,000);
+	public void appendUnfoundTerms(String country, String comp)
+			throws IOException {
+		// int id = ccasMap.size();
+		fh.appendUnfoundTerms(country, comp, 000);
 	}
 
 }

@@ -163,9 +163,7 @@ public class Bari91UpCommingOdds {
 				if (k == StandartResponses.DEFAULT_NULL)
 					continue;
 				if (k == StandartResponses.ALL_MATCHES_TAKEN) {
-					// store remaining matches for next odds add loop
 					continue;
-					// remainingFlag = true;
 				}
 
 				// logger.info("{} {} {}", country, compName, level);
@@ -207,21 +205,6 @@ public class Bari91UpCommingOdds {
 					}
 				}
 
-				// if (remainingFlag) {// handle extra match
-				// for (int i = 0; i < remainings.size(); i++) {
-				// if (remainings.get(i).getT1() == teams[0]) {
-				// remainingFlag = true; // if it is alreadythere
-				// }
-				// }
-				// if (!remainingFlag) {
-				// MatchObj mobj = new MatchObj(-1, compId, teams[0],
-				// teams[1], 0, 0, 0, 0, _1, _2, _x, _o, _u,
-				// Date.valueOf(ld));
-				// remainings.add(mobj);
-				// }
-				// remainingFlag = false;
-				// } else {
-
 				MatchGetter.schedNewMatches.get(compId).get(k).set_1(_1);
 				MatchGetter.schedNewMatches.get(compId).get(k).set_x(_x);
 				MatchGetter.schedNewMatches.get(compId).get(k).set_2(_2);
@@ -230,12 +213,6 @@ public class Bari91UpCommingOdds {
 				// }
 			}// if compId >=0
 		}// for elements
-
-		// for (String s : rejects) {
-		// logger.info("RRRRRRRRRRRRRRR{}", s);
-		// }
-
-		// }
 	}
 
 	private int teamCombinationScorerBari(String t1, String t2, int compId) {
@@ -253,19 +230,13 @@ public class Bari91UpCommingOdds {
 			t2 = btsTeams.get(t2);
 		}
 
-		int d1 = 0, d2 = 0, td = 1000, k = -1;
-		int mind1 = 1000, mind2 = 1000;
+		float d1 = 0, d2 = 0, td = 1000 ;
+		float mind1 = 1000, mind2 = 1000;
+		int k=-1;
 
 		for (int i = 0; i < MatchGetter.schedNewMatches.get(compId).size(); i++) {
 			// dismis previously combined matches -1 the taken ones
 			if (MatchGetter.schedNewMatches.get(compId).get(i).getFt1() != -1) {
-
-				// logger.info(" {} - {}",
-				// MatchGetter.schedNewMatches.get(compId)
-				// .get(i).getT1(), MatchGetter.schedNewMatches
-				// .get(compId).get(i).getT2());
-				// logger.info(" {} - {}", t1, t2);
-
 				d1 = StringSimilarity.levenshteinDistance(
 						MatchGetter.schedNewMatches.get(compId).get(i).getT1(),
 						t1);
@@ -317,11 +288,6 @@ public class Bari91UpCommingOdds {
 			MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 			return k;
 		} else {
-			// BariToScorerTuple btst = new
-			// BariToScorerTuple(t1,MatchGetter.schedNewMatches.get(compId).get(k).getT1());
-			logger.info("unCombined {}__ {},{},{}    {}-{}", compId, country,
-					compName, level, t1, t2);
-
 			return -1;
 		}
 	}
@@ -337,17 +303,6 @@ public class Bari91UpCommingOdds {
 		if (country == null) {
 			return -1;
 		}
-		// if (btpNotAllowed.contains(ss) == true) {
-		// return -1;
-		// }
-		// if (btpAllowed.get(ss) != null) {
-		// compIdx = btpAllowed.get(ss);
-		// return compIdx;
-		// }
-		// compIdx = tempBariToCompId.get(ss);
-		// if (compIdx != null) {
-		// return compIdx;
-		// }
 
 		if (level != -1) {
 			// binary search for country then partial search for level
@@ -360,7 +315,7 @@ public class Bari91UpCommingOdds {
 			return cc.ccasList.get(compIdx).getCompId();
 		} else {
 
-			logger.info("unaccepted ---- '{}'", ss);
+//			logger.info("unaccepted ---- '{}'", ss);
 			return compIdx;// -1
 		}
 
@@ -438,41 +393,7 @@ public class Bari91UpCommingOdds {
 		return level;
 	}
 
-	// -----------------------
-
-	// public void remainingHandler() {
-	// for (MatchObj m : remainings) {
-	// if (Period.between(m.getDat().toLocalDate(), ld).getDays() > 1) {
-	// remainings.remove(m);
-	// } else {
-	// if (MatchGetter.schedNewMatches.get(m.getComId()) != null) {
-	// int kk = teamCombinationScorerBari(m.getT1(), m.getT2(),
-	// m.getComId());
-	// if (kk == StandartResponses.DEFAULT_NULL)
-	// continue;
-	// if (kk == StandartResponses.ALL_MATCHES_TAKEN) {
-	// // store remaining matches for next odds add loop
-	// remainings.add(m);
-	// continue;
-	// }
-	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-	// .set_1(m.get_1());
-	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-	// .set_2(m.get_2());
-	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-	// .set_x(m.get_x());
-	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-	// .set_o(m.get_o());
-	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-	// .set_u(m.get_u());
-	// MatchGetter.schedNewMatches.get(m.getComId()).get(kk)
-	// .setDat(Date.valueOf(ld));
-	// }// if compId;
-	// //
-	// }
-	// }
-	// }
-
+	
 	// ////////////STORE & READ//////////////////
 	public void storeSched(Document d) {
 		File dir = new File("C:/m/");

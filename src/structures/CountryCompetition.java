@@ -305,7 +305,7 @@ public class CountryCompetition {
 		while (sdsList.get(i).getCountry().equalsIgnoreCase(country)) {
 			if (sdsList.get(i).getDb() == 1)
 				for (String s : sdsList.get(i).altComps()) {
-					int d=StringSimilarity.levenshteinDistance(s, comp);
+					float  d=StringSimilarity.levenshteinDistance(s, comp);
 //					logger.info("----------------{} - {}, {}",s,comp,d);
 					if (d <= StandartResponses.LEV_DISTANCE) {
 						return i;
@@ -317,7 +317,7 @@ public class CountryCompetition {
 		while (sdsList.get(i).getCountry().equalsIgnoreCase(country)) {
 			if (sdsList.get(i).getDb() == 1)
 				for (String s : sdsList.get(i).altComps()) {
-					int d=StringSimilarity.levenshteinDistance(s, comp);
+					float d=StringSimilarity.levenshteinDistance(s, comp);
 //					logger.info("---------------{} - {}, {}",s,comp,d);
 					if (d <= StandartResponses.LEV_DISTANCE) {
 						return i;
@@ -350,8 +350,8 @@ public class CountryCompetition {
 		 * Levestain distance (b is with or without levistani distance)
 		 */
 		int minDistanceCompIdx = -1;// the idx of the most similar term
-		int minDist = 100;// var to keep the min distance
-		int dist = 0; // temporary distance var
+		float minDist = 100;// var to keep the min distance
+		float dist = 0; // temporary distance var
 
 		for (int i = 0; i < ccasList.size(); i++) {
 			// if (ccasList.get(i).getDb() == 1) {//Original_Line
@@ -396,5 +396,7 @@ public class CountryCompetition {
 			e.printStackTrace();
 		}
 	}
+
+	
 
 }

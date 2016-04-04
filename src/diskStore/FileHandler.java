@@ -53,6 +53,7 @@ public class FileHandler {
 	private File unfoundScoreTerms = new File(dataFilesFolder
 			+ "/unfoundScoreTerms");
 
+	
 	private File bariToScorerTeams = new File(dataFilesFolder
 			+ "/bariToScorerTeams");
 	private File bariAllowedTerms = new File(dataFilesFolder
@@ -69,6 +70,8 @@ public class FileHandler {
 	private File odderNotAllowedComps = new File(dataFilesFolder
 			+ "/odderNotAllowedComps");
 
+	private File punterToScorerTeams = new File(dataFilesFolder+"/punterToScorerTeams");
+	
 	private BufferedWriter bw = null;
 
 	// ------------
@@ -433,6 +436,7 @@ public class FileHandler {
 					odderToScorerTeams));
 			String line;
 			while ((line = br.readLine()) != null) {
+				System.out.println(line);
 				StrStrTuple sst = gson.fromJson(line, StrStrTuple.class);
 				OddsNStats.oddsToScorer.put(sst.getS1(), sst.getS2());
 			}
@@ -505,4 +509,18 @@ public class FileHandler {
 			e.printStackTrace();
 		}
 	}
+//=================Punter To scorer============================
+public void appendPunterToScorerTeams(String p,String s){
+	try {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(
+				punterToScorerTeams, true));
+		StrStrTuple sst = new StrStrTuple(p, s);
+		bw.write(gson.toJson(sst) + "\n");
+		bw.close();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+
+public void readPunterToScorerTeams(){}
 }

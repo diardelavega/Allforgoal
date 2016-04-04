@@ -29,7 +29,7 @@ public class StringSimilarity {
 		return costs[b.length()];
 	}
 
-	public static int levenshteinDistance(String a, String b) {
+	public static float levenshteinDistance(String a, String b) {
 		// izraeli teams area all macabi and hapoel ... return a list of
 		// distances
 
@@ -150,6 +150,15 @@ public class StringSimilarity {
 			af = Integer.parseInt(s);
 		} catch (Exception e) {
 			// logger.warn("Not a valid string {}", s);
+		}
+		if (s.contains("a")) {
+			af = 1;
+		}
+		if (s.contains("b")) {
+			af = 2;
+		}
+		if (s.contains("c")) {
+			af = 3;
 		}
 		if (s.contains("i")) {
 			af = 1;
