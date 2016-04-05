@@ -92,10 +92,10 @@ public class AjaxGrabber {
 			}
 
 			// as value we get the average of the three bookies
-			if (j == 0) {
-				over = 1;
-				under = 1;
-			} else {
+			if (j != 0) {
+//				over = 1;
+//				under = 1;
+//			} else {
 				over /= j;
 				under /= j;
 			}
@@ -144,21 +144,21 @@ public class AjaxGrabber {
 			int j = 0;
 			for (int i = 1; i < 20; i++) {
 				if (jobj.has(i + "")) {
-					_1 = jobj.get(i + "").getAsJsonObject().get("1")
+					_1 += jobj.get(i + "").getAsJsonObject().get("1")
 							.getAsJsonObject().get("odds").getAsFloat();
-					_2 = jobj.get(i + "").getAsJsonObject().get("2")
+					_2 += jobj.get(i + "").getAsJsonObject().get("2")
 							.getAsJsonObject().get("odds").getAsFloat();
-					_x = jobj.get(i + "").getAsJsonObject().get("X")
+					_x += jobj.get(i + "").getAsJsonObject().get("X")
 							.getAsJsonObject().get("odds").getAsFloat();
 					j++;
 				}
 			}
 			// as value we get the average of the three bookies
-			if (j == 0) {
-				_1 = 1;
-				_x = 1;
-				_2 = 1;
-			} else {
+			if (j != 0) {
+//				_1 = 1;
+//				_x = 1;
+//				_2 = 1;
+//			} else {
 				_1 /= j;
 				_x /= j;
 				_2 /= j;

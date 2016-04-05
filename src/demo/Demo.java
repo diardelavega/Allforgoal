@@ -67,7 +67,9 @@ public class Demo {
 		 spm.competitionResultsGrabbers(compIdx);
 		 ml.storeSched();
 //		ml.readSched();
-		
+	/*re calculate prediction file from dab matches without re grabing them.  bets fixed	*/
+		 
+		 
 //		for (Integer key : MatchesList.readMatches.keySet()) {
 ////			mttr = new MatchToTableRenewal(key);
 //			for(MatchObj m:MatchesList.readMatches.get(key))
