@@ -95,7 +95,11 @@ taking in consideration the match in hand.
 	 				 	  
 ----------------------------------------------
 ----------------------------------------------------
-Implemented allowsed & not allowed files & map/list with competitions based on the xScorer syntax ()
+Implemented allowsed & not allowed files & map/list with competitions based on the xScorer syntax ()-- DONE.
+
+--------------Prediction fase
+it will not create a prediction file if comp has less than 4 weeks.
+
 
 	 				 	  
 	 				 	  

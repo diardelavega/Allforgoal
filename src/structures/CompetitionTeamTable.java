@@ -37,11 +37,11 @@ public class CompetitionTeamTable {
 	private boolean isFullTable = false;
 	private boolean isTable = false;
 	private String tableName;
-	private int rowSize;
+	private int rowSize;// rows in the db
 
 	public CompetitionTeamTable(String tableName) {
 		super();
-		this.tableName = tableName;
+		this.tableName = tableName.replace(".", "");
 	}
 
 	public void existsDb() throws SQLException {
@@ -58,6 +58,7 @@ public class CompetitionTeamTable {
 			isTable = true;
 			// resultSet = metadata.getColumns(null, null, dbName, "htScoreIn");
 			
+			//take nw of rows in the db
 			resultSet=conn.getConn().createStatement().executeQuery("select count(*) from "+ tableName
 					+ "_FullTable;");
 			if (resultSet.next()) {
@@ -367,7 +368,7 @@ public class CompetitionTeamTable {
 				+ " p3down_matchesin = ?,  p3down_matchesout = ?, p3down_htscorein =?, p3down_htscoreout =?, p3down_htconcedein = ?, p3down_htconcedeout = ?, "
 				+ " p3down_ftscorein =?, p3down_ftscoreout =?, p3down_ftconcedein = ?, p3down_ftconcedeout = ?, "
 				+ "  form  = ? , form1  = ? , form2  = ?, form3  = ?, form4  = ?, formAtack  = ?, formAtackIn  = ?,formAtackOut  = ?, "
-				+ "  formDefence  = ?, formDefenceIn  = ?, formDefenceOut  = ?, avgWinCont = ? avgDrawCont = ?, avgLoseCont = ?, "
+				+ "  formDefence  = ?, formDefenceIn  = ?, formDefenceOut  = ?, avgWinCont = ?, avgDrawCont = ?, avgLoseCont = ?, "
 				+ " winsIn = ?, winsOut = ?, drawsIn = ?, drawsOut = ?, losesIn = ?, losesOut = ?, ftgg = ?, htgg = ? ";
 
 		Conn conn = new Conn();
@@ -502,146 +503,7 @@ public class CompetitionTeamTable {
 		this.tableName = tableName;
 	}
 
-	private void uselesMethodes() {
-		/*
-		 * public String basicUpdateTeam1(BasicTableEntity t1) { String updateSd
-		 * = "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("points = "); sb.append(t1.getPoints() +
-		 * ", "); sb.append("matchesin = "); sb.append(t1.getMatchesIn() +
-		 * ", "); sb.append("htscorein = "); sb.append(t1.getHtScoreIn() +
-		 * ", "); sb.append("htconcedein = "); sb.append(t1.getHtConcededIn() +
-		 * ", "); sb.append("ftscorein = "); sb.append(t1.getFtScoreIn() +
-		 * ", "); sb.append("ftconcedein = "); sb.append(t1.getFtConcededIn() +
-		 * ", ");
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t1.getTeam() + "');"; return ret; }
-		 * 
-		 * public String basicUpdateTeam2(BasicTableEntity t2) { String updateSd
-		 * = "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("points = "); sb.append(t2.getPoints() +
-		 * ", "); sb.append("matchesout = "); sb.append(t2.getMatchesOut() +
-		 * ", "); sb.append("htscoreout = "); sb.append(t2.getHtScoreOut() +
-		 * ", "); sb.append("htconcedeout = "); sb.append(t2.getHtConcededOut()
-		 * + ", "); sb.append("ftscoreout = "); sb.append(t2.getFtScoreOut() +
-		 * ", "); sb.append("ftconcedeout = ");
-		 * sb.append(t2.getFtConcededOut());
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t2.getTeam() + "');"; return ret; }
-		 * 
-		 * public String ttUpdateTeam1(BasicTableEntity t1) { String updateSd =
-		 * "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("tt_matchesin = ");
-		 * sb.append(t1.getTtMatchesIn() + ", "); sb.append("tt_htscorein = ");
-		 * sb.append(t1.getTtHtScoreIn() + ", ");
-		 * sb.append("tt_htconcedein = "); sb.append(t1.getTtHtConcededIn() +
-		 * ", "); sb.append("tt_ftscorein = "); sb.append(t1.getTtFtScoreIn() +
-		 * ", "); sb.append("tt_ftconcedein = ");
-		 * sb.append(t1.getTtFtConcededIn() + ", ");
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t1.getTeam() + "');"; return ret; }
-		 * 
-		 * public String ttUpdateTeam2(BasicTableEntity t2) { String updateSd =
-		 * "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("tt_matchesout = ");
-		 * sb.append(t2.getTtMatchesOut() + ", ");
-		 * sb.append("tt_htscoreout = "); sb.append(t2.getTtHtScoreOut() +
-		 * ", "); sb.append("tt_htconcedeout = ");
-		 * sb.append(t2.getTtHtConcededOut() + ", ");
-		 * sb.append("tt_ftscoreout = "); sb.append(t2.getTtFtScoreOut() +
-		 * ", "); sb.append("tt_ftconcedeout = ");
-		 * sb.append(t2.getTtFtConcededOut());
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t2.getTeam() + "');"; return ret; }
-		 * 
-		 * public String p3UpdateTeam1(BasicTableEntity t1) { String updateSd =
-		 * "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("p3_matchesin = ");
-		 * sb.append(t1.getP3MatchesIn() + ", "); sb.append("p3_htscorein = ");
-		 * sb.append(t1.getP3HtScoreIn() + ", ");
-		 * sb.append("p3_htconcedein = "); sb.append(t1.getP3HtConcededIn() +
-		 * ", "); sb.append("p3_ftscorein = "); sb.append(t1.getP3FtScoreIn() +
-		 * ", "); sb.append("p3_ftconcedein = ");
-		 * sb.append(t1.getP3FtConcededIn() + ", ");
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t1.getTeam() + "');"; return ret; }
-		 * 
-		 * public String p3UpdateTeam2(BasicTableEntity t2) { String updateSd =
-		 * "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("p3_matchesout = ");
-		 * sb.append(t2.getP3MatchesOut() + ", ");
-		 * sb.append("p3_htscoreout = "); sb.append(t2.getP3HtScoreOut() +
-		 * ", "); sb.append("p3_htconcedeout = ");
-		 * sb.append(t2.getP3HtConcededOut() + ", ");
-		 * sb.append("p3_ftscoreout = "); sb.append(t2.getP3FtScoreOut() +
-		 * ", "); sb.append("p3_ftconcedeout = ");
-		 * sb.append(t2.getP3FtConcededOut());
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t2.getTeam() + "');"; return ret; }
-		 * 
-		 * public String p3UpUpdateTeam1(BasicTableEntity t1) { String updateSd
-		 * = "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("p3_matchesin = ");
-		 * sb.append(t1.getP3UpMatchesIn() + ", ");
-		 * sb.append("p3_htscorein = "); sb.append(t1.getP3UpHtScoreIn() +
-		 * ", "); sb.append("p3_htconcedein = ");
-		 * sb.append(t1.getP3UpHtConcededIn() + ", ");
-		 * sb.append("p3_ftscorein = "); sb.append(t1.getP3UpFtScoreIn() +
-		 * ", "); sb.append("p3_ftconcedein = ");
-		 * sb.append(t1.getP3UpFtConcededIn() + ", ");
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t1.getTeam() + "');"; return ret; }
-		 * 
-		 * public String p3UpUpdateTeam2(BasicTableEntity t2) { String updateSd
-		 * = "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("p3_matchesout = ");
-		 * sb.append(t2.getP3UpMatchesOut() + ", ");
-		 * sb.append("p3_htscoreout = "); sb.append(t2.getP3UpHtScoreOut() +
-		 * ", "); sb.append("p3_htconcedeout = ");
-		 * sb.append(t2.getP3UpHtConcededOut() + ", ");
-		 * sb.append("p3_ftscoreout = "); sb.append(t2.getP3UpFtScoreOut() +
-		 * ", "); sb.append("p3_ftconcedeout = ");
-		 * sb.append(t2.getP3UpFtConcededOut());
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t2.getTeam() + "');"; return ret; }
-		 * 
-		 * public String p3DownUpdateTeam1(BasicTableEntity t1) { String
-		 * updateSd = "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("p3_matchesin = ");
-		 * sb.append(t1.getP3DownMatchesIn() + ", ");
-		 * sb.append("p3_htscorein = "); sb.append(t1.getP3DownHtScoreIn() +
-		 * ", "); sb.append("p3_htconcedein = ");
-		 * sb.append(t1.getP3DownHtConcededIn() + ", ");
-		 * sb.append("p3_ftscorein = "); sb.append(t1.getP3DownFtScoreIn() +
-		 * ", "); sb.append("p3_ftconcedein = ");
-		 * sb.append(t1.getP3DownFtConcededIn() + ", ");
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t1.getTeam() + "');"; return ret; }
-		 * 
-		 * public String p3DownUpdateTeam2(BasicTableEntity t2) { String
-		 * updateSd = "update  " + tableName + " set "; StringBuilder sb = new
-		 * StringBuilder(); sb.append("p3_matchesout = ");
-		 * sb.append(t2.getP3DownMatchesOut() + ", ");
-		 * sb.append("p3_htscoreout = "); sb.append(t2.getP3DownHtScoreOut() +
-		 * ", "); sb.append("p3_htconcedeout = ");
-		 * sb.append(t2.getP3DownHtConcededOut() + ", ");
-		 * sb.append("p3_ftscoreout = "); sb.append(t2.getP3DownFtScoreOut() +
-		 * ", "); sb.append("p3_ftconcedeout = ");
-		 * sb.append(t2.getP3DownFtConcededOut());
-		 * 
-		 * String ret = updateSd + sb.toString() + " where team like '" +
-		 * t2.getTeam() + "');"; return ret; }
-		 */
-	}
-
+	
 	public int getRowSize() {
 		return rowSize;
 	}

@@ -54,7 +54,7 @@ public class Demo {
 		// cc.sdsList.get(i).printer();
 		// }
 		//
-		int compIdx = 134;
+		int compIdx = 9;
 		// String link = CountryCompetition.ccasList.get(111).getCompLink();
 		// int compId = CountryCompetition.ccasList.get(111).getCompId();
 
@@ -63,28 +63,28 @@ public class Demo {
 		MatchesList ml = new MatchesList();
 		//
 		// // ----------------TEST-----------
-		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-		 spm.competitionResultsGrabbers(compIdx);
-		 ml.storeSched();
-//		ml.readSched();
+//		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+//		 spm.competitionResultsGrabbers(compIdx);
+//		 ml.storeSched();
+		ml.readSched();
 	/*re calculate prediction file from dab matches without re grabing them.  bets fixed	*/
 		 
 		 
 //		for (Integer key : MatchesList.readMatches.keySet()) {
 ////			mttr = new MatchToTableRenewal(key);
 //			for(MatchObj m:MatchesList.readMatches.get(key))
-//			log(m.printMatch());
+////			log(m.printMatch());
 //		}
 		// // -------------AFTER GRAB Calcualate & Put to Predfile
-		 //TODO handle db tables with the same banes
+//		 //TODO handle db tables with the same banes
 		MatchToTableRenewal mttr;
 		for (Integer key : MatchesList.readMatches.keySet()) {
 			mttr = new MatchToTableRenewal(key);
 			mttr.calculate();
 		}
 		// --------------- insert matches to db
-
-		ml.insertMatches();
+//
+//		ml.insertMatches();
 
 		// {
 		// {// TODO this section grabs the matches from the site

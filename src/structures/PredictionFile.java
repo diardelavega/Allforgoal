@@ -6,15 +6,15 @@ import org.slf4j.LoggerFactory;
 public class PredictionFile {
 	private static final Logger logger = LoggerFactory
 			.getLogger(PredictionFile.class);
+	
 	private int week = 0;
 	private String headOutcome; // MatchOutcome val 1/x/2
 	private String scoreOutcome; // o/u
-	// new
 	private String ht1pOutcome; // y,n, m-> missing
 	private String ht2pOutcome; // y,n, NA-> missing
 	private String ggOutcome; // y,n
-	private int totHtScore = 0;
-	private int totFtScore = 0;
+	private int totHtScore = -1;
+	private int totFtScore = -1;
 
 	private float bet_1 = 0;
 	private float bet_2 = 0;
@@ -741,7 +741,7 @@ public class PredictionFile {
 		sb.append(",");
 		sb.append(bet_U);
 
-		logger.info(sb.toString());
+//		logger.info(sb.toString());
 
 		return sb.toString();
 	}

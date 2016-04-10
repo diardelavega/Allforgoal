@@ -51,16 +51,18 @@ public class AjaxGrabber {
 		 * "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&
 		 * t y p e I d = 4 7
 		 */
+		flag=true;
 		URL url = new URL(ajaxUrl + mid + "&typeId=47");
-		 logger.info("url -: {}", url);
+		logger.info("url -: {}", url);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Accept", "application/json");
 		if (conn.getResponseCode() != 200) {
 			errorStatus = "Faulty connection 69";
-			logger.info("{}    HTTP error code :{} ",errorStatus,conn.getResponseCode());
-//			throw new RuntimeException("Failed : HTTP error code : "
-//					+ conn.getResponseCode());
+			logger.info("{}    HTTP error code :{} ", errorStatus,
+					conn.getResponseCode());
+			// throw new RuntimeException("Failed : HTTP error code : "
+			// + conn.getResponseCode());
 			return false;
 		}
 
@@ -93,9 +95,6 @@ public class AjaxGrabber {
 
 			// as value we get the average of the three bookies
 			if (j != 0) {
-//				over = 1;
-//				under = 1;
-//			} else {
 				over /= j;
 				under /= j;
 			}
@@ -113,16 +112,16 @@ public class AjaxGrabber {
 
 	public boolean f69(String mid) throws IOException {
 		/* read the 1x2 odds from the json data */
+		flag=true;
 		URL url = new URL(ajaxUrl + mid + "&typeId=69");
-		 logger.info("url -: {}", url);
+		logger.info("url -: {}", url);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Accept", "application/json");
 		if (conn.getResponseCode() != 200) {
 			errorStatus = "Faulty connection 69";
-			logger.info("{}    HTTP error code :{} ",errorStatus,conn.getResponseCode());
-//			throw new RuntimeException("Failed : HTTP error code : "
-//					+ conn.getResponseCode());
+			logger.info("{}    HTTP error code :{} ", errorStatus,
+					conn.getResponseCode());
 			return false;
 		}
 
@@ -155,10 +154,6 @@ public class AjaxGrabber {
 			}
 			// as value we get the average of the three bookies
 			if (j != 0) {
-//				_1 = 1;
-//				_x = 1;
-//				_2 = 1;
-//			} else {
 				_1 /= j;
 				_x /= j;
 				_2 /= j;
@@ -173,7 +168,7 @@ public class AjaxGrabber {
 			return flag;
 		}
 
-		return false;
+		return flag;
 	}
 
 	public float getOver() {

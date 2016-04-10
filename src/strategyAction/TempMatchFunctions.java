@@ -253,13 +253,6 @@ public class TempMatchFunctions {
 					mobj.setHt2(m.getHt2());
 					mobj.setFt1(m.getFt1());
 					mobj.setFt2(m.getFt2());
-					// {
-					// mobj.set_1(m.get_1());
-					// mobj.set_2(m.get_2());
-					// mobj.set_x(m.get_x());
-					// mobj.set_o(m.get_o());
-					// mobj.set_u(m.get_u());
-					// }
 					matches.add(mobj);
 					readTempMatchesList.remove(idx);// for efficiency
 					mobj.printMatch();
