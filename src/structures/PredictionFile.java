@@ -3,16 +3,18 @@ package structures;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import extra.MatchOutcome;
+
 public class PredictionFile {
 	private static final Logger logger = LoggerFactory
 			.getLogger(PredictionFile.class);
 	
 	private int week = 0;
-	private String headOutcome; // MatchOutcome val 1/x/2
-	private String scoreOutcome; // o/u
-	private String ht1pOutcome; // y,n, m-> missing
-	private String ht2pOutcome; // y,n, NA-> missing
-	private String ggOutcome; // y,n
+	private String headOutcome=MatchOutcome.missing; // MatchOutcome val 1/x/2
+	private String scoreOutcome=MatchOutcome.missing; // o/u
+	private String ht1pOutcome=MatchOutcome.missing; // y,n, m-> missing
+	private String ht2pOutcome=MatchOutcome.missing; // y,n, NA-> missing
+	private String ggOutcome=MatchOutcome.missing; // y,n
 	private int totHtScore = -1;
 	private int totFtScore = -1;
 
@@ -755,7 +757,7 @@ public class PredictionFile {
 		sb.append("ht2pOutcome,");
 		sb.append("ggOutcome,");
 		sb.append("totHtScore,");
-		sb.append("totHtScore,");
+		sb.append("totFtScore,");
 		
 		sb.append("t1,");
 		sb.append("t1Points,");

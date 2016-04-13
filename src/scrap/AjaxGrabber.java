@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
 /**
@@ -51,7 +53,7 @@ public class AjaxGrabber {
 		 * "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2086384&
 		 * t y p e I d = 4 7
 		 */
-		flag=true;
+		flag = true;
 		URL url = new URL(ajaxUrl + mid + "&typeId=47");
 		logger.info("url -: {}", url);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -68,10 +70,20 @@ public class AjaxGrabber {
 
 		JsonParser jp = new JsonParser();
 		// traverse json until 2.5 object
-		JsonObject jobj = (JsonObject) jp
-				.parse(new InputStreamReader(conn.getInputStream(), "UTF-8"))
-				.getAsJsonObject().get("rows").getAsJsonObject().get("2.5")
-				.getAsJsonObject().get("bm").getAsJsonObject();
+		JsonObject jobj = null;
+		try {
+			jobj = (JsonObject) jp
+					.parse(new InputStreamReader(conn.getInputStream(), "UTF-8"))
+					.getAsJsonObject().get("rows").getAsJsonObject().get("2.5")
+					.getAsJsonObject().get("bm").getAsJsonObject();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			logger.info("No odds for this match");
+			errorStatus = "Not Found Json Object";
+			flag = false;
+			return flag;
+		}
 
 		if (jobj == null) {
 			// some matches don't have odds and they lack the json attributes
@@ -112,7 +124,7 @@ public class AjaxGrabber {
 
 	public boolean f69(String mid) throws IOException {
 		/* read the 1x2 odds from the json data */
-		flag=true;
+		flag = true;
 		URL url = new URL(ajaxUrl + mid + "&typeId=69");
 		logger.info("url -: {}", url);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -127,10 +139,20 @@ public class AjaxGrabber {
 
 		JsonParser jp = new JsonParser();
 		// traverse json until 1x2 results object
-		JsonObject jobj = (JsonObject) jp
-				.parse(new InputStreamReader(conn.getInputStream(), "UTF-8"))
-				.getAsJsonObject().get("rows").getAsJsonObject().get("0")
-				.getAsJsonObject().get("bm").getAsJsonObject();
+		JsonObject jobj = null;
+		try {
+			jobj = (JsonObject) jp
+					.parse(new InputStreamReader(conn.getInputStream(), "UTF-8"))
+					.getAsJsonObject().get("rows").getAsJsonObject().get("0")
+					.getAsJsonObject().get("bm").getAsJsonObject();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			logger.info("No odds for this match");
+			flag = false;
+			errorStatus = "Not found Json Object";
+			return flag;
+		}
 		if (jobj == null) {
 			// some matches don't have odds and they lack the json attributes
 			logger.info("No odds for this match");
