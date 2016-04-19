@@ -719,10 +719,10 @@ public class MatchToTableRenewal {
 		pf.setT2(Elem.getTeam());
 		pf.setT2Points(Elem.getPoints());
 		pf.setT2Form(Elem.getForm());
-		pf.setT1Form1Diff(Elem.getForm() - Elem.getForm1());
-		pf.setT1Form2Diff(Elem.getForm1() - Elem.getForm2());
-		pf.setT1Form3Diff(Elem.getForm2() - Elem.getForm3());
-		pf.setT1Form4Diff(Elem.getForm3() - Elem.getForm4());
+		pf.setT2Form1Diff(Elem.getForm() - Elem.getForm1());
+		pf.setT2Form2Diff(Elem.getForm1() - Elem.getForm2());
+		pf.setT2Form3Diff(Elem.getForm2() - Elem.getForm3());
+		pf.setT2Form4Diff(Elem.getForm3() - Elem.getForm4());
 		pf.setT2Atack(Elem.getFormAtack());
 		pf.setT2AtackIn(Elem.getFormAtackIn());
 		pf.setT2AtackOut(Elem.getFormAtackOut());

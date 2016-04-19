@@ -54,7 +54,7 @@ public class Demo {
 		// cc.sdsList.get(i).printer();
 		// }
 		//
-		int compIdx =50;
+		int compIdx =49;
 		// String link = CountryCompetition.ccasList.get(111).getCompLink();
 		// int compId = CountryCompetition.ccasList.get(111).getCompId();
 

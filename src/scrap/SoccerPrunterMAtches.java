@@ -54,6 +54,9 @@ public class SoccerPrunterMAtches {
 	private AnalyticFileHandler afh = new AnalyticFileHandler();
 	private String baseUrl = "http://www.soccerpunter.com";
 
+	private int intweek;
+	private boolean weekflag = false;
+
 	// ------------------MODULATE FUNCTIONS
 
 	private Elements docConnectAndScrap(String url) {
@@ -146,15 +149,14 @@ public class SoccerPrunterMAtches {
 		return 0;
 	}
 
-	public int competitionResultsGrabbers( int compIdx)
-			throws IOException {
+	public int competitionResultsGrabbers(int compIdx) throws IOException {
 		/*
 		 * go to the page with the results table and gather the match data we
 		 * want report error in case something goes wrong
 		 */
-		
-		String url=CountryCompetition.ccasList.get(compIdx).getCompLink();
-		int compId=CountryCompetition.ccasList.get(compIdx).getCompId();
+
+		String url = CountryCompetition.ccasList.get(compIdx).getCompLink();
+		int compId = CountryCompetition.ccasList.get(compIdx).getCompId();
 		Document doc = null;
 		try {
 			logger.info(baseUrl + url + "/results");
@@ -180,7 +182,7 @@ public class SoccerPrunterMAtches {
 			errorStatus = "Unfound Element";
 		} else {
 			// set file ready to be writen----*********
-//			afh.openTrainOutput(compId);
+			// afh.openTrainOutput(compId);
 
 			Elements trs = resultTable.getElementsByTag("tr");
 			for (Element tr : trs) {
@@ -204,8 +206,8 @@ public class SoccerPrunterMAtches {
 					}
 				}
 			} // for
-			//----*******
-//			afh.closeOutput();
+				// ----*******
+				// afh.closeOutput();
 		}
 		logger.info("STATUS is {}", errorStatus);
 		return 0;
@@ -218,6 +220,11 @@ public class SoccerPrunterMAtches {
 		 * get all the data including the odds which should come from another 2
 		 * url calls
 		 */
+
+		if (!weekflag) {
+			intweek = Integer.parseInt(week);
+			weekflag = true;
+		}
 
 		MatchObj match = new MatchObj();
 		String[] temp = ft.split(" - ");
@@ -248,25 +255,25 @@ public class SoccerPrunterMAtches {
 		if (!oddUrl.equals("")) {
 			String matchId = oddUrl.split("_id=|&home")[1];
 			AjaxGrabber ag = new AjaxGrabber();
-			if(ag.f47(matchId)){
+			if (ag.f47(matchId)) {
 				match.set_o(ag.getOver());
 				match.set_u(ag.getUnder());
 			}
-		
-			if(ag.f69(matchId)){
+
+			if (ag.f69(matchId)) {
 				match.set_1(ag.get_1());
 				match.set_2(ag.get_2());
 				match.set_x(ag.get_x());
-				
+
 			}
 			errorStatus = ag.errorStatus;
-			logger.warn("STATUS--:{}",errorStatus);
+			logger.warn("STATUS--:{}", errorStatus);
 		}
 		// match.printMatch();
 
 		// append to file;----*******
-//		 afh.appendCsv(match.printMatch());
-//		 appendMatchData(match);
+		// afh.appendCsv(match.printMatch());
+		// appendMatchData(match);
 		// put the matches to the appropriate list structure
 		if (MatchesList.readMatches.get(compId) == null) {
 			MatchesList.readMatches.put(compId, new ArrayList<>());
@@ -324,4 +331,14 @@ public class SoccerPrunterMAtches {
 		conn.close();
 		return ld;
 	}
+
+	public int getIntweek() {
+		return intweek;
+	}
+
+	public void setIntweek(int intweek) {
+		this.intweek = intweek;
+	}
+
+	
 }
