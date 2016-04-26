@@ -80,7 +80,7 @@ public class CompetitionTeamTable {
 		Conn conn = new Conn();
 		conn.open();
 		ResultSet rs = conn.getConn().createStatement().executeQuery(query);
-		// tableEntity(rs);
+		 tableEntity(rs);
 		rs.close();
 		conn.close();
 	}

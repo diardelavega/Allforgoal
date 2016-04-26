@@ -42,6 +42,7 @@ import structures.MatchesList;
  *         "http://www.soccerpunter.com/livesoccerodds_ajx.php?match_id=2120502
  *         &typeId=69"
  */
+
 public class SoccerPrunterMAtches {
 
 	// CountryCompetition.readCompIdLink
@@ -49,9 +50,9 @@ public class SoccerPrunterMAtches {
 			.getLogger(SoccerPrunterMAtches.class);
 
 	private String errorStatus = "OK"; // a simple way to report problems
-	private List<MatchObj> matchlist = new ArrayList<>();
+	// private List<MatchObj> matchlist = new ArrayList<>();
 	private NameCleaner nc = new NameCleaner();
-	private AnalyticFileHandler afh = new AnalyticFileHandler();
+	// private AnalyticFileHandler afh = new AnalyticFileHandler();
 	private String baseUrl = "http://www.soccerpunter.com";
 
 	private int intweek;
@@ -95,8 +96,7 @@ public class SoccerPrunterMAtches {
 
 	// -------------------------
 
-	public int remainingResultsGraber(String url, int compId,
-			LocalDate supplyDate, boolean partial) throws IOException {
+	public int remainingResultsGraber(int compIdx) throws IOException {
 		/*
 		 * go to the page of the url; get matches list; get only matches with
 		 * date greater than supplied date. this function is to be use in two
@@ -109,6 +109,32 @@ public class SoccerPrunterMAtches {
 		 * are added to the @MatchesList.readMatches Map as <compId,List<Mobj>>.
 		 */
 
+		String url = CountryCompetition.ccasList.get(compIdx).getCompLink();
+		int compId = CountryCompetition.ccasList.get(compIdx).getCompId();
+
+		// get date from db---------
+		LocalDate supplyDate = null;// the leatest match date
+		Conn conn = new Conn();
+		try {
+			conn.open();
+			ResultSet rs = conn
+					.getConn()
+					.createStatement()
+					.executeQuery(
+							"SELECT dat FROM matches WHERE compid = " + compId
+									+ " order by dat desc ;");
+			if (rs.next())
+				supplyDate = LocalDate.parse(rs.getString(1));
+			
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		if(supplyDate==null){
+			errorStatus="un found supply date";
+			return 0;
+		}
 		Elements trs = docConnectAndScrap(url);// resultTable.getElementsByTag("tr");
 		if (trs == null) {
 			return -1;
@@ -126,15 +152,14 @@ public class SoccerPrunterMAtches {
 					tds.get(2).select("span").remove();
 					tds.get(4).select("span").remove();
 
-					if (partial) {// in case of partial match grub
-						LocalDate matchDat = LocalDate.parse(tds.get(1).text(),
-								DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-						if (matchDat.isEqual(supplyDate)) {
-							// we already have the matches earlier than
-							// supplied date
-							// afh.closeOutput();
-							return 0;
-						}
+					// if (partial) {// in case of partial match grub
+					LocalDate matchDat = LocalDate.parse(tds.get(1).text(),DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+					if (matchDat.isEqual(supplyDate)) {
+						// we already have the matches earlier than
+						// supplied date
+						// afh.closeOutput();
+						return 0;
+						// }
 					}
 
 					adapto(tds.get(0).text(), tds.get(1).text(), /* tm1 */
@@ -152,8 +177,11 @@ public class SoccerPrunterMAtches {
 	public int competitionResultsGrabbers(int compIdx) throws IOException {
 		/*
 		 * go to the page with the results table and gather the match data we
-		 * want report error in case something goes wrong
+		 * want report error in case something goes wrong.
 		 */
+
+		// TODO get the last date of matches for that competition and
+		// gather only those matches
 
 		String url = CountryCompetition.ccasList.get(compIdx).getCompLink();
 		int compId = CountryCompetition.ccasList.get(compIdx).getCompId();
@@ -297,17 +325,17 @@ public class SoccerPrunterMAtches {
 		return errorStatus;
 	}
 
-	public List<MatchObj> getMatchlist() {
-		return matchlist;
-	}
+	// public List<MatchObj> getMatchlist() {
+	// return matchlist;
+	// }
 
 	public void setErrorStatus(String errorStatus) {
 		this.errorStatus = errorStatus;
 	}
 
-	public void setMatchlist(List<MatchObj> matchlist) {
-		this.matchlist = matchlist;
-	}
+	// public void setMatchlist(List<MatchObj> matchlist) {
+	// this.matchlist = matchlist;
+	// }
 
 	public LocalDate getLatestMatchesDate(int compId) throws SQLException {
 		/*
@@ -340,5 +368,4 @@ public class SoccerPrunterMAtches {
 		this.intweek = intweek;
 	}
 
-	
 }

@@ -166,7 +166,10 @@ public class MatchToTableRenewal {
 		// -----------------------------------
 		// afh.openTrainOutput(compId, compName, country);
 		pf = new PredictionFile();
-		matchesDF.add(pf.csvHeader());
+		if (!ctt.isTable()) {// suppose file exists
+			matchesDF.add(pf.csvHeader());
+		}
+		
 		// afh.appendCsv(pf.csvHeader());
 		// -----------------------------------
 
@@ -251,7 +254,7 @@ public class MatchToTableRenewal {
 			ctt.insertTable();
 
 		}
-		//write to file
+		// write to file
 		afh.openTrainOutput(compId, compName, country);
 		for (String line : matchesDF) {
 			afh.appendCsv(line);

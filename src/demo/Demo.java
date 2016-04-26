@@ -54,7 +54,7 @@ public class Demo {
 		// cc.sdsList.get(i).printer();
 		// }
 		//
-		int compIdx =49;
+		int compIdx = 9;
 		// String link = CountryCompetition.ccasList.get(111).getCompLink();
 		// int compId = CountryCompetition.ccasList.get(111).getCompId();
 
@@ -63,27 +63,29 @@ public class Demo {
 		MatchesList ml = new MatchesList();
 		//
 		// // ----------------TEST-----------
-		 SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
 		 spm.competitionResultsGrabbers(compIdx);
-		 ml.storeSched();
-//		ml.readSched();
-	/*re calculate prediction file from dab matches without re grabing them.  bets fixed	*/
-		 
-		 
-//		for (Integer key : MatchesList.readMatches.keySet()) {
-////			mttr = new MatchToTableRenewal(key);
-//			for(MatchObj m:MatchesList.readMatches.get(key))
-////			log(m.printMatch());
-//		}
+//		spm.remainingResultsGraber(compIdx);
+
+		// ml.storeSched();
+		// ml.readSched();
+		/*
+		 * re calculate prediction file from dab matches without re grabing
+		 * them. bets fixed
+		 */
+
+		// for (Integer key : MatchesList.readMatches.keySet()) {
+		// // mttr = new MatchToTableRenewal(key);
+		// for(MatchObj m:MatchesList.readMatches.get(key))
+		// // log(m.printMatch());
+		// }
 		// // -------------AFTER GRAB Calcualate & Put to Predfile
-//		 //TODO handle db tables with the same banes
+		// //TODO handle db tables with the same banes
 		MatchToTableRenewal mttr;
 		for (Integer key : MatchesList.readMatches.keySet()) {
 			mttr = new MatchToTableRenewal(key);
 			mttr.calculate();
 		}
-		// --------------- insert matches to db
-//
 		ml.insertMatches();
 
 		// {
@@ -236,14 +238,14 @@ public class Demo {
 	}
 
 	public static void bar() {
-		Map<String, Integer> mm = new HashMap<>();
-		mm.put("A", 0);
-		mm.put("a", 1);
-		mm.put("b", 2);
-		// mm.put("c", 3);
-		// mm.put("e", 4);
-		// mm.put("f", 5);
-		log(mm.get("c") + "");
+//		Map<String, Integer> mm = new HashMap<>();
+//		mm.put("A", 0);
+//		mm.put("a", 1);
+//		mm.put("b", 2);
+//		// mm.put("c", 3);
+//		// mm.put("e", 4);
+//		// mm.put("f", 5);
+//		log(mm.get("c") + "");
 		// Map<String,I>
 
 		//
@@ -256,13 +258,11 @@ public class Demo {
 		// System.out.println("aaaaaaaaaaaaaaa");
 		// }
 
-		// DateTimeFormatter formatter =
-		// DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		// LocalDate mDat = LocalDate.parse("01/03/2016",
-		// DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		// logger.info(mDat.toString());
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//		LocalDate mDat = LocalDate.parse("01/03/2016",	DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+//		logger.info(mDat.toString());
 
-		// LocalDate mDat = LocalDate.parse("2016-01-12");
-		// logger.info(mDat.plusDays(2).toString());
+		 LocalDate mDat = LocalDate.parse("2016-01-12");
+		 logger.info(mDat.plusDays(2).toString());
 	}
 }
