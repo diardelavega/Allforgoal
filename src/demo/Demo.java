@@ -64,8 +64,8 @@ public class Demo {
 		//
 		// // ----------------TEST-----------
 		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-		 spm.competitionResultsGrabbers(compIdx);
-//		spm.remainingResultsGraber(compIdx);
+//		spm.competitionResultsGrabbers(compIdx);
+		 spm.remainingResultsGraber(compIdx);
 
 		// ml.storeSched();
 		// ml.readSched();
@@ -84,7 +84,7 @@ public class Demo {
 		MatchToTableRenewal mttr;
 		for (Integer key : MatchesList.readMatches.keySet()) {
 			mttr = new MatchToTableRenewal(key);
-			mttr.calculate();
+			mttr.calculate( MatchesList.readMatches.get(key));
 		}
 		ml.insertMatches();
 
@@ -200,6 +200,10 @@ public class Demo {
 			System.out
 					.println("Country competition structure not initialized corectly");
 		}
+		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
+			CountryCompetition.idToIdx.put(CountryCompetition.ccasList.get(i)
+					.getCompId(), i);
+		}
 		cp.readsdStruct(conn.getConn());
 		if (cp.sdsList.size() > 0) {
 			System.out
@@ -238,14 +242,14 @@ public class Demo {
 	}
 
 	public static void bar() {
-//		Map<String, Integer> mm = new HashMap<>();
-//		mm.put("A", 0);
-//		mm.put("a", 1);
-//		mm.put("b", 2);
-//		// mm.put("c", 3);
-//		// mm.put("e", 4);
-//		// mm.put("f", 5);
-//		log(mm.get("c") + "");
+		// Map<String, Integer> mm = new HashMap<>();
+		// mm.put("A", 0);
+		// mm.put("a", 1);
+		// mm.put("b", 2);
+		// // mm.put("c", 3);
+		// // mm.put("e", 4);
+		// // mm.put("f", 5);
+		// log(mm.get("c") + "");
 		// Map<String,I>
 
 		//
@@ -258,11 +262,13 @@ public class Demo {
 		// System.out.println("aaaaaaaaaaaaaaa");
 		// }
 
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//		LocalDate mDat = LocalDate.parse("01/03/2016",	DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-//		logger.info(mDat.toString());
+		// DateTimeFormatter formatter =
+		// DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		// LocalDate mDat = LocalDate.parse("01/03/2016",
+		// DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		// logger.info(mDat.toString());
 
-		 LocalDate mDat = LocalDate.parse("2016-01-12");
-		 logger.info(mDat.plusDays(2).toString());
+		LocalDate mDat = LocalDate.parse("2016-01-12");
+		logger.info(mDat.plusDays(2).toString());
 	}
 }

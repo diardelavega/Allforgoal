@@ -234,8 +234,16 @@ public class SoccerPrunterMAtches {
 					}
 				}
 			} // for
-				// ----*******
-				// afh.closeOutput();
+		}
+		
+		// update db structures db attribute to 1
+		Conn conn = new  	 Conn();
+		conn.open();
+		try {
+			conn.getConn().createStatement().executeUpdate("UPDATE  ccallstruct SET db=1 WHERE compid = "+compId+";");
+			conn.getConn().createStatement().executeUpdate("UPDATE  scoreDataStruct SET db=1 WHERE compid = "+compId+";");
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		logger.info("STATUS is {}", errorStatus);
 		return 0;

@@ -50,15 +50,16 @@ public class MainTry {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException {
-//		initCCAllStruct();
-//		Strategy strategy = new Strategy();
-//		strategy.tryTask();
+		initCCAllStruct();
+		// Strategy strategy = new Strategy();
+		// strategy.task();
+		// strategy.tryTask();
 
-//		Soccerpunter_homePage sch= new Soccerpunter_homePage();
-//		sch.goGetCompetitions();
-//		SoccerPunterOdds spo = new SoccerPunterOdds();
-//		spo.getDailyOdds(LocalDate.now());
-		
+		// Soccerpunter_homePage sch= new Soccerpunter_homePage();
+		// sch.goGetCompetitions();
+		// SoccerPunterOdds spo = new SoccerPunterOdds();
+		// spo.getDailyOdds(LocalDate.now());
+
 		// strategy .periodic();
 		// corelator();
 		// LocalDate ld =LocalDate.now();
@@ -69,38 +70,39 @@ public class MainTry {
 		// System.out.println("Uganda".compareTo("Usa"));
 		//
 
-		 dater();
-//		distancer() ;
-//		odder();
+		dater();
+		// distancer() ;
+		// odder();
 	}
 
-	public static void odder(){
-//		OddsNStats odns=new OddsNStats();
-//		odns.getOddsPage(LocalDate.now());
-		
-		OddsNStatsMatchOdd ood = new OddsNStatsMatchOdd("http://oddsandstats.com/as-latina-vs-us-avellino/e/5116387/");
+	public static void odder() {
+		// OddsNStats odns=new OddsNStats();
+		// odns.getOddsPage(LocalDate.now());
+
+		OddsNStatsMatchOdd ood = new OddsNStatsMatchOdd(
+				"http://oddsandstats.com/as-latina-vs-us-avellino/e/5116387/");
 		ood.pageGraber();
-		log(ood.getOver()+"");
-		log(ood.getUnder()+"");
+		log(ood.getOver() + "");
+		log(ood.getUnder() + "");
 	}
-	 
+
 	public static void distancer() {
-////		String s1 ="LIGA II SERIE 1", s2="LIGA I";
-//		String s1 ="GERMANY  BUNDESLIGA WOMEN", s2="GERMANY  BUNDESLIGA";
-//		log(StringSimilarity.levenshteinDistance(s1, s2)+"");
-		String s="1,23";
+		// // String s1 ="LIGA II SERIE 1", s2="LIGA I";
+		// String s1 ="GERMANY  BUNDESLIGA WOMEN", s2="GERMANY  BUNDESLIGA";
+		// log(StringSimilarity.levenshteinDistance(s1, s2)+"");
+		String s = "1,23";
 		log(s.replace(",", "."));
 	}
-	
-	public static void seter(){
-//		HashSet<String> set = new HashSet<>();
+
+	public static void seter() {
+		// HashSet<String> set = new HashSet<>();
 		TreeSet<String> set = new TreeSet<String>();
 		set.add("Amarija");
 		set.add("bojano");
 		set.add("tercerta");
-		
-//		set.g
-		
+
+		// set.g
+
 	}
 
 	public static void corelator() {
@@ -126,6 +128,10 @@ public class MainTry {
 		} else {
 			System.out
 					.println("Country competition structure not initialized corectly");
+		}
+		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
+			CountryCompetition.idToIdx.put(CountryCompetition.ccasList.get(i)
+					.getCompId(), i);
 		}
 		cp.readsdStruct(conn.getConn());
 		if (cp.sdsList.size() > 0) {
@@ -201,11 +207,15 @@ public class MainTry {
 	}
 
 	public static void dater() {
-		LocalDate ld = LocalDate.now();
-		LocalDate ld2 = LocalDate.now().plusDays(3);
+		// LocalDate ld = LocalDate.now();
+		// LocalDate ld2 = LocalDate.now().plusDays(3);
+		//
+		// log(Period.between(ld, ld2).getDays() + "");
+		// log(ChronoUnit.DAYS.between(ld2, ld)+"");
 
-		log(Period.between(ld, ld2).getDays() + "");
-		log(ChronoUnit.DAYS.between(ld2, ld)+"");
+		for (int i = 0; i < CountryCompetition.sdsList.size(); i++) {
+			log(CountryCompetition.sdsList.get(i).getCompId() + " " + i);
+		}
 	}
 
 }

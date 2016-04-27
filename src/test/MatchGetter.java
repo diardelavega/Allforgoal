@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.corba.se.impl.orbutil.ObjectWriter;
 
 import structures.CountryCompetition;
+import basicStruct.CCAllStruct;
 import basicStruct.MatchObj;
 import extra.Status;
 import extra.StringSimilarity;
@@ -61,7 +62,7 @@ public class MatchGetter {
 		String url = allDateFormater(dat);
 		Document doc = null;
 		try {
-			 logger.info("gettting url {}", url);
+			logger.info("gettting url {}", url);
 			// doc = Jsoup.parse(new File(
 			// "C:/Users/Administrator/Desktop/skedina/xScores_01.html"),
 			// "UTF-8");
@@ -99,10 +100,10 @@ public class MatchGetter {
 						|| clasVal[4].contains("EURO")) {
 					continue;
 				}
-//				 logger.info("{}  {}", clasVal[0], clasVal[4]);
-				int compIdx = searchForCompIdx(clasVal[0], clasVal[4]);
-				 logger.info("{}  {}  {}", compIdx, clasVal[0], clasVal[4]);
-				if (compIdx < 0) {
+				// logger.info("{}  {}", clasVal[0], clasVal[4]);
+				int compId = searchForCompIdx(clasVal[0], clasVal[4]);
+				logger.info("--: {}  {}  {}", compId, clasVal[0], clasVal[4]);
+				if (compId < 0) {
 					// TODO display un-found matches
 					// ul.appendUnfoundTerms(clasVal[0], clasVal[4]);
 					continue;
@@ -125,16 +126,16 @@ public class MatchGetter {
 									.equals(Status.FTR))) {
 						logger.info(
 								"country {}  competition {}  compId {}  t1-{}  t2-{}",
-								clasVal[0], clasVal[4], compIdx, t1, t2);
+								clasVal[0], clasVal[4], compId, t1, t2);
 						mobj.setDat(Date.valueOf(dat));
-						mobj.setComId(compIdx);
+						mobj.setComId(compId);
 						// schedNewMatches.add(mobj);
-						if (schedNewMatches.get(compIdx) == null) {
+						if (schedNewMatches.get(compId) == null) {
 							List<MatchObj> mol = new ArrayList<>();
 							mol.add(mobj);
-							schedNewMatches.put(compIdx, mol);
+							schedNewMatches.put(compId, mol);
 						} else {
-							schedNewMatches.get(compIdx).add(mobj);
+							schedNewMatches.get(compId).add(mobj);
 						}
 
 						// logger.info("scheduled ---  t1-{}  t2-{}", t1, t2);
@@ -204,7 +205,6 @@ public class MatchGetter {
 		try {
 			scrapMatchesDate(dat, Status.SCHEDULED);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -251,34 +251,29 @@ public class MatchGetter {
 
 	private int searchForCompIdx(String country, String comp)
 			throws IOException {
-		// search in allowed competitions map and CCAS
 
 		/*
 		 * cc allowed competitions should take a combination of name and
 		 * competition because many competitions have the same name but allways
 		 * a unique combination of name&competition
 		 */
-		// logger.info("{} {} {}",country,comp,couComComb(country, comp));
-//		if (country.equals("REP. OF IRELAND")) {
-//			logger.info("");
-//		}
 		if (cc.notAllowedcomps.contains(couComComb(country, comp))) {
 			// if is one of the not allowed comps
 			return -1;
 		}
 
 		Integer searchCompIdx = cc.allowedcomps.get(couComComb(country, comp));
-		if (searchCompIdx != null) {
-			return searchCompIdx;
+		if (searchCompIdx != null) {// see if db
+			for (CCAllStruct c : cc.ccasList)
+				if (c.getCompId() == searchCompIdx)
+					if (c.getDb() == 1)
+						return searchCompIdx;
+			return -1;
 		} else {
 			// search for country&comp in scorerDataStruct
 			searchCompIdx = cc.scorerCompIdSearch(country, comp);
 			if (searchCompIdx > -1) {
 				if (cc.sdsList.get(searchCompIdx).getDb() == 1) {
-					// cc.addAllowedComp(couComComb(country, comp),
-					// cc.sdsList.get(searchCompIdx).getCompId());
-					// logger.info("{}  {}",couComComb(country,
-					// comp),cc.sdsList.get(searchCompIdx).getCompId());
 					return cc.sdsList.get(searchCompIdx).getCompId();
 				}
 			}

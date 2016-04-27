@@ -42,6 +42,7 @@ public class CountryCompetition {
 			.getLogger(CountryCompetition.class);
 
 	public static final String baseUrl = "http://www.soccerpunter.com";
+	public static Map<Integer,Integer> idToIdx = new HashMap<Integer, Integer>();
 	public static List<CCAllStruct> ccasList = new ArrayList<>();
 	public static List<ScorerDataStruct> sdsList = new ArrayList<>();
 	public static Map<String, Integer> allowedcomps = new HashMap<>();

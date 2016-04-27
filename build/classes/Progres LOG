@@ -100,8 +100,15 @@ Implemented allowsed & not allowed files & map/list with competitions based on t
 --------------Prediction fase
 it will not create a prediction file if comp has less than 4 weeks.
 
+
+
 *** Test pred file.  
 data in pred data file is written before the curent match calculation is done. leaving it ready for the
 test prediction data.  the numetical data in the test file is the situation as curently is in the table.
-	 				 	  
+
+
+*** all competitions db (available competitions) should be 0 and turned to 1 when they are requested to be analyzed/
+*** get (from scrap) the total number of weeks for a competition. to keep track of what week we are and how many
+	remain to be played		
+*** weeks in the prediction file when getting the remaining matches, start from the top as 1,2,3 etc. 	  
 	 				 	  

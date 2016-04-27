@@ -131,6 +131,7 @@ public class Bari91UpCommingOdds {
 			if (skipComp(ss)) {
 				continue;
 			}
+			
 if(ss.contains("Scotland")){
 	logger.warn("");
 }

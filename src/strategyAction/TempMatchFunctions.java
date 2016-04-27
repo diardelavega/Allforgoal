@@ -13,10 +13,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import calculate.MatchToTableRenewal;
 import scrap.XscoreUpComing;
 import structures.CountryCompetition;
 import test.MatchGetter;
 import dbtry.Conn;
+import extra.StandartResponses;
 import extra.StringSimilarity;
 import extra.Unilang;
 import basicStruct.CCAllStruct;
@@ -61,11 +63,14 @@ public class TempMatchFunctions {
 
 		List<String> dbTeams = new ArrayList<>();
 		int compId = -1;
-
-//		for (Integer key : XscoreUpComing.schedNewMatches.keySet()) {
-//			for (MatchObj m : XscoreUpComing.schedNewMatches.get(key)) {// Original_Line
+		int chosenDbIdx1 = -1, chosenDbIdx2 = -1;
+		// for (Integer key : XscoreUpComing.schedNewMatches.keySet()) {
+		// for (MatchObj m : XscoreUpComing.schedNewMatches.get(key)) {//
+		// Original_Line
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
-				 for (MatchObj m : MatchGetter.schedNewMatches.get(key)) {
+			for (int kk = 0; kk < MatchGetter.schedNewMatches.get(key).size(); kk++) {
+				// for (MatchObj m : MatchGetter.schedNewMatches.get(key)) {
+				MatchObj m = MatchGetter.schedNewMatches.get(key).get(kk);
 				// first search in unilang
 				String t = ul.scoreTeamToCcas(m.getT1());
 				if (t == null) {
@@ -74,44 +79,57 @@ public class TempMatchFunctions {
 						// teams
 						dbTeams.clear();
 						dbTeams = queryCompTeams(m.getComId());
+						if (dbTeams == null) {// not available competition
+							continue;
+						}
 						compId = m.getComId();
 					}
 					float minDist = 100;
-					int chosenDbIdx = -1;
+
 					float curDist;
 					for (int i = 0; i < dbTeams.size(); i++) {
-						curDist = StringSimilarity.levenshteinDistance(m.getT1(), dbTeams.get(i));
-						logger.info("m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",m.getT1(), dbTeams.get(i), curDist, minDist);
-						if (curDist >= m.getT2().length())
+						// iterate through all teams of that competition
+						curDist = StringSimilarity.levenshteinDistance(
+								m.getT1(), dbTeams.get(i));
+						logger.info(
+								"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
+								m.getT1(), dbTeams.get(i), curDist, minDist);
+						if (curDist > StandartResponses.TEAM_DIST)
 							continue;
 						if (curDist < minDist) {
 							minDist = curDist;
-							chosenDbIdx = i;
+							chosenDbIdx1 = i;
 						}
-					}
-					// find the most similar terms; add the to Unilang; delete
-					// them
-					// from dbTeamsList so to be more efficient in the next
-					// search.
-					// change the team names on the list
-					logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
-							dbTeams.get(chosenDbIdx));
-					ul.addTeam(dbTeams.get(chosenDbIdx), m.getT1());
-					m.setT1(dbTeams.get(chosenDbIdx));
-					dbTeams.remove(chosenDbIdx);
-				} else {
-					m.setT1(t);
-				}
+					}// for dbteams
 
+					/*
+					 * find the most similar terms; add the to Unilang; delete
+					 * them from dbTeamsList so to be more efficient in the next
+					 * search. change the team names on the list
+					 */
+					if (chosenDbIdx1 >= 0) {// if found coreleted team
+						logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
+								dbTeams.get(chosenDbIdx1));
+						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
+						MatchGetter.schedNewMatches.get(key).get(kk)
+								.setT1(dbTeams.get(chosenDbIdx1));
+						dbTeams.remove(chosenDbIdx1);
+					} else {
+						logger.info("uncorelated --:  m.T1= '{}'", m.getT1());
+					}
+				} else {
+					MatchGetter.schedNewMatches.get(key).get(kk).setT1(t);
+				}
+				// second team corelation search
 				t = ul.scoreTeamToCcas(m.getT2());
 				if (t == null) {
-					if (m.getComId() != compId) {
-						dbTeams.clear();
-						dbTeams = queryCompTeams(m.getComId());
-						compId = m.getComId();
-					}
+					// if (m.getComId() != compId) {
+					// dbTeams.clear();
+					// dbTeams = queryCompTeams(m.getComId());
+					// compId = m.getComId();
+					// }
 					float minDist = 100;
-					int chosenIdx = -1;
+					// int chosenIdx = -1;
 					float curDist;
 					for (int i = 0; i < dbTeams.size(); i++) {
 						curDist = StringSimilarity.levenshteinDistance(
@@ -123,19 +141,24 @@ public class TempMatchFunctions {
 							continue;
 						if (curDist < minDist) {
 							minDist = curDist;
-							chosenIdx = i;
+							chosenDbIdx2 = i;
 						}
 					}
-					logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),dbTeams.get(chosenIdx));
-					ul.addTeam(dbTeams.get(chosenIdx), m.getT2());
-					m.setT2(dbTeams.get(chosenIdx));
-					dbTeams.remove(chosenIdx);
+					if (chosenDbIdx2 >= 0) {
+						logger.info("m.T2= '{}'    db.t= '{}' ", m.getT2(),
+								dbTeams.get(chosenDbIdx2));
+						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
+						MatchGetter.schedNewMatches.get(key).get(kk)
+								.setT2(dbTeams.get(chosenDbIdx2));
+						dbTeams.remove(chosenDbIdx2);
+					} else {
+						logger.info("uncorelated --:  m.T2= '{}'", m.getT2());
+					}
 				} else {
-					m.setT2(t);
+					MatchGetter.schedNewMatches.get(key).get(kk).setT2(t);
 				}
 			}
 		}
-		// incomeTempMatchesLists = ml;
 	}
 
 	public void storeToTempMatchesDB() throws SQLException {
@@ -232,65 +255,95 @@ public class TempMatchFunctions {
 		// fill from db readTempMatchesList List<>, order by t1
 		readFromTempMatches(d);
 		logger.info("readTempMatchesList size ={}", readTempMatchesList.size());
+		if (readTempMatchesList.size() == 0) {
+			logger.info("No temp matches in db");
+			return;
+		}
 
 		List<MatchObj> matches = new ArrayList<MatchObj>();
+		List<MatchObj> smallPredictionsList = new ArrayList<MatchObj>();
 		// for (MatchObj m : XscoreUpComing.finNewMatches) { Original_Line
 		int idx = -1;
+		int prevCompId = -1;
 		for (MatchObj m : MatchGetter.finNewMatches) {
 			// String team = ul.scoreTeamToCcas(m.getT1()); Original_Line
-			String team = m.getT1();
+			String team = ul.scoreTeamToCcas(m.getT1());
 			if (team != null) {
-				if (readTempMatchesList.size() == 0) {
-					break;
-				}
-				idx = binarySearch(team, 0, readTempMatchesList.size());
+				idx = binarySearch(team, 0, readTempMatchesList.size() - 1);
 				if (idx < 0) {
+					logger.info("---Was not found t1 -{},  t2 {}    ",
+							m.getT1(), m.getT2());
 					continue;
 				} else {
-					logger.info("t1 -{}     t1-{}", m.getT1(), m.getT2());
+					if (prevCompId != m.getComId()) {
+						prevCompId = m.getComId();
+						if (smallPredictionsList.size() > 0) {
+							predictionDataSet(smallPredictionsList);
+							smallPredictionsList.clear();
+						}
+					}
+
 					MatchObj mobj = readTempMatchesList.get(idx);
 					mobj.setHt1(m.getHt1());
 					mobj.setHt2(m.getHt2());
 					mobj.setFt1(m.getFt1());
 					mobj.setFt2(m.getFt2());
+
+					smallPredictionsList.add(mobj);
 					matches.add(mobj);
 					readTempMatchesList.remove(idx);// for efficiency
-					mobj.printMatch();
-					logger.info("Competed");
+
 				}
+			} else {// if team not converted
+				logger.info("disply unconverted {} - {}, __{}", m.getT1(),
+						m.getT2(), m.getComId());
 			}
 		}// for
-
 		deleteTempMatches(matches);// delete finished matches
 		insertMatches(matches);
+		logger.info("Competed standart Completion");
 
+		
 		if (readTempMatchesList.size() > 0) {
-			logger.info("--------------: LOOP TO find postponed");
 			/*
 			 * keep looping through the remaining matches from the db read to
 			 * delete the postponed or cancelled matches
 			 */
+			logger.info("--------------: LOOP TO find postponed");
+			matches.clear();
+			smallPredictionsList.clear();
 			// for (MatchObj m : XscoreUpComing.errorNewMatches) {
 			for (MatchObj m : MatchGetter.errorNewMatches) {
 				// String team = ul.scoreTeamToCcas(m.getT1()); Original_Line
-				String team = m.getT1();
+				String team = ul.scoreTeamToCcas(m.getT1());
 				if (team != null) {
-					if (readTempMatchesList.size() == 0) {
-						break;
-					}
-					idx = binarySearch(team, 0, readTempMatchesList.size());
+					idx = binarySearch(team, 0, readTempMatchesList.size() - 1);
 					if (idx < 0) {
+						logger.info("---Was not found t1 -{},  t2 {}    ",
+								m.getT1(), m.getT2());
 						continue;
 					} else {
+						if (prevCompId != m.getComId()) {
+							prevCompId = m.getComId();
+							if (smallPredictionsList.size() > 0) {
+								predictionDataSet(smallPredictionsList);
+								smallPredictionsList.clear();
+							}
+						}
+
 						MatchObj mobj = readTempMatchesList.get(idx);
+						mobj.setHt1(m.getHt1());
+						mobj.setHt2(m.getHt2());
+						mobj.setFt1(m.getFt1());
+						mobj.setFt2(m.getFt2());
+
+						smallPredictionsList.add(mobj);
 						matches.add(mobj);
-						mobj.printMatch();
-						logger.info("Errores");
 					}
 				}
 			}// for
-
 			deleteTempMatches(matches);// delete cancelled matches
+			logger.info("Competed Old Completion");
 		}
 	}
 
@@ -331,6 +384,7 @@ public class TempMatchFunctions {
 	}
 
 	private boolean deleteTempMatches(List<MatchObj> ml) throws SQLException {
+		/* delete finished matches from the temp matches db */
 		logger.info("--------------: DELETE FROM TempMatches");
 		StringBuilder sb = new StringBuilder();
 		for (MatchObj m : ml) {
@@ -404,15 +458,22 @@ public class TempMatchFunctions {
 	}
 
 	private List<String> queryCompTeams(int compId) {
-		// sql get team names of a competition
-		String tab = CountryCompetition.ccasList.get(compId - 1)
-				.getCompetition();
-		tab = tab.toLowerCase().replaceAll(" ", "_") + "fulltable";
+		/*
+		 * get the team names for a certain competition
+		 */
+		String tab_competition = compNameGetter(compId);
+		if (tab_competition == null) {
+			logger.warn("competition not found");
+			return null;
+		}
+		// else
+		tab_competition = tab_competition.toLowerCase().replaceAll(" ", "_")
+				+ "_fulltable";
 		List<String> teamsList = new ArrayList<String>();
 		ResultSet rs;
 		try {
 			rs = conn.getConn().createStatement()
-					.executeQuery("SELECT team from " + tab + " ;");
+					.executeQuery("SELECT team from " + tab_competition + " ;");
 
 			while (rs.next()) {
 				teamsList.add(rs.getString("team"));
@@ -436,6 +497,25 @@ public class TempMatchFunctions {
 	public void closeDBConn() {
 		if (conn != null) {
 			conn.close();
+		}
+	}
+
+	private String compNameGetter(int compId) {
+		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
+			if (CountryCompetition.ccasList.get(i).getCompId() == compId) {
+				// country = CountryCompetition.ccasList.get(i).getCountry();
+				return CountryCompetition.ccasList.get(i).getCompetition();
+			}
+		}
+		return null;
+	}
+
+	private void predictionDataSet(List<MatchObj> predictionsList) {
+		MatchToTableRenewal mttr = new MatchToTableRenewal();
+		try {
+			mttr.calculate(predictionsList);
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
 		}
 	}
 

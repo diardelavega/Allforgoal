@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import calculate.MatchToTableRenewal;
 import basicStruct.MatchObj;
 import scrap.Bari91UpCommingOdds;
 import scrap.OddsNStats;
@@ -32,14 +33,16 @@ public class Strategy {
 	public static final Logger logger = LoggerFactory.getLogger(Strategy.class);
 	private LocalDate lastDatCheck;// = LocalDate.now().minusDays(1);
 	private TempMatchFunctions tmf = new TempMatchFunctions();
-	MatchGetter score = new MatchGetter();
-	// XscoreUpComing score =new XscoreUpComing();
+	private MatchGetter score = new MatchGetter();
+
+	// private XscoreUpComing score =new XscoreUpComing();
 	private int periode = 6; // 6 hours
 
 	public void task() throws SQLException, IOException {
 		/*
 		 * set all the temp match scraping, transforming, calculating re-storing
-		 * and re-writing.
+		 * and re-writing. All matches in hand are stored in the MatchGetter ||
+		 * XscoreUpComing (scheduled or finished) matches-structures
 		 */
 		tmf.openDBConn();
 		try {
@@ -50,7 +53,9 @@ public class Strategy {
 				// scrap todays matches & tomorrows
 				score.getScheduledToday();
 				score.getScheduledTomorrow();
-				// tmf.corelatePunterXScorerTeams();
+				scheduledOddsAdder();
+				tmf.corelatePunterXScorerTeams();
+				testPredMaker();
 				tmf.storeToTempMatchesDB();
 				score.clearLists();
 				lastDatCheck = LocalDate.now();
@@ -60,7 +65,9 @@ public class Strategy {
 					// is new day so get yesterdays results and tomorrows
 					// schedule
 					score.getScheduledTomorrow();
-					// tmf.corelatePunterXScorerTeams();
+					scheduledOddsAdder();
+					tmf.corelatePunterXScorerTeams();
+					testPredMaker();
 					tmf.storeToTempMatchesDB();
 					score.getFinishedYesterday();
 					tmf.completeYesterday();
@@ -83,6 +90,7 @@ public class Strategy {
 	}
 
 	public void tryTask() throws SQLException {
+		/* test method for strategu action performance */
 		// tmf.openDBConn();
 		try {
 
@@ -96,11 +104,10 @@ public class Strategy {
 				tmf.corelatePunterXScorerTeams();
 				// score.getFinishedOnDate(lastDatCheck);
 				// score.getScheduledTomorrow();
-				 score.storeSched();
+				score.storeSched();
 				// score.clearLists();
 				// logger.info("sched size {}",score.schedNewMatches.size());
 				// score.readSched();
-
 
 				System.out.println("--------------------------\n\n\n");
 
@@ -117,7 +124,6 @@ public class Strategy {
 				SoccerPunterOdds spo = new SoccerPunterOdds();
 				spo.getDailyOdds(lastDatCheck);
 
-
 				// tmf.storeToTempMatchesDB();
 				score.clearLists();
 				// lastDatCheck = LocalDate.now();
@@ -131,9 +137,41 @@ public class Strategy {
 		}
 	}
 
+	public void scheduledOddsAdder() {
+		/*
+		 * go to the specific websites and get the odds for the matches to
+		 * analize.
+		 */
+		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+		b91.scrapBariPage(lastDatCheck);
+
+		OddsNStats ons = new OddsNStats();
+		ons.getOddsPage(lastDatCheck);
+
+		SoccerPunterOdds spo = new SoccerPunterOdds();
+		spo.getDailyOdds(lastDatCheck);
+	}
+
+	public void testPredMaker() {
+		/* for all the new matches create a prediction file */
+		MatchToTableRenewal mttr = new MatchToTableRenewal();
+//		TODO fix. Key is the comp id not the index in the data structure!!!
+		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
+			try {
+				mttr.testPredFileCreate(MatchGetter.schedNewMatches.get(key),
+						key, MatchGetter.schedNewMatches.get(key).get(0)
+								.getDat().toLocalDate());
+			} catch (SQLException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public void checkReamaining() throws SQLException, IOException {
 		/*
 		 * handle matches older than yesterday that haven't found a solution yet
+		 * Remaining matches should be adequate to be used in the data
+		 * prediction analisys file, so not very old.
 		 */
 		tmf.openDBConn();
 		List<String> dates = tmf.getTempDates();
@@ -141,12 +179,15 @@ public class Strategy {
 			logger.info("NO REMAINING MATCHES");
 		} else {
 			for (String d : dates) {
-				LocalDate mDat = LocalDate.parse(d,
-						DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				// LocalDate.parse(d,DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				LocalDate mDat = LocalDate.parse(d);
 				if (mDat.isBefore(LocalDate.now().minusDays(1))) {
 					// if match is older than yesterday
 					score.getFinishedOnDate(mDat);
+					// add results to matchgetter finished
 					tmf.complete(mDat);
+					// reads data from db temp matches
+					// ?? incompatible
 				}
 			}// for
 
