@@ -93,10 +93,8 @@ public class MatchToTableRenewal {
 		 * file. In the afh when we open it we can decide if it is going to be
 		 * for writing to TrainDataFile or to TestDataFile.
 		 */
-		compName = CountryCompetition.ccasList.get(
-				CountryCompetition.idToIdx.get(comp_Id)).getCompetition();
-		country = CountryCompetition.ccasList.get(
-				CountryCompetition.idToIdx.get(comp_Id)).getCountry();
+		compName = CountryCompetition.ccasList.get(CountryCompetition.idToIdx.get(comp_Id)).getCompetition();
+		country = CountryCompetition.ccasList.get(CountryCompetition.idToIdx.get(comp_Id)).getCountry();
 		// check if file exists
 		if (afh.isTestFile(comp_Id, compName, country, date)) {
 			// check the dat to see if it is older or neweer than the curent
@@ -106,23 +104,25 @@ public class MatchToTableRenewal {
 				return;
 			}
 		}
+		
+		
 		// check all existence in db and teamtable struct
 		init();
 		if (N == 0) {
 			return;
 		}
-		posT1 = -1;
-		posT2 = -1;
-		if (!getTablePosition()) {
+		mobj = ml.get(0);
+		if(!testTeamDataPositions()){
 			return;
 		}
 
 		// instanciate the pf class attribute
 		afh.openTestOutput(comp_Id, compName, country, date);
-		int week = Math.max(t1.getMatchesIn() + t1.getMatchesOut() + 1,
-				t2.getMatchesIn() + t2.getMatchesOut() + 1);
+		int week = Math.max(t1.getMatchesIn() + t1.getMatchesOut() + 1, t2.getMatchesIn() + t2.getMatchesOut() + 1);
+		pf= new PredictionFile();
 		afh.appendCsv(pf.csvHeader());
 		for (int i = 0; i < ml.size(); i++) {
+			mobj = ml.get(i);
 			if (testTeamDataPositions()) {
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment(false);
@@ -130,6 +130,7 @@ public class MatchToTableRenewal {
 				afh.appendCsv(pf.liner());
 			}
 		}
+		afh.closeOutput();
 	}
 
 	private boolean testTeamDataPositions() throws SQLException {
@@ -138,7 +139,8 @@ public class MatchToTableRenewal {
 		 * match),needed for the testFile for the prediction operations. (i
 		 * think)
 		 */
-
+		t1 = null;
+		t2 = null;
 		posT1 = -1;
 		posT2 = -1;
 		if (!getTablePosition()) {
@@ -281,7 +283,7 @@ public class MatchToTableRenewal {
 		 * ready
 		 */
 
-		compName = compName.replaceAll(" ", "_");
+		compName = compName.replaceAll(" ", "_").replace(".", "");
 		ctt = new CompetitionTeamTable(compName);
 
 		ctt.existsDb();

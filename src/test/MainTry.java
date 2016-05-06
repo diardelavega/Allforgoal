@@ -51,9 +51,9 @@ public class MainTry {
 
 	public static void main(String[] args) throws SQLException, IOException {
 		initCCAllStruct();
-		// Strategy strategy = new Strategy();
-		// strategy.task();
-		// strategy.tryTask();
+		 Strategy strategy = new Strategy();
+		 strategy.task();
+//		 strategy.tryTask();
 
 		// Soccerpunter_homePage sch= new Soccerpunter_homePage();
 		// sch.goGetCompetitions();
@@ -70,7 +70,7 @@ public class MainTry {
 		// System.out.println("Uganda".compareTo("Usa"));
 		//
 
-		dater();
+//		dater();
 		// distancer() ;
 		// odder();
 	}

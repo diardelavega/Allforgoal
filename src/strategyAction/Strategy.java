@@ -49,6 +49,7 @@ public class Strategy {
 
 			// TODO integrate the test file and data file for prediction
 			if (lastDatCheck == null) {
+				lastDatCheck = LocalDate.now();
 				// first time ever to check for temp matches
 				// scrap todays matches & tomorrows
 				score.getScheduledToday();
@@ -58,7 +59,7 @@ public class Strategy {
 				testPredMaker();
 				tmf.storeToTempMatchesDB();
 				score.clearLists();
-				lastDatCheck = LocalDate.now();
+				
 				logger.info("NULL Last Ceck");
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
@@ -142,6 +143,7 @@ public class Strategy {
 		 * go to the specific websites and get the odds for the matches to
 		 * analize.
 		 */
+		//TODO keep track of all available matches and stop if they have odds
 		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
 		b91.scrapBariPage(lastDatCheck);
 

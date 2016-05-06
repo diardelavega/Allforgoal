@@ -2,6 +2,7 @@ package demo;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -61,6 +62,11 @@ public class Demo {
 		logger.info("{}", CountryCompetition.ccasList.get(compIdx).printer());
 		// System.out.println(link);
 		MatchesList ml = new MatchesList();
+		
+		
+//		Date d= Date.valueOf( LocalDate.parse("2016-04-22"));
+//		ml.readMatchesCompTeamDateFromTo(10, "", null, d);
+		
 		//
 		// // ----------------TEST-----------
 		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();

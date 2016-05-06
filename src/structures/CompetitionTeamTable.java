@@ -52,15 +52,14 @@ public class CompetitionTeamTable {
 		Conn conn = new Conn();
 		conn.open();
 		DatabaseMetaData metadata = conn.getConn().getMetaData();
-		ResultSet resultSet = metadata.getTables(null, null, tableName
-				+ "_FullTable", null);
+		ResultSet resultSet = metadata.getTables(null, null, tableName+ "_FullTable", null);
 		if (resultSet.next()) {
 			isTable = true;
 			// resultSet = metadata.getColumns(null, null, dbName, "htScoreIn");
-			
 			//take nw of rows in the db
 			resultSet=conn.getConn().createStatement().executeQuery("select count(*) from "+ tableName
 					+ "_FullTable;");
+			
 			if (resultSet.next()) {
 				rowSize=resultSet.getInt(1);
 			}
@@ -369,13 +368,14 @@ public class CompetitionTeamTable {
 				+ " p3down_ftscorein =?, p3down_ftscoreout =?, p3down_ftconcedein = ?, p3down_ftconcedeout = ?, "
 				+ "  form  = ? , form1  = ? , form2  = ?, form3  = ?, form4  = ?, formAtack  = ?, formAtackIn  = ?,formAtackOut  = ?, "
 				+ "  formDefence  = ?, formDefenceIn  = ?, formDefenceOut  = ?, avgWinCont = ?, avgDrawCont = ?, avgLoseCont = ?, "
-				+ " winsIn = ?, winsOut = ?, drawsIn = ?, drawsOut = ?, losesIn = ?, losesOut = ?, ftgg = ?, htgg = ? ";
+				+ " winsIn = ?, winsOut = ?, drawsIn = ?, drawsOut = ?, losesIn = ?, losesOut = ?, ftgg = ?, htgg = ? "
+				+ "WHERE team=? ";
 
 		Conn conn = new Conn();
 		conn.open();
 		PreparedStatement ps = conn.getConn().prepareStatement(sql);
 		for (BasicTableEntity o : classificationPos) {
-
+logger.info("{}",o.line());
 			ps.setInt(1, o.getPoints());
 			ps.setInt(2, o.getMatchesIn());
 			ps.setInt(3, o.getMatchesOut());
@@ -457,8 +457,11 @@ public class CompetitionTeamTable {
 
 			ps.setInt(72, o.getFtGg());
 			ps.setInt(73, o.getHtGg());
+			
+			ps.setString(74, o.getTeam());
 
 			ps.addBatch();
+//			ps.executeBatch();
 		}
 		ps.executeBatch();
 		ps.close();

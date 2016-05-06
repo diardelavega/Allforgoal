@@ -69,10 +69,9 @@ public class MatchesList {
 			sb.append(" dat <= '" + date2 + "'");
 			flag = true;
 		}
-		sb.append(" ORDER BY dat ");
+		sb.append(" ORDER BY dat desc ");
 		logger.info("query is {}", sb.toString());
-		ResultSet rs = conn.getConn().createStatement()
-				.executeQuery(sb.toString());
+		ResultSet rs = conn.getConn().createStatement() .executeQuery(sb.toString());
 		listFill(rs, compId);
 		rs.close();
 		conn.close();

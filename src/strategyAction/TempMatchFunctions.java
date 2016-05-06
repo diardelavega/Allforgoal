@@ -467,11 +467,12 @@ public class TempMatchFunctions {
 			return null;
 		}
 		// else
-		tab_competition = tab_competition.toLowerCase().replaceAll(" ", "_")
+		tab_competition = tab_competition.toLowerCase().replace(".", "").replaceAll(" ", "_")
 				+ "_fulltable";
 		List<String> teamsList = new ArrayList<String>();
 		ResultSet rs;
 		try {
+			
 			rs = conn.getConn().createStatement()
 					.executeQuery("SELECT team from " + tab_competition + " ;");
 

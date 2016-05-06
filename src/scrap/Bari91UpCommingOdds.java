@@ -131,10 +131,7 @@ public class Bari91UpCommingOdds {
 			if (skipComp(ss)) {
 				continue;
 			}
-			
-if(ss.contains("Scotland")){
-	logger.warn("");
-}
+
 			ss = ss.replaceFirst("\u00A0", "");
 			logger.info("'{}'",ss);
 			// --------------------Check if already stored-------
