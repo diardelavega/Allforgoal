@@ -100,7 +100,7 @@ public class MatchGetter {
 						|| clasVal[4].contains("EURO")) {
 					continue;
 				}
-				// logger.info("{}  {}", clasVal[0], clasVal[4]);
+				 logger.info("{}  {}", clasVal[0], clasVal[4]);
 				int compId = searchForCompIdx(clasVal[0], clasVal[4]);
 				logger.info("--: {}  {}  {}", compId, clasVal[0], clasVal[4]);
 				if (compId < 0) {

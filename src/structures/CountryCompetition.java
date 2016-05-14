@@ -42,7 +42,7 @@ public class CountryCompetition {
 			.getLogger(CountryCompetition.class);
 
 	public static final String baseUrl = "http://www.soccerpunter.com";
-	public static Map<Integer,Integer> idToIdx = new HashMap<Integer, Integer>();
+	public static Map<Integer, Integer> idToIdx = new HashMap<Integer, Integer>();
 	public static List<CCAllStruct> ccasList = new ArrayList<>();
 	public static List<ScorerDataStruct> sdsList = new ArrayList<>();
 	public static Map<String, Integer> allowedcomps = new HashMap<>();
@@ -78,7 +78,8 @@ public class CountryCompetition {
 		// read from db and insert to list;
 		// possible necessity of some ordering; COUNTRIES are already ordered
 		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery("SELECT * FROM ccallstruct ORDER BY country;");
+		ResultSet rs = st
+				.executeQuery("SELECT * FROM ccallstruct ORDER BY country;");
 		CCAllStruct ccas;
 		while (rs.next()) {
 			ccas = new CCAllStruct();
@@ -120,11 +121,12 @@ public class CountryCompetition {
 	}
 
 	public void readAllowedComps() throws JsonSyntaxException, IOException {
-//		FileHandler fh = new FileHandler();
+		// FileHandler fh = new FileHandler();
 		fh.readAllowedCompetitions();
 	}
+
 	public void readNotAllowedComps() throws JsonSyntaxException, IOException {
-//		FileHandler fh = new FileHandler();
+		// FileHandler fh = new FileHandler();
 		fh.readNotAllowedCompetitions();
 	}
 
@@ -181,36 +183,45 @@ public class CountryCompetition {
 		int i = initial;
 		if (b) {// with levistein
 			while (ccasList.get(i).getCountry().equalsIgnoreCase(country)) {
-				if(ccasList.get(i).getDb()==1)
-				if (StringSimilarity.levenshteinDistance(ccasList.get(i)
-						.getCompetition(), comp) <= StandartResponses.LEV_DISTANCE) {
-					return i;
-				}
+				if (ccasList.get(i).getDb() == 1)
+					if (StringSimilarity.levenshteinDistance(ccasList.get(i)
+							.getCompetition(), comp) <= StandartResponses.LEV_DISTANCE) {
+						return i;
+					}
 				i++;
 			}
+
+			// do not search below idx 0
+			if (initial == 0)
+				return -1;
+
 			i = initial;
 			while (ccasList.get(i).getCountry().equalsIgnoreCase(country)) {
-				if(ccasList.get(i).getDb()==1)
-				if (StringSimilarity.levenshteinDistance(ccasList.get(i)
-						.getCompetition(), comp) <= StandartResponses.LEV_DISTANCE) {
-					return i;
-				}
+				if (ccasList.get(i).getDb() == 1)
+					if (StringSimilarity.levenshteinDistance(ccasList.get(i)
+							.getCompetition(), comp) <= StandartResponses.LEV_DISTANCE) {
+						return i;
+					}
 				i--;
 			}
 		} else {// no levestein
 			while (ccasList.get(i).getCountry().equalsIgnoreCase(country)) {
-				if(ccasList.get(i).getDb()==1)
-				if (ccasList.get(i).getCompetition().equalsIgnoreCase(comp)) {
-					return i;
-				}
+				if (ccasList.get(i).getDb() == 1)
+					if (ccasList.get(i).getCompetition().equalsIgnoreCase(comp)) {
+						return i;
+					}
 				i++;
 			}
+			// do not search below idx 0
+			if (initial == 0)
+				return -1;
+
 			i = initial;
 			while (ccasList.get(i).getCountry().equalsIgnoreCase(country)) {
-				if(ccasList.get(i).getDb()==1)
-				if (ccasList.get(i).getCompetition().equalsIgnoreCase(comp)) {
-					return i;
-				}
+				if (ccasList.get(i).getDb() == 1)
+					if (ccasList.get(i).getCompetition().equalsIgnoreCase(comp)) {
+						return i;
+					}
 				i--;
 			}
 		}
@@ -306,20 +317,24 @@ public class CountryCompetition {
 		while (sdsList.get(i).getCountry().equalsIgnoreCase(country)) {
 			if (sdsList.get(i).getDb() == 1)
 				for (String s : sdsList.get(i).altComps()) {
-					float  d=StringSimilarity.levenshteinDistance(s, comp);
-//					logger.info("----------------{} - {}, {}",s,comp,d);
+					float d = StringSimilarity.levenshteinDistance(s, comp);
+					// logger.info("----------------{} - {}, {}",s,comp,d);
 					if (d <= StandartResponses.LEV_DISTANCE) {
 						return i;
 					}
 				}
 			i++;
 		}
+		// if the idx was 0, it can not search in idx <0
+		if (initial == 0)
+			return -1;
+
 		i = initial - 1;
 		while (sdsList.get(i).getCountry().equalsIgnoreCase(country)) {
 			if (sdsList.get(i).getDb() == 1)
 				for (String s : sdsList.get(i).altComps()) {
-					float d=StringSimilarity.levenshteinDistance(s, comp);
-//					logger.info("---------------{} - {}, {}",s,comp,d);
+					float d = StringSimilarity.levenshteinDistance(s, comp);
+					// logger.info("---------------{} - {}, {}",s,comp,d);
 					if (d <= StandartResponses.LEV_DISTANCE) {
 						return i;
 					}
@@ -328,7 +343,6 @@ public class CountryCompetition {
 		}
 		return -1;
 	}
-
 
 	// -----------------------------------------------------------
 	public int searchComp(String compName) {
@@ -380,24 +394,22 @@ public class CountryCompetition {
 
 	public void addAllowedComp(String comp, int idx) {
 		allowedcomps.put(comp, idx);
-		
+
 		try {
 			fh.appendAllowedCompetitions(comp, idx);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void addNotAllowedComp(String comp) {
 		notAllowedcomps.add(comp);
-		
+
 		try {
 			fh.appendNotAllowedCompetitions(comp);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
-	
 
 }
