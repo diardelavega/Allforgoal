@@ -180,8 +180,6 @@ public class SoccerPrunterMAtches {
 		 * want report error in case something goes wrong.
 		 */
 
-		// TODO get the last date of matches for that competition and
-		// gather only those matches
 
 		String url = CountryCompetition.ccasList.get(compIdx).getCompLink();
 		int compId = CountryCompetition.ccasList.get(compIdx).getCompId();

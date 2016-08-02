@@ -14,6 +14,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import structures.CountryCompetition;
 import basicStruct.CCAllStruct;
@@ -22,7 +27,8 @@ import basicStruct.MatchObj;
 import com.google.gson.Gson;
 
 public class AnalyticFileHandler {
-	Gson gson = new Gson();
+	public static Logger log = LoggerFactory.getLogger(AnalyticFileHandler.class);
+//	Gson gson = new Gson();
 	private File bastFileFolder = new File("C:/BastData");
 	private File predDataFolder = new File(bastFileFolder + "/Pred/Data");
 	private File predTestFolder = new File(bastFileFolder + "/Pred/Test");
@@ -59,8 +65,8 @@ public class AnalyticFileHandler {
 		 */
 
 		try {
-			bw = new BufferedWriter(new FileWriter(getTestFileName(compId, country,
-					compName, date), true));
+			bw = new BufferedWriter(new FileWriter(getTestFileName(compId,
+					compName, country, date), true));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,7 +83,7 @@ public class AnalyticFileHandler {
 		bw.append(line + "\n");
 	}
 
-	private File getTestFileName(int compId, String compName, String country,
+	public File getTestFileName(int compId, String compName, String country,
 			LocalDate dat) {
 		// create the folder file and a new test file of format
 		// folder/CompName_compId_Test_2016-10-10
@@ -101,7 +107,41 @@ public class AnalyticFileHandler {
 		return tFile;
 	}
 
-	private File getTrainFileName(int compId, String compName, String country) {
+	public File getLeatestTestFileName(int compId, String compName,
+			String country) {
+		log.info("@ getLeatestTestFileName");
+		File cFolder = new File(predTestFolder + "/" + country);
+		if (!cFolder.exists()) {
+			log.warn("afh Folder not found");
+			return null;
+		}
+		SortedSet<LocalDate> ldl = new TreeSet<>();
+		for (String fil : cFolder.list()) {
+			String[] temp = fil.split("_");
+			try {
+				LocalDate ld = LocalDate.parse(temp[3],
+						DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				ldl.add(ld);
+			} catch (Exception e) {
+				log.warn("afh Exception here");
+				e.printStackTrace();
+			}
+		}// for
+log.info(ldl.last().toString());
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separator);
+		sb.append(compName);
+		sb.append("_");
+		sb.append(compId);
+		sb.append("_");
+		sb.append("Test");
+		sb.append("_");
+		sb.append(ldl.last().toString());
+
+		return (new File(cFolder + sb.toString()));
+	}
+
+	public File getTrainFileName(int compId, String compName, String country) {
 		// create the folder file and a new test file of format
 		// folder/CompName_compId_Data
 
@@ -168,7 +208,7 @@ public class AnalyticFileHandler {
 				try {
 					LocalDate ld = LocalDate.parse(temp[3],
 							DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-					return (int) ChronoUnit.DAYS.between(ld,dat);
+					return (int) ChronoUnit.DAYS.between(ld, dat);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

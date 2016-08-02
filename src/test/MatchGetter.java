@@ -100,9 +100,9 @@ public class MatchGetter {
 						|| clasVal[4].contains("EURO")) {
 					continue;
 				}
-				 logger.info("{}  {}", clasVal[0], clasVal[4]);
+//				 logger.info("{}  {}", clasVal[0], clasVal[4]);
 				int compId = searchForCompIdx(clasVal[0], clasVal[4]);
-				logger.info("--: {}  {}  {}", compId, clasVal[0], clasVal[4]);
+				//logger.info("--: {}  {}  {}", compId, clasVal[0], clasVal[4]);
 				if (compId < 0) {
 					// TODO display un-found matches
 					// ul.appendUnfoundTerms(clasVal[0], clasVal[4]);
@@ -110,12 +110,14 @@ public class MatchGetter {
 				} else {
 					// int compIdx = 10101;
 					Elements tds = row.getElementsByTag("td");
+					String matchTime = tds.get(0).text();
 					String status = tds.get(1).text();
 					String t1 = tds.get(5).text();
 					String t2 = tds.get(9).text();
 					mobj = new MatchObj();
 					mobj.setT1(t1);
 					mobj.setT2(t2);
+					mobj.setMatchTime(matchTime);
 
 					// mobj.setDat(Date.valueOf(dat));
 					// mobj.setComId(compIdx + 1);
@@ -125,7 +127,7 @@ public class MatchGetter {
 							&& (status.equals(Status.SCHEDULED) || status
 									.equals(Status.FTR))) {
 						logger.info(
-								"country {}  competition {}  compId {}  t1-{}  t2-{}",
+								"getting SCHEDULED :: country {}  competition {}  compId {}  t1-{}  t2-{}",
 								clasVal[0], clasVal[4], compId, t1, t2);
 						mobj.setDat(Date.valueOf(dat));
 						mobj.setComId(compId);
@@ -253,7 +255,7 @@ public class MatchGetter {
 			throws IOException {
 
 		/*
-		 * cc allowed competitions should take a combination of name and
+		 * cc allowed competitions should take a combination of country name and
 		 * competition because many competitions have the same name but allways
 		 * a unique combination of name&competition
 		 */
@@ -263,7 +265,7 @@ public class MatchGetter {
 		}
 
 		Integer searchCompIdx = cc.allowedcomps.get(couComComb(country, comp));
-		if (searchCompIdx != null) {// see if db
+		if (searchCompIdx != null) {// see if db ==1 -> available for processing
 			for (CCAllStruct c : cc.ccasList)
 				if (c.getCompId() == searchCompIdx)
 					if (c.getDb() == 1)

@@ -190,6 +190,7 @@ public class TempMatchFunctions {
 				ps.setDouble(12, mobj.get_o());
 				ps.setDouble(13, mobj.get_u());
 				ps.setDate(14, mobj.getDat());
+				// TODO consider for match time element addition #ta1
 				ps.addBatch();
 				i++;
 				if (i % 500 == 0) {
@@ -233,6 +234,7 @@ public class TempMatchFunctions {
 			mobj.set_o(rs.getFloat(12));
 			mobj.set_u(rs.getFloat(13));
 			mobj.setDat(rs.getDate(14));
+			// TODO consider for match time element addition #ta2
 			readTempMatchesList.add(mobj);
 			logger.info("t1-: {}   t1-: {}", rs.getString(3), rs.getString(4));
 		}
@@ -254,13 +256,24 @@ public class TempMatchFunctions {
 
 		// fill from db readTempMatchesList List<>, order by t1
 		readFromTempMatches(d);
-		logger.info("readTempMatchesList size ={}", readTempMatchesList.size());
+		// logger.info("readTempMatchesList size ={}",
+		// readTempMatchesList.size());
 		if (readTempMatchesList.size() == 0) {
 			logger.info("No temp matches in db");
 			return;
 		}
 
+		/*
+		 * will keep all the selected matches. Thean delete them from temp
+		 * matches table & insert to regular matches dbtable
+		 */
 		List<MatchObj> matches = new ArrayList<MatchObj>();
+		/*
+		 * will contain at any time match(es) from the same competition, matches
+		 * previously in the temp match db and test prediction file but now with
+		 * the score results. They will be calculated and inserted in the
+		 * competitions Train prediction file with all the matches data so far.
+		 */
 		List<MatchObj> smallPredictionsList = new ArrayList<MatchObj>();
 		// for (MatchObj m : XscoreUpComing.finNewMatches) { Original_Line
 		int idx = -1;
@@ -295,15 +308,15 @@ public class TempMatchFunctions {
 
 				}
 			} else {// if team not converted
-				logger.info("disply unconverted {} - {}, __{}", m.getT1(),
-						m.getT2(), m.getComId());
+				logger.info(
+						"disply unconverted, Not found in temp matches {} - {}, __{}",
+						m.getT1(), m.getT2(), m.getComId());
 			}
 		}// for
 		deleteTempMatches(matches);// delete finished matches
 		insertMatches(matches);
 		logger.info("Competed standart Completion");
 
-		
 		if (readTempMatchesList.size() > 0) {
 			/*
 			 * keep looping through the remaining matches from the db read to
@@ -319,8 +332,8 @@ public class TempMatchFunctions {
 				if (team != null) {
 					idx = binarySearch(team, 0, readTempMatchesList.size() - 1);
 					if (idx < 0) {
-						logger.info("---Was not found t1 -{},  t2 {}    ",
-								m.getT1(), m.getT2());
+						// logger.info("---Was not found t1 -{},  t2 {}    ",
+						// m.getT1(), m.getT2());
 						continue;
 					} else {
 						if (prevCompId != m.getComId()) {
@@ -421,6 +434,7 @@ public class TempMatchFunctions {
 			ps.setDouble(12, mobj.get_o());
 			ps.setDouble(13, mobj.get_u());
 			ps.setDate(14, mobj.getDat());
+			// TODO consider for match time element addition #ta3
 			ps.addBatch();
 			i++;
 			if (i % 500 == 0) {
@@ -434,12 +448,12 @@ public class TempMatchFunctions {
 
 	private int binarySearch(String team, int min, int max) {
 		try {
-			logger.info("t__{}  min_{}   max__{}", team, min, max);
+			// logger.info("t__{}  min_{}   max__{}", team, min, max);
 			if (min > max) {
 				return -1;
 			}
 			int mid = (max + min) / 2;
-			logger.warn("mid__{}", mid);
+			// logger.warn("mid__{}", mid);
 			if (readTempMatchesList.get(mid).getT1().equals(team)) {
 				return mid;
 			} else if (readTempMatchesList.get(mid).getT1().compareTo(team) > 0) {
@@ -448,7 +462,6 @@ public class TempMatchFunctions {
 				return binarySearch(team, mid + 1, max);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			logger.info("t__{}  min_{}   max__{},  readTempMatchesList-:{}",
 					team, min, max, readTempMatchesList.size());
 			e.printStackTrace();
@@ -467,12 +480,13 @@ public class TempMatchFunctions {
 			return null;
 		}
 		// else
-		tab_competition = tab_competition.toLowerCase().replace(".", "").replaceAll(" ", "_")
+		tab_competition = tab_competition.toLowerCase().replace(".", "")
+				.replaceAll(" ", "_")
 				+ "_fulltable";
 		List<String> teamsList = new ArrayList<String>();
 		ResultSet rs;
 		try {
-			
+
 			rs = conn.getConn().createStatement()
 					.executeQuery("SELECT team from " + tab_competition + " ;");
 

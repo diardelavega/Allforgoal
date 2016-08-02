@@ -470,7 +470,7 @@ logger.info("{}",o.line());
 	}
 
 	public void orderClassificationTable() {
-		// TODO sort the classificationPos based on the points of eachteam
+		//  sort the classificationPos based on the points of eachteam
 		Collections.sort(classificationPos);
 	}
 

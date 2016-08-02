@@ -1,4 +1,63 @@
+----------------------------------------------------------------------
+(*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
+----------------------------------------------------------------------------
 
+**- oddsnstats is off-line
+
+
+*-set the ht& ft results for the test file to NA instead of 0 as they curently are.
+	!- can\t chanege theb meacouse na is string and ht,ft take int vars => uninitialized they will be 0
+
+
+
+*** based on the curend task function @ Strategy the odds for the tommorrows matches are not being calculated
+!- the problem was the  tommorows odds where not being taken
+
+
+-- The csv files are just written on but not being read, create novel functions to read them
+!!!@ Done Fixed
+
+!!! i am no inserting the time string to the database in matches and tempMatches tables; only on the pred file
+
+
+*** Test and see what happens to matches without Ht score data!!
+
+
+
+
+** bug The matches in the test pred file created by the periodic task takes the matches by 3 times when they are 
+	written	in the pred file.  
+	--Reason. Probably: because after the matches are entered in the pred file they are cleared& after
+	 they are re-scheduled and reantered and cleared unttilll they have started- (no longer marced as scheduled)
+*! FIXED
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------
+-------------------From here down the data goes from older (on top)  to newer (going down)---------------------------------------
+----------------------------------------------------------
+----------------------------------------------------------
+----------------------------------------------------------
+@TODO some way to show all the todays matches ready for prediction, all togather
+
+@TODO create a list of leatest gathered competitions and update them every time with the remaining matches or results
+      so that no to be left behind 
+----------------------
+-----------------------------------------
+------------------------------------------------------------
+------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------
+-----------------------------------------------------------
+--------------------------------------------
+--------------------
 
 --) we are in the phase to calculate the db necessary components for the competition table attributes calculation
 taking in consideration the match in hand.

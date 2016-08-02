@@ -55,7 +55,8 @@ public class Demo {
 		// cc.sdsList.get(i).printer();
 		// }
 		//
-		int compIdx = 9;
+//		idx should be +1 than the val in the sql
+		int compIdx = CountryCompetition.idToIdx.get(112) ;
 		// String link = CountryCompetition.ccasList.get(111).getCompLink();
 		// int compId = CountryCompetition.ccasList.get(111).getCompId();
 
@@ -70,8 +71,8 @@ public class Demo {
 		//
 		// // ----------------TEST-----------
 		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-//		spm.competitionResultsGrabbers(compIdx);
-		 spm.remainingResultsGraber(compIdx);
+		spm.competitionResultsGrabbers(compIdx);
+//		 spm.remainingResultsGraber(compIdx);
 
 		// ml.storeSched();
 		// ml.readSched();
@@ -94,34 +95,6 @@ public class Demo {
 		}
 		ml.insertMatches();
 
-		// {
-		// {// TODO this section grabs the matches from the site
-		// SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-		// // spm.matchGraber();
-		// spm.competitionResultsGrabbers(link, compId);
-		// // at this point matches garbed and put to list
-		// }
-		//
-		// {// TODO this section reads and writes data to matches table
-		// MatchesList ml = new MatchesList();
-		// ml.insertMatches();
-		// if (ml.readMatches.size() == 0) {
-		// ml.readMatchesComp(compId);
-		// }
-		// }
-		// // TODO store the list in db
-		//
-		// // TODO call MatchToTableRenewual and evaluate attributes
-		// MatchToTableRenewal mttr;
-		//
-		// for (Integer key : MatchesList.readMatches.keySet()) {
-		// mttr = new MatchToTableRenewal( MatchesList.readMatches.get(key),
-		// key);
-		// MatchToTableRenewal.fh.openOutput();
-		// mttr.calculate();
-		// MatchToTableRenewal.fh.closeOutput();
-		// }
-		// }
 
 		// XscoreUpComing sc = new XscoreUpComing();
 		//

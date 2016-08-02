@@ -93,33 +93,35 @@ public class MatchToTableRenewal {
 		 * file. In the afh when we open it we can decide if it is going to be
 		 * for writing to TrainDataFile or to TestDataFile.
 		 */
-		compName = CountryCompetition.ccasList.get(CountryCompetition.idToIdx.get(comp_Id)).getCompetition();
-		country = CountryCompetition.ccasList.get(CountryCompetition.idToIdx.get(comp_Id)).getCountry();
+		compName = CountryCompetition.ccasList.get(
+				CountryCompetition.idToIdx.get(comp_Id)).getCompetition();
+		country = CountryCompetition.ccasList.get(
+				CountryCompetition.idToIdx.get(comp_Id)).getCountry();
 		// check if file exists
 		if (afh.isTestFile(comp_Id, compName, country, date)) {
 			// check the dat to see if it is older or neweer than the curent
 			// date
-			if (afh.testFileDateDifference(comp_Id, compName, country, date) < 0) {
+			if (afh.testFileDateDifference(comp_Id, compName, country, date) <= 0) {
 				logger.warn("Unable to create a new file a valid one exists!");
 				return;
 			}
 		}
-		
-		
+
 		// check all existence in db and teamtable struct
 		init();
 		if (N == 0) {
 			return;
 		}
 		mobj = ml.get(0);
-		if(!testTeamDataPositions()){
+		if (!testTeamDataPositions()) {
 			return;
 		}
 
 		// instanciate the pf class attribute
 		afh.openTestOutput(comp_Id, compName, country, date);
-		int week = Math.max(t1.getMatchesIn() + t1.getMatchesOut() + 1, t2.getMatchesIn() + t2.getMatchesOut() + 1);
-		pf= new PredictionFile();
+		int week = Math.max(t1.getMatchesIn() + t1.getMatchesOut() + 1,
+				t2.getMatchesIn() + t2.getMatchesOut() + 1);
+		pf = new PredictionFile();
 		afh.appendCsv(pf.csvHeader());
 		for (int i = 0; i < ml.size(); i++) {
 			mobj = ml.get(i);
@@ -127,6 +129,11 @@ public class MatchToTableRenewal {
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment(false);
 				pf.setWeek(week);
+				// pf.setMatchTime(mobj.getMatchTime());
+				// pf.setT1Ht(mobj.getHt1());
+				// pf.setT2Ht(mobj.getHt2());
+				// pf.setT1Ft(mobj.getFt1());
+				// pf.setT2Ft(mobj.getFt2());
 				afh.appendCsv(pf.liner());
 			}
 		}
@@ -166,6 +173,13 @@ public class MatchToTableRenewal {
 	public void calculate(List<MatchObj> matchesList) throws SQLException,
 			IOException {
 
+		/*
+		 * calculate the data and change the corresponding values for each of
+		 * the two teams in a match. the new data is inserted in the train
+		 * prediction file of that competition and also used to change the data
+		 * in the DB for every team in the matches
+		 */
+
 		t1 = null;
 		t2 = null;
 		init();// get the db table ready
@@ -176,11 +190,12 @@ public class MatchToTableRenewal {
 			tempT = ctt.getClassificationPos().get(4);
 			int all2 = tempT.getMatchesIn() + tempT.getMatchesOut();
 			totMatches = Math.max(all1, all2) * N / 2;
-			tempT=null;
+			tempT = null;
 		}
 
 		pf = new PredictionFile();
-		if (!ctt.isTable()) {// suppose file doesn't exists
+		if (!ctt.isTable()) {
+			// if file doesn't exists add a csv headder
 			matchesDF.add(pf.csvHeader());
 		}
 
@@ -256,7 +271,7 @@ public class MatchToTableRenewal {
 			}
 		}
 
-		// at the end
+		// at the end,  after all the calcu;ations for all the matches in the list
 		orderClassificationTable();
 		if (ctt.isTable()) {
 			if (ctt.getRowSize() >= 1) {
@@ -279,8 +294,8 @@ public class MatchToTableRenewal {
 	public void init() throws SQLException {
 		/*
 		 * in int we check if the db table exists and then we read it else we
-		 * create it. In any case we set a teamtable for a specific competition
-		 * ready
+		 * create it. In any case we set a teamtable (classification)for a
+		 * specific competition ready
 		 */
 
 		compName = compName.replaceAll(" ", "_").replace(".", "");
@@ -684,6 +699,11 @@ public class MatchToTableRenewal {
 	}
 
 	private void predictionFileAttributeAsignment(boolean outcomes) {
+		/*
+		 * it sets the data for the each team in the PREDICTION file attributes
+		 * for the train or test prediction file
+		 */
+
 		// outcomes is used to diferentiate between train and test data
 		// pf.setWeek(totMatches);
 		BasicTableEntity Elem = ctt.getClassificationPos().get(posT1);
@@ -787,11 +807,19 @@ public class MatchToTableRenewal {
 
 		if (outcomes) {
 			outcomeAsignment();
-		}
+		} 
 	}
 
 	private void outcomeAsignment() {
 		if (mobj != null) {
+			
+			pf.setMatchTime(MatchOutcome.missing);
+			pf.setT1Ht(mobj.getHt1());
+			pf.setT2Ht(mobj.getHt2());
+			pf.setT1Ft(mobj.getFt1());
+			pf.setT2Ft(mobj.getFt2());
+			
+			
 			// head outcome 1X2
 			if (mobj.getFt1() > mobj.getFt2()) {
 				pf.setHeadOutcome(MatchOutcome.home);

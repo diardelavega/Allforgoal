@@ -133,7 +133,7 @@ public class Bari91UpCommingOdds {
 			}
 
 			ss = ss.replaceFirst("\u00A0", "");
-			logger.info("'{}'",ss);
+//			logger.info("'{}'",ss);
 			// --------------------Check if already stored-------
 			if (tempBariToCompId.get(ss) == null) {
 				if (btpNotAllowed.contains(ss) == true) {
@@ -152,7 +152,7 @@ public class Bari91UpCommingOdds {
 
 			if (compId >= 0) {// valid comp id; search Scprer matches & add odds
 				if (MatchGetter.schedNewMatches.get(compId) == null) {
-					// there is no such competition matches @ scorer
+					// there is no such competition matches @ scorer, xscorer 
 					continue;
 				}
 

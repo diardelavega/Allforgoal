@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title id="tit">Insert title here</title>
+<script type="text/javascript" src="./ajax.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	
+<script type="text/javascript">
+	function addatt(){
+		$("#did").attr('bbut','akiu');
+	}
+	
+	function search(){
+/* 		var val=$("#did").attr('bbut');
+		if(val !==undefined){
+			$("#did2").html(val);
+		}else{console.log("Nothing to show");} */
+		
+		var td=$('td');
+		console.log(Number( td[0].innerHTML));
+		
+		$("#did2").html( Number( td[0].textContent) + 111);
+	}
+</script>
+</head>
+<body>
+
+	<input type="button" value="ajax call" onclick="addatt();"/>
+	<div id="did">aaaaaaaaaaaaa</div>
+	<input type="button" value="ajax call" onclick="search();"/>
+	<div id="did2">aaaaaaaaaaaaa</div>
+	<table><tr><td>111</td></tr></table>
+	<input type="button" value="wdl" onclick="wdlAjaxCall(164);"/>
+</body>
+</html>

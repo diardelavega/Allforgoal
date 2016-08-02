@@ -32,8 +32,8 @@ import structures.CountryCompetition;
 import basicStruct.MatchObj;
 
 import com.google.gson.JsonSyntaxException;
-import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
-import com.sun.xml.ws.rx.util.FiberExecutor;
+//import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
+//import com.sun.xml.ws.rx.util.FiberExecutor;
 
 import dbtry.Conn;
 import demo.Demo;
@@ -52,21 +52,22 @@ public class MainTry {
 	public static void main(String[] args) throws SQLException, IOException {
 		initCCAllStruct();
 		 Strategy strategy = new Strategy();
-		 strategy.task();
+		 //strategy.task();
 //		 strategy.tryTask();
 
-		// Soccerpunter_homePage sch= new Soccerpunter_homePage();
-		// sch.goGetCompetitions();
-		// SoccerPunterOdds spo = new SoccerPunterOdds();
-		// spo.getDailyOdds(LocalDate.now());
+//		 Soccerpunter_homePage sch= new Soccerpunter_homePage();
+//		 sch.goGetCompetitions();
+//		 SoccerPunterOdds spo = new SoccerPunterOdds();
+//		 spo.getDailyOdds(LocalDate.now());
 
-		// strategy .periodic();
+		 strategy .periodic();
+		 
 		// corelator();
 		// LocalDate ld =LocalDate.now();
 		// log(ld.toString());
 		// Soccerpunter_homePage sch = new Soccerpunter_homePage();
 		// sch.goGetCompetitions();
-		// filer();
+		 //filer();
 		// System.out.println("Uganda".compareTo("Usa"));
 		//
 

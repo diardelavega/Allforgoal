@@ -20,6 +20,7 @@ public class MatchObj implements Serializable{
 	private double _o;
 	private double _u;
 	private Date dat;
+	private String matchTime;
 
 	public MatchObj(long mId, int comId, String t1, String t2, int ft1,
 			int ft2, int ht1, int ht2, double _1, double _2, double _x,
@@ -39,6 +40,27 @@ public class MatchObj implements Serializable{
 		this._o = _o;
 		this._u = _u;
 		this.dat = dat;
+	}
+	
+	public MatchObj(long mId, int comId, String t1, String t2, int ft1,
+			int ft2, int ht1, int ht2, double _1, double _2, double _x,
+			double _o, double _u, Date dat, String mtime) {
+		super();
+		this.mId = mId;
+		this.comId = comId;
+		this.t1 = t1;
+		this.t2 = t2;
+		this.ft1 = ft1;
+		this.ft2 = ft2;
+		this.ht1 = ht1;
+		this.ht2 = ht2;
+		this._1 = _1;
+		this._2 = _2;
+		this._x = _x;
+		this._o = _o;
+		this._u = _u;
+		this.dat = dat;
+		this.matchTime=mtime;
 	}
 
 	public MatchObj() {
@@ -156,6 +178,15 @@ public class MatchObj implements Serializable{
 		this.dat = dat;
 	}
 
+	
+	public String getMatchTime() {
+		return matchTime;
+	}
+
+	public void setMatchTime(String matchTime) {
+		this.matchTime = matchTime;
+	}
+
 	public boolean isFull() {
 		try {
 			if (ht1 >= 0)
@@ -169,6 +200,8 @@ public class MatchObj implements Serializable{
 	public String printMatch() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(dat);
+		sb.append(",  ");
+		sb.append(matchTime);
 		sb.append(",  ");
 		sb.append(comId);
 		sb.append(",  ");

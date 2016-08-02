@@ -9,6 +9,7 @@ public class PredictionFile {
 	private static final Logger logger = LoggerFactory
 			.getLogger(PredictionFile.class);
 	
+	
 	private int week = 0;
 	private String headOutcome=MatchOutcome.missing; // MatchOutcome val 1/x/2
 	private String scoreOutcome=MatchOutcome.missing; // o/u
@@ -80,6 +81,12 @@ public class PredictionFile {
 	private int t2LosesIn = 0;
 	private int t2LosesOut = 0;
 
+	//------extra new
+	private String matchTime;
+	private int t1Ht=0;
+	private int t2Ht=0;
+	private int t1Ft=0;
+	private int t2Ft=0;
 	
 	
 	
@@ -607,6 +614,48 @@ public class PredictionFile {
 		this.t2Defense = t2Defense;
 	}
 
+	
+	//-----------new funcs
+	public String getMatchTime() {
+		return matchTime;
+	}
+
+	public void setMatchTime(String matchTime) {
+		this.matchTime = matchTime;
+	}
+	
+	public int getT1Ht() {
+		return t1Ht;
+	}
+
+	public int getT2Ht() {
+		return t2Ht;
+	}
+
+	public int getT1Ft() {
+		return t1Ft;
+	}
+
+	public int getT2Ft() {
+		return t2Ft;
+	}
+
+	public void setT1Ht(int t1Ht) {
+		this.t1Ht = t1Ht;
+	}
+
+	public void setT2Ht(int t2Ht) {
+		this.t2Ht = t2Ht;
+	}
+
+	public void setT1Ft(int t1Ft) {
+		this.t1Ft = t1Ft;
+	}
+
+	public void setT2Ft(int t2Ft) {
+		this.t2Ft = t2Ft;
+	}
+
 	public String liner() {
 		// return a string to be stored in a file
 		StringBuilder sb = new StringBuilder();
@@ -742,7 +791,21 @@ public class PredictionFile {
 		sb.append(bet_O);
 		sb.append(",");
 		sb.append(bet_U);
+		sb.append(",");
 
+		//----------more data
+		sb.append(t1Ht);
+		sb.append(",");
+		sb.append(t2Ht);
+		sb.append(",");
+		sb.append(t1Ft);
+		sb.append(",");
+		sb.append(t2Ft);
+		sb.append(",");
+		sb.append(matchTime);
+		
+		
+		
 //		logger.info(sb.toString());
 
 		return sb.toString();
@@ -816,8 +879,15 @@ public class PredictionFile {
 		sb.append("bet_X,");
 		sb.append("bet_2,");
 		sb.append("bet_O,");
-		sb.append("bet_U");
+		sb.append("bet_U,");
 
+		
+		sb.append("t1Ht,");
+		sb.append("t2Ht,");
+		sb.append("t1Ft,");
+		sb.append("t2Ft,");
+		sb.append("matchTime");
+		
 		return sb.toString();
 	}
 

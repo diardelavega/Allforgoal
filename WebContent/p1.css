@@ -1,0 +1,15 @@
+/* // css file */
+
+.columns{
+	background-color: #d7dde5;
+	font-size: 14px;
+    text-align: center;
+    width: 100%;
+	/*border:2pt solid;*/
+}	
+	
+.compHeader{
+	background-color: yellow;
+	font-size: 14px;
+    text-align: center;
+}

@@ -32,4 +32,7 @@ public class StrStrTuple {
 		this.s2 = s2;
 	}
 
+	public void strstrshow(){
+		System.out.println(s1+ " - "+s2);
+	}
 }
