@@ -90,19 +90,19 @@ function redWeekHandle(cid,data){//complex id ; compId *100 + idx
 	//gather from displayed fields the two teams names
 	var tds =$("#rowmld"+cid).children("td");
 	var homeTeam = $(tds[1]).text();
-	console.log(homeTeam);
+//	console.log(homeTeam);
 	var awayTeam = $(tds[5]).text();
-	console.log(awayTeam);
+//	console.log(awayTeam);
 	
 	//proces funcs
 	redFormDataExtraction(cid,homeTeam,awayTeam);
 	
 	// draw common adversaries
-	commonAdversaries(cid,homeTeam,awayTeam);
+	redCommonAdversaries(cid,homeTeam,awayTeam);
 	
 	//draw functions
 	drawFormChart(cid,homeTeam,awayTeam);
-	$('#form_chart'+cid).hide();
+//	$('#form_chart'+cid).hide();
 	drawAtackChart(cid,homeTeam,awayTeam);
 	$('#atackForm_chart'+cid).hide();
 	drawDeffChart(cid,homeTeam,awayTeam);

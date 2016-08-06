@@ -93,7 +93,7 @@ function drawProgressChart(idx,homeTeam,awayTeam){
 
 	var options = {
 		chartArea: {
-			left: '7%',bottom: '10%',
+			left: '10%',bottom: '10%',
 			right:'15%', top:'10%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
@@ -102,8 +102,8 @@ function drawProgressChart(idx,homeTeam,awayTeam){
 			 }
 		 },
 		lineWidth: 3,
-		width: 700,
-		height: 350,
+		width: 900,
+		height: 450,
 		backgroundColor: '#d7dde5',
 		title:  'Team RESULT progres throught the weeks',
 		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },
@@ -165,7 +165,7 @@ function drawFormChart(idx,homeTeam,awayTeam) {
 	
 	var options = {
 		chartArea: {
-			left: '7%',bottom: '10%',
+			left: '10%',bottom: '10%',
 			right:'15%', top:'10%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
@@ -174,8 +174,8 @@ function drawFormChart(idx,homeTeam,awayTeam) {
 			 }
 		 },
 		lineWidth: 5,
-		width: 700,
-		height: 350,
+		width: 900,
+		height: 450,
 		backgroundColor: '#d7dde5',
 		title:  'Team FORM progres throught the weeks',
 		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },
@@ -238,7 +238,7 @@ function drawAtackChart(idx,homeTeam,awayTeam) {
 	var options = {
 	
 		chartArea: {
-			left: '7%',bottom: '10%',
+			left: '10%',bottom: '10%',
 			right:'15%', top:'10%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
@@ -300,7 +300,7 @@ function drawDeffChart(idx,homeTeam,awayTeam) {
 
 	var options = {
 		chartArea: {
-			left: '7%',bottom: '10%',
+			left: '10%',bottom: '10%',
 			right:'15%', top:'10%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
@@ -309,8 +309,8 @@ function drawDeffChart(idx,homeTeam,awayTeam) {
 			 }
 		 },
 		lineWidth: 3,
-		width: 700,
-		height: 350,
+		width: 900,
+		height: 450,
 		backgroundColor: '#d7dde5',
 		title:  'Team Defence FORM progres throught the weeks',
 		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },

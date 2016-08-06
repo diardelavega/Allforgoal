@@ -179,10 +179,8 @@ function redCommonAdversaries(idx, homeTeam, awayTeam){
 	var t1spoting=[];
 	var t2spoting=[];
 
-//	var team1=todaysMatches[idx].t1;
-//	var team2=todaysMatches[idx].t2;
-
-
+	console.log("in  redCommonAdversaries")
+	
 	var tab= $("#common"+idx).find('td');
 	tab[0].innerHTML=homeTeam;
 	$(tab[0]).css({'font-size':18});
@@ -305,7 +303,7 @@ function redCommonAdversaries(idx, homeTeam, awayTeam){
 	for(var i=1;i<t1spoting.length;i++){
 		if( t1spoting[i].adv==team2){
 			directadv.push(t1spoting[i]);
-			tobj={week:t1spoting[i].datWeek, tname:team1, adv:team2, io:t1spoting[i].inOut, t1Res:t1spoting[i].tRes, t2Res:t1spoting[i].advRes}
+			tobj={week:t1spoting[i].datWeek, tname:team1, adv:team2, io:t1spoting[i].inOut, t1Res:t1spoting[i].tRes, t2Res:t1spoting[i].advRes};
 			commonAdvTabShower(idx, tobj, null);
 		}
 	}
@@ -315,15 +313,18 @@ function redCommonAdversaries(idx, homeTeam, awayTeam){
 	var pos2;
 	for(var i=1;i<t1spoting.length;i++){
 		if(t1spoting[i].pair!==undefined){
-			tobj1={week:t1spoting[i].datWeek, tname:t1spoting[i].team, adv:t1spoting[i].adv, io:t1spoting[i].inOut, t1Res:t1spoting[i].tRes, t2Res:t1spoting[i].advRes}
+			tobj1={week:t1spoting[i].datWeek, tname:t1spoting[i].team, adv:t1spoting[i].adv, io:t1spoting[i].inOut, t1Res:t1spoting[i].tRes, t2Res:t1spoting[i].advRes};
 			//console.log(tobj1);
 			pos2=t1spoting[i].pair;
-			tobj2={week:t2spoting[pos2].datWeek,tname:t2spoting[pos2].team, adv:t2spoting[pos2].adv, io:t2spoting[pos2].inOut, t1Res:t2spoting[pos2].tRes, t2Res:t2spoting[pos2].advRes}
+			tobj2={week:t2spoting[pos2].datWeek,tname:t2spoting[pos2].team, adv:t2spoting[pos2].adv, io:t2spoting[pos2].inOut, t1Res:t2spoting[pos2].tRes, t2Res:t2spoting[pos2].advRes};
 			//console.log(tobj2);
 			commonAdvTabShower(idx, tobj1, tobj2);
 		}
 	}
+	
 }
+
+
 
 
 
