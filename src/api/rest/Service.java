@@ -9,8 +9,11 @@ import javax.ws.rs.PathParam;
 
 import com.google.gson.Gson;
 
+import api.functionality.CommonAdversariesHandler;
 import api.functionality.CompIdToCountryCompCompID;
 import api.functionality.MatchPredLineHandler;
+import api.functionality.TrainPredFile;
+import api.functionality.WeekMatchHandler;
 import api.functionality.WinDrawLoseHandler;
 import api.functionality.obj.CountryCompCompId;
 import api.functionality.obj.MatchPredWithWinDrawLose;
@@ -40,8 +43,9 @@ public class Service {
 	@GET
 	@Path("/predwdl")
 	public String competitionMatchPredLineWithWDL() throws SQLException {
-		CountryCompCompId ccci = new CountryCompCompId("Sweden", "Superettan",
-				164);
+		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(112); 
+//				new CountryCompCompId("Sweden", "Superettan",
+//				164);
 
 		MatchPredLineHandler mph = new MatchPredLineHandler();
 		// mph.doer(164, "Superettan", "Sweden");
@@ -82,17 +86,31 @@ public class Service {
 	}
 
 	@GET
-	@Path("/weekmatchesred/{compid}")
+	@Path("/redweekmatches/{compid}")
 	public String weekMatchesRed(@PathParam("compid") int compId)
 			throws SQLException {
-		/* get the weekly data for a competition, including form,atack,score,defence,etc. */
-		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
-		MatchPredLineHandler mph = new MatchPredLineHandler();
-		mph.wdlOnly(ccci);
-		Gson gson = new Gson();
-		ccci.setObj(mph.getMatchPredLine());
-		String jo = gson.toJson(ccci);
-		return jo;
+		/*
+		 * get the weekly data for a competition, including
+		 * form,atack,score,defence,etc.
+		 */
+		WeekMatchHandler wmh = new WeekMatchHandler();
+		// Gson gson = new Gson();
+		return wmh.redWeekMatches(compId);
 	}
-	
+
+	@GET
+	@Path("/redcommon/{compid}")
+	public String commonAdversariesRed(@PathParam("compid") int compId)
+			throws SQLException {
+		/*
+		 * Check to see if the static map has the data required
+		 */
+		if (CommonAdversariesHandler.commonAdv.get(compId) != null) {
+			return CommonAdversariesHandler.commonAdv.get(compId);
+		} else {
+			// search and recalculate
+		}
+		return "hello";
+	}
+
 }

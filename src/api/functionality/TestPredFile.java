@@ -18,7 +18,8 @@ import diskStore.AnalyticFileHandler;
 public class TestPredFile implements CsvFileHandler {
 
 	public static Logger log = LoggerFactory.getLogger(TestPredFile.class);
-	
+	private int lastRecWeek;
+
 	public List<StrStrTuple> daylyAdversaries(int compId, String compName,
 			String country) {
 		/* collect and return the adversary teams playing today */
@@ -28,7 +29,7 @@ public class TestPredFile implements CsvFileHandler {
 		StrStrTuple temp;
 		for (CSVRecord record : parser) {
 			temp = new StrStrTuple();
-			log.info("{}  -  {}",record.get("t1"),record.get("t2"));
+			log.info("{}  -  {}", record.get("t1"), record.get("t2"));
 			temp.setS1(record.get("t1"));
 			temp.setS2(record.get("t2"));
 			daylyMatchAdversaries.add(temp);
@@ -38,18 +39,30 @@ public class TestPredFile implements CsvFileHandler {
 
 	@Override
 	public String fullCsv(int compId, String compName, String country) {
+		/*
+		 * store the data that we have, and for what we dont have such as the
+		 * score : store as -1
+		 */
 		CSVParser parser = parser(compId, compName, country);
 		StringBuilder sb = new StringBuilder();
 
 		for (CSVRecord record : parser) {
 			sb.append(record.get("week") + "," + record.get("t1") + ","
-					+ record.get("t1") + "," + (-1) + "," + (-1) + "," + (-1)
+					+ record.get("t2") + "," + (-1) + "," + (-1) + "," + (-1)
 					+ "," + (-1) + "," + record.get("t1Form") + ","
 					+ record.get("t2Form") + "," + record.get("t1Atack") + ","
 					+ record.get("t2Atack") + "," + ","
 					+ record.get("t1Defense") + "," + record.get("t2Defense")
-					+ "," + record.get("t1AvgFtScore") + ","
-					+ record.get("t2AvgFtScore") + "\n");
+					+ "," + record.get("t1AvgFtScoreIn") + ","
+					+ record.get("t1AvgFtScoreOut") + ","
+					+ record.get("t2AvgFtScoreIn") + ","
+					+ record.get("t2AvgFtScoreOut") + "\n");
+		}
+		try {
+			lastRecWeek = Integer.parseInt(parser.getRecords().get(0)
+					.get("week"));
+		} catch (NumberFormatException | IOException e) {
+			e.printStackTrace();
 		}
 		return sb.toString();
 	}
@@ -60,15 +73,15 @@ public class TestPredFile implements CsvFileHandler {
 		StringBuilder sb = new StringBuilder();
 
 		for (CSVRecord record : parser) {
+			adaptLastRecWeek(record.get("week"));
 			sb.append(record.get("week") + "," + record.get("t1") + ","
-					+ record.get("t1") + "," + (-1) + "," + (-1) + ","
+					+ record.get("t2") + "," + (-1) + "," + (-1) + ","
 					+ record.get("t1Form") + "," + record.get("t2Form") + ","
 					+ record.get("t1Atack") + "," + record.get("t2Atack") + ","
 					+ "," + record.get("t1Defense") + ","
-					+ record.get("t2Defense") + ","
-					+ record.get("t1AvgFtScore") + ","
-					+ record.get("t2AvgFtScore") + "\n");
+					+ record.get("t2Defense") + "\n");
 		}
+
 		return sb.toString();
 	}
 
@@ -91,4 +104,17 @@ public class TestPredFile implements CsvFileHandler {
 		log.info(parser.toString());
 		return parser;
 	}
+
+	public int getLastRecWeek() {
+		return lastRecWeek;
+	}
+
+	public void setLastRecWeek(int lastRecWeek) {
+		this.lastRecWeek = lastRecWeek;
+	}
+
+	private void adaptLastRecWeek(String week) {
+		lastRecWeek = Integer.parseInt(week);
+	}
+
 }

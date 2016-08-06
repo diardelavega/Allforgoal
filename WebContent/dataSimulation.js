@@ -175,7 +175,163 @@ function todaysMatchesPop(){
 /////////SPECIAL PROCESSING FUNCTIONS
 /////////TO SHOW DATA
 
-function commonAdversaries(idx){
+function redCommonAdversaries(idx, homeTeam, awayTeam){
+	var t1spoting=[];
+	var t2spoting=[];
+
+//	var team1=todaysMatches[idx].t1;
+//	var team2=todaysMatches[idx].t2;
+
+
+	var tab= $("#common"+idx).find('td');
+	tab[0].innerHTML=homeTeam;
+	$(tab[0]).css({'font-size':18});
+	$(tab[0]).css("font-weight","Bold");
+	$(tab[0]).css('text-decoration', 'underline')
+	tab[1].innerHTML=awayTeam;
+	$(tab[1]).css({'font-size':18});
+	$(tab[1]).css("font-weight","Bold");
+	$(tab[1]).css('text-decoration', 'underline')
+	
+	// suppose we have an array ttArray with the current weeks data as weeklyMatches format
+	
+	var currentWeek= compRedData[compRedData.length-2][0]+1;
+	var advObj1={};
+	var advObj2={};
+	//search in tt (curent week matches)
+	//for(var i=todaysMatches.length-1;i>=0;i--)
+	
+	//search in weeklyMatches (previous week matches)
+	//currentWeek=weeklyMatches[weeklyMatches.length-1].week
+	
+	for(var i=compRedData.length-1;i>=0;i--){
+		if(compRedData[i][0] + commonBackWeeksSearch < currentWeek){break;} // iterate 10 last weeks
+		if(homeTeam === compRedData[i][1]){
+			advObj1={datWeek:compRedData[i][0], team:homeTeam, adv:compRedData[i][2], pos:i, inOut:"In", tRes:compRedData[i][3],
+					advRes:compRedData[i][4]
+					/*, tForm:weeklyMatches[i].t1form, advForm:weeklyMatches[i].t2form,
+					  tAtack:(compRedData[i][7]), advAtak:(weeklyMatches[i].t2atackIn +weeklyMatches[i].t2atackOut),
+					  tDef:(weeklyMatches[i].t1defIn +weeklyMatches[i].t1defOut), advDef:(weeklyMatches[i].t2defIn +weeklyMatches[i].t2defOut),
+					  tAvgScore:(weeklyMatches[i].t1AvgScoreIn + weeklyMatches[i].t1AvgScoreOut), 
+					  advAvgScore:(weeklyMatches[i].t2AvgScoreIn + weeklyMatches[i].t2AvgScoreOut)*/
+				  };
+				  t1spoting.push(advObj1);
+		}
+		else if(homeTeam == compRedData[i][2]){
+			advObj1={datWeek:compRedData[i][0], team:homeTeam, adv:compRedData[i][1], pos:i, inOut:"Out", tRes:compRedData[i][4], 
+					advRes:compRedData[i][3]
+					/*, tForm:weeklyMatches[i].t2form, advForm:weeklyMatches[i].t1form, 
+					  tAtack:(weeklyMatches[i].t2atackIn +weeklyMatches[i].t2atackOut), advAtak:(weeklyMatches[i].t1atackIn +weeklyMatches[i].t1atackOut),
+					  tDef:(weeklyMatches[i].t2defIn +weeklyMatches[i].t2defOut), advDef:(weeklyMatches[i].t1defIn +weeklyMatches[i].t1defOut),
+					  tAvgScore:(weeklyMatches[i].t2AvgScoreIn + weeklyMatches[i].t2AvgScoreOut), 
+					  advAvgScore:(weeklyMatches[i].t1AvgScoreIn + weeklyMatches[i].t1AvgScoreOut)*/
+				  };
+				  t1spoting.push(advObj1);
+		}
+		
+		if(awayTeam ==compRedData[i][1]){
+			advObj2={datWeek:compRedData[i][0], team:awayTeam, adv:compRedData[i][2], pos:i, inOut:"In", tRes:compRedData[i][3],
+					advRes:compRedData[i][4]
+					/*, tForm:weeklyMatches[i].t1form, advForm:weeklyMatches[i].t2form,
+					  tAtack:(weeklyMatches[i].t1atackIn +weeklyMatches[i].t1atackOut), advAtak:(weeklyMatches[i].t2atackIn +weeklyMatches[i].t2atackOut),
+					  tDef:(weeklyMatches[i].t1defIn +weeklyMatches[i].t1defOut), advDef:(weeklyMatches[i].t2defIn +weeklyMatches[i].t2defOut),
+					  tAvgScore:(weeklyMatches[i].t1AvgScoreIn + weeklyMatches[i].t1AvgScoreOut), 
+					  advAvgScore:(weeklyMatches[i].t2AvgScoreIn + weeklyMatches[i].t2AvgScoreOut)*/
+				  };
+				  t2spoting.push(advObj2);
+		}
+		else if(awayTeam == compRedData[i][2]){
+			advObj2={datWeek:compRedData[i][0], team:awayTeam, adv:compRedData[i][1], pos:i, inOut:"Out", tRes:compRedData[i][4],
+					advRes:compRedData[i][3]
+					/*, tForm:weeklyMatches[i].t2form, advForm:weeklyMatches[i].t1form, 
+					  tAtack:(weeklyMatches[i].t2atackIn +weeklyMatches[i].t2atackOut), advAtak:(weeklyMatches[i].t1atackIn +weeklyMatches[i].t1atackOut),
+					  tDef:(weeklyMatches[i].t2defIn +weeklyMatches[i].t2defOut), advDef:(weeklyMatches[i].t1defIn +weeklyMatches[i].t1defOut),
+					  tAvgScore:(weeklyMatches[i].t2AvgScoreIn + weeklyMatches[i].t2AvgScoreOut), 
+					  advAvgScore:(weeklyMatches[i].t1AvgScoreIn + weeklyMatches[i].t1AvgScoreOut)*/
+				  };
+				  t2spoting.push(advObj2);
+		}
+	}	
+	
+	//---------------search first 3 common adv from t1spotiong then 2 from t2 spoting for tot of last 5 common adversaries
+	// when a common adv is found we pair them so that we know which match in spot1 corresponds to spot2
+	var count=0;
+	for(var i=1;i<t1spoting.length;i++){// i & j =1 and not 0 because 0 has the current match data
+		if(count>=3){break;}
+		for(var j=1;j<t2spoting.length;j++){
+			if(t2spoting[j].pair!==undefined){continue;}
+			if(t1spoting[i].adv ==t2spoting[j].adv){//->  found a common Adversary
+				t1spoting[i].pair=j;
+				t2spoting[j].pair=i;
+				count++;
+			
+				/*t1spoting[i].newForn =  t1spoting[i-1].tForm;
+				t1spoting[i].newAtack = t1spoting[i-1].tAtack;
+				t1spoting[i].newDef =   t1spoting[i-1].tDef;
+				
+				t2spoting[j].newForn =  t2spoting[j-1].tForm;
+                t2spoting[j].newAtack = t2spoting[j-1].tAtack;
+                t2spoting[j].newDef =  t2spoting[j-1].tDef;*/
+			}
+		}
+	}
+	
+	count=0;
+	for(var i=1;i<t2spoting.length;i++){
+		if(count>=2){break;}
+		if(t2spoting[i].pair!==undefined){continue;}
+		for(var j=1;j<t1spoting.length;j++){
+			if(t1spoting[j].pair!==undefined){continue;}
+			
+			if(t2spoting[i].adv ==t1spoting[j].adv){//->  found a common Adversary
+				t2spoting[i].pair=j;
+				t1spoting[j].pair=i;
+				count++;
+			
+				/*t1spoting[j].newForn =  t1spoting[j-1].tForm;
+				t1spoting[j].newAtack = t1spoting[j-1].tAtack;
+				t1spoting[j].newDef =   t1spoting[j-1].tDef;
+				
+				t2spoting[i].newForn =  t2spoting[i-1].tForm;
+                t2spoting[i].newAtack = t2spoting[i-1].tAtack;
+                t2spoting[i].newDef =  t2spoting[i-1].tDef;*/
+			}
+		}
+	}
+		
+		
+	var directadv =[];
+	//show their direct previous encounters
+	for(var i=1;i<t1spoting.length;i++){
+		if( t1spoting[i].adv==team2){
+			directadv.push(t1spoting[i]);
+			tobj={week:t1spoting[i].datWeek, tname:team1, adv:team2, io:t1spoting[i].inOut, t1Res:t1spoting[i].tRes, t2Res:t1spoting[i].advRes}
+			commonAdvTabShower(idx, tobj, null);
+		}
+	}
+
+	var tobj1;
+	var tobj2;
+	var pos2;
+	for(var i=1;i<t1spoting.length;i++){
+		if(t1spoting[i].pair!==undefined){
+			tobj1={week:t1spoting[i].datWeek, tname:t1spoting[i].team, adv:t1spoting[i].adv, io:t1spoting[i].inOut, t1Res:t1spoting[i].tRes, t2Res:t1spoting[i].advRes}
+			//console.log(tobj1);
+			pos2=t1spoting[i].pair;
+			tobj2={week:t2spoting[pos2].datWeek,tname:t2spoting[pos2].team, adv:t2spoting[pos2].adv, io:t2spoting[pos2].inOut, t1Res:t2spoting[pos2].tRes, t2Res:t2spoting[pos2].advRes}
+			//console.log(tobj2);
+			commonAdvTabShower(idx, tobj1, tobj2);
+		}
+	}
+}
+
+
+
+
+
+
+
+function commonAdversaries_OLD(idx){
 	var t1spoting=[];
 	var t2spoting=[];
 
@@ -239,14 +395,14 @@ function commonAdversaries(idx){
 	for(var i=weeklyMatches.length-1;i>=0;i--){
 		if(weeklyMatches[i].week + commonBackWeeksSearch < currentWeek){break;} // iterate 10 last weeks
 		if(team1== weeklyMatches[i].t1){
-			advObj1={datWeek:weeklyMatches[i].week, team:team1, adv:weeklyMatches[i].t2, pos:i, inOut:"In", tRes:weeklyMatches[i].t1res,advRes:weeklyMatches[i].t2res, tForm:weeklyMatches[i].t1form, advForm:weeklyMatches[i].t2form,
+			advObj1={datWeek:weeklyMatches[i].week, team:team1, adv:weeklyMatches[i].t2, pos:i, inOut:"In", tRes:compRedData[i][3],advRes:weeklyMatches[i].t2res, tForm:weeklyMatches[i].t1form, advForm:weeklyMatches[i].t2form,
 			      tAtack:(weeklyMatches[i].t1atackIn +weeklyMatches[i].t1atackOut), advAtak:(weeklyMatches[i].t2atackIn +weeklyMatches[i].t2atackOut),
 				  tDef:(weeklyMatches[i].t1defIn +weeklyMatches[i].t1defOut), advDef:(weeklyMatches[i].t2defIn +weeklyMatches[i].t2defOut),
 				  tAvgScore:(weeklyMatches[i].t1AvgScoreIn + weeklyMatches[i].t1AvgScoreOut), advAvgScore:(weeklyMatches[i].t2AvgScoreIn + weeklyMatches[i].t2AvgScoreOut)};
 				  t1spoting.push(advObj1);
 		}
 		else if(team1== weeklyMatches[i].t2){
-			advObj1={datWeek:weeklyMatches[i].week, team:team1, adv:weeklyMatches[i].t1, pos:i, inOut:"Out", tRes:weeklyMatches[i].t2res, advRes:weeklyMatches[i].t1res, tForm:weeklyMatches[i].t2form, advForm:weeklyMatches[i].t1form, 
+			advObj1={datWeek:weeklyMatches[i].week, team:team1, adv:weeklyMatches[i].t1, pos:i, inOut:"Out", tRes:weeklyMatches[i].t2res, advRes:compRedData[i][3], tForm:weeklyMatches[i].t2form, advForm:weeklyMatches[i].t1form, 
 				  tAtack:(weeklyMatches[i].t2atackIn +weeklyMatches[i].t2atackOut), advAtak:(weeklyMatches[i].t1atackIn +weeklyMatches[i].t1atackOut),
 				  tDef:(weeklyMatches[i].t2defIn +weeklyMatches[i].t2defOut), advDef:(weeklyMatches[i].t1defIn +weeklyMatches[i].t1defOut),
 				  tAvgScore:(weeklyMatches[i].t2AvgScoreIn + weeklyMatches[i].t2AvgScoreOut), advAvgScore:(weeklyMatches[i].t1AvgScoreIn + weeklyMatches[i].t1AvgScoreOut)};
@@ -254,14 +410,14 @@ function commonAdversaries(idx){
 		}
 		
 		if(team2== weeklyMatches[i].t1){
-			advObj2={datWeek:weeklyMatches[i].week, team:team2, adv:weeklyMatches[i].t2, pos:i, inOut:"In", tRes:weeklyMatches[i].t1res,advRes:weeklyMatches[i].t2res, tForm:weeklyMatches[i].t1form, advForm:weeklyMatches[i].t2form,
+			advObj2={datWeek:weeklyMatches[i].week, team:team2, adv:weeklyMatches[i].t2, pos:i, inOut:"In", tRes:compRedData[i][3],advRes:weeklyMatches[i].t2res, tForm:weeklyMatches[i].t1form, advForm:weeklyMatches[i].t2form,
 			      tAtack:(weeklyMatches[i].t1atackIn +weeklyMatches[i].t1atackOut), advAtak:(weeklyMatches[i].t2atackIn +weeklyMatches[i].t2atackOut),
 				  tDef:(weeklyMatches[i].t1defIn +weeklyMatches[i].t1defOut), advDef:(weeklyMatches[i].t2defIn +weeklyMatches[i].t2defOut),
 				  tAvgScore:(weeklyMatches[i].t1AvgScoreIn + weeklyMatches[i].t1AvgScoreOut), advAvgScore:(weeklyMatches[i].t2AvgScoreIn + weeklyMatches[i].t2AvgScoreOut)};
 				  t2spoting.push(advObj2);
 		}
 		else if(team2== weeklyMatches[i].t2){
-			advObj2={datWeek:weeklyMatches[i].week, team:team2, adv:weeklyMatches[i].t1, pos:i, inOut:"Out", tRes:weeklyMatches[i].t2res,advRes:weeklyMatches[i].t1res, tForm:weeklyMatches[i].t2form, advForm:weeklyMatches[i].t1form, 
+			advObj2={datWeek:weeklyMatches[i].week, team:team2, adv:weeklyMatches[i].t1, pos:i, inOut:"Out", tRes:weeklyMatches[i].t2res,advRes:compRedData[i][3], tForm:weeklyMatches[i].t2form, advForm:weeklyMatches[i].t1form, 
 				  tAtack:(weeklyMatches[i].t2atackIn +weeklyMatches[i].t2atackOut), advAtak:(weeklyMatches[i].t1atackIn +weeklyMatches[i].t1atackOut),
 				  tDef:(weeklyMatches[i].t2defIn +weeklyMatches[i].t2defOut), advDef:(weeklyMatches[i].t1defIn +weeklyMatches[i].t1defOut),
 				  tAvgScore:(weeklyMatches[i].t2AvgScoreIn + weeklyMatches[i].t2AvgScoreOut), advAvgScore:(weeklyMatches[i].t1AvgScoreIn + weeklyMatches[i].t1AvgScoreOut)};
@@ -342,11 +498,14 @@ function commonAdversaries(idx){
 }
 
 
+
+
+
 var formArray=[];
 var atackArray=[];
 var deffArray=[];
 var progressArray=[];
-function formDataExtraction(mld){
+function formDataExtraction_old(mld){
 	console.log("formDataExtraction");
 	//  from weeklyMatches get data for forms and progress chart data arrays.
 	console.log(mld);
@@ -372,12 +531,12 @@ function formDataExtraction(mld){
 	
 	for(var i=0;i<weeklyMatches.length;i++){
 		if(weeklyMatches[i].t1===mld.t1 ){
-			color=colorCode(weeklyMatches[i].t1res,weeklyMatches[i].t2res);//</h5> <br> <h4>
-			t1data_row.push([weeklyMatches[i].week, weeklyMatches[i].t1form, "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t1form)+"</h4>"]);
-			t1Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut), "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", attack: "+numberFormat(weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut)+"</h4>"])
-			t1Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut), "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ "</h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut)+"</h4>"])
+			color=colorCode(compRedData[i][3],weeklyMatches[i].t2res);//</h5> <br> <h4>
+			t1data_row.push([weeklyMatches[i].week, weeklyMatches[i].t1form, "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t1form)+"</h4>"]);
+			t1Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", attack: "+numberFormat(weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut)+"</h4>"])
+			t1Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ "</h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut)+"</h4>"])
 			
-			 t1ProgVal+=progressPoint(weeklyMatches[i].t1res,weeklyMatches[i].t2res);
+			 t1ProgVal+=progressPoint(compRedData[i][3],weeklyMatches[i].t2res);
 			 t1Prog_row.push([weeklyMatches[i].week, t1ProgVal, "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>"]);
 		
 		}
@@ -504,6 +663,172 @@ function formDataExtraction(mld){
 	}
 	
 }
+
+
+function redFormDataExtraction(cid,homeTeam,awayTeam){
+	console.log("redFormDataExtraction");
+	//  from compRedData get data for forms and progress chart data arrays.
+	
+//	var tds =$("#rowmld"+cid).children("td");
+//	var homeTeam = $(tds[1]).text();
+//	console.log(homeTeam);
+//	var awayTeam = $(tds[5]).text();
+//	console.log(awayTeam);
+//	
+	//empty arrays from previous calculations	
+	 formArray=[];
+	 atackArray=[];
+	 deffArray=[];
+	 progressArray=[];
+	
+	//from weekley matches generate the array data for the graphs
+	var t1data_row=[];
+	var t2data_row=[];
+	var t1Atack_row=[];
+	var t2Atack_row=[];
+	var t1Deff_row=[];
+	var t2Deff_row=[];
+	
+	var t1Prog_row=[];
+	var t1ProgVal=0;
+	var t2Prog_row=[];
+	var t2ProgVal=0;
+	
+	for(var i=0;i<compRedData.length;i++){
+		if(compRedData[i][1]===homeTeam){
+			color=colorCode(compRedData[i][3],compRedData[i][4]);//</h5> <br> <h4>
+			t1data_row.push([compRedData[i][0], compRedData[i][5], "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][5])+"</h4>"]);
+			t1Atack_row.push([compRedData[i][0], (compRedData[i][7]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", attack: "+numberFormat(compRedData[i][7])+"</h4>"])
+			t1Deff_row.push([compRedData[i][0], (compRedData[i][9]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ "</h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][9])+"</h4>"])
+			
+			 t1ProgVal+=progressPoint(compRedData[i][3],compRedData[i][4]);
+			 t1Prog_row.push([compRedData[i][0], t1ProgVal, "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>"]);
+		
+		}
+		else if(compRedData[i][2] ===homeTeam){
+			color=colorCode(compRedData[i][4],compRedData[i][3]);//</h5>   <br> <h4>
+			t1data_row.push([compRedData[i][0], compRedData[i][6], "<h4 style='background-color:"+color+"'> "+compRedData[i][1] +"  "+compRedData[i][3]+" - "+compRedData[i][4]+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][6])+"</h4>"]);
+			t1Atack_row.push([compRedData[i][0], (compRedData[i][8]), "<h4 style='background-color:"+color+"'>  "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out   </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", attack: "+numberFormat(compRedData[i][8])+"</h4>"])
+			t1Deff_row.push([compRedData[i][0], (compRedData[i][10]), "<h4 style='background-color:"+color+"'>    "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][10])+"</h4>"])
+		
+			 t1ProgVal+=progressPoint(compRedData[i][4],compRedData[i][3]);
+			 t1Prog_row.push([compRedData[i][0], t1ProgVal, "<h4 style='background-color:"+color+"'>    "+compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out </h4>"]);
+		}
+		
+		if(compRedData[i][2] === awayTeam){
+			color=colorCode(compRedData[i][4], compRedData[i][3]);
+			t2data_row.push([compRedData[i][0], compRedData[i][6], "<h4 style='background-color:"+color+"'> "+compRedData[i][1] +"  "+compRedData[i][3]+" - "+compRedData[i][4]+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][6])+"</h4>"]);
+			t2Atack_row.push([compRedData[i][0], (compRedData[i][8]), "<h4 style='background-color:"+color+"'>  "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", attack: "+numberFormat(compRedData[i][8])+"</h4>"])
+			t2Deff_row.push([compRedData[i][0], (compRedData[i][10]), "<h4 style='background-color:"+color+"'>    "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][10])+"</h4>"])
+		
+			 t2ProgVal+=progressPoint(compRedData[i][4],compRedData[i][3]);
+			t2Prog_row.push([compRedData[i][0], t2ProgVal, "<h4 style='background-color:"+color+"'>    "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out </h4>"]);
+		}
+		else if(compRedData[i][1] === awayTeam){
+			color=colorCode(compRedData[i][3],compRedData[i][4]);
+			t2data_row.push([compRedData[i][0], compRedData[i][5], "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ "</h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][5])+"</h4>"]);
+			t2Atack_row.push([compRedData[i][0], (compRedData[i][7]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", attack:  "+numberFormat(compRedData[i][7])+"</h4>"])
+			t2Deff_row.push([compRedData[i][0], (compRedData[i][9]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ "   </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][9])+"</h4>"])
+		
+			t2ProgVal+=progressPoint(compRedData[i][3],compRedData[i][4]);
+			t2Prog_row.push([compRedData[i][0], t2ProgVal, "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>"]);
+		}
+	}
+	
+	var t1i=0;
+	var t2i=0;
+	
+
+
+	
+	var sizeSize=false;
+	if(t1data_row.length==t2data_row.length){
+		sizeSize=true;
+	}
+
+
+
+
+	// so far the data is divided in two allays when the team plays in and out. We unite them to show the graph
+	for(var i=weekStart; t1i<t1data_row.length || t2i<t2data_row.length;){
+
+		if(t1data_row[t1i][0]==t2data_row[t2i][0]){
+			formArray.push(    [t1data_row[t1i][0], t1data_row[t1i][1], t1data_row[t1i][2],t2data_row[t2i][1],  t2data_row[t2i][2]]);
+			atackArray.push(   [t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
+			deffArray.push(    [t1Deff_row[t1i][0], t1Deff_row[t1i][1], t1Deff_row[t1i][2],t2Deff_row[t2i][1],  t2Deff_row[t2i][2]]);
+			progressArray.push([t1Prog_row[t1i][0], t1Prog_row[t1i][1], t1Prog_row[t1i][2],t2Prog_row[t2i][1],  t2Prog_row[t2i][2]]);
+			t1i++;
+			t2i++;
+			i++;
+		}
+		else{ //in case of mising matches and wrong enumeration try to correct
+			if(sizeSize){
+				if(t1data_row[t1i][0]!=i){
+					t1data_row[t1i][0]=i;
+					t1Atack_row[t1i][0]=i;
+					t1Deff_row[t1i][0]=i;
+					t1Prog_row[t1i][0]=i;
+					//i++;
+				}
+				if(t2data_row[t2i][0]!=i){
+					t2data_row[t2i][0]=i;
+					t2Atack_row[t2i][0]=i;
+					t2Deff_row[t2i][0]=i;
+					t2Prog_row[t2i][0]=i;
+					//i++;
+				}
+				continue;
+			}
+
+
+
+
+			if(t1data_row[t1i][0]==t1data_row[t1i-1][0]){
+				if(t1data_row[t1i+1][0]-t1data_row[t1i][0]>=2){ // if the week was counted wrongly as a previous week
+					t1data_row[t1i][0] = t1data_row[t1i][0]+1;  // Math.round( (t1data_row[t1i][0]+t1data_row[t1i+1][0]) /2 ); // correct it and recalc
+					t1Atack_row[t1i][0] = t1Atack_row[t1i][0]+1;
+					t1Deff_row[t1i][0] = t1Deff_row[t1i][0]+1;
+					t1Prog_row[t1i][0] = t1Prog_row[t1i][0]+1;
+
+					console.log("aaaa "+t1data_row[t1i][0] +" == "+ t1data_row[t1i+1][0]);
+					continue;
+					console.log('This should not be showing');
+				}
+			}
+			else if(t2data_row[t2i][0]==t2data_row[t2i-1][0]){
+				if(t2data_row[t2i+1][0]-t2data_row[t2i][0]==2){ // if the week was counted wrongly as a previous week
+					t2data_row[t2i][0] =  t2data_row[t1i][0]+1;//Math.round( (t2data_row[t2i][0]+t2data_row[t2i+1][0]) /2 ); // correct it and recalc
+					t2Atack_row[t1i][0] = t2Atack_row[t1i][0]+1;
+					t2Deff_row[t1i][0] = t2Deff_row[t1i][0]+1;
+					t2Prog_row[t1i][0] = t2Prog_row[t1i][0]+1;
+					console.log("aaaa "+t2data_row[t2i][0] +" == "+ t2data_row[t2i+1][0]);
+					continue;
+					console.log('This should not be showing');
+				}
+			}
+			
+			//in case of mising matches just skip over the missing matches and show only one of the teams for that missing week
+			if(t1data_row[t1i][0]>t2data_row[t2i][0]){
+				formArray.push ([t2data_row [t2i][0],,"",t2data_row [t2i][1],t2data_row [t2i][2]]);
+				atackArray.push([t2Atack_row[t2i][0],,"",t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
+				deffArray.push ([t2Deff_row [t2i][0],,"",t2Deff_row [t2i][1],t2Deff_row [t2i][2]]);
+				progressArray.push([t2Prog_row[t2i][0],,"",t2Prog_row[t2i][1],t2Prog_row[t2i][2]]);
+				t2i++;
+				console.log(t1i +" < "+ t2i);
+			}
+			else if(t1data_row[t1i][0]<t2data_row[t2i][0]){
+				formArray.push ([t1data_row [t1i][0],t1data_row [t1i][1],t1data_row [t1i][2],,""]);
+				atackArray.push([t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],,""]);
+				deffArray.push ([t1Deff_row [t1i][0],t1Deff_row [t1i][1],t1Deff_row [t1i][2],,""]);
+				progressArray.push([t1Prog_row[t1i][0],t1Prog_row[t1i][1],t1Prog_row[t1i][2],,""]);
+				t1i++;
+				console.log(t1i +" > "+ t2i);			
+			}
+		}
+	}
+	
+}
+
 
 //-----------------------------------------END OF Preprocessing
 //=========================================

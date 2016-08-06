@@ -80,20 +80,18 @@ function formChartData(chId,progId){
 
 
 //====================================Progress chart
-function drawProgressChart(idx){
-	mld=todaysMatches[idx];
+function drawProgressChart(idx,homeTeam,awayTeam){
 
 	var data = new google.visualization.DataTable();
 	data.addColumn('number','week')
-	data.addColumn('number', mld.t1);
+	data.addColumn('number', homeTeam);
 	data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
-	data.addColumn('number', mld.t2);			
+	data.addColumn('number',awayTeam);			
 	data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
 	data.addRows(progressArray);
 
 	var options = {
-	
 		chartArea: {
 			left: '7%',bottom: '10%',
 			right:'15%', top:'10%',
@@ -154,29 +152,21 @@ function drawProgressChart(idx){
 //------------------------------------END OF Progress Charts
 
 //==================Line chart for FORM		
-function drawFormChart(idx) {
- 	mld=todaysMatches[idx];
+function drawFormChart(idx,homeTeam,awayTeam) {
 
 	var data = new google.visualization.DataTable();
 	data.addColumn('number','week')
-	data.addColumn('number', mld.t1);
+	data.addColumn('number', homeTeam);
 	data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
-	data.addColumn('number', mld.t2);			
+	data.addColumn('number', awayTeam);			
 	data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
 	data.addRows(formArray);
 	
 	var options = {
-		/*legend: {position: 'in'},
-		titlePosition: 'in',
-		axisTitlesPosition: 'in',
-		hAxis: {textPosition: 'in'}, vAxis: {textPosition: 'in'},*/
-
-	
 		chartArea: {
 			left: '7%',bottom: '10%',
 			right:'15%', top:'10%',
-			
 			//width: '90%', height: '90%',
 			'backgroundColor': {
 				'fill': '#BFC8D4',
@@ -187,11 +177,6 @@ function drawFormChart(idx) {
 		width: 700,
 		height: 350,
 		backgroundColor: '#d7dde5',
-		//is3D: true,
-		chart: {
-			title: 'Box Office Earnings in First Two Weeks of Opening',
-			subtitle: 'in millions of dollars (USD)'
-		},
 		title:  'Team FORM progres throught the weeks',
 		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },
 		tooltip: {isHtml: true},
@@ -205,7 +190,6 @@ function drawFormChart(idx) {
 		hAxis: {
 			gridlines: { color:  'f2f2f2'},
 			//gridlines: { count:  0},
-			//ticks: [{v:0, f:'0%'},{v:10, f:'10%'},{v:20, f:'20%'},{v:30, f:'30%'},],
 			baselineColor: 'transparent',
 			baselineColor: '#587dae',
 			title: 'Weeks',
@@ -240,30 +224,22 @@ function drawFormChart(idx) {
 }
 		
 
-function drawAtackChart(idx) {
-	mld=todaysMatches[idx];
+function drawAtackChart(idx,homeTeam,awayTeam) {
 
 	var data = new google.visualization.DataTable();
 	data.addColumn('number','week')
-	data.addColumn('number', mld.t1);
+	data.addColumn('number', homeTeam);
 	data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
-	data.addColumn('number',  mld.t2);			
+	data.addColumn('number',  awayTeam);			
 	data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
-	//genData();
 	data.addRows(atackArray);
 
 	var options = {
-		/*legend: {position: 'in'},
-		titlePosition: 'in',
-		axisTitlesPosition: 'in',
-		hAxis: {textPosition: 'in'}, vAxis: {textPosition: 'in'},*/
-
 	
 		chartArea: {
 			left: '7%',bottom: '10%',
 			right:'15%', top:'10%',
-			
 			//width: '90%', height: '90%',
 			'backgroundColor': {
 				'fill': '#BFC8D4',
@@ -271,14 +247,9 @@ function drawAtackChart(idx) {
 			 }
 		 },
 		lineWidth: 3,
-		width: 700,
-		height: 350,
+		width: 900,
+		height: 450,
 		backgroundColor: '#d7dde5',
-		//is3D: true,
-		chart: {
-			title: 'Box Office Earnings in First Two Weeks of Opening',
-			subtitle: 'in millions of dollars (USD)'
-		},
 		title:  'Team Atack FORM progres throught the weeks',
 		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },
 		tooltip: {isHtml: true},
@@ -292,7 +263,6 @@ function drawAtackChart(idx) {
 		hAxis: {
 			gridlines: { color:  'f2f2f2'},
 			//gridlines: { count:  0},
-			//ticks: [{v:0, f:'0%'},{v:10, f:'10%'},{v:20, f:'20%'},{v:30, f:'30%'},],
 			baselineColor: 'transparent',
 			baselineColor: '#587dae',
 			title: 'Weeks',
@@ -305,20 +275,11 @@ function drawAtackChart(idx) {
 			title: 'Value',
 			titleTextStyle:{fontSize: 10}
 		},
-		 //tooltip:{trigger:'none'},
-		/*trendlines: {
-			 tooltip:false,
-		  0: {type: 'linear', color: '#8986dd', opacity: .5,lineWidth:3, visibleInLegend: true,labelInLegend: 'trend'},
-		  1: {type: 'linear', color: '#d07b24', opacity: .5,lineWidth:3, visibleInLegend: true,labelInLegend: 'trend'}
-		},*/
-		
 		colors: [ 'blue', 'red', 'green', 'black','yellow', 'gray'],
-		pointSize: 5,
+		pointSize: 7,
 		pointShape: 'square'
 	};
 
-	// var chart = new google.visualization.LineChart(document.getElementById('atackForm_chart'));
-	
 	var chart = new google.visualization.LineChart(document.getElementById('atackForm_chart'+idx));
 	//var chart = new google.charts.Line(document.getElementById('atackForm_chart'+idx));
 
@@ -327,44 +288,30 @@ function drawAtackChart(idx) {
 }		
   
   
-function drawDeffChart(idx) {
-	mld=todaysMatches[idx];
-
+function drawDeffChart(idx,homeTeam,awayTeam) {
 	var data = new google.visualization.DataTable();
 	data.addColumn('number','week')
-	data.addColumn('number', mld.t1);
+	data.addColumn('number',homeTeam);
 	data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
-	data.addColumn('number',  mld.t2);			
+	data.addColumn('number',  awayTeam);			
 	data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
-	//genData();
 	data.addRows(deffArray);
 
 	var options = {
-		/*legend: {position: 'in'},
-		titlePosition: 'in',
-		axisTitlesPosition: 'in',
-		hAxis: {textPosition: 'in'}, vAxis: {textPosition: 'in'},*/
 		chartArea: {
 			left: '7%',bottom: '10%',
 			right:'15%', top:'10%',
-			
 			//width: '90%', height: '90%',
 			'backgroundColor': {
 				'fill': '#BFC8D4',
 				'opacity': 10
 			 }
 		 },
-		 //curveType: 'function',
 		lineWidth: 3,
 		width: 700,
 		height: 350,
 		backgroundColor: '#d7dde5',
-		//is3D: true,
-		chart: {
-			title: 'Box Office Earnings in First Two Weeks of Opening',
-			subtitle: 'in millions of dollars (USD)'
-		},
 		title:  'Team Defence FORM progres throught the weeks',
 		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },
 		tooltip: {isHtml: true},
@@ -378,7 +325,6 @@ function drawDeffChart(idx) {
 		hAxis: {
 			gridlines: { color:  'f2f2f2'},
 			//gridlines: { count:  0},
-			//ticks: [{v:0, f:'0%'},{v:10, f:'10%'},{v:20, f:'20%'},{v:30, f:'30%'},],
 			baselineColor: 'transparent',
 			baselineColor: '#587dae',
 			title: 'Weeks',
@@ -391,20 +337,12 @@ function drawDeffChart(idx) {
 			title: 'Value',
 			titleTextStyle:{fontSize: 10}
 		},
-		 //tooltip:{trigger:'none'},
-		/*trendlines: {
-			 tooltip:false,
-		  0: {type: 'linear', color: '#8986dd', opacity: .5,lineWidth:3, visibleInLegend: true,labelInLegend: 'trend'},
-		  1: {type: 'linear', color: '#d07b24', opacity: .5,lineWidth:3, visibleInLegend: true,labelInLegend: 'trend'}
-		},*/
-		
 		colors: [ 'blue', 'red', 'green', 'black','yellow', 'gray'],
 		pointSize: 5,
 		pointShape: 'square'
 	};
 
 	
-	// var chart = new google.visualization.LineChart(chartId);
 	var chart = new google.visualization.LineChart(document.getElementById('deffForm_chart'+idx));
 	//var chart = new google.charts.Line(document.getElementById('the_chart'));
 
@@ -449,7 +387,6 @@ function barOfTot(obj1, obj2, idx){
 		},
 		 
 		legend: { position: 'top'},
-		// backgroundColor:{fill:'#d7dde5'},
 		height:350,
 		width:300,
 		 //bars: 'horizontal' // Required for Material Bar Charts.
@@ -534,7 +471,6 @@ function barOfAll(obj1,obj2,idx){
 			 'opacity': 10
 			}
 		 },
-		  //backgroundColor:{fill:'#d7dde5'},
 			legend: { position: 'top'},
 		 	height:350,
 		 	width:400

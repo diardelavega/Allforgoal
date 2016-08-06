@@ -28,7 +28,36 @@ function newMainPlay(){
 //------------------------END new FUNCTIONS
 
 var tempid;
-function clickCatch(idx){
+function clickCatch(idc){
+	console.log(idc);
+	//split the idc into compid and idx; var[0]-> comp id, var[1]-> idx
+	var nrvals=compIdxSplitter(idc);
+	
+	//check if localstorage date is todays date
+	var dat =localStorage.getItem("date");
+	var tdate = new Date().getDate();
+	
+	if(tdate === null || tdate != dat){
+		localStorage.clear();
+		localStorage.setItem("date",tdate);
+		redWeekMatchesAjaxCall(idc);
+	}
+	else{// check if storage has data for the selected compId
+//		console.log("in mainPlay clickCatch ");
+//		console.log("local storage : "+localStorage.getItem(nrvals[0]));
+		if(localStorage.getItem(nrvals[0])===null  ){
+			console.log("to call ajax");
+			redWeekMatchesAjaxCall(idc);
+		}else{
+			console.log("handle response");
+			redWeekHandle(idc,localStorage.getItem(nrvals[0]));
+		}
+	}
+	
+	
+	// call the form data ajax and get the data
+	
+	
 //	commonAdversaries(idx);
 //
 //	formDataExtraction(todaysMatches[idx]);
@@ -49,6 +78,40 @@ function clickCatch(idx){
 //	allIdxTrackArray.set(idx,"check");
 //	console.log(" allTracker "+allIdxTrackArray.get(idx));
 }
+
+function redWeekHandle(cid,data){//complex id ; compId *100 + idx
+	//tasks to be executed after the ajax call has returned data  
+	//store to localStorage;		?? do it in ajax
+	console.log(cid);
+	
+	//parse with papa parser
+	papaparse(data);//parse  the data into a array   //-> ret compRedData
+	
+	//gather from displayed fields the two teams names
+	var tds =$("#rowmld"+cid).children("td");
+	var homeTeam = $(tds[1]).text();
+	console.log(homeTeam);
+	var awayTeam = $(tds[5]).text();
+	console.log(awayTeam);
+	
+	//proces funcs
+	redFormDataExtraction(cid,homeTeam,awayTeam);
+	
+	// draw common adversaries
+	commonAdversaries(cid,homeTeam,awayTeam);
+	
+	//draw functions
+	drawFormChart(cid,homeTeam,awayTeam);
+	$('#form_chart'+cid).hide();
+	drawAtackChart(cid,homeTeam,awayTeam);
+	$('#atackForm_chart'+cid).hide();
+	drawDeffChart(cid,homeTeam,awayTeam);
+	$('#deffForm_chart'+cid).hide();
+//
+	drawProgressChart(cid,homeTeam,awayTeam);
+}
+
+
 
 
 
@@ -82,6 +145,20 @@ function old_classFromtodaysMatches(idx){
 
 
 // ------------Test------------
+var compRedData={};		// keep the reduced data of a specific competition
+function papaparse(csv){
+	
+	Papa.parse(csv, {
+		  //header: true,
+		  dynamicTyping: true,
+		  complete: function(results) {
+			  compRedData = results.data;
+		  }
+		});
+	
+	
+}
+
 function testClassMap(){
 	var map = new Map();
 	map.set("a",1);

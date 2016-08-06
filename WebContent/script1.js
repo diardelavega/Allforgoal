@@ -17,11 +17,11 @@ function populateTeamForm(){
 	t1.adv.push("team "+0+"\n"+0);
 	t2.adv.push("team "+77+"\n"+0);
 	
-	for (i=1;i<45;i++){
-		 x=Math.random() * (4 - -4) -4;
-		 y=t1.form[i-1]+x;
-		 // v ="<h1 >team</h1> "+i +"\n "+y;
-		 v =i +"\n "+y;
+	for (var i=1;i<45;i++){
+	var	x=Math.random() * (4 - -4) -4;
+	var	y=t1.form[i-1]+x;
+		// v ="<h1 >team</h1> "+i +"\n "+y;
+	var	v =i +"\n "+y;
 		t1.form.push(y);
 		t1.adv.push(v);
 		console.log(v);
@@ -36,8 +36,6 @@ function populateTeamForm(){
 	genFormData();
 }
 	
-
-
 	
 function adapt() {
 	var trs = $("#tab1 tbody tr");
@@ -85,6 +83,8 @@ function matchPredLineTrBuilder(resp){
 	var htr  =document.createElement("tr");
 	$(htr).attr('class','compHeader');
 	$(htr).append(htd);
+	
+	//TODO FIX add a tr for the matchPredLineHeader (1,x,2,o,u,...)
 	
 	var tabHead =document.createElement("thead");
 	$(tabHead).append(htr);
@@ -210,12 +210,12 @@ function collapsablePannelCreator(line_i){
 	// the form div with the check buttons and graphical divs
 	var formDivTxt="<div id='formMenu"+line_i+"' class='tab-pane fade'>"+
 								"<h3>FORM</h3>"+
-								//"<input id='form_check"+line_i+"' type='checkbox' value='form'  checked='true'  onclick='formswitch(this.value,"+line_i+")'/> "+
-									"<label  for='form_check"+line_i+"' onclick='formswitch("+line_i+")'> <input id='form_check"+line_i+"' type='checkbox' value='form'  checked='true'  onclick='formswitch(this.value,"+line_i+")'/> form</label>&emsp;"+
-								//"<input id='atackForm_check"+line_i+"' type='checkbox'  value='atack'  onclick='formswitch(this.value,"+line_i+")'/>"+
-									"<label for='atackForm_check"+line_i+"' onclick='formswitch("+line_i+")'> <input id='atackForm_check"+line_i+"' type='checkbox'  value='atack'  onclick='formswitch(this.value,"+line_i+")'/> attack</label> &emsp;"+
-								 //"<input id='deffForm_check"+line_i+"' type='checkbox' value='deff' onclick='formswitch(this.value,"+line_i+")'/>"+
-									"<label for='deffForm_check"+line_i+"' class='deff' onclick='formswitch("+line_i+")'><input id='deffForm_check"+line_i+"' type='checkbox' value='deff' onclick='formswitch(this.value,"+line_i+")'/>  deffence</label>"+
+								"<input id='form_check"+line_i+"' type='checkbox' checked='true'  onclick='formswitch("+line_i+")'/>"+
+								"<label  for='form_check"+line_i+"' >  form</label>&emsp;"+
+								"<input id='atackForm_check"+line_i+"' type='checkbox' onclick='formswitch("+line_i+")'/>"+
+								"<label for='atackForm_check"+line_i+"' >  attack</label> &emsp;"+
+								"<input id='deffForm_check"+line_i+"' type='checkbox' onclick='formswitch("+line_i+")'/>"+
+								"<label for='deffForm_check"+line_i+"' >  deffence</label>"+
 								
 								"<div id='form_chart"+line_i+"' style=' margin-bottom:10px'></div>"+
 								"<div id='atackForm_chart"+line_i+"' style=' margin-bottom:10px'></div>"+

@@ -1,5 +1,9 @@
 package api.functionality;
 
+import java.sql.SQLException;
+
+import api.functionality.obj.CountryCompCompId;
+
 /**
  * @author Administrator
  *
@@ -14,7 +18,32 @@ package api.functionality;
  */
 public class WeekMatchHandler {
 
-	public String redWeekMatches() {
-		return null;
+	public String redWeekMatches(int compId) throws SQLException {
+		TestPredFile tspf = new TestPredFile();
+		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
+		// get the test pred file first
+		String csvTxt = tspf.reducedCsv(compId, ccci.getCompetition(),
+				ccci.getCountry());
+		// keep the week from lastRecWeek
+		int lastRecWeek = tspf.getLastRecWeek();
+
+		// get the train pred file after.
+		// for records with week <= lastRecWeek-10
+		// copy record in another csvtext holder
+		TrainPredFile tprf = new TrainPredFile();
+		tprf.setLastRecWeek(lastRecWeek);
+		String formData = tprf.reducedCsv(ccci);
+		
+		csvTxt = tprf.getLast10() + csvTxt;
+
+		// in the end we have the all weeks match csv text for the form data
+		// and a last 10 weeks matches+ curent week matches for common
+		// adversaries
+
+		// store the comon adv csvtxt within a static map to have it ready on
+		// the next request
+		CommonAdversariesHandler.commonAdv.put(compId, csvTxt);
+
+		return formData;
 	}
 }

@@ -27,13 +27,15 @@ import basicStruct.MatchObj;
 import com.google.gson.Gson;
 
 public class AnalyticFileHandler {
-	public static Logger log = LoggerFactory.getLogger(AnalyticFileHandler.class);
-//	Gson gson = new Gson();
+	public static Logger log = LoggerFactory
+			.getLogger(AnalyticFileHandler.class);
+	// Gson gson = new Gson();
 	private File bastFileFolder = new File("C:/BastData");
 	private File predDataFolder = new File(bastFileFolder + "/Pred/Data");
 	private File predTestFolder = new File(bastFileFolder + "/Pred/Test");
 	// private File csvFile = new File(bastFileFolder + "/matches.csv");
 	// private File mDataFile = new File(bastFileFolder + "/matchData.csv");
+	private String wordSeparator = "__";
 
 	private BufferedWriter bw = null;
 
@@ -96,11 +98,11 @@ public class AnalyticFileHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
 		sb.append(compName);
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append(compId);
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append("Test");
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append(dat.toString());
 
 		File tFile = new File(cFolder + sb.toString());
@@ -117,7 +119,12 @@ public class AnalyticFileHandler {
 		}
 		SortedSet<LocalDate> ldl = new TreeSet<>();
 		for (String fil : cFolder.list()) {
-			String[] temp = fil.split("_");
+			String[] temp = fil.split(wordSeparator);
+			if (!temp[0].equals(compName)) {
+				// a country folder can have many competitions with different
+				// names and dates
+				continue;
+			}
 			try {
 				LocalDate ld = LocalDate.parse(temp[3],
 						DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -126,16 +133,17 @@ public class AnalyticFileHandler {
 				log.warn("afh Exception here");
 				e.printStackTrace();
 			}
+
 		}// for
-log.info(ldl.last().toString());
+		log.info(ldl.last().toString());
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
 		sb.append(compName);
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append(compId);
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append("Test");
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append(ldl.last().toString());
 
 		return (new File(cFolder + sb.toString()));
@@ -153,9 +161,9 @@ log.info(ldl.last().toString());
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
 		sb.append(compName);
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append(compId);
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append("Data");
 
 		File tFile = new File(cFolder + sb.toString());
@@ -172,11 +180,11 @@ log.info(ldl.last().toString());
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
 		sb.append(compName);
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append(compId);
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append("Test");
-		sb.append("_");
+		sb.append(wordSeparator);
 		sb.append(dat.toString());
 
 		File tFile = new File(cFolder + sb.toString());
@@ -202,7 +210,7 @@ log.info(ldl.last().toString());
 
 		String[] temp;
 		for (int i = 0; i < cFolder.list().length; i++) {
-			temp = cFolder.list()[i].split("_");
+			temp = cFolder.list()[i].split(wordSeparator);
 			if (temp[0].equals(File.separator + compName)
 					&& temp[1].equals(compId) && temp[2].equals("Test")) {
 				try {

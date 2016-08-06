@@ -7,6 +7,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import api.functionality.obj.CountryCompCompId;
 import diskStore.AnalyticFileHandler;
 
 /**
@@ -18,6 +19,14 @@ import diskStore.AnalyticFileHandler;
  */
 public class TrainPredFile implements CsvFileHandler {
 
+	private int lastRecWeek;
+	private String last10="";
+
+	public String fullCsv(CountryCompCompId ccci) {
+		return fullCsv(ccci.getCompId(), ccci.getCompetition(),
+				ccci.getCountry());
+	}
+
 	public String fullCsv(int compId, String compName, String country) {
 		/*
 		 * TODO read the competition train .csv file. Get only the required
@@ -27,12 +36,10 @@ public class TrainPredFile implements CsvFileHandler {
 		 */
 
 		CSVParser parser = parser(compId, compName, country);
-
 		StringBuilder sb = new StringBuilder();
-
 		for (CSVRecord record : parser) {
-			sb.append(record.get("week") + "," + record.get("t1") + ","
-					+ record.get("t1") + "," + record.get("t1Ht") + ","
+			String line = record.get("week") + "," + record.get("t1") + ","
+					+ record.get("t2") + "," + record.get("t1Ht") + ","
 					+ record.get("t2Ht") + "," + record.get("t1Ft") + ","
 					+ record.get("t2Ft") + "," + record.get("t1Form") + ","
 					+ record.get("t2Form") + "," + record.get("t1AtackIn")
@@ -45,28 +52,40 @@ public class TrainPredFile implements CsvFileHandler {
 					+ record.get("t1AvgFtScoreIn") + ","
 					+ record.get("t1AvgFtScoreOut") + ","
 					+ record.get("t2AvgFtScoreIn") + ","
-					+ record.get("t2AvgFtScoreOut") + "\n");
+					+ record.get("t2AvgFtScoreOut") + "\n";
+			sb.append(line);
+			commonAdvLines(line, record.get("week"));
 		}
 		return sb.toString();
 	}
 
+	public String reducedCsv(CountryCompCompId ccci) {
+		return reducedCsv(ccci.getCompId(), ccci.getCompetition(),
+				ccci.getCountry());
+	}
+
 	@Override
 	public String reducedCsv(int compId, String compName, String country) {
-
 		CSVParser parser = parser(compId, compName, country);
 		StringBuilder sb = new StringBuilder();
-
 		for (CSVRecord record : parser) {
-			sb.append(record.get("week") + "," + record.get("t1") + ","
-					+ record.get("t1") + "," + record.get("t1Ft") + ","
+			String line = record.get("week") + "," + record.get("t1") + ","
+					+ record.get("t2") + "," + record.get("t1Ft") + ","
 					+ record.get("t2Ft") + "," + record.get("t1Form") + ","
 					+ record.get("t2Form") + "," + record.get("t1Atack") + ","
-					+ record.get("t2Atack") + "," + ","
-					+ record.get("t1Defense") + "," + record.get("t2Defense")
-					+ "," + record.get("t1AvgFtScore") + ","
-					+ record.get("t2AvgFtScore") + "\n");
+					+ record.get("t2Atack") + "," + record.get("t1Defense")
+					+ "," + record.get("t2Defense") + "\n";
+			sb.append(line);
+			commonAdvLines(line, record.get("week"));
 		}
 		return sb.toString();
+	}
+
+	private void commonAdvLines(String line, String week) {
+		int observedWeek = Integer.parseInt(week);
+		if (lastRecWeek - observedWeek <= 10) {
+			last10 += line;
+		}
 	}
 
 	private CSVParser parser(int compId, String compName, String country) {
@@ -86,4 +105,21 @@ public class TrainPredFile implements CsvFileHandler {
 		return parser;
 	}
 
+	public int getLastRecWeek() {
+		return lastRecWeek;
+	}
+
+	public void setLastRecWeek(int lastRecWeek) {
+		this.lastRecWeek = lastRecWeek;
+	}
+
+	public String getLast10() {
+		return last10;
+	}
+
+	public void setLast10(String last10) {
+		this.last10 = last10;
+	}
+
+	
 }

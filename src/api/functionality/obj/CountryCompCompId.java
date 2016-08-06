@@ -1,7 +1,11 @@
 package api.functionality.obj;
 
-public class CountryCompCompId {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class CountryCompCompId {
+public static Logger log = LoggerFactory.getLogger(CountryCompCompId.class);
+	
 	private String country;
 	private String competition;
 	private int compId;
@@ -51,4 +55,7 @@ public class CountryCompCompId {
 		this.obj = obj;
 	}
 
+	public void showLine(){
+		log.info("{}   {}   {}",country,competition,compId);
+	}
 }

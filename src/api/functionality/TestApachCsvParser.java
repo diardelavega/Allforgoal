@@ -35,7 +35,7 @@ public class TestApachCsvParser {
 
 	public static void main(String[] args) throws FileNotFoundException,
 			IOException, SQLException {
-		wdlfuncs();
+		matchPredWithWDL();
 	}
 
 	public void parseNPrint() throws FileNotFoundException, IOException {
@@ -121,34 +121,61 @@ public class TestApachCsvParser {
 
 	}
 
-	public static void funcs() throws SQLException {
-		CountryCompCompId ccci = new CountryCompCompId("Sweden", "Superettan", 164);
+	public static void matchPredWithWDL() throws SQLException {
+		CountryCompCompId ccci = new CountryCompCompId("Sweden", "Superettan",
+				164);
+		ccci.showLine();
 		MatchPredLineHandler mph = new MatchPredLineHandler();
 		// mph.doer(164, "Superettan", "Sweden");
 		mph.doer(ccci);
-		
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		ccci.setObj( mph.getMatchPredLine());
-		String jo = gson.toJson( ccci);
-//		String jo = gson.toJson(jecci);
-//		String jo = gson.toJson(mph.getMatchPredLine());
+		ccci.setObj(mph.getMatchPredLine());
+		String jo = gson.toJson(ccci);
+		// String jo = gson.toJson(jecci);
+		// String jo = gson.toJson(mph.getMatchPredLine());
 		log.info("{}", jo);
 	}
+
 	public static void wdlfuncs() throws SQLException {
-		int compId=164;
+		int compId = 112;
 		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
+		ccci.showLine();
 		MatchPredLineHandler mph = new MatchPredLineHandler();
 		// mph.doer(164, "Superettan", "Sweden");
 		mph.wdlOnly(ccci);
-		
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		ccci.setObj( mph.getMatchPredLine());
-		String jo = gson.toJson( ccci);
-//		String jo = gson.toJson(jecci);
-//		String jo = gson.toJson(mph.getMatchPredLine());
+		ccci.setObj(mph.getMatchPredLine());
+		String jo = gson.toJson(ccci);
+		// String jo = gson.toJson(jecci);
+		// String jo = gson.toJson(mph.getMatchPredLine());
 		log.info("{}", jo);
-	}	
-	
+	}
+
+	public static void weekmatch() throws SQLException {
+		int compId = 112;
+		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
+		ccci.showLine();
+		WeekMatchHandler wmh = new WeekMatchHandler();
+		wmh.redWeekMatches(compId);
+//		System.out.println("FORM DATA");
+//		log.info("{}", wmh.redWeekMatches(compId));
+
+		log.info("-------:Now print common adversaries");
+		if (CommonAdversariesHandler.commonAdv.get(compId) != null) {
+			log.info("\n {}", CommonAdversariesHandler.commonAdv.get(compId));
+		} else {
+			log.warn("No common csvText found");
+		}
+
+	}
+
+	public static void printparser() throws SQLException {
+		int compId = 112;
+		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
+//		TrainPredFile tpf = new TrainPredFile();
+		TestPredFile tpf= new TestPredFile();
+		log.info(tpf.reducedCsv(compId, ccci.getCompetition(), ccci.getCountry()));
+	}
 }
