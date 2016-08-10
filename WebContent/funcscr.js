@@ -137,6 +137,45 @@ function formswitch(idx) {
 // -----------------------------FORM END funcs
 
 // ==================Help func
+
+
+function formtt(res1, res2, io, adv, weekVal, val, valDat){
+	var color=colorCode(res1, res2);
+	var txt;
+	if(io==="In"){
+		txt=" <div style='background-color:"+color+"'; width='100'> " +
+				"<h4 > In "+ res1 +" - "+res2 +"  "+ adv+ " </h4>"+
+				"<h4> week: "+ weekVal +",  "+ val+": "+numberFormat(valDat)+"</h4>"+
+				"</div>";
+	}
+	else if (io==="Out"){
+		txt=" <div style='background-color:"+color+"'; width='100'> " +
+				"<h4>"+adv+" "+ res1 +" - "+res2 +" Out </h4>"+
+				"<h4> week: "+ weekVal +",  "+ val+": "+numberFormat(valDat)+"</h4>"+
+				"</div>";
+	}
+	return txt;
+}
+
+function progtt(res1, res2, io, adv){
+	var color=colorCode(res1, res2);
+	var txt;
+	if(io==="In"){
+		txt=" <div style='background-color:"+color+"'; width='100'> " +
+				"<h4> In "+ res1 +" - "+res2 +"  "+ adv+ " </h4>"+
+				"</div>";
+	}
+	else if (io==="Out"){
+		txt=" <div style='background-color:"+color+"'; width='100'> " +
+				"<h4>"+adv+" "+ res1 +" - "+res2 +" Out </h4>"+
+				"</div>";
+	}
+	return txt;
+}
+
+
+
+
 function colorCode(myResult, advResult) {
 	if (myResult > advResult) {
 		return ("#81ea4c");
@@ -166,7 +205,6 @@ function progressPoint(myResult, advResult) {
 	}
 }
 
-var aftercoma = 3;
 function numberFormat(val) {
 	// var a=val.toFixed(3);
 	return (Number(Math.round(val + 'e' + 3) + 'e-' + 3));

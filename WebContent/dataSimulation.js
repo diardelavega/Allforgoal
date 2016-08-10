@@ -176,10 +176,15 @@ function todaysMatchesPop(){
 /////////TO SHOW DATA
 
 function redCommonAdversaries(idx, homeTeam, awayTeam){
+/*in the reduced format we don't need data from the curent weeks matches ecause we will not display
+ * forms, or goals data just weeks, teams and results that we already have from form data request	*/
+	console.log("in  redCommonAdversaries");
+	
+	
 	var t1spoting=[];
 	var t2spoting=[];
 
-	console.log("in  redCommonAdversaries")
+	
 	
 	var tab= $("#common"+idx).find('td');
 	tab[0].innerHTML=homeTeam;
@@ -191,18 +196,13 @@ function redCommonAdversaries(idx, homeTeam, awayTeam){
 	$(tab[1]).css("font-weight","Bold");
 	$(tab[1]).css('text-decoration', 'underline')
 	
-	// suppose we have an array ttArray with the current weeks data as weeklyMatches format
 	
 	var currentWeek= compRedData[compRedData.length-2][0]+1;
 	var advObj1={};
 	var advObj2={};
-	//search in tt (curent week matches)
-	//for(var i=todaysMatches.length-1;i>=0;i--)
 	
-	//search in weeklyMatches (previous week matches)
-	//currentWeek=weeklyMatches[weeklyMatches.length-1].week
 	
-	for(var i=compRedData.length-1;i>=0;i--){
+	for(var i=compRedData.length-2;i>=0;i--){
 		if(compRedData[i][0] + commonBackWeeksSearch < currentWeek){break;} // iterate 10 last weeks
 		if(homeTeam === compRedData[i][1]){
 			advObj1={datWeek:compRedData[i][0], team:homeTeam, adv:compRedData[i][2], pos:i, inOut:"In", tRes:compRedData[i][3],
@@ -254,9 +254,9 @@ function redCommonAdversaries(idx, homeTeam, awayTeam){
 	//---------------search first 3 common adv from t1spotiong then 2 from t2 spoting for tot of last 5 common adversaries
 	// when a common adv is found we pair them so that we know which match in spot1 corresponds to spot2
 	var count=0;
-	for(var i=1;i<t1spoting.length;i++){// i & j =1 and not 0 because 0 has the current match data
+	for(var i=0;i<t1spoting.length;i++){// i & j =1 and not 0 because 0 has the current match data
 		if(count>=3){break;}
-		for(var j=1;j<t2spoting.length;j++){
+		for(var j=0;j<t2spoting.length;j++){
 			if(t2spoting[j].pair!==undefined){continue;}
 			if(t1spoting[i].adv ==t2spoting[j].adv){//->  found a common Adversary
 				t1spoting[i].pair=j;
@@ -275,10 +275,10 @@ function redCommonAdversaries(idx, homeTeam, awayTeam){
 	}
 	
 	count=0;
-	for(var i=1;i<t2spoting.length;i++){
+	for(var i=0;i<t2spoting.length;i++){
 		if(count>=2){break;}
 		if(t2spoting[i].pair!==undefined){continue;}
-		for(var j=1;j<t1spoting.length;j++){
+		for(var j=0;j<t1spoting.length;j++){
 			if(t1spoting[j].pair!==undefined){continue;}
 			
 			if(t2spoting[i].adv ==t1spoting[j].adv){//->  found a common Adversary
@@ -300,10 +300,11 @@ function redCommonAdversaries(idx, homeTeam, awayTeam){
 		
 	var directadv =[];
 	//show their direct previous encounters
-	for(var i=1;i<t1spoting.length;i++){
-		if( t1spoting[i].adv==team2){
+	for(var i=0;i<t1spoting.length;i++){
+//		console.log("direct   -- t1spoting "+j+" "+t1spoting[i].adv);
+		if( t1spoting[i].adv==awayTeam){
 			directadv.push(t1spoting[i]);
-			tobj={week:t1spoting[i].datWeek, tname:team1, adv:team2, io:t1spoting[i].inOut, t1Res:t1spoting[i].tRes, t2Res:t1spoting[i].advRes};
+			tobj={week:t1spoting[i].datWeek, tname:homeTeam, adv:awayTeam, io:t1spoting[i].inOut, t1Res:t1spoting[i].tRes, t2Res:t1spoting[i].advRes};
 			commonAdvTabShower(idx, tobj, null);
 		}
 	}
@@ -314,10 +315,8 @@ function redCommonAdversaries(idx, homeTeam, awayTeam){
 	for(var i=1;i<t1spoting.length;i++){
 		if(t1spoting[i].pair!==undefined){
 			tobj1={week:t1spoting[i].datWeek, tname:t1spoting[i].team, adv:t1spoting[i].adv, io:t1spoting[i].inOut, t1Res:t1spoting[i].tRes, t2Res:t1spoting[i].advRes};
-			//console.log(tobj1);
 			pos2=t1spoting[i].pair;
 			tobj2={week:t2spoting[pos2].datWeek,tname:t2spoting[pos2].team, adv:t2spoting[pos2].adv, io:t2spoting[pos2].inOut, t1Res:t2spoting[pos2].tRes, t2Res:t2spoting[pos2].advRes};
-			//console.log(tobj2);
 			commonAdvTabShower(idx, tobj1, tobj2);
 		}
 	}
@@ -328,8 +327,234 @@ function redCommonAdversaries(idx, homeTeam, awayTeam){
 
 
 
+var formArray=[];
+var atackArray=[];
+var deffArray=[];
+var progressArray=[];
+function redFormDataExtraction(cid,homeTeam,awayTeam){
+	console.log("redFormDataExtraction");
+	//  from compRedData get data for forms and progress chart data arrays.
+	
+	//empty arrays from previous calculations	
+	 formArray=[];
+	 atackArray=[];
+	 deffArray=[];
+	 progressArray=[];
+	
+	//from weekley matches generate the array data for the graphs
+	var t1data_row=[];
+	var t2data_row=[];
+	var t1Atack_row=[];
+	var t2Atack_row=[];
+	var t1Deff_row=[];
+	var t2Deff_row=[];
+	
+	var t1Prog_row=[];
+	var t1ProgVal=0;
+	var t2Prog_row=[];
+	var t2ProgVal=0;
+	
+	for(var i=0;i<compRedData.length;i++){
+		if(compRedData[i][1]===homeTeam){
+			var res1=compRedData[i][3], res2=compRedData[i][4], adv=compRedData[i][2], weekVal=compRedData[i][0];
+			var io="In";
+			t1data_row.push( [weekVal, numberFormat(compRedData[i][5]),formtt(res1, res2, io, adv, weekVal, "form", compRedData[i][5]) ]);
+			t1Atack_row.push([weekVal, numberFormat(compRedData[i][7]),formtt(res1, res2, io, adv, weekVal, "atk", compRedData[i][7]) ]);
+			t1Deff_row.push( [weekVal, numberFormat(compRedData[i][9]),formtt(res1, res2, io, adv, weekVal, "def", compRedData[i][9]) ]);
+			
+			 t1ProgVal+=progressPoint(res1, res2);
+			 t1Prog_row.push([weekVal, t1ProgVal, progtt(res1, res2, io, adv)]);
+		
+		}
+		else if(compRedData[i][2] ===homeTeam){
+			var res1=compRedData[i][4], res2=compRedData[i][3], adv=compRedData[i][1], weekVal=compRedData[i][0];
+			var io="Out";
+			t1data_row.push( [weekVal, numberFormat(compRedData[i][6]), formtt(res1, res2, io, adv, weekVal, "form", compRedData[i][6]) ]);
+			t1Atack_row.push([weekVal, numberFormat(compRedData[i][8]), formtt(res1, res2, io, adv, weekVal, "atk",  compRedData[i][8]) ]);
+			t1Deff_row.push( [weekVal, numberFormat(compRedData[i][10]),formtt(res1, res2, io, adv, weekVal, "def",  compRedData[i][10]) ]);
+		
+			 t1ProgVal+=progressPoint(res1,res2);
+			 t1Prog_row.push([weekVal, t1ProgVal, progtt(res1, res2, io, adv)]);
+		}
+		
+		if(compRedData[i][2] === awayTeam){
+			var res1=compRedData[i][4], res2=compRedData[i][3], adv=compRedData[i][1], weekVal=compRedData[i][0];
+			var io="Out";
+			t2data_row.push( [weekVal, numberFormat(compRedData[i][6]), formtt(res1, res2, io, adv, weekVal, "form", compRedData[i][6]) ]);
+			t2Atack_row.push([weekVal, numberFormat(compRedData[i][8]), formtt(res1, res2, io, adv, weekVal, "atk",  compRedData[i][8]) ]);
+			t2Deff_row.push( [weekVal, numberFormat(compRedData[i][10]),formtt(res1, res2, io, adv, weekVal, "def",  compRedData[i][10]) ]);
+			
+			 t2ProgVal+=progressPoint(res1, res2);
+			 t2Prog_row.push([weekVal, t2ProgVal, progtt(res1, res2, io, adv)]);
+		}
+		else if(compRedData[i][1] === awayTeam){
+			var res1=compRedData[i][3], res2=compRedData[i][4], adv=compRedData[i][2], weekVal=compRedData[i][0];
+			var io="In";
+			t2data_row.push( [weekVal, numberFormat(compRedData[i][5]), formtt(res1, res2, io, adv, weekVal, "form", compRedData[i][5]) ]);
+			t2Atack_row.push([weekVal, numberFormat(compRedData[i][7]), formtt(res1, res2, io, adv, weekVal, "atk",  compRedData[i][7]) ]);
+			t2Deff_row.push( [weekVal, numberFormat(compRedData[i][9]),formtt(res1, res2, io, adv, weekVal, "def",  compRedData[i][9]) ]);
+			
+			t2ProgVal+=progressPoint(res1, res2);
+			t2Prog_row.push([weekVal, t2ProgVal, progtt(res1, res2, io, adv)]);
+		}
+	}
+	
+	var t1i=0;
+	var t2i=0;
+	
+	var sizeSize=false;
+	if(t1data_row.length==t2data_row.length){
+		sizeSize=true;
+	}
+
+	// so far the data is divided in two allays when the team plays in and out. We unite them to show the graph
+	for(var i=weekStart; t1i<t1data_row.length || t2i<t2data_row.length;){
+
+		if(t1data_row[t1i][0]==t2data_row[t2i][0]){
+			formArray.push(    [t1data_row[t1i][0], t1data_row[t1i][1], t1data_row[t1i][2],t2data_row[t2i][1],  t2data_row[t2i][2]]);
+			atackArray.push(   [t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
+			deffArray.push(    [t1Deff_row[t1i][0], t1Deff_row[t1i][1], t1Deff_row[t1i][2],t2Deff_row[t2i][1],  t2Deff_row[t2i][2]]);
+			progressArray.push([t1Prog_row[t1i][0], t1Prog_row[t1i][1], t1Prog_row[t1i][2],t2Prog_row[t2i][1],  t2Prog_row[t2i][2]]);
+			t1i++;
+			t2i++;
+			i++;
+		}
+		else{ //in case of mising matches and wrong enumeration try to correct
+			if(sizeSize){
+				if(t1data_row[t1i][0]!=i){
+					t1data_row[t1i][0]=i;
+					t1Atack_row[t1i][0]=i;
+					t1Deff_row[t1i][0]=i;
+					t1Prog_row[t1i][0]=i;
+					//i++;
+				}
+				if(t2data_row[t2i][0]!=i){
+					t2data_row[t2i][0]=i;
+					t2Atack_row[t2i][0]=i;
+					t2Deff_row[t2i][0]=i;
+					t2Prog_row[t2i][0]=i;
+					//i++;
+				}
+				continue;
+			}
+
+			if(t1data_row[t1i][0]==t1data_row[t1i-1][0]){
+				if(t1data_row[t1i+1][0]-t1data_row[t1i][0]>=2){ // if the week was counted wrongly as a previous week
+					t1data_row[t1i][0] = t1data_row[t1i][0]+1;  // Math.round( (t1data_row[t1i][0]+t1data_row[t1i+1][0]) /2 ); // correct it and recalc
+					t1Atack_row[t1i][0] = t1Atack_row[t1i][0]+1;
+					t1Deff_row[t1i][0] = t1Deff_row[t1i][0]+1;
+					t1Prog_row[t1i][0] = t1Prog_row[t1i][0]+1;
+
+					console.log("aaaa "+t1data_row[t1i][0] +" == "+ t1data_row[t1i+1][0]);
+					continue;
+					console.log('This should not be showing');
+				}
+			}
+			else if(t2data_row[t2i][0]==t2data_row[t2i-1][0]){
+				if(t2data_row[t2i+1][0]-t2data_row[t2i][0]==2){ // if the week was counted wrongly as a previous week
+					t2data_row[t2i][0] =  t2data_row[t1i][0]+1;//Math.round( (t2data_row[t2i][0]+t2data_row[t2i+1][0]) /2 ); // correct it and recalc
+					t2Atack_row[t1i][0] = t2Atack_row[t1i][0]+1;
+					t2Deff_row[t1i][0] = t2Deff_row[t1i][0]+1;
+					t2Prog_row[t1i][0] = t2Prog_row[t1i][0]+1;
+					console.log("aaaa "+t2data_row[t2i][0] +" == "+ t2data_row[t2i+1][0]);
+					continue;
+					console.log('This should not be showing');
+				}
+			}
+			
+			//in case of mising matches just skip over the missing matches and show only one of the teams for that missing week
+			if(t1data_row[t1i][0]>t2data_row[t2i][0]){
+				formArray.push ([t2data_row [t2i][0],,"",t2data_row [t2i][1],t2data_row [t2i][2]]);
+				atackArray.push([t2Atack_row[t2i][0],,"",t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
+				deffArray.push ([t2Deff_row [t2i][0],,"",t2Deff_row [t2i][1],t2Deff_row [t2i][2]]);
+				progressArray.push([t2Prog_row[t2i][0],,"",t2Prog_row[t2i][1],t2Prog_row[t2i][2]]);
+				t2i++;
+				console.log(t1i +" < "+ t2i);
+			}
+			else if(t1data_row[t1i][0]<t2data_row[t2i][0]){
+				formArray.push ([t1data_row [t1i][0],t1data_row [t1i][1],t1data_row [t1i][2],,""]);
+				atackArray.push([t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],,""]);
+				deffArray.push ([t1Deff_row [t1i][0],t1Deff_row [t1i][1],t1Deff_row [t1i][2],,""]);
+				progressArray.push([t1Prog_row[t1i][0],t1Prog_row[t1i][1],t1Prog_row[t1i][2],,""]);
+				t1i++;
+				console.log(t1i +" > "+ t2i);			
+			}
+		}
+	}
+	
+}
 
 
+//-----------------------------------------END OF Preprocessing
+//=========================================
+
+//------------Test the simulation
+
+function resultSimulator(head,score){
+	
+	if(head=='X'){
+		return([score/2,score/2]);
+	}
+	if(score==0){
+		return([0,0]);
+	}
+	
+	var x = Math.floor(Math.random() * (score + 1));
+	var y=0;
+		
+	while(x==score/2){
+		x = Math.floor(Math.random() * (score + 1));
+	}
+	y=score-x;
+	//console.log('score: '+score + ", head: "+head+",  x-"+ x+ " y-"+ y);
+	if(head==1){
+		return([Math.max(x,y),Math.min(x,y)])
+	}
+	if(head==2){
+		return([Math.min(x,y),Math.max(x,y)])
+	}
+}
+
+
+function simSimTest(){
+	for(var i=0;i<20;i++){
+	a=Math.floor(Math.random() * (3 + 1));
+	sc=Math.floor(Math.random() * (8 + 1));
+	if(a==1){
+		s.log(resultSimulator(1,sc));
+	}
+	if(a==2){
+		console.log(resultSimulator("X",2*sc));
+	}
+	if(a==3){
+		console.log(resultSimulator(2,sc));
+	}
+	}
+}
+
+
+var tempArray=[];
+var tempArray2=[];
+function tetToy(){
+	var weeknr =weeklyMatches[weeklyMatches.length-1].week;
+	for(var i=weeklyMatches.length-1; i>0;i-- ){
+		
+		console.log("in ");
+		if(weeknr!=weeklyMatches[i].week){
+			console.log(weeklyMatches[i].week);
+			break;
+		}
+		else{
+			//todaysMatches.push(weeklyMatches[i]);
+			
+			tempArray.push(weeklyMatches[i]);
+			tempArray2.push(weeklyMatches.pop());
+			
+			
+		}
+		console.log(i);
+	}
+}
 
 
 function commonAdversaries_OLD(idx){
@@ -499,405 +724,314 @@ function commonAdversaries_OLD(idx){
 }
 
 
-
-
-
-var formArray=[];
-var atackArray=[];
-var deffArray=[];
-var progressArray=[];
+//depricated
 function formDataExtraction_old(mld){
-	console.log("formDataExtraction");
-	//  from weeklyMatches get data for forms and progress chart data arrays.
-	console.log(mld);
-		
-	//empty arrays from previous calculations	
-	 formArray=[];
-	 atackArray=[];
-	 deffArray=[];
-	 progressArray=[];
-	
-	//from weekley matches generate the array data for the graphs
-	var t1data_row=[];
-	var t2data_row=[];
-	var t1Atack_row=[];
-	var t2Atack_row=[];
-	var t1Deff_row=[];
-	var t2Deff_row=[];
-	
-	var t1Prog_row=[];
-	var t1ProgVal=0;
-	var t2Prog_row=[];
-	var t2ProgVal=0;
-	
-	for(var i=0;i<weeklyMatches.length;i++){
-		if(weeklyMatches[i].t1===mld.t1 ){
-			color=colorCode(compRedData[i][3],weeklyMatches[i].t2res);//</h5> <br> <h4>
-			t1data_row.push([weeklyMatches[i].week, weeklyMatches[i].t1form, "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t1form)+"</h4>"]);
-			t1Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", attack: "+numberFormat(weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut)+"</h4>"])
-			t1Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ "</h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut)+"</h4>"])
+		console.log("formDataExtraction");
+		//  from weeklyMatches get data for forms and progress chart data arrays.
+		console.log(mld);
 			
-			 t1ProgVal+=progressPoint(compRedData[i][3],weeklyMatches[i].t2res);
-			 t1Prog_row.push([weeklyMatches[i].week, t1ProgVal, "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>"]);
+		//empty arrays from previous calculations	
+		 formArray=[];
+		 atackArray=[];
+		 deffArray=[];
+		 progressArray=[];
 		
-		}
-		else if(weeklyMatches[i].t2===mld.t1){
-			color=colorCode(weeklyMatches[i].t2res,weeklyMatches[i].t1res);//</h5>   <br> <h4>
-			t1data_row.push([weeklyMatches[i].week, weeklyMatches[i].t2form, "<h4 style='background-color:"+color+"'> "+weeklyMatches[i].t1 +"  "+weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t2form)+"</h4>"]);
-			t1Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t2atackIn + weeklyMatches[i].t2atackOut), "<h4 style='background-color:"+color+"'>  "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out   </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", attack: "+numberFormat(weeklyMatches[i].t2atackIn + weeklyMatches[i].t2atackOut)+"</h4>"])
-			t1Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t2defIn + weeklyMatches[i].t2defOut), "<h4 style='background-color:"+color+"'>    "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t2defIn + weeklyMatches[i].t2defOut)+"</h4>"])
+		//from weekley matches generate the array data for the graphs
+		var t1data_row=[];
+		var t2data_row=[];
+		var t1Atack_row=[];
+		var t2Atack_row=[];
+		var t1Deff_row=[];
+		var t2Deff_row=[];
 		
-			 t1ProgVal+=progressPoint(weeklyMatches[i].t2res,weeklyMatches[i].t1res);
-			 t1Prog_row.push([weeklyMatches[i].week, t1ProgVal, "<h4 style='background-color:"+color+"'>    "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out </h4>"]);
-		}
+		var t1Prog_row=[];
+		var t1ProgVal=0;
+		var t2Prog_row=[];
+		var t2ProgVal=0;
 		
-		if(weeklyMatches[i].t2=== mld.t2 ){
-			color=colorCode(weeklyMatches[i].t2res, weeklyMatches[i].t1res);
-			t2data_row.push([weeklyMatches[i].week, weeklyMatches[i].t2form, "<h4 style='background-color:"+color+"'> "+weeklyMatches[i].t1 +"  "+weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t2form)+"</h4>"]);
-			t2Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t2atackIn + weeklyMatches[i].t2atackOut), "<h4 style='background-color:"+color+"'>  "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", attack: "+numberFormat(weeklyMatches[i].t2atackIn + weeklyMatches[i].t2atackOut)+"</h4>"])
-			t2Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t2defIn + weeklyMatches[i].t2defOut), "<h4 style='background-color:"+color+"'>    "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t2defIn + weeklyMatches[i].t2defOut)+"</h4>"])
-		
-			 t2ProgVal+=progressPoint(weeklyMatches[i].t2res,weeklyMatches[i].t1res);
-			t2Prog_row.push([weeklyMatches[i].week, t2ProgVal, "<h4 style='background-color:"+color+"'>    "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out </h4>"]);
-		}
-		else if(weeklyMatches[i].t1=== mld.t2 ){
-			color=colorCode(weeklyMatches[i].t1res,weeklyMatches[i].t2res);
-			t2data_row.push([weeklyMatches[i].week, weeklyMatches[i].t1form, "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ "</h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t1form)+"</h4>"]);
-			t2Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut), "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", attack:  "+numberFormat(weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut)+"</h4>"])
-			t2Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut), "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ "   </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut)+"</h4>"])
-		
-			t2ProgVal+=progressPoint(weeklyMatches[i].t1res,weeklyMatches[i].t2res);
-			t2Prog_row.push([weeklyMatches[i].week, t2ProgVal, "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>"]);
-		}
-	}
-	
-	var t1i=0;
-	var t2i=0;
-	
-
-
-	
-	var sizeSize=false;
-	if(t1data_row.length==t2data_row.length){
-		sizeSize=true;
-	}
-
-
-
-
-	// so far the data is divided in two allays when the team plays in and out. We unite them to show the graph
-	for(var i=weekStart; t1i<t1data_row.length || t2i<t2data_row.length;){
-
-		if(t1data_row[t1i][0]==t2data_row[t2i][0]){
-			formArray.push(    [t1data_row[t1i][0], t1data_row[t1i][1], t1data_row[t1i][2],t2data_row[t2i][1],  t2data_row[t2i][2]]);
-			atackArray.push(   [t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
-			deffArray.push(    [t1Deff_row[t1i][0], t1Deff_row[t1i][1], t1Deff_row[t1i][2],t2Deff_row[t2i][1],  t2Deff_row[t2i][2]]);
-			progressArray.push([t1Prog_row[t1i][0], t1Prog_row[t1i][1], t1Prog_row[t1i][2],t2Prog_row[t2i][1],  t2Prog_row[t2i][2]]);
-			t1i++;
-			t2i++;
-			i++;
-		}
-		else{ //in case of mising matches and wrong enumeration try to correct
-			if(sizeSize){
-				if(t1data_row[t1i][0]!=i){
-					t1data_row[t1i][0]=i;
-					t1Atack_row[t1i][0]=i;
-					t1Deff_row[t1i][0]=i;
-					t1Prog_row[t1i][0]=i;
-					//i++;
-				}
-				if(t2data_row[t2i][0]!=i){
-					t2data_row[t2i][0]=i;
-					t2Atack_row[t2i][0]=i;
-					t2Deff_row[t2i][0]=i;
-					t2Prog_row[t2i][0]=i;
-					//i++;
-				}
-				continue;
+		for(var i=0;i<weeklyMatches.length;i++){
+			if(weeklyMatches[i].t1===mld.t1 ){
+				color=colorCode(compRedData[i][3],weeklyMatches[i].t2res);//</h5> <br> <h4>
+				t1data_row.push([weeklyMatches[i].week, weeklyMatches[i].t1form, "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t1form)+"</h4>"]);
+				t1Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", attack: "+numberFormat(weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut)+"</h4>"])
+				t1Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ "</h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut)+"</h4>"])
+				
+				 t1ProgVal+=progressPoint(compRedData[i][3],weeklyMatches[i].t2res);
+				 t1Prog_row.push([weeklyMatches[i].week, t1ProgVal, "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>"]);
+			
 			}
-
-
-
-
-			if(t1data_row[t1i][0]==t1data_row[t1i-1][0]){
-				if(t1data_row[t1i+1][0]-t1data_row[t1i][0]>=2){ // if the week was counted wrongly as a previous week
-					t1data_row[t1i][0] = t1data_row[t1i][0]+1;  // Math.round( (t1data_row[t1i][0]+t1data_row[t1i+1][0]) /2 ); // correct it and recalc
-					t1Atack_row[t1i][0] = t1Atack_row[t1i][0]+1;
-					t1Deff_row[t1i][0] = t1Deff_row[t1i][0]+1;
-					t1Prog_row[t1i][0] = t1Prog_row[t1i][0]+1;
-
-					console.log("aaaa "+t1data_row[t1i][0] +" == "+ t1data_row[t1i+1][0]);
-					continue;
-					console.log('This should not be showing');
-				}
-			}
-			else if(t2data_row[t2i][0]==t2data_row[t2i-1][0]){
-				if(t2data_row[t2i+1][0]-t2data_row[t2i][0]==2){ // if the week was counted wrongly as a previous week
-					t2data_row[t2i][0] =  t2data_row[t1i][0]+1;//Math.round( (t2data_row[t2i][0]+t2data_row[t2i+1][0]) /2 ); // correct it and recalc
-					t2Atack_row[t1i][0] = t2Atack_row[t1i][0]+1;
-					t2Deff_row[t1i][0] = t2Deff_row[t1i][0]+1;
-					t2Prog_row[t1i][0] = t2Prog_row[t1i][0]+1;
-					console.log("aaaa "+t2data_row[t2i][0] +" == "+ t2data_row[t2i+1][0]);
-					continue;
-					console.log('This should not be showing');
-				}
+			else if(weeklyMatches[i].t2===mld.t1){
+				color=colorCode(weeklyMatches[i].t2res,weeklyMatches[i].t1res);//</h5>   <br> <h4>
+				t1data_row.push([weeklyMatches[i].week, weeklyMatches[i].t2form, "<h4 style='background-color:"+color+"'> "+weeklyMatches[i].t1 +"  "+weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t2form)+"</h4>"]);
+				t1Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t2atackIn + weeklyMatches[i].t2atackOut), "<h4 style='background-color:"+color+"'>  "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out   </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", attack: "+numberFormat(weeklyMatches[i].t2atackIn + weeklyMatches[i].t2atackOut)+"</h4>"])
+				t1Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t2defIn + weeklyMatches[i].t2defOut), "<h4 style='background-color:"+color+"'>    "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t2defIn + weeklyMatches[i].t2defOut)+"</h4>"])
+			
+				 t1ProgVal+=progressPoint(weeklyMatches[i].t2res,weeklyMatches[i].t1res);
+				 t1Prog_row.push([weeklyMatches[i].week, t1ProgVal, "<h4 style='background-color:"+color+"'>    "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out </h4>"]);
 			}
 			
-			//in case of mising matches just skip over the missing matches and show only one of the teams for that missing week
-			if(t1data_row[t1i][0]>t2data_row[t2i][0]){
-				formArray.push ([t2data_row [t2i][0],,"",t2data_row [t2i][1],t2data_row [t2i][2]]);
-				atackArray.push([t2Atack_row[t2i][0],,"",t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
-				deffArray.push ([t2Deff_row [t2i][0],,"",t2Deff_row [t2i][1],t2Deff_row [t2i][2]]);
-				progressArray.push([t2Prog_row[t2i][0],,"",t2Prog_row[t2i][1],t2Prog_row[t2i][2]]);
-				t2i++;
-				console.log(t1i +" < "+ t2i);
+			if(weeklyMatches[i].t2=== mld.t2 ){
+				color=colorCode(weeklyMatches[i].t2res, weeklyMatches[i].t1res);
+				t2data_row.push([weeklyMatches[i].week, weeklyMatches[i].t2form, "<h4 style='background-color:"+color+"'> "+weeklyMatches[i].t1 +"  "+weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t2form)+"</h4>"]);
+				t2Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t2atackIn + weeklyMatches[i].t2atackOut), "<h4 style='background-color:"+color+"'>  "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", attack: "+numberFormat(weeklyMatches[i].t2atackIn + weeklyMatches[i].t2atackOut)+"</h4>"])
+				t2Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t2defIn + weeklyMatches[i].t2defOut), "<h4 style='background-color:"+color+"'>    "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t2defIn + weeklyMatches[i].t2defOut)+"</h4>"])
+			
+				 t2ProgVal+=progressPoint(weeklyMatches[i].t2res,weeklyMatches[i].t1res);
+				t2Prog_row.push([weeklyMatches[i].week, t2ProgVal, "<h4 style='background-color:"+color+"'>    "+ weeklyMatches[i].t1+"  "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  Out </h4>"]);
 			}
-			else if(t1data_row[t1i][0]<t2data_row[t2i][0]){
-				formArray.push ([t1data_row [t1i][0],t1data_row [t1i][1],t1data_row [t1i][2],,""]);
-				atackArray.push([t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],,""]);
-				deffArray.push ([t1Deff_row [t1i][0],t1Deff_row [t1i][1],t1Deff_row [t1i][2],,""]);
-				progressArray.push([t1Prog_row[t1i][0],t1Prog_row[t1i][1],t1Prog_row[t1i][2],,""]);
+			else if(weeklyMatches[i].t1=== mld.t2 ){
+				color=colorCode(weeklyMatches[i].t1res,weeklyMatches[i].t2res);
+				t2data_row.push([weeklyMatches[i].week, weeklyMatches[i].t1form, "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ "</h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", form: "+numberFormat(weeklyMatches[i].t1form)+"</h4>"]);
+				t2Atack_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut), "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>  <h4 style='background-color:"+color+"'> week: "+weeklyMatches[i].week+", attack:  "+numberFormat(weeklyMatches[i].t1atackIn + weeklyMatches[i].t1atackOut)+"</h4>"])
+				t2Deff_row.push([weeklyMatches[i].week, (weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut), "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ "   </h4>  <h4 style='background-color:"+color+"'>week: "+weeklyMatches[i].week+", def: "+numberFormat(weeklyMatches[i].t1defIn + weeklyMatches[i].t1defOut)+"</h4>"])
+			
+				t2ProgVal+=progressPoint(weeklyMatches[i].t1res,weeklyMatches[i].t2res);
+				t2Prog_row.push([weeklyMatches[i].week, t2ProgVal, "<h4 style='background-color:"+color+"'> In "+ weeklyMatches[i].t1res+" - "+weeklyMatches[i].t2res+"  "+ weeklyMatches[i].t2+ " </h4>"]);
+			}
+		}
+		
+		var t1i=0;
+		var t2i=0;
+		
+
+
+		
+		var sizeSize=false;
+		if(t1data_row.length==t2data_row.length){
+			sizeSize=true;
+		}
+
+
+
+
+		// so far the data is divided in two allays when the team plays in and out. We unite them to show the graph
+		for(var i=weekStart; t1i<t1data_row.length || t2i<t2data_row.length;){
+
+			if(t1data_row[t1i][0]==t2data_row[t2i][0]){
+				formArray.push(    [t1data_row[t1i][0], t1data_row[t1i][1], t1data_row[t1i][2],t2data_row[t2i][1],  t2data_row[t2i][2]]);
+				atackArray.push(   [t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
+				deffArray.push(    [t1Deff_row[t1i][0], t1Deff_row[t1i][1], t1Deff_row[t1i][2],t2Deff_row[t2i][1],  t2Deff_row[t2i][2]]);
+				progressArray.push([t1Prog_row[t1i][0], t1Prog_row[t1i][1], t1Prog_row[t1i][2],t2Prog_row[t2i][1],  t2Prog_row[t2i][2]]);
 				t1i++;
-				console.log(t1i +" > "+ t2i);			
-			}
-		}
-	}
-	
-}
-
-
-function redFormDataExtraction(cid,homeTeam,awayTeam){
-	console.log("redFormDataExtraction");
-	//  from compRedData get data for forms and progress chart data arrays.
-	
-//	var tds =$("#rowmld"+cid).children("td");
-//	var homeTeam = $(tds[1]).text();
-//	console.log(homeTeam);
-//	var awayTeam = $(tds[5]).text();
-//	console.log(awayTeam);
-//	
-	//empty arrays from previous calculations	
-	 formArray=[];
-	 atackArray=[];
-	 deffArray=[];
-	 progressArray=[];
-	
-	//from weekley matches generate the array data for the graphs
-	var t1data_row=[];
-	var t2data_row=[];
-	var t1Atack_row=[];
-	var t2Atack_row=[];
-	var t1Deff_row=[];
-	var t2Deff_row=[];
-	
-	var t1Prog_row=[];
-	var t1ProgVal=0;
-	var t2Prog_row=[];
-	var t2ProgVal=0;
-	
-	for(var i=0;i<compRedData.length;i++){
-		if(compRedData[i][1]===homeTeam){
-			color=colorCode(compRedData[i][3],compRedData[i][4]);//</h5> <br> <h4>
-			t1data_row.push([compRedData[i][0], compRedData[i][5], "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][5])+"</h4>"]);
-			t1Atack_row.push([compRedData[i][0], (compRedData[i][7]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", attack: "+numberFormat(compRedData[i][7])+"</h4>"])
-			t1Deff_row.push([compRedData[i][0], (compRedData[i][9]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ "</h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][9])+"</h4>"])
-			
-			 t1ProgVal+=progressPoint(compRedData[i][3],compRedData[i][4]);
-			 t1Prog_row.push([compRedData[i][0], t1ProgVal, "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>"]);
-		
-		}
-		else if(compRedData[i][2] ===homeTeam){
-			color=colorCode(compRedData[i][4],compRedData[i][3]);//</h5>   <br> <h4>
-			t1data_row.push([compRedData[i][0], compRedData[i][6], "<h4 style='background-color:"+color+"'> "+compRedData[i][1] +"  "+compRedData[i][3]+" - "+compRedData[i][4]+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][6])+"</h4>"]);
-			t1Atack_row.push([compRedData[i][0], (compRedData[i][8]), "<h4 style='background-color:"+color+"'>  "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out   </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", attack: "+numberFormat(compRedData[i][8])+"</h4>"])
-			t1Deff_row.push([compRedData[i][0], (compRedData[i][10]), "<h4 style='background-color:"+color+"'>    "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][10])+"</h4>"])
-		
-			 t1ProgVal+=progressPoint(compRedData[i][4],compRedData[i][3]);
-			 t1Prog_row.push([compRedData[i][0], t1ProgVal, "<h4 style='background-color:"+color+"'>    "+compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out </h4>"]);
-		}
-		
-		if(compRedData[i][2] === awayTeam){
-			color=colorCode(compRedData[i][4], compRedData[i][3]);
-			t2data_row.push([compRedData[i][0], compRedData[i][6], "<h4 style='background-color:"+color+"'> "+compRedData[i][1] +"  "+compRedData[i][3]+" - "+compRedData[i][4]+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][6])+"</h4>"]);
-			t2Atack_row.push([compRedData[i][0], (compRedData[i][8]), "<h4 style='background-color:"+color+"'>  "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", attack: "+numberFormat(compRedData[i][8])+"</h4>"])
-			t2Deff_row.push([compRedData[i][0], (compRedData[i][10]), "<h4 style='background-color:"+color+"'>    "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][10])+"</h4>"])
-		
-			 t2ProgVal+=progressPoint(compRedData[i][4],compRedData[i][3]);
-			t2Prog_row.push([compRedData[i][0], t2ProgVal, "<h4 style='background-color:"+color+"'>    "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out </h4>"]);
-		}
-		else if(compRedData[i][1] === awayTeam){
-			color=colorCode(compRedData[i][3],compRedData[i][4]);
-			t2data_row.push([compRedData[i][0], compRedData[i][5], "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ "</h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][5])+"</h4>"]);
-			t2Atack_row.push([compRedData[i][0], (compRedData[i][7]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", attack:  "+numberFormat(compRedData[i][7])+"</h4>"])
-			t2Deff_row.push([compRedData[i][0], (compRedData[i][9]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ "   </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][9])+"</h4>"])
-		
-			t2ProgVal+=progressPoint(compRedData[i][3],compRedData[i][4]);
-			t2Prog_row.push([compRedData[i][0], t2ProgVal, "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>"]);
-		}
-	}
-	
-	var t1i=0;
-	var t2i=0;
-	
-
-
-	
-	var sizeSize=false;
-	if(t1data_row.length==t2data_row.length){
-		sizeSize=true;
-	}
-
-
-
-
-	// so far the data is divided in two allays when the team plays in and out. We unite them to show the graph
-	for(var i=weekStart; t1i<t1data_row.length || t2i<t2data_row.length;){
-
-		if(t1data_row[t1i][0]==t2data_row[t2i][0]){
-			formArray.push(    [t1data_row[t1i][0], t1data_row[t1i][1], t1data_row[t1i][2],t2data_row[t2i][1],  t2data_row[t2i][2]]);
-			atackArray.push(   [t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
-			deffArray.push(    [t1Deff_row[t1i][0], t1Deff_row[t1i][1], t1Deff_row[t1i][2],t2Deff_row[t2i][1],  t2Deff_row[t2i][2]]);
-			progressArray.push([t1Prog_row[t1i][0], t1Prog_row[t1i][1], t1Prog_row[t1i][2],t2Prog_row[t2i][1],  t2Prog_row[t2i][2]]);
-			t1i++;
-			t2i++;
-			i++;
-		}
-		else{ //in case of mising matches and wrong enumeration try to correct
-			if(sizeSize){
-				if(t1data_row[t1i][0]!=i){
-					t1data_row[t1i][0]=i;
-					t1Atack_row[t1i][0]=i;
-					t1Deff_row[t1i][0]=i;
-					t1Prog_row[t1i][0]=i;
-					//i++;
-				}
-				if(t2data_row[t2i][0]!=i){
-					t2data_row[t2i][0]=i;
-					t2Atack_row[t2i][0]=i;
-					t2Deff_row[t2i][0]=i;
-					t2Prog_row[t2i][0]=i;
-					//i++;
-				}
-				continue;
-			}
-
-
-
-
-			if(t1data_row[t1i][0]==t1data_row[t1i-1][0]){
-				if(t1data_row[t1i+1][0]-t1data_row[t1i][0]>=2){ // if the week was counted wrongly as a previous week
-					t1data_row[t1i][0] = t1data_row[t1i][0]+1;  // Math.round( (t1data_row[t1i][0]+t1data_row[t1i+1][0]) /2 ); // correct it and recalc
-					t1Atack_row[t1i][0] = t1Atack_row[t1i][0]+1;
-					t1Deff_row[t1i][0] = t1Deff_row[t1i][0]+1;
-					t1Prog_row[t1i][0] = t1Prog_row[t1i][0]+1;
-
-					console.log("aaaa "+t1data_row[t1i][0] +" == "+ t1data_row[t1i+1][0]);
-					continue;
-					console.log('This should not be showing');
-				}
-			}
-			else if(t2data_row[t2i][0]==t2data_row[t2i-1][0]){
-				if(t2data_row[t2i+1][0]-t2data_row[t2i][0]==2){ // if the week was counted wrongly as a previous week
-					t2data_row[t2i][0] =  t2data_row[t1i][0]+1;//Math.round( (t2data_row[t2i][0]+t2data_row[t2i+1][0]) /2 ); // correct it and recalc
-					t2Atack_row[t1i][0] = t2Atack_row[t1i][0]+1;
-					t2Deff_row[t1i][0] = t2Deff_row[t1i][0]+1;
-					t2Prog_row[t1i][0] = t2Prog_row[t1i][0]+1;
-					console.log("aaaa "+t2data_row[t2i][0] +" == "+ t2data_row[t2i+1][0]);
-					continue;
-					console.log('This should not be showing');
-				}
-			}
-			
-			//in case of mising matches just skip over the missing matches and show only one of the teams for that missing week
-			if(t1data_row[t1i][0]>t2data_row[t2i][0]){
-				formArray.push ([t2data_row [t2i][0],,"",t2data_row [t2i][1],t2data_row [t2i][2]]);
-				atackArray.push([t2Atack_row[t2i][0],,"",t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
-				deffArray.push ([t2Deff_row [t2i][0],,"",t2Deff_row [t2i][1],t2Deff_row [t2i][2]]);
-				progressArray.push([t2Prog_row[t2i][0],,"",t2Prog_row[t2i][1],t2Prog_row[t2i][2]]);
 				t2i++;
-				console.log(t1i +" < "+ t2i);
+				i++;
 			}
-			else if(t1data_row[t1i][0]<t2data_row[t2i][0]){
-				formArray.push ([t1data_row [t1i][0],t1data_row [t1i][1],t1data_row [t1i][2],,""]);
-				atackArray.push([t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],,""]);
-				deffArray.push ([t1Deff_row [t1i][0],t1Deff_row [t1i][1],t1Deff_row [t1i][2],,""]);
-				progressArray.push([t1Prog_row[t1i][0],t1Prog_row[t1i][1],t1Prog_row[t1i][2],,""]);
+			else{ //in case of mising matches and wrong enumeration try to correct
+				if(sizeSize){
+					if(t1data_row[t1i][0]!=i){
+						t1data_row[t1i][0]=i;
+						t1Atack_row[t1i][0]=i;
+						t1Deff_row[t1i][0]=i;
+						t1Prog_row[t1i][0]=i;
+						//i++;
+					}
+					if(t2data_row[t2i][0]!=i){
+						t2data_row[t2i][0]=i;
+						t2Atack_row[t2i][0]=i;
+						t2Deff_row[t2i][0]=i;
+						t2Prog_row[t2i][0]=i;
+						//i++;
+					}
+					continue;
+				}
+
+
+
+
+				if(t1data_row[t1i][0]==t1data_row[t1i-1][0]){
+					if(t1data_row[t1i+1][0]-t1data_row[t1i][0]>=2){ // if the week was counted wrongly as a previous week
+						t1data_row[t1i][0] = t1data_row[t1i][0]+1;  // Math.round( (t1data_row[t1i][0]+t1data_row[t1i+1][0]) /2 ); // correct it and recalc
+						t1Atack_row[t1i][0] = t1Atack_row[t1i][0]+1;
+						t1Deff_row[t1i][0] = t1Deff_row[t1i][0]+1;
+						t1Prog_row[t1i][0] = t1Prog_row[t1i][0]+1;
+
+						console.log("aaaa "+t1data_row[t1i][0] +" == "+ t1data_row[t1i+1][0]);
+						continue;
+						console.log('This should not be showing');
+					}
+				}
+				else if(t2data_row[t2i][0]==t2data_row[t2i-1][0]){
+					if(t2data_row[t2i+1][0]-t2data_row[t2i][0]==2){ // if the week was counted wrongly as a previous week
+						t2data_row[t2i][0] =  t2data_row[t1i][0]+1;//Math.round( (t2data_row[t2i][0]+t2data_row[t2i+1][0]) /2 ); // correct it and recalc
+						t2Atack_row[t1i][0] = t2Atack_row[t1i][0]+1;
+						t2Deff_row[t1i][0] = t2Deff_row[t1i][0]+1;
+						t2Prog_row[t1i][0] = t2Prog_row[t1i][0]+1;
+						console.log("aaaa "+t2data_row[t2i][0] +" == "+ t2data_row[t2i+1][0]);
+						continue;
+						console.log('This should not be showing');
+					}
+				}
+				
+				//in case of mising matches just skip over the missing matches and show only one of the teams for that missing week
+				if(t1data_row[t1i][0]>t2data_row[t2i][0]){
+					formArray.push ([t2data_row [t2i][0],,"",t2data_row [t2i][1],t2data_row [t2i][2]]);
+					atackArray.push([t2Atack_row[t2i][0],,"",t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
+					deffArray.push ([t2Deff_row [t2i][0],,"",t2Deff_row [t2i][1],t2Deff_row [t2i][2]]);
+					progressArray.push([t2Prog_row[t2i][0],,"",t2Prog_row[t2i][1],t2Prog_row[t2i][2]]);
+					t2i++;
+					console.log(t1i +" < "+ t2i);
+				}
+				else if(t1data_row[t1i][0]<t2data_row[t2i][0]){
+					formArray.push ([t1data_row [t1i][0],t1data_row [t1i][1],t1data_row [t1i][2],,""]);
+					atackArray.push([t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],,""]);
+					deffArray.push ([t1Deff_row [t1i][0],t1Deff_row [t1i][1],t1Deff_row [t1i][2],,""]);
+					progressArray.push([t1Prog_row[t1i][0],t1Prog_row[t1i][1],t1Prog_row[t1i][2],,""]);
+					t1i++;
+					console.log(t1i +" > "+ t2i);			
+				}
+			}
+		}
+		
+	}
+function redFormDataExtraction_old(cid,homeTeam,awayTeam){
+		console.log("redFormDataExtraction");
+		//  from compRedData get data for forms and progress chart data arrays.
+		
+		//empty arrays from previous calculations	
+		 formArray=[];
+		 atackArray=[];
+		 deffArray=[];
+		 progressArray=[];
+		
+		//from weekley matches generate the array data for the graphs
+		var t1data_row=[];
+		var t2data_row=[];
+		var t1Atack_row=[];
+		var t2Atack_row=[];
+		var t1Deff_row=[];
+		var t2Deff_row=[];
+		
+		var t1Prog_row=[];
+		var t1ProgVal=0;
+		var t2Prog_row=[];
+		var t2ProgVal=0;
+		
+		for(var i=0;i<compRedData.length;i++){
+			if(compRedData[i][1]===homeTeam){
+				color=colorCode(compRedData[i][3],compRedData[i][4]);//</h5> <br> <h4>
+				t1data_row.push([compRedData[i][0], numberFormat(compRedData[i][5]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][5])+"</h4>"]);
+				t1Atack_row.push([compRedData[i][0], (compRedData[i][7]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", attack: "+numberFormat(compRedData[i][7])+"</h4>"])
+				t1Deff_row.push([compRedData[i][0], (compRedData[i][9]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ "</h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][9])+"</h4>"])
+				
+				 t1ProgVal+=progressPoint(compRedData[i][3],compRedData[i][4]);
+				 t1Prog_row.push([compRedData[i][0], t1ProgVal, "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>"]);
+			
+			}
+			else if(compRedData[i][2] ===homeTeam){
+				color=colorCode(compRedData[i][4],compRedData[i][3]);//</h5>   <br> <h4>
+				t1data_row.push([compRedData[i][0], numberFormat(compRedData[i][6]), "<h4 style='background-color:"+color+"'> "+compRedData[i][1] +"  "+compRedData[i][3]+" - "+compRedData[i][4]+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][6])+"</h4>"]);
+				t1Atack_row.push([compRedData[i][0], (compRedData[i][8]), "<h4 style='background-color:"+color+"'>  "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out   </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", attack: "+numberFormat(compRedData[i][8])+"</h4>"])
+				t1Deff_row.push([compRedData[i][0], (compRedData[i][10]), "<h4 style='background-color:"+color+"'>    "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][10])+"</h4>"])
+			
+				 t1ProgVal+=progressPoint(compRedData[i][4],compRedData[i][3]);
+				 t1Prog_row.push([compRedData[i][0], t1ProgVal, "<h4 style='background-color:"+color+"'>    "+compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out </h4>"]);
+			}
+			
+			if(compRedData[i][2] === awayTeam){
+				color=colorCode(compRedData[i][4], compRedData[i][3]);
+				t2data_row.push([compRedData[i][0], numberFormat(compRedData[i][6]), "<h4 style='background-color:"+color+"'> "+compRedData[i][1] +"  "+compRedData[i][3]+" - "+compRedData[i][4]+ " Out  </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][6])+"</h4>"]);
+				t2Atack_row.push([compRedData[i][0], (compRedData[i][8]), "<h4 style='background-color:"+color+"'>  "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", attack: "+numberFormat(compRedData[i][8])+"</h4>"])
+				t2Deff_row.push([compRedData[i][0], (compRedData[i][10]), "<h4 style='background-color:"+color+"'>    "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out  </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][10])+"</h4>"])
+			
+				 t2ProgVal+=progressPoint(compRedData[i][4],compRedData[i][3]);
+				t2Prog_row.push([compRedData[i][0], t2ProgVal, "<h4 style='background-color:"+color+"'>    "+ compRedData[i][1]+"  "+ compRedData[i][3]+" - "+compRedData[i][4]+"  Out </h4>"]);
+			}
+			else if(compRedData[i][1] === awayTeam){
+				color=colorCode(compRedData[i][3],compRedData[i][4]);
+				t2data_row.push([compRedData[i][0], numberFormat(compRedData[i][5]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ "</h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", form: "+numberFormat(compRedData[i][5])+"</h4>"]);
+				t2Atack_row.push([compRedData[i][0], (compRedData[i][7]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>  <h4 style='background-color:"+color+"'> week: "+compRedData[i][0]+", attack:  "+numberFormat(compRedData[i][7])+"</h4>"])
+				t2Deff_row.push([compRedData[i][0], (compRedData[i][9]), "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ "   </h4>  <h4 style='background-color:"+color+"'>week: "+compRedData[i][0]+", def: "+numberFormat(compRedData[i][9])+"</h4>"])
+			
+				t2ProgVal+=progressPoint(compRedData[i][3],compRedData[i][4]);
+				t2Prog_row.push([compRedData[i][0], t2ProgVal, "<h4 style='background-color:"+color+"'> In "+ compRedData[i][3]+" - "+compRedData[i][4]+"  "+ compRedData[i][2]+ " </h4>"]);
+			}
+		}
+		
+		var t1i=0;
+		var t2i=0;
+		
+		var sizeSize=false;
+		if(t1data_row.length==t2data_row.length){
+			sizeSize=true;
+		}
+
+		// so far the data is divided in two allays when the team plays in and out. We unite them to show the graph
+		for(var i=weekStart; t1i<t1data_row.length || t2i<t2data_row.length;){
+
+			if(t1data_row[t1i][0]==t2data_row[t2i][0]){
+				formArray.push(    [t1data_row[t1i][0], t1data_row[t1i][1], t1data_row[t1i][2],t2data_row[t2i][1],  t2data_row[t2i][2]]);
+				atackArray.push(   [t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
+				deffArray.push(    [t1Deff_row[t1i][0], t1Deff_row[t1i][1], t1Deff_row[t1i][2],t2Deff_row[t2i][1],  t2Deff_row[t2i][2]]);
+				progressArray.push([t1Prog_row[t1i][0], t1Prog_row[t1i][1], t1Prog_row[t1i][2],t2Prog_row[t2i][1],  t2Prog_row[t2i][2]]);
 				t1i++;
-				console.log(t1i +" > "+ t2i);			
+				t2i++;
+				i++;
+			}
+			else{ //in case of mising matches and wrong enumeration try to correct
+				if(sizeSize){
+					if(t1data_row[t1i][0]!=i){
+						t1data_row[t1i][0]=i;
+						t1Atack_row[t1i][0]=i;
+						t1Deff_row[t1i][0]=i;
+						t1Prog_row[t1i][0]=i;
+						//i++;
+					}
+					if(t2data_row[t2i][0]!=i){
+						t2data_row[t2i][0]=i;
+						t2Atack_row[t2i][0]=i;
+						t2Deff_row[t2i][0]=i;
+						t2Prog_row[t2i][0]=i;
+						//i++;
+					}
+					continue;
+				}
+
+				if(t1data_row[t1i][0]==t1data_row[t1i-1][0]){
+					if(t1data_row[t1i+1][0]-t1data_row[t1i][0]>=2){ // if the week was counted wrongly as a previous week
+						t1data_row[t1i][0] = t1data_row[t1i][0]+1;  // Math.round( (t1data_row[t1i][0]+t1data_row[t1i+1][0]) /2 ); // correct it and recalc
+						t1Atack_row[t1i][0] = t1Atack_row[t1i][0]+1;
+						t1Deff_row[t1i][0] = t1Deff_row[t1i][0]+1;
+						t1Prog_row[t1i][0] = t1Prog_row[t1i][0]+1;
+
+						console.log("aaaa "+t1data_row[t1i][0] +" == "+ t1data_row[t1i+1][0]);
+						continue;
+						console.log('This should not be showing');
+					}
+				}
+				else if(t2data_row[t2i][0]==t2data_row[t2i-1][0]){
+					if(t2data_row[t2i+1][0]-t2data_row[t2i][0]==2){ // if the week was counted wrongly as a previous week
+						t2data_row[t2i][0] =  t2data_row[t1i][0]+1;//Math.round( (t2data_row[t2i][0]+t2data_row[t2i+1][0]) /2 ); // correct it and recalc
+						t2Atack_row[t1i][0] = t2Atack_row[t1i][0]+1;
+						t2Deff_row[t1i][0] = t2Deff_row[t1i][0]+1;
+						t2Prog_row[t1i][0] = t2Prog_row[t1i][0]+1;
+						console.log("aaaa "+t2data_row[t2i][0] +" == "+ t2data_row[t2i+1][0]);
+						continue;
+						console.log('This should not be showing');
+					}
+				}
+				
+				//in case of mising matches just skip over the missing matches and show only one of the teams for that missing week
+				if(t1data_row[t1i][0]>t2data_row[t2i][0]){
+					formArray.push ([t2data_row [t2i][0],,"",t2data_row [t2i][1],t2data_row [t2i][2]]);
+					atackArray.push([t2Atack_row[t2i][0],,"",t2Atack_row[t2i][1],t2Atack_row[t2i][2]]);
+					deffArray.push ([t2Deff_row [t2i][0],,"",t2Deff_row [t2i][1],t2Deff_row [t2i][2]]);
+					progressArray.push([t2Prog_row[t2i][0],,"",t2Prog_row[t2i][1],t2Prog_row[t2i][2]]);
+					t2i++;
+					console.log(t1i +" < "+ t2i);
+				}
+				else if(t1data_row[t1i][0]<t2data_row[t2i][0]){
+					formArray.push ([t1data_row [t1i][0],t1data_row [t1i][1],t1data_row [t1i][2],,""]);
+					atackArray.push([t1Atack_row[t1i][0],t1Atack_row[t1i][1],t1Atack_row[t1i][2],,""]);
+					deffArray.push ([t1Deff_row [t1i][0],t1Deff_row [t1i][1],t1Deff_row [t1i][2],,""]);
+					progressArray.push([t1Prog_row[t1i][0],t1Prog_row[t1i][1],t1Prog_row[t1i][2],,""]);
+					t1i++;
+					console.log(t1i +" > "+ t2i);			
+				}
 			}
 		}
-	}
-	
-}
-
-
-//-----------------------------------------END OF Preprocessing
-//=========================================
-
-//------------Test the simulation
-
-function resultSimulator(head,score){
-	
-	if(head=='X'){
-		return([score/2,score/2]);
-	}
-	if(score==0){
-		return([0,0]);
-	}
-	
-	var x = Math.floor(Math.random() * (score + 1));
-	var y=0;
 		
-	while(x==score/2){
-		x = Math.floor(Math.random() * (score + 1));
-	}
-	y=score-x;
-	//console.log('score: '+score + ", head: "+head+",  x-"+ x+ " y-"+ y);
-	if(head==1){
-		return([Math.max(x,y),Math.min(x,y)])
-	}
-	if(head==2){
-		return([Math.min(x,y),Math.max(x,y)])
-	}
-}
+	
 
 
-function simSimTest(){
-	for(var i=0;i<20;i++){
-	a=Math.floor(Math.random() * (3 + 1));
-	sc=Math.floor(Math.random() * (8 + 1));
-	if(a==1){
-		s.log(resultSimulator(1,sc));
-	}
-	if(a==2){
-		console.log(resultSimulator("X",2*sc));
-	}
-	if(a==3){
-		console.log(resultSimulator(2,sc));
-	}
-	}
-}
 
-
-var tempArray=[];
-var tempArray2=[];
-function tetToy(){
-	var weeknr =weeklyMatches[weeklyMatches.length-1].week;
-	for(var i=weeklyMatches.length-1; i>0;i-- ){
-		
-		console.log("in ");
-		if(weeknr!=weeklyMatches[i].week){
-			console.log(weeklyMatches[i].week);
-			break;
-		}
-		else{
-			//todaysMatches.push(weeklyMatches[i]);
-			
-			tempArray.push(weeklyMatches[i]);
-			tempArray2.push(weeklyMatches.pop());
-			
-			
-		}
-		console.log(i);
 	}
-}

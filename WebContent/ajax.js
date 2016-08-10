@@ -59,7 +59,7 @@ function redWeekMatchesAjaxCall(cId) {
 			console.log(response);
 			$("#tit").html("Bamboleio!!");//
 			localStorage.setItem(nrvars[0],response )
-//			redWeekHandle(cId,response);
+			redWeekHandle(cId,response);
 		},
 		error : function(error, stat, cod) {
 			console.log(error);

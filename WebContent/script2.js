@@ -78,6 +78,17 @@ function formChartData(chId,progId){
 //---------------------------end of help functions
 
 
+//###############################
+//chart vars
+var titleColor='#5c5c5c';
+
+var backgColor='#d7dde5';
+var fillColor ='#BFC8D4';
+var h_gridlines = 'f2f2f2';
+var v_gridlines = 'f2f2f2';
+
+var h_baselineColor = '#587dae'; //0 line
+var v_baselineColor = '#587dae'; //0 line
 
 //====================================Progress chart
 function drawProgressChart(idx,homeTeam,awayTeam){
@@ -97,49 +108,44 @@ function drawProgressChart(idx,homeTeam,awayTeam){
 			right:'15%', top:'10%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
-				'fill': '#BFC8D4',
+				'fill': fillColor,
 				'opacity': 10
 			 }
 		 },
-		lineWidth: 3,
+		lineWidth: 4,
 		width: 900,
 		height: 450,
-		backgroundColor: '#d7dde5',
+		backgroundColor: backgColor,
 		title:  'Team RESULT progres throught the weeks',
-		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },
+		titleTextStyle: { color: titleColor, fontName: 'Montserrat', fontSize: '15' },
 		tooltip: {isHtml: true},
-		axes:{
-			x:{
-				0:{side:'top'}
-			}
-		},
 		legend: { position: 'right',textStyle: {fontSize: 10} },
 		tooltip: {isHtml: true},
 		hAxis: {
-			gridlines: { color:  'f2f2f2'},
+			gridlines: { color:  h_gridlines},
 			//gridlines: { count:  0},
-			baselineColor: 'transparent',
-			baselineColor: '#587dae',
+//			baselineColor: 'transparent',
+			baselineColor: h_baselineColor,
 			title: 'Weeks',
 			titleTextStyle:{fontSize: 10}
 		},
 		vAxis: {
-		 baselineColor: '#587dae',
+			baselineColor: v_baselineColor,
 			//gridlines: { count: 6 },
-			gridlines: { color:  'f2f2f2'},
+			gridlines: { color:  v_gridlines},
 			title: 'Value',
 			titleTextStyle:{fontSize: 10}
 		},
 		 //tooltip:{trigger:'none'},
-		trendlines: {
-			trigger:'none',
-			 tooltip:false,
-		  0: {type: 'linear', color: '#8986dd', opacity: .5,lineWidth:3, visibleInLegend: true, labelInLegend:' trend'},
-		  1: {type: 'linear', color: '#d07b24', opacity: .5,lineWidth:3, visibleInLegend: true,labelInLegend:' trend'}
-		},
+//		trendlines: {
+//			trigger:'none',
+//			 tooltip:false,
+//		  0: {type: 'linear', color: '#8986dd', opacity: .5,lineWidth:3, visibleInLegend: true, labelInLegend:' trend'},
+//		  1: {type: 'linear', color: '#d07b24', opacity: .5,lineWidth:3, visibleInLegend: true, labelInLegend:' trend'}
+//		},
 		
 		colors: [ 'blue', 'red', 'green', 'black','yellow', 'gray'],
-		pointSize: 5,
+		pointSize: 12,
 		pointShape: 'square'
 	};
 
@@ -169,36 +175,31 @@ function drawFormChart(idx,homeTeam,awayTeam) {
 			right:'15%', top:'10%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
-				'fill': '#BFC8D4',
+				'fill': fillColor,
 				'opacity': 10
 			 }
 		 },
 		lineWidth: 5,
 		width: 900,
 		height: 450,
-		backgroundColor: '#d7dde5',
+		backgroundColor: backgColor,
 		title:  'Team FORM progres throught the weeks',
-		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },
+		titleTextStyle: { color: titleColor, fontName: 'Montserrat', fontSize: '15' },
 		tooltip: {isHtml: true},
-		axes:{
-			x:{
-				0:{side:'top'}
-			}
-		},
 		legend: { position: 'right',textStyle: {fontSize: 10} },
 		tooltip: {isHtml: true},
 		hAxis: {
-			gridlines: { color:  'f2f2f2'},
+			gridlines: { color:  h_gridlines},
 			//gridlines: { count:  0},
-			baselineColor: 'transparent',
-			baselineColor: '#587dae',
+//			baselineColor: 'transparent',
+			baselineColor: h_baselineColor ,
 			title: 'Weeks',
 			titleTextStyle:{fontSize: 10}
 		},
 		vAxis: {
-		 baselineColor: '#587dae',
+			baselineColor: v_baselineColor,
 			//gridlines: { count: 6 },
-			gridlines: { color:  'f2f2f2'},
+			gridlines: { color:  v_gridlines},
 			title: 'Value',
 			titleTextStyle:{fontSize: 10}
 		},
@@ -210,17 +211,15 @@ function drawFormChart(idx,homeTeam,awayTeam) {
 		},
 		
 		colors: [ 'blue', 'red', 'green', 'black','yellow', 'gray'],
-		//pointSize: 5,
+//		pointSize: 5,
 		//pointShape: 'square'
 	};
 
-	//var chart = new google.visualization.LineChart(chartId);
 	var chart = new google.visualization.LineChart(document.getElementById('form_chart'+idx));
 	//var chart = new google.charts.Line(document.getElementById('the_chart'));
 
 	//google.visualization.events.addListener(chart, 'ready', animate);
 	chart.draw(data, google.charts.Line.convertOptions(options));
-	//form_form_flag=true;
 }
 		
 
@@ -242,41 +241,36 @@ function drawAtackChart(idx,homeTeam,awayTeam) {
 			right:'15%', top:'10%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
-				'fill': '#BFC8D4',
+				'fill': fillColor,
 				'opacity': 10
 			 }
 		 },
-		lineWidth: 3,
+		lineWidth: 4,
 		width: 900,
 		height: 450,
-		backgroundColor: '#d7dde5',
+		backgroundColor: backgColor,
 		title:  'Team Atack FORM progres throught the weeks',
-		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },
+		titleTextStyle: { color: titleColor, fontName: 'Montserrat', fontSize: '15' },
 		tooltip: {isHtml: true},
-		axes:{
-			x:{
-				0:{side:'top'}
-			}
-		},
 		legend: { position: 'right',textStyle: {fontSize: 10} },
 		tooltip: {isHtml: true},
 		hAxis: {
-			gridlines: { color:  'f2f2f2'},
+			gridlines: { color: h_gridlines},
 			//gridlines: { count:  0},
-			baselineColor: 'transparent',
-			baselineColor: '#587dae',
+//			baselineColor: 'transparent',
+			baselineColor: h_baselineColor,
 			title: 'Weeks',
 			titleTextStyle:{fontSize: 10}
 		},
 		vAxis: {
-		 baselineColor: '#587dae',
+			baselineColor: v_baselineColor,
 			//gridlines: { count: 6 },
-			gridlines: { color:  'f2f2f2'},
+			gridlines: { color:  v_gridlines},
 			title: 'Value',
 			titleTextStyle:{fontSize: 10}
 		},
 		colors: [ 'blue', 'red', 'green', 'black','yellow', 'gray'],
-		pointSize: 7,
+		pointSize: 12,
 		pointShape: 'square'
 	};
 
@@ -304,41 +298,36 @@ function drawDeffChart(idx,homeTeam,awayTeam) {
 			right:'15%', top:'10%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
-				'fill': '#BFC8D4',
+				'fill': fillColor,
 				'opacity': 10
 			 }
 		 },
-		lineWidth: 3,
+		lineWidth: 4,
 		width: 900,
 		height: 450,
-		backgroundColor: '#d7dde5',
+		backgroundColor: backgColor,
 		title:  'Team Defence FORM progres throught the weeks',
-		titleTextStyle: { color: '#5c5c5c', fontName: 'Montserrat', fontSize: '15' },
+		titleTextStyle: { color: titleColor, fontName: 'Montserrat', fontSize: '15' },
 		tooltip: {isHtml: true},
-		axes:{
-			x:{
-				0:{side:'top'}
-			}
-		},
 		legend: { position: 'right',textStyle: {fontSize: 10} },
 		tooltip: {isHtml: true},
 		hAxis: {
-			gridlines: { color:  'f2f2f2'},
+			gridlines: { color:  h_gridlines},
 			//gridlines: { count:  0},
-			baselineColor: 'transparent',
-			baselineColor: '#587dae',
+//			baselineColor: 'transparent',
+			baselineColor: h_baselineColor,
 			title: 'Weeks',
 			titleTextStyle:{fontSize: 10}
 		},
 		vAxis: {
-		 baselineColor: '#587dae',
+			baselineColor: v_baselineColor,
 			//gridlines: { count: 6 },
-			gridlines: { color:  'f2f2f2'},
+			gridlines: { color:  v_gridlines},
 			title: 'Value',
 			titleTextStyle:{fontSize: 10}
 		},
 		colors: [ 'blue', 'red', 'green', 'black','yellow', 'gray'],
-		pointSize: 5,
+		pointSize: 12,
 		pointShape: 'square'
 	};
 
@@ -374,14 +363,13 @@ function barOfTot(obj1, obj2, idx){
 	]);
 
 	var options = {
-		
 	   title: 'Total results of the teams ',
 	   chartArea: {
 			left: '10%',bottom: '10%',
 			right:'5%', top:'15%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
-				 //'fill': '#BFC8D4',
+//				 'fill': fillColor,
 				 'opacity': 10
 			}
 		},
@@ -423,7 +411,7 @@ function barOfOp(obj1, obj2, idx){
 				right:'5%', top:'15%',
 				//width: '90%', height: '90%',
 					'backgroundColor': {
-					 //'fill': '#BFC8D4',
+//					 'fill': fillColor,
 					 'opacity': 10
 				}
 			},
@@ -456,18 +444,13 @@ function barOfAll(obj1,obj2,idx){
 	]);
 
     var options = {
-         /*material options
-		  chart: {
-          title: 'Teams Concrete Results',
-          subtitle: 'Compared In vs Out',
-         ,*/
 		 title: 'In vs Out results of the teams ',
 		 chartArea: {
 			left: '10%',bottom: '10%',
 			right:'5%', top:'15%',
 			//width: '90%', height: '90%',
 			'backgroundColor': {
-			 //'fill': '#BFC8D4',
+//			 'fill': fillColor,
 			 'opacity': 10
 			}
 		 },
