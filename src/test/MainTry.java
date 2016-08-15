@@ -51,27 +51,27 @@ public class MainTry {
 
 	public static void main(String[] args) throws SQLException, IOException {
 		initCCAllStruct();
-		 Strategy strategy = new Strategy();
-		 //strategy.task();
-//		 strategy.tryTask();
+		Strategy strategy = new Strategy();
+		// strategy.task();
+		// strategy.tryTask();
 
-//		 Soccerpunter_homePage sch= new Soccerpunter_homePage();
-//		 sch.goGetCompetitions();
-//		 SoccerPunterOdds spo = new SoccerPunterOdds();
-//		 spo.getDailyOdds(LocalDate.now());
+		// Soccerpunter_homePage sch= new Soccerpunter_homePage();
+		// sch.goGetCompetitions();
+		// SoccerPunterOdds spo = new SoccerPunterOdds();
+		// spo.getDailyOdds(LocalDate.now());
 
-		 strategy .periodic();
-		 
+		strategy.periodic();
+
 		// corelator();
 		// LocalDate ld =LocalDate.now();
 		// log(ld.toString());
 		// Soccerpunter_homePage sch = new Soccerpunter_homePage();
 		// sch.goGetCompetitions();
-		 //filer();
+		// filer();
 		// System.out.println("Uganda".compareTo("Usa"));
 		//
 
-//		dater();
+		// dater();
 		// distancer() ;
 		// odder();
 	}
@@ -118,7 +118,11 @@ public class MainTry {
 			JsonSyntaxException, IOException {
 		/*
 		 * read from the DB the competitions data and keep them in the java
-		 * Competition* structures
+		 * Competition* structures. IDX orientation is based on the countries
+		 * alphabetical order. (countries that have been added later are in the
+		 * ena. with the last competition id, but in case of alphabetical order
+		 * they will not be last so the competition order is different from
+		 * compId order)
 		 */
 		CountryCompetition cp = new CountryCompetition();
 		Conn conn = new Conn();
@@ -127,20 +131,22 @@ public class MainTry {
 		if (cp.ccasList.size() > 0) {
 			System.out.println("Country competition structure is ready");
 		} else {
-			System.out
-					.println("Country competition structure not initialized corectly");
+			System.out.println("Country competition "
+					+ "structure not initialized corectly");
 		}
+
 		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
 			CountryCompetition.idToIdx.put(CountryCompetition.ccasList.get(i)
 					.getCompId(), i);
 		}
+
 		cp.readsdStruct(conn.getConn());
 		if (cp.sdsList.size() > 0) {
-			System.out
-					.println("Country competition Scorer Data structure is ready");
+			System.out.println("Country competition "
+					+ "Scorer Data structure is ready");
 		} else {
-			System.out
-					.println("Country competition scorer data structure not initialized corectly");
+			System.out.println("Country competition scorer data structure "
+					+ "not initialized corectly");
 		}
 		cp.readAllowedComps();
 		cp.readNotAllowedComps();

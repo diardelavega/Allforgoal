@@ -56,7 +56,7 @@ public class Strategy {
 				score.getScheduledTomorrow();
 				scheduledOddsAdder();
 				tmf.corelatePunterXScorerTeams();
-				testPredMaker();
+				testPredFileMaker();
 				tmf.storeToTempMatchesDB();
 				score.clearLists();
 				
@@ -68,7 +68,7 @@ public class Strategy {
 					score.getScheduledTomorrow();
 					scheduledOddsAdder();
 					tmf.corelatePunterXScorerTeams();
-					testPredMaker();
+					testPredFileMaker();
 					tmf.storeToTempMatchesDB();
 					score.getFinishedYesterday();
 					tmf.completeYesterday();
@@ -154,7 +154,7 @@ public class Strategy {
 		spo.getDailyOdds(lastDatCheck);
 	}
 
-	public void testPredMaker() {
+	public void testPredFileMaker() {
 		/* for all the new matches create a prediction file */
 		MatchToTableRenewal mttr = new MatchToTableRenewal();
 //		TODO fix. Key is the comp id not the index in the data structure!!!

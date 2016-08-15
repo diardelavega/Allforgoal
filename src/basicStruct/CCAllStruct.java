@@ -1,5 +1,10 @@
 package basicStruct;
 
+/**
+ * @author Administrator
+ *
+ *         Country Competition all structure. Java Obj corresponding to db
+ */
 public class CCAllStruct {
 
 	private String country;
@@ -71,7 +76,7 @@ public class CCAllStruct {
 		this._level = _level;
 	}
 
-	public String printer(){
+	public String printer() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(compId);
 		sb.append(",");
@@ -85,7 +90,7 @@ public class CCAllStruct {
 		sb.append(",");
 		sb.append(_level);
 		sb.append(",");
-//		System.out.println(sb.toString());
+		// System.out.println(sb.toString());
 		return sb.toString();
 	}
 }

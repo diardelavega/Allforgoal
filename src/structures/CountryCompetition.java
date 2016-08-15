@@ -261,7 +261,6 @@ public class CountryCompetition {
 			idx = smallScorerCompidxSearch(idx, country, competition);
 			// allowedcomps.put(compName, idx);
 			return idx;
-
 		}
 	}
 

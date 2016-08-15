@@ -33,6 +33,7 @@ public class AnalyticFileHandler {
 	private File bastFileFolder = new File("C:/BastData");
 	private File predDataFolder = new File(bastFileFolder + "/Pred/Data");
 	private File predTestFolder = new File(bastFileFolder + "/Pred/Test");
+	private File imageFolder = new File(bastFileFolder + "/Img");
 	// private File csvFile = new File(bastFileFolder + "/matches.csv");
 	// private File mDataFile = new File(bastFileFolder + "/matchData.csv");
 	private String wordSeparator = "__";
@@ -169,6 +170,32 @@ public class AnalyticFileHandler {
 		File tFile = new File(cFolder + sb.toString());
 
 		return tFile;
+	}
+
+	// --------------------------return Txt
+
+	public String getImageFileName(int compId, String compName, String country) {
+		/* see if image file exists and has data in it. Return its path or null */
+
+		// CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
+		File cFolder = new File(imageFolder + "/" + country);
+		if (!cFolder.exists()) {
+			cFolder.mkdirs();
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separator);
+		sb.append(compName);
+		sb.append(wordSeparator);
+		sb.append(compId);
+		// sb.append(wordSeparator);
+		sb.append(".RData");
+
+		File tFile = new File(cFolder + sb.toString());
+		if (tFile.exists() && tFile.length() > 10) {
+			return (cFolder + sb.toString());
+		}
+		return null;
 	}
 
 	public boolean isTestFile(int compId, String compName, String country,
