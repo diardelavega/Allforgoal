@@ -114,6 +114,21 @@ public class RHandler {
 		 * initiate the DTF objects and execute a cros fold validation crfv for
 		 * that cometitiom
 		 */
+		CCAllStruct ccs;
+		for (int i : un_foundImagesCompIds) {
+			ccs = CountryCompetition.ccasList.get(CountryCompetition.idToIdx
+					.get(i));
+			File tempFile = afh.getTrainFileName(ccs.getCompId(),
+					ccs.getCompetition(), ccs.getCountry());
+			if (tempFile.exists() && tempFile.length() > 10) {
+				predTrainPath.add(tempFile.getAbsolutePath());
+			} else {
+				log.warn("Comp Id {} has no Training Prediction file", i);
+				un_foundImagesCompIds.remove(i);
+			}
+		}
+		// TODO call R files & funct to initiate the crfv for this competition
+		// TODO call R to predict next match matchline pred data
 	}
 
 }
