@@ -5,42 +5,47 @@
 		the curent Week match data are needed because in the reduced view we only display teams, scores and week) 
 
 
+------------------------------------------------------------------------------------------------------
 !!* in the full pred for the specific matches: create the full csvTxt with the two teams only and not all
 	the competitions teams
 
 
+------------------------------------------------------------------------------------------------------
 !!* opt:) in the TrainPredFile class in the red func extra argument of avgftscore.
 
 
-
+------------------------------------------------------------------------------------------------------
 !- to measure the last 10 weeks for the common adversaries we shuld start from common adversaries so that
 	to have available the value of the curent week
 
 
 
+------------------------------------------------------------------------------------------------------
 -- only norway has the training full with results and match time
 
 
 
 **- oddsnstats is off-line
 
-
+------------------------------------------------------------------------------------------------------
 *-set the ht& ft results for the test file to NA instead of 0 as they curently are.
 	!- can\t chanege theb meacouse na is string and ht,ft take int vars => uninitialized they will be 0
 
 
-
-*** based on the curend task function @ Strategy the odds for the tommorrows matches are not being calculated
+------------------------------------------------------------------------------------------------------
+!!!*** based on the curend task function @ Strategy the odds for the tommorrows matches are not being calculated
 !- the problem was the  tommorows odds where not being taken
 
-
+------------------------------------------------------------------------------------------------------
 -- The csv files are just written on but not being read, create novel functions to read them
 !!!@ Done Fixed
 
+------------------------------------------------------------------------------------------------------
 !!! i am no inserting the time string to the database in matches and tempMatches tables; only on the pred file
+------------------------------------------------------------------------------------------------------
 
-
-*** Test and see what happens to matches without Ht score data!!
+!!!*** Test and see what happens to matches without Ht score data!!
+------------------------------------------------------------------------------------------------------
 
 
 
