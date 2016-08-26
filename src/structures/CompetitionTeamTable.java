@@ -39,9 +39,10 @@ public class CompetitionTeamTable {
 	private String tableName;
 	private int rowSize;// rows in the db
 
-	public CompetitionTeamTable(String tableName) {
+	public CompetitionTeamTable(String tableName, String countryName) {
 		super();
-		this.tableName = tableName.replace(".", "");
+		//TODO set "this.tableName"  to a combo of country$tablename
+		this.tableName = (tableName+"$"+countryName).replace(".", "");
 	}
 
 	public void existsDb() throws SQLException {
@@ -211,6 +212,7 @@ public class CompetitionTeamTable {
 	}
 
 	public void createFullTable() throws SQLException {
+		//TODO get a combo of country& talename
 		String create = "create table " + tableName + "_fullTable ( ";
 
 		String attributes = " team varchar(25) not null unique, "
@@ -502,8 +504,8 @@ logger.info("{}",o.line());
 		return tableName;
 	}
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
+	public void setTableNames(String tableName, String country) {
+		this.tableName = (tableName+"$"+country).replace(".", "");
 	}
 
 	

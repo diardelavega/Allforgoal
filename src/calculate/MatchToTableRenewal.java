@@ -129,7 +129,7 @@ public class MatchToTableRenewal {
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment(false);
 				pf.setWeek(week);
-				// pf.setMatchTime(mobj.getMatchTime());
+				 pf.setMatchTime(mobj.getMatchTime());
 				// pf.setT1Ht(mobj.getHt1());
 				// pf.setT2Ht(mobj.getHt2());
 				// pf.setT1Ft(mobj.getFt1());
@@ -299,14 +299,15 @@ public class MatchToTableRenewal {
 		 */
 
 		compName = compName.replaceAll(" ", "_").replace(".", "");
-		ctt = new CompetitionTeamTable(compName);
+		country= country.replaceAll(" ", "_").replace(".", "");
+		ctt = new CompetitionTeamTable(compName,country);
 
 		ctt.existsDb();
 		if (ctt.isTable()) {
 			logger.info("----- IT IS TABLE!!!   size {}", ctt.getRowSize());
 			if (ctt.getRowSize() >= 1)
 				ctt.tableReader();
-			ctt.testPrint();
+//			ctt.testPrint();
 			N = ctt.getClassificationPos().size();
 		} else {
 			ctt.createFullTable();

@@ -96,7 +96,7 @@ public class Demo {
 		
 		// // ----------------TEST-----------
 		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-//		spm.competitionResultsGrabbers(compIdx);
+		spm.competitionResultsGrabbers(compIdx);
 		 spm.remainingResultsGraber(compIdx);
 
 		/*

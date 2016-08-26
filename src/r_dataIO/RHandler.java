@@ -1,22 +1,19 @@
 package r_dataIO;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.Rengine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import basicStruct.CCAllStruct;
-import api.functionality.CompIdToCountryCompCompID;
-import api.functionality.obj.CountryCompCompId;
-import diskStore.AnalyticFileHandler;
 import structures.CountryCompetition;
 import test.MatchGetter;
+import basicStruct.CCAllStruct;
+import diskStore.AnalyticFileHandler;
 
 /**
  * @author Administrator
@@ -28,7 +25,9 @@ import test.MatchGetter;
  *         All files must exist in order to make a prediction*****************
  *         From what i understand the data passed to R through JRI can only be
  *         of String format.(so the data from the list will be written as a
- *         c(data,dat,dat,))
+ *         c(data,dat,dat,) r vector format & java String).& in the
+ *         CompletableFuture for runnable shuld go with runAsync instead of
+ *         suplyAsync also i doesnt accepts exeptionally method??
  */
 
 public class RHandler {
@@ -40,29 +39,9 @@ public class RHandler {
 	private List<Integer> un_foundImagesCompIds;
 	private AnalyticFileHandler afh = new AnalyticFileHandler();
 
-	public void makePrediction() throws SQLException {
-		// for all keys of the new Matches
+	private void listFiller(CCAllStruct ccs, String ret) {
+		/* handle the files (the found and the missing ones) */
 
-		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
-			// CountryCompCompId ccci = new CompIdToCountryCompCompID()
-			// .search(key);
-			int idx = CountryCompetition.idToIdx.get(key);
-			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			// unefective ccci with db query
-			// search for image ".Rdata" file with DTF ojbs
-			String ret = afh.getImageFileName(ccs.getCompId(),
-					ccs.getCompetition(), ccs.getCountry());
-			if (ret != null) {
-				listFiller(ccs, ret);
-			} else {
-				un_foundImagesCompIds.add(key);
-			}
-		}
-
-		rVectorMaker();
-	}
-
-	public void listFiller(CCAllStruct ccs, String ret) {
 		// add the image *.RData file path in the list
 		foundImagePath.add(ret);
 
@@ -71,7 +50,7 @@ public class RHandler {
 				ccs.getCompetition(), ccs.getCountry());
 		if (tempFile.exists() && tempFile.length() > 10) {
 			predTrainPath.add(tempFile.getAbsolutePath());
-			// Test file should exist becouse it should have been created
+			// Test file should exist because it should have been created
 			// in the previous step
 			predTestPath.add(afh.getLeatestTestFileName(ccs.getCompId(),
 					ccs.getCompetition(), ccs.getCountry()).getAbsolutePath());
@@ -81,28 +60,7 @@ public class RHandler {
 		}
 	}
 
-	public void rVectorMaker() {
-		/* use the found lists to create vectors to send to R */
-		if (foundImagePath.size() != predTestPath.size()) {
-			log.warn("Not equal found array sizes");
-			return;
-		}
-		StringBuilder sbf = new StringBuilder("c(");
-		StringBuilder sbtr = new StringBuilder("c(");
-		StringBuilder sbts = new StringBuilder("c(");
-		int i = 0;
-		for (; i < foundImagePath.size() - 1; i++) {
-			sbf.append("'" + foundImagePath.get(i) + "',");
-			sbtr.append("'" + predTrainPath.get(i) + "',");
-			sbts.append("'" + predTestPath.get(i) + "',");
-		}
-		// the last record of the vector should not contain "," comma at the end
-		sbf.append("'" + foundImagePath.get(i + 1) + "'(");
-		sbtr.append("'" + predTrainPath.get(i + 1) + "')");
-		sbts.append("'" + predTestPath.get(i + 1) + "')");
-	}
-	
-	public String listToRvector(List<String> list){
+	private String listToRvector(List<String> list) {
 		StringBuilder sbf = new StringBuilder("c(");
 		int i = 0;
 		for (; i < list.size() - 1; i++) {
@@ -112,21 +70,165 @@ public class RHandler {
 		return sbf.toString();
 	}
 
-	public void testRcall() {
-		Rengine re = new Rengine(new String[] { "--no-save" }, true, null);
-		re.eval(" source('C:/TotalPrediction/DTF_Create.R')");
-//		List<String> slist = new ArrayList<String>();
-//		slist.add("C:/BastData/Pred/Data/Norway/Eliteserien__112__Data");
-//		String vecs =listToRvector(slist);
-//		re.eval("runAll("+vecs+")");
+	public void predictAll() throws SQLException {
+		/*
+		 * read the scheduled matches competitions; search initially for the
+		 * dtf_objs image file of that competition; for the found images get the
+		 * train and test file path; with 3 lists of file paths transformed to R
+		 * vecors call the predict function
+		 */
 
-		int k =re.eval("test(8)").asInt();
-		int kk =re.eval("max(8,3,6)").asInt();
-		REXP ee = re.eval("max(8,3,6)");
-		System.out.println(k);
-		System.out.println(kk);
-		System.out.println(ee);
-		re.end();
+		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
+			int idx = CountryCompetition.idToIdx.get(key);
+			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
+			String ret = afh.getImageFileName(ccs.getCompId(),
+					ccs.getCompetition(), ccs.getCountry());
+			if (ret != null) {
+				listFiller(ccs, ret);
+			} else {
+				un_foundImagesCompIds.add(key);
+			}
+		}
+		// after that the lists should be full
+		Rcall_Pred();
+	}
+
+	public void predictSome(List<Integer> comp_Ids) {
+		/* predict the competitions given by the list of compeyiyions ids */
+		for (Integer key : comp_Ids) {
+			int idx = CountryCompetition.idToIdx.get(key);
+			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
+			String ret = afh.getImageFileName(ccs.getCompId(),
+					ccs.getCompetition(), ccs.getCountry());
+			if (ret != null) {
+				listFiller(ccs, ret);
+			} else {
+				un_foundImagesCompIds.add(key);
+			}
+		}
+		// after that the lists should be full
+		Rcall_Pred();
+	}
+
+	public void predictOne(int comp_Id) {
+		/* predict the competitions given by the list of compeyiyions ids */
+		int idx = CountryCompetition.idToIdx.get(comp_Id);
+		CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
+		String ret = afh.getImageFileName(ccs.getCompId(),
+				ccs.getCompetition(), ccs.getCountry());
+		if (ret != null) {
+			listFiller(ccs, ret);
+		} else {
+			un_foundImagesCompIds.add(comp_Id);
+		}
+		// after that the lists should be full
+		Rcall_Pred();
+	}
+
+	public void reEvaluate(List<Integer> comp_Ids) {
+		/*
+		 * To be used after we ahve the actual data from the matches we
+		 * predicted. To keep variating the points we have asigned to the
+		 * predictive algorithms.
+		 */
+
+		for (Integer key : comp_Ids) {
+			int idx = CountryCompetition.idToIdx.get(key);
+			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
+			String ret = afh.getImageFileName(ccs.getCompId(),
+					ccs.getCompetition(), ccs.getCountry());
+			if (ret != null) {
+				listFiller(ccs, ret);
+			} else {
+				un_foundImagesCompIds.add(key);
+			}
+		}
+		// after that the lists should be full
+		Rcall_ReEvaluate();
+	}
+
+	public void Rcall_DTF(List<String> slist) {
+		String trVec = listToRvector(slist);
+		Runnable r = () -> {
+			Rengine re = null;
+			try {
+				re = new Rengine(new String[] { "--no-save" }, false, null);
+				re.eval(" source('C:/TotalPrediction/DTF_Create.R')");
+				re.eval("runAll(" + trVec + ")");
+				re.end();
+			} catch (Exception e) {
+				log.warn("SOMETHING WHENT WRONG");
+				e.printStackTrace();
+				{// test r func
+					// double d = re.eval("test(100," + vecs + ")").asDouble();
+					// log.info("the double isssss= {}", d);
+				}
+			} finally {
+				re.end();
+			}
+		};
+
+		CompletableFuture futureCount = CompletableFuture.runAsync(r)
+		// .exceptionally(() -> log.warn("aaaa, {}"))
+				.thenAccept(
+						(c) -> log.info("succesfull R DTF completion  msg:{}",
+								c));
+	}
+
+	public void Rcall_Pred() {
+		String dftVec = listToRvector(foundImagePath);
+		String trVec = listToRvector(predTrainPath);
+		String tsVec = listToRvector(predTestPath);
+
+		Runnable r = () -> {
+			Rengine re = null;
+			try {
+				re = new Rengine(new String[] { "--no-save" }, false, null);
+				re.eval(" source('C:/TotalPrediction/Predict.R')");
+				re.eval("predictAll(" + dftVec + ", " + trVec + ", " + tsVec
+						+ ")");
+				re.end();
+			} catch (Exception e) {
+				log.warn("SOMETHING WHENT WRONG");
+				e.printStackTrace();
+			} finally {
+				re.end();
+			}
+		};
+
+		CompletableFuture futureCount = CompletableFuture
+				.runAsync(r)
+				.thenAccept(
+						(c) -> log
+								.info("succesfull R Prediction completion  msg:{}",
+										c));
+	}
+
+	public void Rcall_ReEvaluate() {
+		String dftVec = listToRvector(foundImagePath);
+		String tsVec = listToRvector(predTestPath);
+
+		Runnable r = () -> {
+			Rengine re = null;
+			try {
+				re = new Rengine(new String[] { "--no-save" }, false, null);
+				re.eval(" source('C:/TotalPrediction/ReEvaluation.R')");
+				re.eval("reEvalAll(" + dftVec + ", " + tsVec + ")");
+				re.end();
+			} catch (Exception e) {
+				log.warn("SOMETHING WHENT WRONG");
+				e.printStackTrace();
+			} finally {
+				re.end();
+			}
+		};
+
+		CompletableFuture futureCount = CompletableFuture.runAsync(r)
+				.thenAccept(
+						(c) -> log.info(
+								"succesfull R reEvaluation completion  msg:{}",
+								c));
+
 	}
 
 	public void handleUnfound() {
@@ -137,27 +239,55 @@ public class RHandler {
 		 * that cometitiom
 		 */
 		CCAllStruct ccs;
+		List<String> slist = new ArrayList<String>();
+
 		for (int i : un_foundImagesCompIds) {
 			ccs = CountryCompetition.ccasList.get(CountryCompetition.idToIdx
 					.get(i));
-			File tempFile = afh.getTrainFileName(ccs.getCompId(),
+			File temptrFile = afh.getTrainFileName(ccs.getCompId(),
 					ccs.getCompetition(), ccs.getCountry());
-			if (tempFile.exists() && tempFile.length() > 10) {
-				predTrainPath.add(tempFile.getAbsolutePath());
+			if (temptrFile.exists() && temptrFile.length() > 10) {
+				slist.add(temptrFile.getAbsolutePath());
 			} else {
 				log.warn("Comp Id {} has no Training Prediction file", i);
 				un_foundImagesCompIds.remove(i);
 			}
 		}
-		// TODO call R files & funct to initiate the crfv for this competition
-		// 1 - source DTF_create file;
-		// 2- runAll<- function(trPaths)
-		// 2.5- call runAll() with a vector "c()" of predTrainPath
-		// 3: it will create datasets, DTF objects & store them in the DTF
-		// folder
+		Rcall_DTF(slist);
 
-		// TODO call R to predict next match matchline pred data
+		// call R to predict next match matchline pred data
+		predictSome(un_foundImagesCompIds);
 	}
 
-}
+	// ---------------------
+	public void testRcall() {
+		List<String> slist = new ArrayList<String>();
+		slist.add("C:/BastData/Pred/Data/Norway/Eliteserien__112__Data");
+		String vecs = listToRvector(slist);
 
+		Runnable r = () -> {
+			Rengine re = null;
+			try {
+				re = new Rengine(new String[] { "--no-save" }, false, null);
+				re.eval(" source('C:/TotalPrediction/DTF_Create.R')");
+				re.eval("runAll(" + vecs + ")");
+				re.end();
+			} catch (Exception e) {
+				log.warn("SOMETHING WHENT WRONG");
+				e.printStackTrace();
+				{// test r func
+					// double d = re.eval("test(100," + vecs + ")").asDouble();
+					// log.info("the double isssss= {}", d);
+				}
+			} finally {
+				re.end();
+			}
+		};
+
+		CompletableFuture futureCount = CompletableFuture.runAsync(r)
+		// .exceptionally(() -> log.warn("aaaa, {}"))
+				.thenAccept(
+						(c) -> log.info("succesfull R DTF completion  msg:{}",
+								c));
+	}
+}

@@ -123,8 +123,7 @@ public class MatchGetter {
 					// mobj.setComId(compIdx + 1);
 					// schedNewMatches.add(mobj);
 
-					if (_status.equals(Status.SCHEDULED)
-							&& (status.equals(Status.SCHEDULED) || status
+					if (_status.equals(Status.SCHEDULED) && (status.equals(Status.SCHEDULED) || status
 									.equals(Status.FTR))) {
 						logger.info(
 								"getting SCHEDULED :: country {}  competition {}  compId {}  t1-{}  t2-{}",
