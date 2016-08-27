@@ -42,11 +42,11 @@ public class Demo {
 	public static final Logger logger = LoggerFactory.getLogger(Demo.class);
 
 	public static void main(String[] args) throws IOException, SQLException {
+		// renovateCCall();
 
 		initCCAllStruct();
 		funcGrab();
 	}
-
 
 	public static void initCCAllStruct() throws SQLException,
 			JsonSyntaxException, IOException {
@@ -83,21 +83,19 @@ public class Demo {
 		conn.close();
 	}
 
-	
-	public static void funcGrab() throws IOException, SQLException{
-		int compIdx = CountryCompetition.idToIdx.get(10) ;
+	public static void funcGrab() throws IOException, SQLException {
+		int compIdx = CountryCompetition.idToIdx.get(93);
 		// String link = CountryCompetition.ccasList.get(111).getCompLink();
 		// int compId = CountryCompetition.ccasList.get(111).getCompId();
 
 		logger.info("{}", CountryCompetition.ccasList.get(compIdx).printer());
 		// System.out.println(link);
 		MatchesList ml = new MatchesList();
-		
-		
+
 		// // ----------------TEST-----------
 		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
 		spm.competitionResultsGrabbers(compIdx);
-		 spm.remainingResultsGraber(compIdx);
+		// spm.remainingResultsGraber(compIdx);
 
 		/*
 		 * re calculate prediction file from dab matches without re grabing
@@ -109,10 +107,19 @@ public class Demo {
 		MatchToTableRenewal mttr;
 		for (Integer key : MatchesList.readMatches.keySet()) {
 			mttr = new MatchToTableRenewal(key);
-			mttr.calculate( MatchesList.readMatches.get(key));
+			mttr.calculate(MatchesList.readMatches.get(key));
 		}
 		ml.insertMatches();
 
+	}
 
+	public static void renovateCCall() throws IOException {
+		Soccerpunter_homePage sph = new Soccerpunter_homePage();
+		sph.goGetCompetitions();
+		/*
+		 * in case this function is chosen try to keep in mind the update on the
+		 * link(url addres specifically the year that the competition 2016-2017
+		 * etc) and the coordination of the ccallstruct with the scoredatastruct
+		 */
 	}
 }

@@ -45,6 +45,7 @@ public class MainTry {
 	public static void main(String[] args) throws SQLException, IOException {
 		initCCAllStruct();
 		Strategy strategy = new Strategy();
+		strategy.periodic();
 		// strategy.task();
 		// strategy.tryTask();
 
@@ -53,7 +54,7 @@ public class MainTry {
 		// SoccerPunterOdds spo = new SoccerPunterOdds();
 		// spo.getDailyOdds(LocalDate.now());
 
-		strategy.periodic();
+//		strategy.periodic();
 
 		// corelator();
 		// LocalDate ld =LocalDate.now();
@@ -90,6 +91,7 @@ public class MainTry {
 			System.out.println("Country competition "
 					+ "structure not initialized corectly");
 		}
+		System.out.println("ccall size ------------------: "+cp.ccasList.size());
 
 		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
 			CountryCompetition.idToIdx.put(CountryCompetition.ccasList.get(i)
@@ -97,6 +99,7 @@ public class MainTry {
 		}
 
 		cp.readsdStruct(conn.getConn());
+		System.out.println("ccall size ------------------: "+cp.sdsList.size());
 		if (cp.sdsList.size() > 0) {
 			System.out.println("Country competition "
 					+ "Scorer Data structure is ready");

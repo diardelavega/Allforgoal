@@ -3,7 +3,12 @@
 ----------------------------------------------------------------------------
 
 
+!!--) create a page for the renovation of the CCALLdata (especialy the links and the dates at the end of the
+ competition), the specifications for the correct date of the competitions
 
+
+
+------------------------------------------------------------------------------------------------------
 !!) implemented the read Prediction from the R predictions, untested &&
 **) i think i fixed the tommorrows matches odds problem (now they  should have odds)
 

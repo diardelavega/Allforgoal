@@ -34,15 +34,16 @@ public class Soccerpunter_homePage {
 	private NameCleaner nc = new NameCleaner();
 
 	public void goGetCompetitions() throws IOException {
-		// got tho the home address of the site ang get the link for all the
-		// competitions;
+		 /*got tho the home address of the site ang get the link for all the
+		 competitions;*/
 
-		Document doc = Jsoup.connect(link).userAgent("Mozilla").get();
+		Document doc = Jsoup.connect(link).userAgent(
+				"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+		.maxBodySize(0).timeout(600000).get();
 		// File ssfile = new File("C:/Users/Administrator/Desktop/ss.html");
 		// Document doc = Jsoup.parse(ssfile, "UTF-8");
 
 		Element linkStructure = doc.getElementsByTag("select").get(4);
-		// System.out.println(linkStructure);
 		Elements opts = linkStructure.getElementsByTag("option");
 
 		int i = 0;
@@ -80,18 +81,24 @@ public class Soccerpunter_homePage {
 				ccas.setCompLink(s);
 
 				ccas.printer();
-//				CountryCompetition.ccasList.add(ccas);
+				CountryCompetition.ccasList.add(ccas);
 				// System.out.println(i + " " + s);
 			}
 		}
-//		try {
-//			CountryCompetition cc = new CountryCompetition();
-//			cc.storeCCAllStruct();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			CountryCompetition cc = new CountryCompetition();
+			cc.storeCCAllStruct();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
+	
+	public void renewCCAll(){
+//		goGetCompetitions();
+	}
+	
+	
 	public String getComp(int c, String strComp) {
 		StringBuilder sb = new StringBuilder();
 		String[] s = nc.convertNonAscii(strComp).split(" ");

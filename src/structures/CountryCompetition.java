@@ -48,7 +48,9 @@ public class CountryCompetition {
 	public static Map<String, Integer> allowedcomps = new HashMap<>();
 	public static List<String> notAllowedcomps = new ArrayList<>();
 	FileHandler fh = new FileHandler();
-//TODO implement lists of competition ids for yesterday, today & tomorrows competitions
+
+	// TODO implement lists of competition ids for yesterday, today & tomorrows
+	// competitions
 	public CountryCompetition() {
 		super();
 	}
@@ -189,6 +191,9 @@ public class CountryCompetition {
 						return i;
 					}
 				i++;
+				if (i >= ccasList.size()) {
+					return -1;
+				}
 			}
 
 			// do not search below idx 0
@@ -203,6 +208,9 @@ public class CountryCompetition {
 						return i;
 					}
 				i--;
+				if (i < 0) {
+					return -1;
+				}
 			}
 		} else {// no levestein
 			while (ccasList.get(i).getCountry().equalsIgnoreCase(country)) {
@@ -211,6 +219,9 @@ public class CountryCompetition {
 						return i;
 					}
 				i++;
+				if (i >= ccasList.size()) {
+					return -1;
+				}
 			}
 			// do not search below idx 0
 			if (initial == 0)
@@ -223,6 +234,9 @@ public class CountryCompetition {
 						return i;
 					}
 				i--;
+				if (i < 0) {
+					return -1;
+				}
 			}
 		}
 		return -1;
@@ -254,6 +268,7 @@ public class CountryCompetition {
 
 	// ---------SCORER SEARCH------------------------
 	public int scorerCompIdSearch(String country, String competition) {
+
 		int idx = binaryScorerSearchCountry(country, 0, sdsList.size() - 1);
 		if (idx < 0) {// country not found
 			return idx;
@@ -311,6 +326,7 @@ public class CountryCompetition {
 	private int smallScorerCompidxSearch(int initial, String country,
 			String comp) {
 		/* a small loob for all the competitions a country might have */
+		logger.info("{}", initial);
 		int i = initial;
 		// with levistein
 		while (sdsList.get(i).getCountry().equalsIgnoreCase(country)) {
@@ -323,7 +339,11 @@ public class CountryCompetition {
 					}
 				}
 			i++;
+			if (i >= sdsList.size()) {
+				return -1;
+			}
 		}
+
 		// if the idx was 0, it can not search in idx <0
 		if (initial == 0)
 			return -1;
@@ -339,6 +359,9 @@ public class CountryCompetition {
 					}
 				}
 			i--;
+			if (i < 0) {
+				return -1;
+			}
 		}
 		return -1;
 	}

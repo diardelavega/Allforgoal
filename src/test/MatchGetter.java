@@ -83,7 +83,6 @@ public class MatchGetter {
 		for (Element row : mrows) {
 			if (row.hasAttr("class") && row.attr("class").contains("#")) {
 				String[] clasVal = row.attr("class").split("#");
-				// logger.info("country {},   comp {}", clasVal[0], clasVal[4]);
 
 				if (clasVal[0].contains("WORLD")
 						|| clasVal[0].contains("AFRICA")
@@ -100,15 +99,10 @@ public class MatchGetter {
 						|| clasVal[4].contains("EURO")) {
 					continue;
 				}
-//				 logger.info("{}  {}", clasVal[0], clasVal[4]);
 				int compId = searchForCompIdx(clasVal[0], clasVal[4]);
-				//logger.info("--: {}  {}  {}", compId, clasVal[0], clasVal[4]);
 				if (compId < 0) {
-					// TODO display un-found matches
-					// ul.appendUnfoundTerms(clasVal[0], clasVal[4]);
 					continue;
 				} else {
-					// int compIdx = 10101;
 					Elements tds = row.getElementsByTag("td");
 					String matchTime = tds.get(0).text();
 					String status = tds.get(1).text();
@@ -138,8 +132,6 @@ public class MatchGetter {
 						} else {
 							schedNewMatches.get(compId).add(mobj);
 						}
-
-						// logger.info("scheduled ---  t1-{}  t2-{}", t1, t2);
 						continue;
 					}
 
