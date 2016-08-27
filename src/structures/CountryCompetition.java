@@ -48,7 +48,7 @@ public class CountryCompetition {
 	public static Map<String, Integer> allowedcomps = new HashMap<>();
 	public static List<String> notAllowedcomps = new ArrayList<>();
 	FileHandler fh = new FileHandler();
-
+//TODO implement lists of competition ids for yesterday, today & tomorrows competitions
 	public CountryCompetition() {
 		super();
 	}

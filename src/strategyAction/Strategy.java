@@ -36,7 +36,7 @@ public class Strategy {
 	private MatchGetter score = new MatchGetter();
 
 	// private XscoreUpComing score =new XscoreUpComing();
-	private int periode = 6; // 6 hours
+//	private int periode = 6; // 6 hours
 
 	public void task() throws SQLException, IOException {
 		/*
@@ -53,7 +53,9 @@ public class Strategy {
 				// first time ever to check for temp matches
 				// scrap todays matches & tomorrows
 				score.getScheduledToday();
+				//create a list of compIds playing today
 				score.getScheduledTomorrow();
+				//create a list of compIds playing tomorrow
 				scheduledOddsAdder();
 				tmf.corelatePunterXScorerTeams();
 				testPredFileMaker();
@@ -146,12 +148,15 @@ public class Strategy {
 		//TODO keep track of all available matches and stop if they have odds
 		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
 		b91.scrapBariPage(lastDatCheck);
+		b91.scrapBariPage(lastDatCheck.plusDays(1));
 
 		OddsNStats ons = new OddsNStats();
 		ons.getOddsPage(lastDatCheck);
+		ons.getOddsPage(lastDatCheck.plusDays(1));
 
 		SoccerPunterOdds spo = new SoccerPunterOdds();
 		spo.getDailyOdds(lastDatCheck);
+		spo.getDailyOdds(lastDatCheck.plusDays(1));
 	}
 
 	public void testPredFileMaker() {

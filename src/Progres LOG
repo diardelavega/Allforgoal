@@ -1,6 +1,14 @@
 ----------------------------------------------------------------------
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
+
+
+
+!!) implemented the read Prediction from the R predictions, untested &&
+**) i think i fixed the tommorrows matches odds problem (now they  should have odds)
+
+
+------------------------------------------------------------------------------------------------------
 !!* opt:)For the RedCommonAdversaries the data that is requires is all in the weekMatchData; (Not even the forms  from
 		the curent Week match data are needed because in the reduced view we only display teams, scores and week) 
 

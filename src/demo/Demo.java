@@ -85,7 +85,7 @@ public class Demo {
 
 	
 	public static void funcGrab() throws IOException, SQLException{
-		int compIdx = CountryCompetition.idToIdx.get(112) ;
+		int compIdx = CountryCompetition.idToIdx.get(10) ;
 		// String link = CountryCompetition.ccasList.get(111).getCompLink();
 		// int compId = CountryCompetition.ccasList.get(111).getCompId();
 
