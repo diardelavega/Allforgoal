@@ -117,7 +117,8 @@ public class MatchGetter {
 					// mobj.setComId(compIdx + 1);
 					// schedNewMatches.add(mobj);
 
-					if (_status.equals(Status.SCHEDULED) && (status.equals(Status.SCHEDULED) || status
+					if (_status.equals(Status.SCHEDULED)
+							&& (status.equals(Status.SCHEDULED) || status
 									.equals(Status.FTR))) {
 						logger.info(
 								"getting SCHEDULED :: country {}  competition {}  compId {}  t1-{}  t2-{}",
@@ -129,8 +130,18 @@ public class MatchGetter {
 							List<MatchObj> mol = new ArrayList<>();
 							mol.add(mobj);
 							schedNewMatches.put(compId, mol);
+
+							if (dat.isAfter(LocalDate.now())) {
+								addToTomorrowComps(compId);
+								// add competitions to be interpreted in R
+							}
 						} else {
 							schedNewMatches.get(compId).add(mobj);
+
+							if (dat.isAfter(LocalDate.now())) {
+								// add competitions to be interpreted in R
+								addToTomorrowComps(compId);
+							}
 						}
 						continue;
 					}
@@ -179,6 +190,9 @@ public class MatchGetter {
 			}
 		}// for td
 
+		if (dat.isEqual(LocalDate.now())) {
+			addToTodayComps(); // add compId to todays list to be handled by R
+		}
 	}
 
 	public void getFinishedOnDate(LocalDate dat) {
@@ -321,4 +335,19 @@ public class MatchGetter {
 		}
 	}
 
+	// //////////////////////HELP FUNC/////////////
+	public void addToTomorrowComps(int compId) {
+		if (!CountryCompetition.tommorrowComps.contains(compId))
+			CountryCompetition.tommorrowComps.add(compId);
+	}
+
+	public void addToTodayComps() {
+		/*
+		 * since on strategy the todayMatches are the firs to be added all the
+		 * data in the scheduled matches will be of the same day thas we get it
+		 * all if the date is write
+		 */
+		CountryCompetition.todayComps = (List<Integer>) MatchGetter.schedNewMatches
+				.keySet();
+	}
 }

@@ -1,42 +1,21 @@
 package demo;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.spi.LoggerFactoryBinder;
 
-import com.google.gson.JsonSyntaxException;
-
-import calculate.MatchToTableRenewal;
-import basicStruct.CompIdLinkSoccerPlunter;
-import basicStruct.CountryCompObj;
-import basicStruct.MatchObj;
-import basicStruct.ScorerDataStruct;
-import dbtry.Conn;
-import extra.Status;
-import extra.StringSimilarity;
-import extra.Unilang;
-import scrap.AjaxGrabber;
 import scrap.SoccerPrunterMAtches;
 import scrap.Soccerpunter_homePage;
-import scrap.XscoreUpComing;
-import strategyAction.TempMatchFunctions;
-import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
 import structures.MatchesList;
-import test.MatchQueries;
-import test.Timestamps;
+import calculate.MatchToTableRenewal;
+
+//import com.google.gson.JsonSyntaxException;
+
+import dbtry.Conn;
+import extra.Unilang;
 
 public class Demo {
 	public static final Logger logger = LoggerFactory.getLogger(Demo.class);
@@ -48,8 +27,7 @@ public class Demo {
 		funcGrab();
 	}
 
-	public static void initCCAllStruct() throws SQLException,
-			JsonSyntaxException, IOException {
+	public static void initCCAllStruct() throws SQLException, IOException {
 		/*
 		 * read from the DB the competitions data and keep them in the java
 		 * Competition* structures
@@ -103,7 +81,6 @@ public class Demo {
 		 */
 
 		// // -------------AFTER GRAB Calcualate & Put to Predfile
-		// //TODO handle db tables with the same banes
 		MatchToTableRenewal mttr;
 		for (Integer key : MatchesList.readMatches.keySet()) {
 			mttr = new MatchToTableRenewal(key);

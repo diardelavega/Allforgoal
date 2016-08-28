@@ -18,6 +18,7 @@ import scrap.Bari91UpCommingOdds;
 import scrap.OddsNStats;
 import scrap.SoccerPunterOdds;
 import scrap.XscoreUpComing;
+import structures.CountryCompetition;
 import test.MatchGetter;
 import test.TestFile;
 
@@ -36,7 +37,7 @@ public class Strategy {
 	private MatchGetter score = new MatchGetter();
 
 	// private XscoreUpComing score =new XscoreUpComing();
-//	private int periode = 6; // 6 hours
+	// private int periode = 6; // 6 hours
 
 	public void task() throws SQLException, IOException {
 		/*
@@ -47,34 +48,36 @@ public class Strategy {
 		tmf.openDBConn();
 		try {
 
-			// TODO integrate the test file and data file for prediction
 			if (lastDatCheck == null) {
 				lastDatCheck = LocalDate.now();
 				// first time ever to check for temp matches
 				// scrap todays matches & tomorrows
 				score.getScheduledToday();
-				//create a list of compIds playing today
+				// create a list of compIds playing today
 				score.getScheduledTomorrow();
-				//create a list of compIds playing tomorrow
-				scheduledOddsAdder();
+				// list of compIds for tomorrow is created in getScheduled ...
+				scheduledOddsAdderToday();
+				scheduledOddsAdderTomorrow(lastDatCheck);
 				tmf.corelatePunterXScorerTeams();
 				testPredFileMaker();
 				tmf.storeToTempMatchesDB();
 				score.clearLists();
-				
+
+				// TODO insert R calls Here
 				logger.info("NULL Last Ceck");
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
+					lastDatCheck = LocalDate.now();
 					// is new day so get yesterdays results and tomorrows
 					// schedule
 					score.getScheduledTomorrow();
-					scheduledOddsAdder();
+					scheduledOddsAdderTomorrow(lastDatCheck);
 					tmf.corelatePunterXScorerTeams();
 					testPredFileMaker();
 					tmf.storeToTempMatchesDB();
 					score.getFinishedYesterday();
 					tmf.completeYesterday();
-					lastDatCheck = LocalDate.now();
+					
 					score.clearLists();
 					checkReamaining();
 					logger.info("Last Ceck   BEFORE TODAY");
@@ -140,29 +143,42 @@ public class Strategy {
 		}
 	}
 
-	public void scheduledOddsAdder() {
+	public void scheduledOddsAdderToday() {
 		/*
 		 * go to the specific websites and get the odds for the matches to
 		 * analize.
 		 */
-		//TODO keep track of all available matches and stop if they have odds
 		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
 		b91.scrapBariPage(lastDatCheck);
-		b91.scrapBariPage(lastDatCheck.plusDays(1));
 
-		OddsNStats ons = new OddsNStats();
-		ons.getOddsPage(lastDatCheck);
-		ons.getOddsPage(lastDatCheck.plusDays(1));
+		// whent ofline
+		// OddsNStats ons = new OddsNStats();
+		// ons.getOddsPage(lastDatCheck);
 
 		SoccerPunterOdds spo = new SoccerPunterOdds();
 		spo.getDailyOdds(lastDatCheck);
-		spo.getDailyOdds(lastDatCheck.plusDays(1));
+	}
+
+	public void scheduledOddsAdderTomorrow(LocalDate todate) {
+		/*
+		 * go to the specific websites and get the odds for the matches to
+		 * analize.
+		 */
+		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+		b91.scrapBariPage(todate.plusDays(1));
+
+		// whent ofline
+		// OddsNStats ons = new OddsNStats();
+		// ons.getOddsPage(todate.plusDays(1));
+
+		SoccerPunterOdds spo = new SoccerPunterOdds();
+		spo.getDailyOdds(todate.plusDays(1));
 	}
 
 	public void testPredFileMaker() {
 		/* for all the new matches create a prediction file */
 		MatchToTableRenewal mttr = new MatchToTableRenewal();
-//		TODO fix. Key is the comp id not the index in the data structure!!!
+		//Key is the comp id not the index in the data structure!!!
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
 			try {
 				mttr.testPredFileCreate(MatchGetter.schedNewMatches.get(key),

@@ -2,7 +2,13 @@
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
 
+***!!!) how to handle the R calls based on the today,tomarrow,yesterday comp lists;
+		How to change the tommorrow comps to today and when to add them to yesterday
+		Where and When to add the actual results so that they can be shown on client side 
 
+
+
+--------------------------------------------------------------------------------------------------
 !!--) create a page for the renovation of the CCALLdata (especialy the links and the dates at the end of the
  competition), the specifications for the correct date of the competitions
 

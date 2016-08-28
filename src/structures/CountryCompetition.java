@@ -50,7 +50,12 @@ public class CountryCompetition {
 	FileHandler fh = new FileHandler();
 
 	// TODO implement lists of competition ids for yesterday, today & tomorrows
-	// competitions
+	public static List<Integer> yesterdayComps = new ArrayList<>();
+	public static List<Integer> todayComps = new ArrayList<>();
+	public static List<Integer> tommorrowComps = new ArrayList<>();
+
+	// --------------------------
+
 	public CountryCompetition() {
 		super();
 	}

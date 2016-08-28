@@ -231,7 +231,7 @@ public class AnalyticFileHandler {
 		sb.append(wordSeparator);
 		sb.append(compId);
 		// sb.append(wordSeparator);
-		sb.append(".RData");
+		sb.append(".dtf.RData");
 
 		File tFile = new File(cFolder + sb.toString());
 		if (tFile.exists() && tFile.length() > 10) {

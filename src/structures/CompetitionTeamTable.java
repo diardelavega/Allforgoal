@@ -41,8 +41,11 @@ public class CompetitionTeamTable {
 
 	public CompetitionTeamTable(String tableName, String countryName) {
 		super();
-		//TODO set "this.tableName"  to a combo of country$tablename
-		this.tableName = (tableName+"$"+countryName).replace(".", "");
+		
+		tableName = tableName.replaceAll(" ", "_").replace(".", "");
+		countryName= countryName.replaceAll(" ", "_").replace(".", "");
+		// set "this.tableName"  to a combo of country$tablename
+		this.tableName = (tableName+"$"+countryName);
 	}
 
 	public void existsDb() throws SQLException {
@@ -505,7 +508,10 @@ logger.info("{}",o.line());
 	}
 
 	public void setTableNames(String tableName, String country) {
-		this.tableName = (tableName+"$"+country).replace(".", "");
+		tableName = tableName.replaceAll(" ", "_").replace(".", "");
+		country= country.replaceAll(" ", "_").replace(".", "");
+		// set "this.tableName"  to a combo of country$tablename
+		this.tableName = (tableName+"$"+country);
 	}
 
 	
