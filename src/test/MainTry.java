@@ -1,43 +1,15 @@
 package test;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
 
-import scrap.OddsNStats;
-import scrap.OddsNStatsMatchOdd;
-import scrap.SoccerPunterOdds;
-import scrap.Soccerpunter_homePage;
-import scrap.XscoreUpComing;
 import strategyAction.Strategy;
-import strategyAction.TempMatchFunctions;
 import structures.CountryCompetition;
-import basicStruct.MatchObj;
-
-import com.google.gson.JsonSyntaxException;
-//import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
-//import com.sun.xml.ws.rx.util.FiberExecutor;
 
 import dbtry.Conn;
-import demo.Demo;
-import extra.StringSimilarity;
 import extra.Unilang;
 
 public class MainTry {
@@ -54,7 +26,7 @@ public class MainTry {
 		// SoccerPunterOdds spo = new SoccerPunterOdds();
 		// spo.getDailyOdds(LocalDate.now());
 
-//		strategy.periodic();
+		// strategy.periodic();
 
 		// corelator();
 		// LocalDate ld =LocalDate.now();
@@ -70,9 +42,7 @@ public class MainTry {
 		// odder();
 	}
 
-
-	public static void initCCAllStruct() throws SQLException,
-			JsonSyntaxException, IOException {
+	public static void initCCAllStruct() throws SQLException, IOException {
 		/*
 		 * read from the DB the competitions data and keep them in the java
 		 * Competition* structures. IDX orientation is based on the countries
@@ -91,7 +61,8 @@ public class MainTry {
 			System.out.println("Country competition "
 					+ "structure not initialized corectly");
 		}
-		System.out.println("ccall size ------------------: "+cp.ccasList.size());
+		System.out.println("ccall size ------------------: "
+				+ cp.ccasList.size());
 
 		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
 			CountryCompetition.idToIdx.put(CountryCompetition.ccasList.get(i)
@@ -99,7 +70,8 @@ public class MainTry {
 		}
 
 		cp.readsdStruct(conn.getConn());
-		System.out.println("ccall size ------------------: "+cp.sdsList.size());
+		System.out.println("ccall size ------------------: "
+				+ cp.sdsList.size());
 		if (cp.sdsList.size() > 0) {
 			System.out.println("Country competition "
 					+ "Scorer Data structure is ready");

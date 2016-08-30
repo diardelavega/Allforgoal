@@ -53,14 +53,14 @@ public class Strategy {
 				// first time ever to check for temp matches
 				// scrap todays matches & tomorrows
 				score.getScheduledToday();
-				// create a list of compIds playing today
 				score.getScheduledTomorrow();
-				// list of compIds for tomorrow is created in getScheduled ...
+				// a list of compIds playing today & tomorrow is created
 				scheduledOddsAdderToday();
 				scheduledOddsAdderTomorrow(lastDatCheck);
 				tmf.corelatePunterXScorerTeams();
 				testPredFileMaker();
-				tmf.storeToTempMatchesDB();
+				storeToTempDB();
+				
 				score.clearLists();
 
 				// TODO insert R calls Here
@@ -77,7 +77,7 @@ public class Strategy {
 					tmf.storeToTempMatchesDB();
 					score.getFinishedYesterday();
 					tmf.completeYesterday();
-					
+
 					score.clearLists();
 					checkReamaining();
 					logger.info("Last Ceck   BEFORE TODAY");
@@ -95,6 +95,12 @@ public class Strategy {
 		}
 	}
 
+	public void storeToTempDB() throws SQLException{
+		tmf.storeToTempMatchesDB();
+		tmf.storeToRecentMatchesDB();
+		
+	}
+	
 	public void tryTask() throws SQLException {
 		/* test method for strategu action performance */
 		// tmf.openDBConn();
@@ -178,7 +184,7 @@ public class Strategy {
 	public void testPredFileMaker() {
 		/* for all the new matches create a prediction file */
 		MatchToTableRenewal mttr = new MatchToTableRenewal();
-		//Key is the comp id not the index in the data structure!!!
+		// Key is the comp id not the index in the data structure!!!
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
 			try {
 				mttr.testPredFileCreate(MatchGetter.schedNewMatches.get(key),

@@ -22,7 +22,10 @@ public class TestPredFile implements CsvFileHandler {
 
 	public List<StrStrTuple> daylyAdversaries(int compId, String compName,
 			String country) {
-		/* collect and return the adversary teams playing today */
+		/*
+		 * parse the csv file specified by the parameters and collect and return
+		 * the adversary teams playing today
+		 */
 		CSVParser parser = parser(compId, compName, country);
 
 		List<StrStrTuple> daylyMatchAdversaries = new ArrayList<>();
