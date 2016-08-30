@@ -1,6 +1,25 @@
 ----------------------------------------------------------------------
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
+
+***!!!) how to handle the R calls based on the today,tomarrow,yesterday comp lists;
+		How to change the tommorrow comps to today and when to add them to yesterday
+		Where and When to add the actual results so that they can be shown on client side 
+
+
+
+--------------------------------------------------------------------------------------------------
+!!--) create a page for the renovation of the CCALLdata (especialy the links and the dates at the end of the
+ competition), the specifications for the correct date of the competitions
+
+
+
+------------------------------------------------------------------------------------------------------
+!!) implemented the read Prediction from the R predictions, untested &&
+**) i think i fixed the tommorrows matches odds problem (now they  should have odds)
+
+
+------------------------------------------------------------------------------------------------------
 !!* opt:)For the RedCommonAdversaries the data that is requires is all in the weekMatchData; (Not even the forms  from
 		the curent Week match data are needed because in the reduced view we only display teams, scores and week) 
 

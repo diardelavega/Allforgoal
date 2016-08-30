@@ -8,6 +8,11 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Administrator
+ *
+ *Try and get the ods that couldnt get in the first page from oddsNstats
+ */
 public class OddsNStatsMatchOdd {
 
 	public static final Logger logger = LoggerFactory

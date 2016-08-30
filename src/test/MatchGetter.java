@@ -83,7 +83,6 @@ public class MatchGetter {
 		for (Element row : mrows) {
 			if (row.hasAttr("class") && row.attr("class").contains("#")) {
 				String[] clasVal = row.attr("class").split("#");
-				// logger.info("country {},   comp {}", clasVal[0], clasVal[4]);
 
 				if (clasVal[0].contains("WORLD")
 						|| clasVal[0].contains("AFRICA")
@@ -100,15 +99,10 @@ public class MatchGetter {
 						|| clasVal[4].contains("EURO")) {
 					continue;
 				}
-//				 logger.info("{}  {}", clasVal[0], clasVal[4]);
 				int compId = searchForCompIdx(clasVal[0], clasVal[4]);
-				//logger.info("--: {}  {}  {}", compId, clasVal[0], clasVal[4]);
 				if (compId < 0) {
-					// TODO display un-found matches
-					// ul.appendUnfoundTerms(clasVal[0], clasVal[4]);
 					continue;
 				} else {
-					// int compIdx = 10101;
 					Elements tds = row.getElementsByTag("td");
 					String matchTime = tds.get(0).text();
 					String status = tds.get(1).text();
@@ -136,11 +130,19 @@ public class MatchGetter {
 							List<MatchObj> mol = new ArrayList<>();
 							mol.add(mobj);
 							schedNewMatches.put(compId, mol);
+
+							if (dat.isAfter(LocalDate.now())) {
+								addToTomorrowComps(compId);
+								// add competitions to be interpreted in R
+							}
 						} else {
 							schedNewMatches.get(compId).add(mobj);
-						}
 
-						// logger.info("scheduled ---  t1-{}  t2-{}", t1, t2);
+							if (dat.isAfter(LocalDate.now())) {
+								// add competitions to be interpreted in R
+								addToTomorrowComps(compId);
+							}
+						}
 						continue;
 					}
 
@@ -188,6 +190,9 @@ public class MatchGetter {
 			}
 		}// for td
 
+		if (dat.isEqual(LocalDate.now())) {
+			addToTodayComps(); // add compId to todays list to be handled by R
+		}
 	}
 
 	public void getFinishedOnDate(LocalDate dat) {
@@ -330,4 +335,19 @@ public class MatchGetter {
 		}
 	}
 
+	// //////////////////////HELP FUNC/////////////
+	public void addToTomorrowComps(int compId) {
+		if (!CountryCompetition.tommorrowComps.contains(compId))
+			CountryCompetition.tommorrowComps.add(compId);
+	}
+
+	public void addToTodayComps() {
+		/*
+		 * since on strategy the todayMatches are the firs to be added all the
+		 * data in the scheduled matches will be of the same day thas we get it
+		 * all if the date is write
+		 */
+		CountryCompetition.todayComps = (List<Integer>) MatchGetter.schedNewMatches
+				.keySet();
+	}
 }

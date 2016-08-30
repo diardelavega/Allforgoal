@@ -331,17 +331,9 @@ public class SoccerPrunterMAtches {
 		return errorStatus;
 	}
 
-	// public List<MatchObj> getMatchlist() {
-	// return matchlist;
-	// }
-
 	public void setErrorStatus(String errorStatus) {
 		this.errorStatus = errorStatus;
 	}
-
-	// public void setMatchlist(List<MatchObj> matchlist) {
-	// this.matchlist = matchlist;
-	// }
 
 	public LocalDate getLatestMatchesDate(int compId) throws SQLException {
 		/*

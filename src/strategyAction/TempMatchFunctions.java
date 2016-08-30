@@ -29,8 +29,9 @@ public class TempMatchFunctions {
 	public static final Logger logger = LoggerFactory
 			.getLogger(TempMatchFunctions.class);
 	private Unilang ul = new Unilang(); // Original_Line
-	public List<MatchObj> incomeTempMatchesLists = new ArrayList<>();
+	// public List<MatchObj> incomeTempMatchesListss = new ArrayList<>();
 	public List<MatchObj> readTempMatchesList = new ArrayList<>();
+	public List<MatchObj> readRecentMatchesList = new ArrayList<>();
 
 	private Conn conn;
 
@@ -161,21 +162,76 @@ public class TempMatchFunctions {
 		}
 	}
 
+	// //////////////////////////////////////////
+	// to write and read in the temp and recent matches db tables
+	public void storeToRecentMatchesDB() throws SQLException {
+		String insert = "insert into recentmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		storeToShortMatches(insert);
+	}
+
+	public void readFromRecentMatches(LocalDate dat) throws SQLException {
+		readFromShortMatches(dat, "recentmatches");
+	}
+
+	public boolean deleteFromRecentMatches(LocalDate ld) throws SQLException {
+		openDBConn();
+		boolean b = conn
+				.getConn()
+				.createStatement()
+				.execute(
+						"DELETE FROM tempmatches where dat = ("
+								+ Date.valueOf(ld.minusDays(3)) + ");");
+		closeDBConn();
+		return b;
+	}
+
+	public boolean deleteFromRecentMatches() throws SQLException {
+		openDBConn();
+		boolean b = conn
+				.getConn()
+				.createStatement()
+				.execute(
+						"DELETE FROM tempmatches where dat = ("
+								+ Date.valueOf(LocalDate.now().minusDays(3))
+								+ ");");
+		closeDBConn();
+		return b;
+	}
+
 	public void storeToTempMatchesDB() throws SQLException {
-		logger.info("--------------: STORE To TEMPMATCHS");
+		// /*
+		// * store the matches scheduled for today and tomorrow in the temporary
+		// * database table
+		// */
+		String insert = "insert into tempmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		storeToShortMatches(insert);
+	}
+
+	public void readFromTempMatches(LocalDate dat) throws SQLException {
+		// intended to be used during periodic check for the finished matches
+		logger.info("--------------: Read From TempMatches");
+		readFromShortMatches(dat, "tempmatches");
+
+	}
+
+	private void storeToShortMatches(String insertLine) throws SQLException {
+		/*
+		 * store the matches scheduled for today and tomorrow in the temporary
+		 * database table. which one <temp> or <recent> is decided by the
+		 * insertLine parameter
+		 */
+		logger.info("--------------: STORE To SHORT-MATCHS");
 		// should come after the correlation from newFormat to punter
 
 		openDBConn();
-		String insert = "insert into tempmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		PreparedStatement ps = conn.getConn().prepareStatement(insert);
+		// String insert =
+		// "insert into tempmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		PreparedStatement ps = conn.getConn().prepareStatement(insertLine);
 		int i = 0;
 		// @ this point suppose xscore.shcedmatches is converted to punter teams
 		// for (MatchObj mobj : XscoreUpComing.schedNewMatches) {
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
 			for (MatchObj mobj : MatchGetter.schedNewMatches.get(key)) {// alt
-																		// line
-
-				// ps.setNull(1, java.sql.Types.INTEGER);
 				ps.setLong(1, mobj.getmId());
 				ps.setInt(2, mobj.getComId());
 				ps.setString(3, mobj.getT1());
@@ -190,6 +246,7 @@ public class TempMatchFunctions {
 				ps.setDouble(12, mobj.get_o());
 				ps.setDouble(13, mobj.get_u());
 				ps.setDate(14, mobj.getDat());
+				ps.setString(15, mobj.getMatchTime());
 				// TODO consider for match time element addition #ta1
 				ps.addBatch();
 				i++;
@@ -201,22 +258,22 @@ public class TempMatchFunctions {
 		}
 		ps.executeBatch();
 
-		// closeDBConn();
+		closeDBConn();
+
 	}
 
-	public void readFromTempMatches(LocalDate dat) throws SQLException {
-		// intended to be used during periodic check for the finished matches
-		logger.info("--------------: Read From TempMatches");
-
+	private void readFromShortMatches(LocalDate dat, String tab)
+			throws SQLException {
 		openDBConn();
 		Date date = Date.valueOf(dat);
 		ResultSet rs = conn
 				.getConn()
 				.createStatement()
 				.executeQuery(
-						"SELECT * FROM tempmatches where dat ='" + date
+						"SELECT * FROM " + tab + " where dat ='" + date
 								+ "' order by t1 ;");
 
+		List<MatchObj> mali = new ArrayList<>();
 		MatchObj mobj = null;
 		while (rs.next()) {
 			mobj = new MatchObj();
@@ -234,30 +291,41 @@ public class TempMatchFunctions {
 			mobj.set_o(rs.getFloat(12));
 			mobj.set_u(rs.getFloat(13));
 			mobj.setDat(rs.getDate(14));
+			mobj.setMatchTime(rs.getString(15));
 			// TODO consider for match time element addition #ta2
-			readTempMatchesList.add(mobj);
-			logger.info("t1-: {}   t1-: {}", rs.getString(3), rs.getString(4));
+			mali.add(mobj);
 		}
-		logger.info("readTempMatchesList size ={}", readTempMatchesList.size());
+		switch (tab) {
+		case "tempmatches":
+			readTempMatchesList.addAll(mali);
+			logger.info("read-" + tab + "-MatchesList size ={}",
+					readTempMatchesList.size());
+			break;
+		case "recentmatches":
+			readRecentMatchesList.addAll(mali);
+			logger.info("read-" + tab + "-MatchesList size ={}",
+					readTempMatchesList.size());
+			break;
+		default:
+			break;
+		}
+		closeDBConn();
 	}
 
+	// //////////////////////////////////////////
 	public void complete(LocalDate d) throws SQLException {
 		/*
 		 * intended to be used during the periodical check for results of
 		 * matches. Supposedly the readTempMatchesList is full of matches of a
 		 * certain date ordered by home team for binary search. add results to
 		 * the finished matches; store them to "regular" matches delete them
-		 * from tempmatches db table. This func should be called after Xcore
+		 * from tempmatches db table. This func should be called after Xscore
 		 * class functions have gathered the scores of the finished matches
 		 */
 
 		logger.info("--------------: COMPLETE");
-		openDBConn();
-
-		// fill from db readTempMatchesList List<>, order by t1
+		// fill from db the readTempMatchesList List<>, order by t1
 		readFromTempMatches(d);
-		// logger.info("readTempMatchesList size ={}",
-		// readTempMatchesList.size());
 		if (readTempMatchesList.size() == 0) {
 			logger.info("No temp matches in db");
 			return;

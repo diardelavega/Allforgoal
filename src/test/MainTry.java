@@ -1,57 +1,23 @@
 package test;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
 
-import scrap.OddsNStats;
-import scrap.OddsNStatsMatchOdd;
-import scrap.SoccerPunterOdds;
-import scrap.Soccerpunter_homePage;
-import scrap.XscoreUpComing;
 import strategyAction.Strategy;
-import strategyAction.TempMatchFunctions;
 import structures.CountryCompetition;
-import basicStruct.MatchObj;
-
-import com.google.gson.JsonSyntaxException;
-//import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
-//import com.sun.xml.ws.rx.util.FiberExecutor;
 
 import dbtry.Conn;
-import demo.Demo;
-import extra.StringSimilarity;
 import extra.Unilang;
 
 public class MainTry {
-	{
-		System.out.println("_static");
-	}
-
-	public static void log2() {
-		System.out.println("AAAAAAAAAAAAAA");
-	}
 
 	public static void main(String[] args) throws SQLException, IOException {
 		initCCAllStruct();
 		Strategy strategy = new Strategy();
+		strategy.periodic();
 		// strategy.task();
 		// strategy.tryTask();
 
@@ -60,7 +26,7 @@ public class MainTry {
 		// SoccerPunterOdds spo = new SoccerPunterOdds();
 		// spo.getDailyOdds(LocalDate.now());
 
-		strategy.periodic();
+		// strategy.periodic();
 
 		// corelator();
 		// LocalDate ld =LocalDate.now();
@@ -76,46 +42,7 @@ public class MainTry {
 		// odder();
 	}
 
-	public static void odder() {
-		// OddsNStats odns=new OddsNStats();
-		// odns.getOddsPage(LocalDate.now());
-
-		OddsNStatsMatchOdd ood = new OddsNStatsMatchOdd(
-				"http://oddsandstats.com/as-latina-vs-us-avellino/e/5116387/");
-		ood.pageGraber();
-		log(ood.getOver() + "");
-		log(ood.getUnder() + "");
-	}
-
-	public static void distancer() {
-		// // String s1 ="LIGA II SERIE 1", s2="LIGA I";
-		// String s1 ="GERMANY  BUNDESLIGA WOMEN", s2="GERMANY  BUNDESLIGA";
-		// log(StringSimilarity.levenshteinDistance(s1, s2)+"");
-		String s = "1,23";
-		log(s.replace(",", "."));
-	}
-
-	public static void seter() {
-		// HashSet<String> set = new HashSet<>();
-		TreeSet<String> set = new TreeSet<String>();
-		set.add("Amarija");
-		set.add("bojano");
-		set.add("tercerta");
-
-		// set.g
-
-	}
-
-	public static void corelator() {
-		/* write the corelated terms found and unfound */
-		// XscoreUpComing score = new XscoreUpComing();
-		MatchGetter score = new MatchGetter();
-		score.getFinishedYesterday();
-		// score
-	}
-
-	public static void initCCAllStruct() throws SQLException,
-			JsonSyntaxException, IOException {
+	public static void initCCAllStruct() throws SQLException, IOException {
 		/*
 		 * read from the DB the competitions data and keep them in the java
 		 * Competition* structures. IDX orientation is based on the countries
@@ -134,6 +61,8 @@ public class MainTry {
 			System.out.println("Country competition "
 					+ "structure not initialized corectly");
 		}
+		System.out.println("ccall size ------------------: "
+				+ cp.ccasList.size());
 
 		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
 			CountryCompetition.idToIdx.put(CountryCompetition.ccasList.get(i)
@@ -141,6 +70,8 @@ public class MainTry {
 		}
 
 		cp.readsdStruct(conn.getConn());
+		System.out.println("ccall size ------------------: "
+				+ cp.sdsList.size());
 		if (cp.sdsList.size() > 0) {
 			System.out.println("Country competition "
 					+ "Scorer Data structure is ready");
@@ -189,28 +120,6 @@ public class MainTry {
 		for (ArrayObj ob : list) {
 			ob.print();
 		}
-	}
-
-	public static void filer() throws IOException {
-		String base = "C:/TestFileFolder";
-		File fo = new File(base + "/MyFolder/c34");
-		if (!fo.exists()) {
-			fo.mkdirs();
-		}
-
-		Date date = new Date(15, 3, 2);
-
-		File f = new File(fo + "/"
-				+ /* LocalDate.now() */date.toString().toString());
-		if (!f.exists()) {
-			f.createNewFile();
-		}
-		BufferedWriter br = new BufferedWriter(new FileWriter(f, true));
-		br.append("Marakaibo \n");
-		br.append("Baila baracude \n");
-		br.append("Si ma bailar nuda \n");
-		br.append("Cha cah! \n");
-		br.close();
 	}
 
 	public static void dater() {

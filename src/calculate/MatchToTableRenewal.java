@@ -4,25 +4,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.MatchResult;
 
 import org.slf4j.LoggerFactory;
 
 import structures.CompetitionTeamTable;
 import structures.CountryCompetition;
 import structures.PredictionFile;
-import basicStruct.ClasifficationStruct;
 import basicStruct.MatchObj;
 import dbhandler.BasicTableEntity;
-import dbhandler.FullTableMaker;
-import dbhandler.TableMaker;
 import diskStore.AnalyticFileHandler;
-import diskStore.FileHandler;
 import extra.ClassifiStatus;
 import extra.MatchOutcome;
 import extra.TeamStatus;
@@ -76,8 +70,12 @@ public class MatchToTableRenewal {
 		this.compId = compId2;
 		compName = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(compId)).getCompetition();
+		
 		country = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(compId)).getCountry();
+		
+		compName = compName.replaceAll(" ", "_").replace(".", "");
+		country= country.replaceAll(" ", "_").replace(".", "");
 	}
 
 	public MatchToTableRenewal() {
@@ -97,6 +95,9 @@ public class MatchToTableRenewal {
 				CountryCompetition.idToIdx.get(comp_Id)).getCompetition();
 		country = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(comp_Id)).getCountry();
+		compName = compName.replaceAll(" ", "_").replace(".", "");
+		country= country.replaceAll(" ", "_").replace(".", "");
+		
 		// check if file exists
 		if (afh.isTestFile(comp_Id, compName, country, date)) {
 			// check the dat to see if it is older or neweer than the curent
@@ -129,7 +130,7 @@ public class MatchToTableRenewal {
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment(false);
 				pf.setWeek(week);
-				// pf.setMatchTime(mobj.getMatchTime());
+				 pf.setMatchTime(mobj.getMatchTime());
 				// pf.setT1Ht(mobj.getHt1());
 				// pf.setT2Ht(mobj.getHt2());
 				// pf.setT1Ft(mobj.getFt1());
@@ -183,7 +184,6 @@ public class MatchToTableRenewal {
 		t1 = null;
 		t2 = null;
 		init();// get the db table ready
-		// TODO totMatches = tot matches in + out
 		if (N != 0) {
 			BasicTableEntity tempT = ctt.getClassificationPos().get(0);
 			int all1 = tempT.getMatchesIn() + tempT.getMatchesOut();
@@ -299,14 +299,15 @@ public class MatchToTableRenewal {
 		 */
 
 		compName = compName.replaceAll(" ", "_").replace(".", "");
-		ctt = new CompetitionTeamTable(compName);
+		country= country.replaceAll(" ", "_").replace(".", "");
+		ctt = new CompetitionTeamTable(compName,country);
 
 		ctt.existsDb();
 		if (ctt.isTable()) {
 			logger.info("----- IT IS TABLE!!!   size {}", ctt.getRowSize());
 			if (ctt.getRowSize() >= 1)
 				ctt.tableReader();
-			ctt.testPrint();
+//			ctt.testPrint();
 			N = ctt.getClassificationPos().size();
 		} else {
 			ctt.createFullTable();
@@ -943,11 +944,11 @@ public class MatchToTableRenewal {
 	}
 
 	public void setCompName(String compName) {
-		this.compName = compName;
+		this.compName = compName.replaceAll(" ", "_").replace(".", "");
 	}
 
 	public void setCountry(String country) {
-		this.country = country;
+		this.country = country.replaceAll(" ", "_").replace(".", "");
 	}
 
 }

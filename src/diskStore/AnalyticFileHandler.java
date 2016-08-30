@@ -33,7 +33,8 @@ public class AnalyticFileHandler {
 	private File bastFileFolder = new File("C:/BastData");
 	private File predDataFolder = new File(bastFileFolder + "/Pred/Data");
 	private File predTestFolder = new File(bastFileFolder + "/Pred/Test");
-	private File imageFolder = new File(bastFileFolder + "/Img");
+	private File imageFolder = new File(bastFileFolder + "/DTF");
+	private File dayPredFolder = new File(bastFileFolder + "/WeekPredPoints");
 	// private File csvFile = new File(bastFileFolder + "/matches.csv");
 	// private File mDataFile = new File(bastFileFolder + "/matchData.csv");
 	private String wordSeparator = "__";
@@ -150,6 +151,47 @@ public class AnalyticFileHandler {
 		return (new File(cFolder + sb.toString()));
 	}
 
+	public File getLeatestPredictionFileName(int compId, String compName,
+			String country) {
+		log.info("@ getLeatestPredictionFileName");
+		File cFolder = new File(dayPredFolder + "/" + country);
+		if (!cFolder.exists()) {
+			log.warn("afh Folder not found");
+			return null;
+		}
+		SortedSet<LocalDate> ldl = new TreeSet<>();
+		for (String fil : cFolder.list()) {
+			String[] temp = fil.split(wordSeparator);
+			if (!temp[0].equals(compName)) {
+				// a country folder can have many competitions with different
+				// names and dates; so check the comp name first
+				continue;
+			}
+			try {
+				LocalDate ld = LocalDate.parse(temp[3],
+						DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				ldl.add(ld);
+			} catch (Exception e) {
+				log.warn("afh Exception here; un parsable date");
+				e.printStackTrace();
+			}
+
+		}// for
+		//rebuild the file path (~ = the folder)
+		log.info(ldl.last().toString());
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separator);
+		sb.append(compName);
+		sb.append(wordSeparator);
+		sb.append(compId);
+		sb.append(wordSeparator);
+		sb.append("Pred");
+		sb.append(wordSeparator);
+		sb.append(ldl.last().toString());
+
+		return (new File(cFolder + sb.toString()));
+	}
+	
 	public File getTrainFileName(int compId, String compName, String country) {
 		// create the folder file and a new test file of format
 		// folder/CompName_compId_Data
@@ -189,7 +231,7 @@ public class AnalyticFileHandler {
 		sb.append(wordSeparator);
 		sb.append(compId);
 		// sb.append(wordSeparator);
-		sb.append(".RData");
+		sb.append(".dtf.RData");
 
 		File tFile = new File(cFolder + sb.toString());
 		if (tFile.exists() && tFile.length() > 10) {

@@ -32,7 +32,8 @@ public class MatchPredLineHandler {
 
 	public void doer(CountryCompCompId ccci) {
 		try {
-			wdlWithPredLine(ccci.getCompId(), ccci.getCompetition(), ccci.getCountry());
+			wdlWithPredLine(ccci.getCompId(), ccci.getCompetition(),
+					ccci.getCountry());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -41,18 +42,25 @@ public class MatchPredLineHandler {
 
 	public void wdlWithPredLine(int compId, String compName, String country)
 			throws SQLException {
-		// get teams from the testpredfile
+		// get teams from the test predfile with specific parameters
+		compName = compName.replaceAll(" ", "_").replace(".", "");
+		country= country.replaceAll(" ", "_").replace(".", "");
 		TestPredFile tpf = new TestPredFile();
 		List<StrStrTuple> advlist = tpf.daylyAdversaries(compId, compName,
 				country);
 
-		// get teams & wdl from db
-		Map<String, String> wdll = windrawloseDbGet(compName);
+		/*
+		 * TODO get all the data from the database initially from matches rhen
+		 * from the competiotion specific table
+		 */
+		//with the teams from the file get their wdl data from db
+		String  tableName = (compName+"$"+country);//combo table name
+		Map<String, String> wdll = windrawloseDbGet(tableName);
 
 		for (StrStrTuple t : advlist) {
 			/* for every dayly match get its corresponding wdl of both teams */
 
-//			t.strstrshow();
+			// t.strstrshow();
 			MatchPredWithWinDrawLose mld = new MatchPredWithWinDrawLose();
 			mld.setT1(t.getS1());
 			String[] temp = wdll.get(t.getS1()).split(";");
@@ -78,20 +86,20 @@ public class MatchPredLineHandler {
 
 	}
 
-	public void wdlOnly(CountryCompCompId ccci) throws SQLException{
+	public void wdlOnly(CountryCompCompId ccci) throws SQLException {
 		// get teams from the testpredfile
 		TestPredFile tpf = new TestPredFile();
-		List<StrStrTuple> advlist = tpf.daylyAdversaries(ccci.getCompId(), ccci.getCompetition(),
-				ccci.getCountry());
+		List<StrStrTuple> advlist = tpf.daylyAdversaries(ccci.getCompId(),
+				ccci.getCompetition(), ccci.getCountry());
 
 		// get teams & wdl from db
-//		WinDrawLoseHandler wdl = new WinDrawLoseHandler();
-		Map<String, String> wdll = windrawloseDbGet( ccci.getCompetition());
+		// WinDrawLoseHandler wdl = new WinDrawLoseHandler();
+		Map<String, String> wdll = windrawloseDbGet(ccci.getCompetition());
 
 		for (StrStrTuple t : advlist) {
 			/* for every dayly match get its corresponding wdl of both teams */
 
-//			t.strstrshow();
+			// t.strstrshow();
 			MatchPredWithWinDrawLose mld = new MatchPredWithWinDrawLose();
 			mld.setT1(t.getS1());
 			String[] temp = wdll.get(t.getS1()).split(";");
@@ -115,9 +123,7 @@ public class MatchPredLineHandler {
 		}
 
 	}
-	
-	
-	
+
 	public MatchPredWithWinDrawLose matchPredSimulation(
 			MatchPredWithWinDrawLose mpcomplex) {
 		// MatchPredWithWinDrawLose mpcomplex = new MatchPredWithWinDrawLose();
@@ -137,13 +143,16 @@ public class MatchPredLineHandler {
 
 		return mpcomplex;
 	}
-	
-	public Map<String, String> windrawloseDbGet(String  compName)
+
+	public Map<String, String> windrawloseDbGet(String compName)
 			throws SQLException {
 		/*
-		 * get wdl data from the db table of a competition and tore in a map of
-		 * <teamName,wIn;wout;din;dout;lin;lout>
+		 * get win draw lose (wdl) data from the db table of a competition and
+		 * store in a map of <teamName,wIn;wout;din;dout;lin;lout>
 		 */
+
+		
+		// TODO change compName to a combo of them
 		String query = "SELECT team, winsIn, winsOut, drawsIn,drawsOut,losesIn,losesOut FROM "
 				+ compName + "_FullTable ORDER BY team ;";
 		Conn conn = new Conn();
@@ -177,8 +186,6 @@ public class MatchPredLineHandler {
 		return ml;
 	}
 
-	
-	
 	private String randomProb() {
 		Random rand = new Random();
 		return (rand.nextFloat() * (100 - 0) + 0) + "";
