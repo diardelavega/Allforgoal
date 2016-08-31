@@ -1,6 +1,7 @@
 package strategyAction;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -12,7 +13,10 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mysql.jdbc.Connection;
+
 import calculate.MatchToTableRenewal;
+import dbtry.Conn;
 import basicStruct.MatchObj;
 import scrap.Bari91UpCommingOdds;
 import scrap.OddsNStats;
@@ -50,33 +54,40 @@ public class Strategy {
 
 			if (lastDatCheck == null) {
 				lastDatCheck = LocalDate.now();
-				// first time ever to check for temp matches
-				// scrap todays matches & tomorrows
-				score.getScheduledToday();
-				score.getScheduledTomorrow();
-				// a list of compIds playing today & tomorrow is created
+				score.getScheduledToday(); // a list of compIds playing
+				score.getScheduledTomorrow();// today & tomorrow is created
 				scheduledOddsAdderToday();
 				scheduledOddsAdderTomorrow(lastDatCheck);
 				tmf.corelatePunterXScorerTeams();
-				testPredFileMaker();
-				storeToTempDB();
-				
+				storeToSmallDBsCondition(lastDatCheck);// store condition
 				score.clearLists();
 
-				// TODO insert R calls Here
+				// TODO keep a list of compids aquired for today & tomorrow
+				// TODO insert R calls Here (create & predict)
 				logger.info("NULL Last Ceck");
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
+					// TODO list of compids today-> yesterday+ R_ reevaluate()
+					// TODO tommorrows compids- > today + R calls (create &
+					// predict)
 					lastDatCheck = LocalDate.now();
-					// is new day so get yesterdays results and tomorrows
-					// schedule
+					// TODO compids from schedule to the tomorrows list
 					score.getScheduledTomorrow();
 					scheduledOddsAdderTomorrow(lastDatCheck);
 					tmf.corelatePunterXScorerTeams();
+					/*
+					 * no condition here because we are sure we dont have
+					 * tomorrows matches in db or file; this is the first time
+					 * we got them
+					 */
 					testPredFileMaker();
-					tmf.storeToTempMatchesDB();
+					storeToSmallDBs(); // store in temp and recent matches
 					score.getFinishedYesterday();
 					tmf.completeYesterday();
+					// *** simultaniously with complete an update on recent tab
+					// is made (scores & errors)
+					// TODO After complete all matches of a comp that day call R
+					// re-evaluation
 
 					score.clearLists();
 					checkReamaining();
@@ -88,19 +99,44 @@ public class Strategy {
 					score.clearLists();
 					logger.info("Last Ceck   Finished  TODAY");
 				}
-
 			}
 		} finally {
 			tmf.closeDBConn();
 		}
 	}
 
-	public void storeToTempDB() throws SQLException{
+	private void storeToSmallDBsCondition(LocalDate checkdat)
+			throws SQLException {
+		/*
+		 * TODO a condition so that matches that have already been written
+		 * inside will not be rewritten maybe get the leatest date from db and
+		 * compare it to the today date
+		 */
+		Conn conn = new Conn();
+		conn.open();
+		LocalDate latestDate = conn
+				.getConn()
+				.createStatement()
+				.executeQuery(
+						"SELECT dat from tempmatches order by dat desc limit 1;")
+				.getDate(1).toLocalDate();
+		if (latestDate.isBefore(checkdat)) {
+			// if leatest match in temp db is inserted before the curent check
+			// date then store the info gathered. Avoid duplicates in db and
+			// test file
+			testPredFileMaker();
+			storeToSmallDBs();
+		}
+		conn.close();
+	}
+
+	public void storeToSmallDBs() throws SQLException {
+		/* store to tempmatches and recentmatches */
 		tmf.storeToTempMatchesDB();
 		tmf.storeToRecentMatchesDB();
-		
+
 	}
-	
+
 	public void tryTask() throws SQLException {
 		/* test method for strategu action performance */
 		// tmf.openDBConn();

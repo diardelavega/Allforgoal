@@ -325,6 +325,7 @@ public class TempMatchFunctions {
 
 		logger.info("--------------: COMPLETE");
 		// fill from db the readTempMatchesList List<>, order by t1
+		// matches in temp & recent db tabs is in the scorer syntax
 		readFromTempMatches(d);
 		if (readTempMatchesList.size() == 0) {
 			logger.info("No temp matches in db");
@@ -335,13 +336,16 @@ public class TempMatchFunctions {
 		 * will keep all the selected matches. Thean delete them from temp
 		 * matches table & insert to regular matches dbtable
 		 */
-		List<MatchObj> matches = new ArrayList<MatchObj>();
+		List<MatchObj> matches = new ArrayList<MatchObj>();// all matches
+
 		/*
 		 * will contain at any time match(es) from the same competition, matches
 		 * previously in the temp match db and test prediction file but now with
 		 * the score results. They will be calculated and inserted in the
 		 * competitions Train prediction file with all the matches data so far.
 		 */
+		// same comp matches of consecutive compids during search loops
+		// used for test prediction file
 		List<MatchObj> smallPredictionsList = new ArrayList<MatchObj>();
 		// for (MatchObj m : XscoreUpComing.finNewMatches) { Original_Line
 		int idx = -1;
@@ -381,14 +385,17 @@ public class TempMatchFunctions {
 						m.getT1(), m.getT2(), m.getComId());
 			}
 		}// for
-		deleteTempMatches(matches);// delete finished matches
-		insertMatches(matches);
+		deleteTempMatches(matches);// delete finished matches from tempdb
+		insertMatches(matches);// insertfinished matches from matches
+		updateRecentScores(matches);// set score to recent matches
 		logger.info("Competed standart Completion");
 
 		if (readTempMatchesList.size() > 0) {
 			/*
-			 * keep looping through the remaining matches from the db read to
-			 * delete the postponed or cancelled matches
+			 * it means that in the temporary matches table tempmatches there
+			 * are still matches unfinished or not properly finished, errors
+			 * canceled postponed etc; keep looping through the remaining
+			 * matches to account for the remaining ones
 			 */
 			logger.info("--------------: LOOP TO find postponed");
 			matches.clear();
@@ -400,32 +407,95 @@ public class TempMatchFunctions {
 				if (team != null) {
 					idx = binarySearch(team, 0, readTempMatchesList.size() - 1);
 					if (idx < 0) {
-						// logger.info("---Was not found t1 -{},  t2 {}    ",
-						// m.getT1(), m.getT2());
+						logger.info(
+								"--- broken ones loop; Was not found t1 -{},  t2 {}    ",
+								m.getT1(), m.getT2());
 						continue;
 					} else {
-						if (prevCompId != m.getComId()) {
-							prevCompId = m.getComId();
-							if (smallPredictionsList.size() > 0) {
-								predictionDataSet(smallPredictionsList);
-								smallPredictionsList.clear();
-							}
-						}
-
+						// if (prevCompId != m.getComId()) {
+						// prevCompId = m.getComId();
+						// if (smallPredictionsList.size() > 0) {
+						/*
+						 * error matches will not be added to the prediction
+						 * file
+						 */// predictionDataSet(smallPredictionsList);
+							// smallPredictionsList.clear();
+						// }
+						// }
 						MatchObj mobj = readTempMatchesList.get(idx);
-						mobj.setHt1(m.getHt1());
-						mobj.setHt2(m.getHt2());
-						mobj.setFt1(m.getFt1());
-						mobj.setFt2(m.getFt2());
+						/*
+						 * since the matches were canceled we dont need to
+						 * asigne scores to them
+						 */
+						// mobj.setHt1(m.getHt1());
+						// mobj.setHt2(m.getHt2());
+						// mobj.setFt1(m.getFt1());
+						// mobj.setFt2(m.getFt2());
+						mobj.setMatchTime("err");
 
-						smallPredictionsList.add(mobj);
+						// smallPredictionsList.add(mobj);
 						matches.add(mobj);
 					}
 				}
 			}// for
-			deleteTempMatches(matches);// delete cancelled matches
+				// delete cancelled matches from tempmatches table
+			deleteTempMatches(matches);
+			updateRecentError(matches);// set err to recent matches time
 			logger.info("Competed Old Completion");
 		}
+	}
+
+	private void updateRecentError(List<MatchObj> matches) throws SQLException {
+		PreparedStatement preparedStatement = null;
+
+		String updateTableSQL = "UPDATE recentmatches SET tim = 'err'  WHERE mid =?";
+
+		openDBConn();
+		for (MatchObj m : matches) {
+			// if (m.getFt1() != -1) {// update only matches with results
+			preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
+			preparedStatement.setLong(5, m.getmId());
+			preparedStatement.addBatch();
+		}
+		// }
+		// execute update SQL stetement
+		preparedStatement.executeBatch();
+		// preparedStatement.executeUpdate();
+		closeDBConn();
+
+	}
+
+	private void updateRecentScores(List<MatchObj> matches) throws SQLException {
+		// update the score results of the recent matches table
+		// based on the idea that the mid of the matches is the same in the temp
+		// and recent tables, since the matches inserted into them are
+		// the same and simultaneous
+
+		PreparedStatement preparedStatement = null;
+
+		String updateTableSQL = "UPDATE recentmatches SET ft1 = ?,ft2 = ?,ht1 = ?,ht2 = ? "
+				+ " WHERE mid =?";
+
+		openDBConn();
+		for (MatchObj m : matches) {
+			if (m.getFt1() != -1) {// update only matches with results
+				preparedStatement = conn.getConn().prepareStatement(
+						updateTableSQL);
+
+				preparedStatement.setInt(1, m.getFt1());
+				preparedStatement.setInt(2, m.getFt2());
+				preparedStatement.setInt(3, m.getHt1());
+				preparedStatement.setInt(4, m.getHt2());
+				preparedStatement.setLong(5, m.getmId());
+
+				preparedStatement.addBatch();
+			}
+		}
+		// execute update SQL stetement
+		preparedStatement.executeBatch();
+		// preparedStatement.executeUpdate();
+		closeDBConn();
+
 	}
 
 	public void completeYesterday() throws SQLException {
@@ -594,6 +664,10 @@ public class TempMatchFunctions {
 	}
 
 	private void predictionDataSet(List<MatchObj> predictionsList) {
+		/*
+		 * add the concludet matches and the updated attributes corresponding to
+		 * them to the Prediction training file
+		 */
 		MatchToTableRenewal mttr = new MatchToTableRenewal();
 		try {
 			mttr.calculate(predictionsList);

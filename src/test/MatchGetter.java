@@ -1,13 +1,9 @@
 package test;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,13 +21,10 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.corba.se.impl.orbutil.ObjectWriter;
-
 import structures.CountryCompetition;
 import basicStruct.CCAllStruct;
 import basicStruct.MatchObj;
 import extra.Status;
-import extra.StringSimilarity;
 import extra.Unilang;
 
 /**
@@ -49,7 +42,7 @@ public class MatchGetter {
 	public static List<Integer> reviewedAndEmptyOdds = new ArrayList<Integer>();
 
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";
-	private Unilang ul = new Unilang();
+	// private Unilang ul = new Unilang();
 	private CountryCompetition cc = new CountryCompetition();
 
 	private void scrapMatchesDate(LocalDate dat, String _status)
@@ -347,7 +340,7 @@ public class MatchGetter {
 		 * data in the scheduled matches will be of the same day thas we get it
 		 * all if the date is write
 		 */
-		CountryCompetition.todayComps = (List<Integer>) MatchGetter.schedNewMatches
-				.keySet();
+		CountryCompetition.todayComps.addAll(MatchGetter.schedNewMatches
+				.keySet());
 	}
 }
