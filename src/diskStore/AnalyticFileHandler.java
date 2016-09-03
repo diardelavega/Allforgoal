@@ -108,7 +108,11 @@ public class AnalyticFileHandler {
 		sb.append(dat.toString());
 
 		File tFile = new File(cFolder + sb.toString());
-		return tFile;
+
+		if (tFile.length() > 10)
+			return tFile;
+		else
+			return null;
 	}
 
 	public File getLeatestTestFileName(int compId, String compName,
@@ -151,7 +155,7 @@ public class AnalyticFileHandler {
 		return (new File(cFolder + sb.toString()));
 	}
 
-	public File getLeatestPredictionFileName(int compId, String compName,
+	public File getLeatestRPredictionFileName(int compId, String compName,
 			String country) {
 		log.info("@ getLeatestPredictionFileName");
 		File cFolder = new File(dayPredFolder + "/" + country);
@@ -177,7 +181,7 @@ public class AnalyticFileHandler {
 			}
 
 		}// for
-		//rebuild the file path (~ = the folder)
+			// rebuild the file path (~ = the folder)
 		log.info(ldl.last().toString());
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
@@ -191,7 +195,7 @@ public class AnalyticFileHandler {
 
 		return (new File(cFolder + sb.toString()));
 	}
-	
+
 	public File getTrainFileName(int compId, String compName, String country) {
 		// create the folder file and a new test file of format
 		// folder/CompName_compId_Data
@@ -210,8 +214,10 @@ public class AnalyticFileHandler {
 		sb.append("Data");
 
 		File tFile = new File(cFolder + sb.toString());
-
-		return tFile;
+		if (tFile.length() > 10)
+			return tFile;
+		else
+			return null;
 	}
 
 	// --------------------------return Txt

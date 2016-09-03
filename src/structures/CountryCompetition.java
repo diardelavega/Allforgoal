@@ -52,7 +52,7 @@ public class CountryCompetition {
 	// TODO implement lists of competition ids for yesterday, today & tomorrows
 	public static List<Integer> yesterdayComps = new ArrayList<>();
 	public static List<Integer> todayComps = new ArrayList<>();
-	public static List<Integer> tommorrowComps = new ArrayList<>();
+	public static List<Integer> tomorrowComps = new ArrayList<>();
 
 	// --------------------------
 

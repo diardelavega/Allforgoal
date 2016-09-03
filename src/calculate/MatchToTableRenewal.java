@@ -130,7 +130,7 @@ public class MatchToTableRenewal {
 				pf = new PredictionFile();
 				predictionFileAttributeAsignment(false);
 				pf.setWeek(week);
-				 pf.setMatchTime(mobj.getMatchTime());
+				pf.setMatchTime(mobj.getMatchTime());
 				// pf.setT1Ht(mobj.getHt1());
 				// pf.setT2Ht(mobj.getHt2());
 				// pf.setT1Ft(mobj.getFt1());

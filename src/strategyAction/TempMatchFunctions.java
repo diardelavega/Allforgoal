@@ -186,6 +186,11 @@ public class TempMatchFunctions {
 	}
 
 	public boolean deleteFromRecentMatches() throws SQLException {
+		/*
+		 * from recentmatches delete matches 3 days older than the suplied date
+		 * (supposedly the dupplied date is today at 00:00 , when the date
+		 * changes)
+		 */
 		openDBConn();
 		boolean b = conn
 				.getConn()

@@ -330,8 +330,8 @@ public class MatchGetter {
 
 	// //////////////////////HELP FUNC/////////////
 	public void addToTomorrowComps(int compId) {
-		if (!CountryCompetition.tommorrowComps.contains(compId))
-			CountryCompetition.tommorrowComps.add(compId);
+		if (!CountryCompetition.tomorrowComps.contains(compId))
+			CountryCompetition.tomorrowComps.add(compId);
 	}
 
 	public void addToTodayComps() {
