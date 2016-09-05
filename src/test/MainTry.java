@@ -15,9 +15,11 @@ import extra.Unilang;
 public class MainTry {
 
 	public static void main(String[] args) throws SQLException, IOException {
-		initCCAllStruct();
-		Strategy strategy = new Strategy();
-		strategy.periodic();
+//		initCCAllStruct();
+//		Strategy strategy = new Strategy();
+//		strategy.periodic();
+		
+		
 		// strategy.task();
 		// strategy.tryTask();
 
@@ -40,6 +42,7 @@ public class MainTry {
 		// dater();
 		// distancer() ;
 		// odder();
+		sortArray();
 	}
 
 	public static void initCCAllStruct() throws SQLException, IOException {
@@ -110,13 +113,16 @@ public class MainTry {
 		list.add(ao23);
 		list.add(ao24);
 		// print(list);
-
+//		changeList(list);
 		// Collections.shuffle(list);
 		Collections.sort(list);
 		print(list);
 	}
 
-	public static void print(List<ArrayObj> list) {
+	public static void changeList(List<ArrayObj> list){
+		list.get(0).setAtt1(100);
+	}
+public static void print(List<ArrayObj> list) {
 		for (ArrayObj ob : list) {
 			ob.print();
 		}

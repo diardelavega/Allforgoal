@@ -119,7 +119,7 @@ public class Strategy {
 					tmf.completeYesterday();
 
 					tmf.readDaySkips();
-					writeResultsToTestFile();
+//					writeResultsToTestFile();
 					rh.reEvaluate(CountryCompetition.yesterdayComps);
 
 					CountryCompetition.yesterdayComps = CountryCompetition.todayComps;
@@ -363,32 +363,5 @@ public class Strategy {
 		executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.HOURS);
 	}
 
-	public void writeResultsToTestFile() {
-		/* in the test files created write the actual results */
-		/*
-		 * the data in the test file that is about to be writtend doesn't have
-		 * to contain all the prediction file attributes just the prediction
-		 * attributes id 1,x,2,o,u,1p,2p,ht,ft. *******************************
-		 * The order in which the data is written in the file matters though
-		 */
-		// the writing will be done at the yesterday comps
-		// get all the tets files from yesterdayComps - the unfinished matches
-		// of skipsday
-		CountryCompetition.yesterdayComps
-				.removeAll(TempMatchFunctions.skipDayCompIds);
-
-		// readr recent matches @ tempMAtchFunctions
-
-		// get a list of testPathFiles (yesterday_comps-skipday)
-
-		// for list of testfile paths
-		// read test file1;
-		// get t1 & t2 for each line
-		// find t1 in recent by binary search
-		// conferm by t2 check & compId check
-		// write in the file a reduced test file {t1,t2,ht,sc,1p,2p,ht,ft}
-		// (t1,t2)?? probably not necesary
-		//write the line in the order that the matches were
-
-	}
+	
 }

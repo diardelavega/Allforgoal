@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,12 +18,20 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import strategyAction.TempMatchFunctions;
 import structures.CountryCompetition;
+import structures.ReducedPredictionTestFile;
+import api.functionality.obj.BaseMatchLinePred;
 import basicStruct.CCAllStruct;
 import basicStruct.MatchObj;
+import api.functionality.obj.StrStrTuple;
+import calculate.OutcomeCalculator;
 
 import com.google.gson.Gson;
 
@@ -72,7 +81,14 @@ public class AnalyticFileHandler {
 			bw = new BufferedWriter(new FileWriter(getTestFileName(compId,
 					compName, country, date), true));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void openTestOutput(File file) {
+		try {
+			bw = new BufferedWriter(new FileWriter(file, true));
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -301,8 +317,101 @@ public class AnalyticFileHandler {
 		return 0;
 	}
 
-	public void writeResults(){
-		
+	// ///////////Write Results Section
+	public void writeResultsToTestFile() throws SQLException,
+			FileNotFoundException, IOException {
+		/* in the test files created write the actual results */
+		/*
+		 * the data in the test file that is about to be writtend doesn't have
+		 * to contain all the prediction file attributes just the prediction
+		 * attributes id 1,x,2,o,u,1p,2p,ht,ft. *******************************
+		 * The order in which the data is written in the file matters though
+		 */
+		// the writing will be done at the yesterday comps
+		// get all the tets files from yesterdayComps - the unfinished matches
+		// of skipsday
+		List<Integer> workingIds = CountryCompetition.yesterdayComps;
+		workingIds.removeAll(TempMatchFunctions.skipDayCompIds);
+		LocalDate yesterDat = LocalDate.now().minusDays(1);
+		TempMatchFunctions tmf = new TempMatchFunctions();
+
+		// read yesterdays matches from the db
+		List<MatchObj> recentmatches = tmf.readFromRecentMatches(yesterDat);
+
+		for (int cid : workingIds) {
+			CCAllStruct cc = CountryCompetition.ccasList
+					.get(CountryCompetition.idToIdx.get(cid));
+			List<StrStrTuple> teamsList = readTestFileContent(getTestFileName(
+					cid, cc.getCompetition(), cc.getCountry(), yesterDat));
+			if (teamsList == null)
+				continue;
+
+			addOutcomes(teamsList, recentmatches);
+			// addOutcomes(teamsList,);
+			// binarySearchRecent(workingIds,);
+		}
+		// write in the file a reduced test file {t1,t2,ht,sc,1p,2p,ht,ft}
+		// (t1,t2)?? probably not necesary
+		// write the line in the order that the matches were
 	}
 
-}
+	private List<ReducedPredictionTestFile> addOutcomes(
+			List<StrStrTuple> teamsList, List<MatchObj> recentmatches) {
+		OutcomeCalculator oc = new OutcomeCalculator();
+		List<ReducedPredictionTestFile> redpfList = new ArrayList<ReducedPredictionTestFile>();
+
+		for (int i = 0; i < teamsList.size(); i++) {
+			String team = teamsList.get(i).getT1();
+			int teamIdx = binarySearchRecent(recentmatches, team);
+			if (teamIdx > -1) {
+				if (teamsList.get(i).getT2()
+						.equalsIgnoreCase(recentmatches.get(teamIdx).getT2())) {
+
+					ReducedPredictionTestFile redpf = oc
+							.outcomeAsignment(recentmatches.get(teamIdx));
+					redpfList.add(redpf);
+
+				} else {
+					log.warn("T2 is not the expected one {} - {}", team,
+							recentmatches.get(teamIdx).getT2());
+				}
+			}// if -1
+		}// for
+		return redpfList;
+
+	}
+
+	public List<StrStrTuple> readTestFileContent(File file)
+			throws FileNotFoundException, IOException {
+		/* read t1 and t2 that the test file contains */
+		if (file == null)
+			return null;
+		CSVFormat format = CSVFormat.RFC4180;
+		List<StrStrTuple> tuples = new ArrayList<StrStrTuple>();
+		CSVParser parser = new CSVParser(new FileReader(file), format);
+		for (CSVRecord record : parser) {
+			StrStrTuple sst = new StrStrTuple();
+			sst.setT1(record.get("t1"));
+			sst.setT2(record.get("t2"));
+			tuples.add(sst);
+		}
+		return tuples;
+	}
+
+	private int binarySearchRecent(List<MatchObj> list, String team) {
+		int min = 0;
+		int max = list.size() - 1;
+
+		for (; min < max;) {
+			int mid = (max + min) / 2;
+			if (list.get(mid).getT1().equals(team)) {
+				return mid;
+			} else if (list.get(mid).getT1().compareTo(team) > 0) {
+				max = mid - 1;
+			} else {
+				min = mid + 1;
+			}
+		}
+		return -1;
+	}
+};

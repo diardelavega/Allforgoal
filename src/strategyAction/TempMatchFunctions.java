@@ -18,11 +18,13 @@ import scrap.XscoreUpComing;
 import structures.CountryCompetition;
 import test.MatchGetter;
 import dbtry.Conn;
+import diskStore.AnalyticFileHandler;
 import extra.StandartResponses;
 import extra.StringSimilarity;
 import extra.Unilang;
 import basicStruct.CCAllStruct;
 import basicStruct.MatchObj;
+import basicStruct.ScorerDataStruct;
 
 public class TempMatchFunctions {
 
@@ -171,8 +173,9 @@ public class TempMatchFunctions {
 		storeToShortMatches(insert);
 	}
 
-	public void readFromRecentMatches(LocalDate dat) throws SQLException {
+	public List<MatchObj> readFromRecentMatches(LocalDate dat) throws SQLException {
 		readFromShortMatches(dat, "recentmatches");
+		return readRecentMatchesList;
 	}
 
 	public boolean deleteFromRecentMatches(LocalDate ld) throws SQLException {
@@ -619,6 +622,8 @@ public class TempMatchFunctions {
 		// return -1;
 		return -1;
 	}
+	
+	
 
 	private List<String> queryCompTeams(int compId) {
 		/*
@@ -666,13 +671,18 @@ public class TempMatchFunctions {
 	}
 
 	private String compNameGetter(int compId) {
-		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
-			if (CountryCompetition.ccasList.get(i).getCompId() == compId) {
-				// country = CountryCompetition.ccasList.get(i).getCountry();
-				return CountryCompetition.ccasList.get(i).getCompetition();
-			}
-		}
-		return null;
+
+		int idx = CountryCompetition.idToIdx.get(compId);
+		CCAllStruct cc = CountryCompetition.ccasList.get(idx);
+		return cc.getCompetition();
+
+//		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
+//			if (CountryCompetition.ccasList.get(i).getCompId() == compId) {
+//				// country = CountryCompetition.ccasList.get(i).getCountry();
+//				return CountryCompetition.ccasList.get(i).getCompetition();
+//			}
+//		}
+//		return null;
 	}
 
 	private void predictionDataSet(List<MatchObj> predictionsList) {
@@ -710,6 +720,42 @@ public class TempMatchFunctions {
 		closeDBConn();
 	}
 
-	
+	/*public void writeResultsToTestFile() throws SQLException {
+		 in the test files created write the actual results 
+		
+		 * the data in the test file that is about to be writtend doesn't have
+		 * to contain all the prediction file attributes just the prediction
+		 * attributes id 1,x,2,o,u,1p,2p,ht,ft. *******************************
+		 * The order in which the data is written in the file matters though
+		 
+		// the writing will be done at the yesterday comps
+		// get all the tets files from yesterdayComps - the unfinished matches
+		// of skipsday
+		List<Integer> workingIds = CountryCompetition.yesterdayComps;
+		workingIds.removeAll(TempMatchFunctions.skipDayCompIds);
+		LocalDate yesterDat = LocalDate.now().minusDays(1);
+		AnalyticFileHandler afh = new AnalyticFileHandler();
+		
+		
+		//read yesterdays matches from the db
+		readFromRecentMatches(yesterDat);
+		for(int cid :workingIds){
+			 CCAllStruct cc = CountryCompetition.ccasList.get(CountryCompetition.idToIdx.get(cid));
+			 afh.getTestFileName(cid, cc.getCompetition(), cc.getCountry(), yesterDat);
+		}
+//		afh.getTestFileName(compId, compName, country, dat)
+		// readr recent matches @ tempMAtchFunctions
 
+		// get a list of testPathFiles (yesterday_comps-skipday)
+
+		// for list of testfile paths
+		// read test file1;
+		// get t1 & t2 for each line
+		// find t1 in recent by binary search
+		// conferm by t2 check & compId check
+		// write in the file a reduced test file {t1,t2,ht,sc,1p,2p,ht,ft}
+		// (t1,t2)?? probably not necesary
+		//write the line in the order that the matches were
+
+	}*/
 }
