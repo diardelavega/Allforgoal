@@ -1,22 +1,18 @@
 package api.rest;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import com.google.gson.Gson;
-
 import api.functionality.CommonAdversariesHandler;
 import api.functionality.CompIdToCountryCompCompID;
 import api.functionality.MatchPredLineHandler;
-import api.functionality.TrainPredFile;
 import api.functionality.WeekMatchHandler;
-import api.functionality.WinDrawLoseHandler;
 import api.functionality.obj.CountryCompCompId;
-import api.functionality.obj.MatchPredWithWinDrawLose;
+
+import com.google.gson.Gson;
 
 /**
  * @author Administrator

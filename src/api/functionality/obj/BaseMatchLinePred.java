@@ -1,8 +1,13 @@
 package api.functionality.obj;
 
-public class BaseMatchLinePred  {
+public class BaseMatchLinePred {
 	protected String t1;
 	protected String t2;
+
+	private int ht1;
+	private int ht2;
+	private int ft1;
+	private int ft2;
 
 	private String _1;
 	private String _x;
@@ -23,12 +28,35 @@ public class BaseMatchLinePred  {
 		super();
 	}
 
-	public BaseMatchLinePred(String t1, String t2, String _1, String _x, String _2,
-			String _o, String _u, String p1y, String p1n, String p2y,
-			String p2n, String ht, String ft) {
+	public BaseMatchLinePred(String t1, String t2, String _1, String _x,
+			String _2, String _o, String _u, String p1y, String p1n,
+			String p2y, String p2n, String ht, String ft) {
 		super();
 		this.t1 = t1;
 		this.t2 = t2;
+		this._1 = _1;
+		this._x = _x;
+		this._2 = _2;
+		this._o = _o;
+		this._u = _u;
+		this.p1y = p1y;
+		this.p1n = p1n;
+		this.p2y = p2y;
+		this.p2n = p2n;
+		this.ht = ht;
+		this.ft = ft;
+	}
+
+	public BaseMatchLinePred(String t1, String t2, int ht1, int ht2, int ft1,
+			int ft2, String _1, String _x, String _2, String _o, String _u,
+			String p1y, String p1n, String p2y, String p2n, String ht, String ft) {
+		super();
+		this.t1 = t1;
+		this.t2 = t2;
+		this.ht1 = ht1;
+		this.ht2 = ht2;
+		this.ft1 = ft1;
+		this.ft2 = ft2;
 		this._1 = _1;
 		this._x = _x;
 		this._2 = _2;
@@ -146,7 +174,7 @@ public class BaseMatchLinePred  {
 		this.ft = ft;
 	}
 
-	public void matchPredLineShow(){
+	public void matchPredLineShow() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(t1);
 		sb.append(" ");
@@ -158,13 +186,12 @@ public class BaseMatchLinePred  {
 		sb.append(" ");
 		sb.append(_2);
 		sb.append(" ");
-		
+
 		sb.append(_o);
 		sb.append(" ");
 		sb.append(_u);
 		sb.append(" ");
-		
-		
+
 		sb.append(p1y);
 		sb.append(" ");
 		sb.append(p1n);
@@ -173,10 +200,43 @@ public class BaseMatchLinePred  {
 		sb.append(" ");
 		sb.append(p2n);
 		sb.append(" ");
-		
+
 		sb.append(ht);
 		sb.append(" ");
 		sb.append(ft);
 		sb.append(" ");
 	}
+
+	public int getHt1() {
+		return ht1;
+	}
+
+	public int getHt2() {
+		return ht2;
+	}
+
+	public int getFt1() {
+		return ft1;
+	}
+
+	public int getFt2() {
+		return ft2;
+	}
+
+	public void setHt1(int ht1) {
+		this.ht1 = ht1;
+	}
+
+	public void setHt2(int ht2) {
+		this.ht2 = ht2;
+	}
+
+	public void setFt1(int ft1) {
+		this.ft1 = ft1;
+	}
+
+	public void setFt2(int ft2) {
+		this.ft2 = ft2;
+	}
+
 }

@@ -28,6 +28,8 @@ public class TempMatchFunctions {
 
 	public static final Logger logger = LoggerFactory
 			.getLogger(TempMatchFunctions.class);
+	public static List<Integer> skipDayCompIds = new ArrayList<>();
+
 	private Unilang ul = new Unilang(); // Original_Line
 	// public List<MatchObj> incomeTempMatchesListss = new ArrayList<>();
 	public List<MatchObj> readTempMatchesList = new ArrayList<>();
@@ -319,6 +321,11 @@ public class TempMatchFunctions {
 
 	// //////////////////////////////////////////
 	public void complete(LocalDate d) throws SQLException {
+		// TODO maybe to store in the temp matches the teams in scorer format
+		// instead of punter so that to have faster acces
+		// in case of comparison; without going through unilang conversion// ??
+		// ??maybe they are kep in punter format for the oddsadders
+
 		/*
 		 * intended to be used during the periodical check for results of
 		 * matches. Supposedly the readTempMatchesList is full of matches of a
@@ -680,5 +687,29 @@ public class TempMatchFunctions {
 			e.printStackTrace();
 		}
 	}
+
+	public void readDaySkips() throws SQLException {
+		/*
+		 * create a list of competition ids with competitions that started
+		 * yesterday but will finish today
+		 */
+
+		Date date = Date.valueOf(LocalDate.now().minusDays(1));
+		openDBConn();
+		conn.open();
+		ResultSet rs = conn
+				.getConn()
+				.createStatement()
+				.executeQuery(
+						"SELECT compid FROM tempmatch WHERE dat = '" + date
+								+ "'");
+		while (rs.next()) {
+			skipDayCompIds.add(rs.getInt(1));
+		}
+
+		closeDBConn();
+	}
+
+	
 
 }

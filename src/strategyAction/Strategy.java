@@ -107,20 +107,28 @@ public class Strategy {
 				scheduledOddsAdderTomorrow(lastDatCheck);
 				tmf.corelatePunterXScorerTeams();
 				storeToSmallDBsCondition(lastDatCheck);// store condition
-				// testPredFileMaker();// test file create
+				testPredFileMaker();// test file create
 				score.clearLists();
 				rh.predictSome(CountryCompetition.todayComps);
-//				rh.predictSome(CountryCompetition.tomorrowComps);
+				// rh.predictSome(CountryCompetition.tomorrowComps);
 				logger.info("NULL Last Ceck");
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
 					lastDatCheck = LocalDate.now();
+					score.getFinishedYesterday();
+					tmf.completeYesterday();
+
+					tmf.readDaySkips();
+					writeResultsToTestFile();
+					rh.reEvaluate(CountryCompetition.yesterdayComps);
+
 					CountryCompetition.yesterdayComps = CountryCompetition.todayComps;
+					CountryCompetition.todayComps = CountryCompetition.tomorrowComps;
+					CountryCompetition.tomorrowComps.clear();// to bee refilled
+
 					// TODO write in the testfile the actual results of the
 					// matches
-					rh.reEvaluate(CountryCompetition.yesterdayComps);
-					CountryCompetition.todayComps = CountryCompetition.tomorrowComps;
-					CountryCompetition.tomorrowComps.clear();
+
 					score.getScheduledTomorrow(); // tommorrowComps is updated
 					scheduledOddsAdderTomorrow(lastDatCheck);
 					tmf.corelatePunterXScorerTeams();
@@ -128,8 +136,6 @@ public class Strategy {
 
 					testPredFileMaker();// test file create
 					rh.predictSome(CountryCompetition.tomorrowComps);
-					score.getFinishedYesterday();
-					tmf.completeYesterday();
 
 					score.clearLists();
 					checkRemaining();
@@ -271,7 +277,8 @@ public class Strategy {
 		/* for all the new matches create a prediction file */
 
 		// CREATE test prediction file for tomorrow group of matches of the same
-		// competition and a test prediction file for the today group of matches for
+		// competition and a test prediction file for the today group of matches
+		// for
 		// that same competition
 
 		LocalDate tdy = LocalDate.now(), tom = LocalDate.now().plusDays(1);
@@ -356,4 +363,32 @@ public class Strategy {
 		executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.HOURS);
 	}
 
+	public void writeResultsToTestFile() {
+		/* in the test files created write the actual results */
+		/*
+		 * the data in the test file that is about to be writtend doesn't have
+		 * to contain all the prediction file attributes just the prediction
+		 * attributes id 1,x,2,o,u,1p,2p,ht,ft. *******************************
+		 * The order in which the data is written in the file matters though
+		 */
+		// the writing will be done at the yesterday comps
+		// get all the tets files from yesterdayComps - the unfinished matches
+		// of skipsday
+		CountryCompetition.yesterdayComps
+				.removeAll(TempMatchFunctions.skipDayCompIds);
+
+		// readr recent matches @ tempMAtchFunctions
+
+		// get a list of testPathFiles (yesterday_comps-skipday)
+
+		// for list of testfile paths
+		// read test file1;
+		// get t1 & t2 for each line
+		// find t1 in recent by binary search
+		// conferm by t2 check & compId check
+		// write in the file a reduced test file {t1,t2,ht,sc,1p,2p,ht,ft}
+		// (t1,t2)?? probably not necesary
+		//write the line in the order that the matches were
+
+	}
 }

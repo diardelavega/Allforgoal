@@ -1,17 +1,11 @@
 package api.functionality;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -20,14 +14,13 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import structures.PredictionFile;
 import api.functionality.obj.CountryCompCompId;
-import api.functionality.obj.MatchPredWithWinDrawLose;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import diskStore.AnalyticFileHandler;
-import structures.PredictionFile;
 
 public class TestApachCsvParser {
 	public static Logger log = LoggerFactory

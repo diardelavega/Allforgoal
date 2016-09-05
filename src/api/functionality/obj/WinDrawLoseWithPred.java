@@ -7,7 +7,7 @@ package api.functionality.obj;
  *         with the basepred match line. (To avoid overhead)
  */
 
-public class MatchPredWithWinDrawLose extends BaseMatchLinePred {
+public class WinDrawLoseWithPred extends BaseMatchLinePred {
 	private int t1wIn;
 	private int t1wOut;
 	private int t2wIn;
@@ -23,11 +23,11 @@ public class MatchPredWithWinDrawLose extends BaseMatchLinePred {
 	private int t2lIn;
 	private int t2lOut;
 
-	public MatchPredWithWinDrawLose() {
+	public WinDrawLoseWithPred() {
 		super();
 	}
 
-	public MatchPredWithWinDrawLose(int t1wIn,
+	public WinDrawLoseWithPred(int t1wIn,
 			int t1wOut, int t2wIn, int t2wOut, int t1dIn, int t1dOut,
 			int t2dIn, int t2dOut, int t1lIn, int t1lOut, int t2lIn, int t2lOut) {
 		super();

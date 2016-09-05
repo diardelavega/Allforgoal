@@ -96,6 +96,7 @@ public class AnalyticFileHandler {
 		File cFolder = new File(predTestFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
+			return null;
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
@@ -204,6 +205,7 @@ public class AnalyticFileHandler {
 		File cFolder = new File(predDataFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
+			return null;
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
@@ -219,8 +221,6 @@ public class AnalyticFileHandler {
 		else
 			return null;
 	}
-
-	// --------------------------return Txt
 
 	public String getImageFileName(int compId, String compName, String country) {
 		/* see if image file exists and has data in it. Return its path or null */
@@ -300,4 +300,9 @@ public class AnalyticFileHandler {
 
 		return 0;
 	}
+
+	public void writeResults(){
+		
+	}
+
 }

@@ -278,7 +278,7 @@ public class RHandler {
 					.get(i));
 			File temptrFile = afh.getTrainFileName(ccs.getCompId(),
 					ccs.getCompetition(), ccs.getCountry());
-			if (temptrFile.exists() && temptrFile.length() > 10) {
+			if (temptrFile!=null) {
 				slist.add(temptrFile.getAbsolutePath());
 			} else {
 				log.warn("Comp Id {} has no Training Prediction file", i);
