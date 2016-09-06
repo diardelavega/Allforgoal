@@ -20,6 +20,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -341,19 +342,57 @@ public class AnalyticFileHandler {
 		for (int cid : workingIds) {
 			CCAllStruct cc = CountryCompetition.ccasList
 					.get(CountryCompetition.idToIdx.get(cid));
-			List<StrStrTuple> teamsList = readTestFileContent(getTestFileName(
-					cid, cc.getCompetition(), cc.getCountry(), yesterDat));
+			File file = getTestFileName(cid, cc.getCompetition(),
+					cc.getCountry(), yesterDat);
+			List<StrStrTuple> teamsList = readTestFileContent(file);
 			if (teamsList == null)
 				continue;
 
-			addOutcomes(teamsList, recentmatches);
-			// addOutcomes(teamsList,);
-			// binarySearchRecent(workingIds,);
+			List<ReducedPredictionTestFile> outcomesList = addOutcomes(
+					teamsList, recentmatches);
+
+			rewriteTestFile(file, outcomesList);
 		}
-		// write in the file a reduced test file {t1,t2,ht,sc,1p,2p,ht,ft}
-		// (t1,t2)?? probably not necesary
-		// write the line in the order that the matches were
 	}
+
+	public void rewriteTestFile(File file,
+			List<ReducedPredictionTestFile> outcomesList) throws IOException {
+		/*
+		 * write to the test file the results needed for the reevaluation on the
+		 * prediction points by the R system. The original predictionFile dat
+		 * (73 attributes ...) will be wiped out
+		 */
+		FileWriter fwrite = new FileWriter(file);
+		CSVFormat format = CSVFormat.RFC4180;
+		// .withHeader(outcomesList.get(0) .csvHeader());
+		CSVPrinter csvFilePrinter = new CSVPrinter(fwrite, format);
+		List<String> studentDataRecord=null;
+		fwrite.write(outcomesList.get(0).csvHeader() + "\n");
+		for (ReducedPredictionTestFile rf : outcomesList) {
+			studentDataRecord = new ArrayList<>();
+			studentDataRecord.add(String.valueOf(rf.getT2()));
+			studentDataRecord.add(String.valueOf(rf.getT1()));
+			studentDataRecord.add(String.valueOf(rf.getHeadOutcome()));
+			studentDataRecord.add(String.valueOf(rf.getScoreOutcome()));
+			studentDataRecord.add(String.valueOf(rf.getHt1pOutcome()));
+			studentDataRecord.add(String.valueOf(rf.getHt2pOutcome()));
+			studentDataRecord.add(String.valueOf(rf.getTotHtScore()));
+			studentDataRecord.add(String.valueOf(rf.getTotFtScore()));
+			csvFilePrinter.printRecord(studentDataRecord);
+		}
+
+		System.out.println("CSV file was created successfully !!!");
+		try {
+			fwrite.flush();
+			fwrite.close();
+			csvFilePrinter.close();
+		} catch (IOException e) {
+			System.out
+					.println("Error while flushing/closing fileWriter/csvPrinter !!!");
+			e.printStackTrace();
+		}
+	}
+
 
 	private List<ReducedPredictionTestFile> addOutcomes(
 			List<StrStrTuple> teamsList, List<MatchObj> recentmatches) {
@@ -381,7 +420,7 @@ public class AnalyticFileHandler {
 
 	}
 
-	public List<StrStrTuple> readTestFileContent(File file)
+	private List<StrStrTuple> readTestFileContent(File file)
 			throws FileNotFoundException, IOException {
 		/* read t1 and t2 that the test file contains */
 		if (file == null)
@@ -414,4 +453,5 @@ public class AnalyticFileHandler {
 		}
 		return -1;
 	}
-};
+
+}

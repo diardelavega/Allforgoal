@@ -3,12 +3,13 @@ package calculate;
 import structures.ReducedPredictionTestFile;
 import basicStruct.MatchObj;
 import extra.MatchOutcome;
+import extra.Status;
 
 public class OutcomeCalculator {
-	
+
 	public ReducedPredictionTestFile outcomeAsignment(MatchObj mobj) {
 		ReducedPredictionTestFile redPf = new ReducedPredictionTestFile();
-		if (mobj != null) {
+		if (!mobj.getMatchTime().equals(Status.ERROR)) {
 			// head outcome 1X2
 			if (mobj.getFt1() > mobj.getFt2()) {
 				redPf.setHeadOutcome(MatchOutcome.home);
@@ -26,8 +27,8 @@ public class OutcomeCalculator {
 			}
 
 			// tot score
-			redPf.setTotHtScore(mobj.getHt1() + mobj.getHt2());
-			redPf.setTotFtScore(mobj.getFt1() + mobj.getFt2());
+			redPf.setTotHtScore((mobj.getHt1() + mobj.getHt2()) + "");
+			redPf.setTotFtScore((mobj.getFt1() + mobj.getFt2()) + "");
 
 			try {// half time
 				if (mobj.getHt1() + mobj.getHt2() >= 2) {
@@ -46,11 +47,14 @@ public class OutcomeCalculator {
 				redPf.setHt2pOutcome(MatchOutcome.missing);
 			}
 		} else {
-			// it should come here for the test pred file
+			// for the erroneus matches attributes are missing
 			redPf.setHt1pOutcome(MatchOutcome.missing);
 			redPf.setHt2pOutcome(MatchOutcome.missing);
 			redPf.setScoreOutcome(MatchOutcome.missing);
 			redPf.setHeadOutcome(MatchOutcome.missing);
+			redPf.setTotHtScore(MatchOutcome.missing);
+			redPf.setTotFtScore(MatchOutcome.missing);
+
 		}
 		return redPf;
 	}

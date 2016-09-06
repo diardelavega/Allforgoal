@@ -1,5 +1,6 @@
 package strategyAction;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -20,6 +21,7 @@ import com.mysql.jdbc.Connection;
 
 import calculate.MatchToTableRenewal;
 import dbtry.Conn;
+import diskStore.AnalyticFileHandler;
 import basicStruct.MatchObj;
 import r_dataIO.RHandler;
 import scrap.Bari91UpCommingOdds;
@@ -119,16 +121,15 @@ public class Strategy {
 					tmf.completeYesterday();
 
 					tmf.readDaySkips();
-//					writeResultsToTestFile();
+					writeResultsToTest();
 					rh.reEvaluate(CountryCompetition.yesterdayComps);
 
 					CountryCompetition.yesterdayComps = CountryCompetition.todayComps;
 					CountryCompetition.todayComps = CountryCompetition.tomorrowComps;
 					CountryCompetition.tomorrowComps.clear();// to bee refilled
-
-					// TODO write in the testfile the actual results of the
-					// matches
-
+					
+					// ----------------Tomorrow's actions reparation line
+					
 					score.getScheduledTomorrow(); // tommorrowComps is updated
 					scheduledOddsAdderTomorrow(lastDatCheck);
 					tmf.corelatePunterXScorerTeams();
@@ -363,5 +364,9 @@ public class Strategy {
 		executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.HOURS);
 	}
 
-	
+	public void writeResultsToTest() throws FileNotFoundException,
+			SQLException, IOException {
+		AnalyticFileHandler afh = new AnalyticFileHandler();
+		afh.writeResultsToTestFile();
+	}
 }

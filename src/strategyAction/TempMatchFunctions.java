@@ -20,6 +20,7 @@ import test.MatchGetter;
 import dbtry.Conn;
 import diskStore.AnalyticFileHandler;
 import extra.StandartResponses;
+import extra.Status;
 import extra.StringSimilarity;
 import extra.Unilang;
 import basicStruct.CCAllStruct;
@@ -463,13 +464,14 @@ public class TempMatchFunctions {
 	private void updateRecentError(List<MatchObj> matches) throws SQLException {
 		PreparedStatement preparedStatement = null;
 
-		String updateTableSQL = "UPDATE recentmatches SET tim = 'err'  WHERE mid =?";
+		String updateTableSQL = "UPDATE recentmatches SET tim = ?  WHERE mid =?";
 
 		openDBConn();
 		for (MatchObj m : matches) {
 			// if (m.getFt1() != -1) {// update only matches with results
 			preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
-			preparedStatement.setLong(5, m.getmId());
+			preparedStatement.setString(1, Status.ERROR);
+			preparedStatement.setLong(2, m.getmId());
 			preparedStatement.addBatch();
 		}
 		// }
@@ -721,9 +723,7 @@ public class TempMatchFunctions {
 	}
 
 	/*public void writeResultsToTestFile() throws SQLException {
-		 in the test files created write the actual results 
-		
-		 * the data in the test file that is about to be writtend doesn't have
+	* the data in the test file that is about to be writtend doesn't have
 		 * to contain all the prediction file attributes just the prediction
 		 * attributes id 1,x,2,o,u,1p,2p,ht,ft. *******************************
 		 * The order in which the data is written in the file matters though

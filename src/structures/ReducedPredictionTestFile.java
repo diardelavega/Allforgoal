@@ -11,8 +11,8 @@ public class ReducedPredictionTestFile {
 	private String ht1pOutcome = MatchOutcome.missing; // y,n, m-> missing
 	private String ht2pOutcome = MatchOutcome.missing; // y,n, NA-> missing
 
-	private int totHtScore = -1;
-	private int totFtScore = -1;
+	private String totHtScore = "-1";
+	private String totFtScore = "-1";
 
 	public ReducedPredictionTestFile() {
 		super();
@@ -21,7 +21,7 @@ public class ReducedPredictionTestFile {
 
 	public ReducedPredictionTestFile(String t1, String t2, String headOutcome,
 			String scoreOutcome, String ht1pOutcome, String ht2pOutcome,
-			int totHtScore, int totFtScore) {
+			String totHtScore, String totFtScore) {
 		super();
 		this.t1 = t1;
 		this.t2 = t2;
@@ -49,11 +49,11 @@ public class ReducedPredictionTestFile {
 		return ht2pOutcome;
 	}
 
-	public int getTotHtScore() {
+	public String getTotHtScore() {
 		return totHtScore;
 	}
 
-	public int getTotFtScore() {
+	public String getTotFtScore() {
 		return totFtScore;
 	}
 
@@ -73,11 +73,11 @@ public class ReducedPredictionTestFile {
 		this.ht2pOutcome = ht2pOutcome;
 	}
 
-	public void setTotHtScore(int totHtScore) {
+	public void setTotHtScore(String totHtScore) {
 		this.totHtScore = totHtScore;
 	}
 
-	public void setTotFtScore(int totFtScore) {
+	public void setTotFtScore(String totFtScore) {
 		this.totFtScore = totFtScore;
 	}
 
