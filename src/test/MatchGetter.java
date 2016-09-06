@@ -56,14 +56,13 @@ public class MatchGetter {
 		Document doc = null;
 		try {
 			logger.info("gettting url {}", url);
-			// doc = Jsoup.parse(new File(
-			// "C:/Users/Administrator/Desktop/skedina/xScores_01.html"),
-			// "UTF-8");
-			doc = Jsoup
-					.connect(url)
-					.userAgent(
-							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-					.maxBodySize(0).timeout(600000).get();
+			doc = Jsoup.parse(new File(
+					"C:/Users/Administrator/Desktop/xScores.html"), "UTF-8");
+			// doc = Jsoup
+			// .connect(url)
+			// .userAgent(
+			// "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+			// .maxBodySize(0).timeout(600000).get();
 			logger.info("Page Aquired!!");
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
@@ -257,21 +256,25 @@ public class MatchGetter {
 		 * competition because many competitions have the same name but allways
 		 * a unique combination of name&competition
 		 */
+		if (country.equals("SOUTH KOREA")) {
+			logger.info("STOPING FOR KOREA");
+		}
 		if (cc.notAllowedcomps.contains(couComComb(country, comp))) {
 			// if is one of the not allowed comps
 			return -1;
 		}
 
-		Integer searchCompIdx = cc.allowedcomps.get(couComComb(country, comp));
-		if (searchCompIdx != null) {// see if db ==1 -> available for processing
-			for (CCAllStruct c : cc.ccasList)
-				if (c.getCompId() == searchCompIdx)
-					if (c.getDb() == 1)
-						return searchCompIdx;
+		Integer searchCompId = cc.allowedcomps.get(couComComb(country, comp));
+		if (searchCompId != null) {// see if db ==1 -> available for processing
+
+			Integer idx = CountryCompetition.idToIdx.get(searchCompId);
+			if (cc.ccasList.get(idx).getDb() == 1) {
+				return searchCompId;
+			}
 			return -1;
 		} else {
 			// search for country&comp in scorerDataStruct
-			searchCompIdx = cc.scorerCompIdSearch(country, comp);
+			int searchCompIdx = cc.scorerCompIdSearch(country, comp);
 			if (searchCompIdx > -1) {
 				if (cc.sdsList.get(searchCompIdx).getDb() == 1) {
 					return cc.sdsList.get(searchCompIdx).getCompId();

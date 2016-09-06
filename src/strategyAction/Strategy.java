@@ -198,42 +198,13 @@ public class Strategy {
 		/* test method for strategu action performance */
 		// tmf.openDBConn();
 		try {
-
-			// TODO integrate the test file and data file for prediction
-			if (lastDatCheck == null) {
-				lastDatCheck = LocalDate.now().plusDays(2);
-				// first time ever to check for temp matches
-				// scrap todays matches & tomorrows
-				// score.getScheduledToday();
-				score.getScheduledOnDate(lastDatCheck);
-				tmf.corelatePunterXScorerTeams();
-				// score.getFinishedOnDate(lastDatCheck);
-				// score.getScheduledTomorrow();
-				score.storeSched();
-				// score.clearLists();
-				// logger.info("sched size {}",score.schedNewMatches.size());
-				// score.readSched();
-
-				System.out.println("--------------------------\n\n\n");
-
-				Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
-				b91.scrapBariPage(lastDatCheck);
-
-				System.out.println("---------------------------\n\n\n");
-
-				//
-				OddsNStats ons = new OddsNStats();
-				ons.getOddsPage(lastDatCheck);
-				//
-				System.out.println("---------------------------\n\n\n");
-				SoccerPunterOdds spo = new SoccerPunterOdds();
-				spo.getDailyOdds(lastDatCheck);
-
-				// tmf.storeToTempMatchesDB();
-				score.clearLists();
-				// lastDatCheck = LocalDate.now();
-				// logger.info("NULL Last Ceck");
-			}
+			lastDatCheck = LocalDate.now();
+			score.getScheduledToday();
+//			score.getScheduledTomorrow();// today & tomorrow is created
+			scheduledOddsAdderToday();
+//			scheduledOddsAdderTomorrow(lastDatCheck);
+			tmf.corelatePunterXScorerTeams();
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

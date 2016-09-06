@@ -330,7 +330,7 @@ public class CountryCompetition {
 
 	private int smallScorerCompidxSearch(int initial, String country,
 			String comp) {
-		/* a small loob for all the competitions a country might have */
+		/* a small loop for all the competitions a country might have */
 		logger.info("{}", initial);
 		int i = initial;
 		// with levistein

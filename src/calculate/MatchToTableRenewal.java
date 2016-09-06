@@ -298,8 +298,6 @@ public class MatchToTableRenewal {
 		 * specific competition ready
 		 */
 
-		compName = compName.replaceAll(" ", "_").replace(".", "");
-		country= country.replaceAll(" ", "_").replace(".", "");
 		ctt = new CompetitionTeamTable(compName,country);
 
 		ctt.existsDb();
