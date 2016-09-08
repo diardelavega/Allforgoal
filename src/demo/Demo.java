@@ -62,7 +62,7 @@ public class Demo {
 	}
 
 	public static void funcGrab() throws IOException, SQLException {
-		int compIdx = CountryCompetition.idToIdx.get(93);
+		int compIdx = CountryCompetition.idToIdx.get(157);
 		// String link = CountryCompetition.ccasList.get(111).getCompLink();
 		// int compId = CountryCompetition.ccasList.get(111).getCompId();
 
@@ -73,7 +73,7 @@ public class Demo {
 		// // ----------------TEST-----------
 		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
 		spm.competitionResultsGrabbers(compIdx);
-		// spm.remainingResultsGraber(compIdx);
+//		 spm.remainingResultsGraber(compIdx);
 
 		/*
 		 * re calculate prediction file from dab matches without re grabing
@@ -90,9 +90,26 @@ public class Demo {
 
 	}
 
+	public static void trainFileFromMatches() throws SQLException, IOException {
+		int compIdx = CountryCompetition.idToIdx.get(89);
+		//read from matches, get remaining data from punter
+		MatchesList ml = new MatchesList();
+		ml.readMatchesComp(compIdx);
+		// recalculate and procede as normal
+		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+		 spm.remainingResultsGraber(compIdx);
+		 MatchToTableRenewal mttr;
+			for (Integer key : MatchesList.readMatches.keySet()) {
+				mttr = new MatchToTableRenewal(key);
+				mttr.calculate(MatchesList.readMatches.get(key));
+			}
+			ml.insertMatches();
+	}
+	
 	public static void renovateCCall() throws IOException {
 		Soccerpunter_homePage sph = new Soccerpunter_homePage();
 		sph.goGetCompetitions();
+		//tries to renovate all the data in the ccal struct
 		/*
 		 * in case this function is chosen try to keep in mind the update on the
 		 * link(url addres specifically the year that the competition 2016-2017

@@ -70,12 +70,12 @@ public class MatchToTableRenewal {
 		this.compId = compId2;
 		compName = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(compId)).getCompetition();
-		
+
 		country = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(compId)).getCountry();
-		
+
 		compName = compName.replaceAll(" ", "_").replace(".", "");
-		country= country.replaceAll(" ", "_").replace(".", "");
+		country = country.replaceAll(" ", "_").replace(".", "");
 	}
 
 	public MatchToTableRenewal() {
@@ -96,8 +96,8 @@ public class MatchToTableRenewal {
 		country = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(comp_Id)).getCountry();
 		compName = compName.replaceAll(" ", "_").replace(".", "");
-		country= country.replaceAll(" ", "_").replace(".", "");
-		
+		country = country.replaceAll(" ", "_").replace(".", "");
+
 		// check if file exists
 		if (afh.isTestFile(comp_Id, compName, country, date)) {
 			// check the dat to see if it is older or neweer than the curent
@@ -271,7 +271,8 @@ public class MatchToTableRenewal {
 			}
 		}
 
-		// at the end,  after all the calcu;ations for all the matches in the list
+		// at the end, after all the calcu;ations for all the matches in the
+		// list
 		orderClassificationTable();
 		if (ctt.isTable()) {
 			if (ctt.getRowSize() >= 1) {
@@ -284,11 +285,19 @@ public class MatchToTableRenewal {
 			ctt.insertTable();
 		}
 		// write prediction data to file
-		afh.openTrainOutput(compId, compName, country);
-		for (String line : matchesDF) {
-			afh.appendCsv(line);
+		if (matchesDF.size() > 0) {
+			// for less than 4 weeks do not write results in train file
+			try {
+				afh.openTrainOutput(compId, compName, country);
+				for (String line : matchesDF) {
+					afh.appendCsv(line);
+				}
+				afh.closeOutput();
+			} catch (Exception e) {
+				logger.warn("Something whent wrong with the train file creation");
+			}
 		}
-		afh.closeOutput();
+
 	}
 
 	public void init() throws SQLException {
@@ -298,14 +307,14 @@ public class MatchToTableRenewal {
 		 * specific competition ready
 		 */
 
-		ctt = new CompetitionTeamTable(compName,country);
+		ctt = new CompetitionTeamTable(compName, country);
 
 		ctt.existsDb();
 		if (ctt.isTable()) {
 			logger.info("----- IT IS TABLE!!!   size {}", ctt.getRowSize());
 			if (ctt.getRowSize() >= 1)
 				ctt.tableReader();
-//			ctt.testPrint();
+			// ctt.testPrint();
 			N = ctt.getClassificationPos().size();
 		} else {
 			ctt.createFullTable();
@@ -806,19 +815,18 @@ public class MatchToTableRenewal {
 
 		if (outcomes) {
 			outcomeAsignment();
-		} 
+		}
 	}
 
 	private void outcomeAsignment() {
 		if (mobj != null) {
-			
+
 			pf.setMatchTime(MatchOutcome.missing);
 			pf.setT1Ht(mobj.getHt1());
 			pf.setT2Ht(mobj.getHt2());
 			pf.setT1Ft(mobj.getFt1());
 			pf.setT2Ft(mobj.getFt2());
-			
-			
+
 			// head outcome 1X2
 			if (mobj.getFt1() > mobj.getFt2()) {
 				pf.setHeadOutcome(MatchOutcome.home);

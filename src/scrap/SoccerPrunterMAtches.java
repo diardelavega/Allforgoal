@@ -211,6 +211,7 @@ public class SoccerPrunterMAtches {
 			// afh.openTrainOutput(compId);
 
 			Elements trs = resultTable.getElementsByTag("tr");
+			
 			for (Element tr : trs) {
 				if (tr.hasClass("even") || tr.hasClass("odd")) {
 					Element scoretd = tr.children().get(3)
@@ -235,7 +236,7 @@ public class SoccerPrunterMAtches {
 		}
 		
 		// update db structures db attribute to 1
-		Conn conn = new  	 Conn();
+		Conn conn = new Conn();
 		conn.open();
 		try {
 			conn.getConn().createStatement().executeUpdate("UPDATE  ccallstruct SET db=1 WHERE compid = "+compId+";");
@@ -255,10 +256,10 @@ public class SoccerPrunterMAtches {
 		 * url calls
 		 */
 
-		if (!weekflag) {
-			intweek = Integer.parseInt(week);
-			weekflag = true;
-		}
+//		if (!weekflag) {
+//			intweek = Integer.parseInt(week);
+//			weekflag = true;
+//		}
 
 		MatchObj match = new MatchObj();
 		String[] temp = ft.split(" - ");

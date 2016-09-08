@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -113,7 +114,7 @@ public class Strategy {
 				score.clearLists();
 				rh.predictSome(CountryCompetition.todayComps);
 				// rh.predictSome(CountryCompetition.tomorrowComps);
-				logger.info("NULL Last Ceck");
+				logger.info("NULL Last Ceck {}",LocalTime.now());
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
 					lastDatCheck = LocalDate.now();
@@ -141,13 +142,13 @@ public class Strategy {
 					score.clearLists();
 					checkRemaining();
 					tmf.deleteFromRecentMatches();
-					logger.info("Last Ceck   BEFORE TODAY");
+					logger.info("Last Ceck   BEFORE TODAY {}",LocalTime.now());
 				} else {
 					// is still the same day get todays results
 					score.getFinishedToday();
 					tmf.completeToday();
 					score.clearLists();
-					logger.info("Last Ceck   Finished  TODAY");
+					logger.info("Last Ceck   Finished  TODAY {}",LocalTime.now());
 				}
 			}
 		} finally {

@@ -3,6 +3,7 @@ package r_dataIO;
 import java.io.File;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -184,6 +185,7 @@ public class RHandler {
 	public void Rcall_DTF(List<String> slist) {
 		String trVec = listToRvector(slist);
 		Runnable r = () -> {
+			log.info("START: {}",LocalDateTime.now());
 			Rengine re = null;
 			try {
 				re = new Rengine(new String[] { "--no-save" }, false, null);
@@ -202,7 +204,10 @@ public class RHandler {
 		};
 
 		CompletableFuture.runAsync(r).thenAccept(
-				(c) -> log.info("succesfull R DTF completion  msg:{}", c));
+				(c) -> log.info("succesfull R DTF completion  msg:{}", c)
+//				.thenAccept((v)->{
+//					log.info("FINISH: {}",LocalDateTime.now()); }
+				);
 	}
 
 	public void Rcall_Pred() {
@@ -271,7 +276,7 @@ public class RHandler {
 		 * that cometitiom
 		 */
 		CCAllStruct ccs;
-		List<String> slist = new ArrayList<String>();
+		List<String> trlist = new ArrayList<String>();
 
 		for (int i : un_foundImagesCompIds) {
 			ccs = CountryCompetition.ccasList.get(CountryCompetition.idToIdx
@@ -279,13 +284,13 @@ public class RHandler {
 			File temptrFile = afh.getTrainFileName(ccs.getCompId(),
 					ccs.getCompetition(), ccs.getCountry());
 			if (temptrFile!=null) {
-				slist.add(temptrFile.getAbsolutePath());
+				trlist.add(temptrFile.getAbsolutePath());
 			} else {
 				log.warn("Comp Id {} has no Training Prediction file", i);
 				un_foundImagesCompIds.remove(i);
 			}
 		}
-		Rcall_DTF(slist);
+		Rcall_DTF(trlist);
 
 		// call R to predict next match matchline pred data
 		// predictSome(un_foundImagesCompIds);

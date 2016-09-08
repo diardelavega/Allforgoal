@@ -66,8 +66,12 @@ public class AnalyticFileHandler {
 
 	public void openTrainOutput(int compId, String compName, String country)
 			throws IOException {
-		bw = new BufferedWriter(new FileWriter(getTrainFileName(compId,
-				compName, country), true));
+		File f = createTrainFile(compId, compName, country);
+		if (f == null) {
+			log.warn("Train Pred file not found for {} {}", compName, country);
+		} else {
+			bw = new BufferedWriter(new FileWriter(f, true));
+		}
 
 	}
 
@@ -79,8 +83,13 @@ public class AnalyticFileHandler {
 		 */
 
 		try {
-			bw = new BufferedWriter(new FileWriter(getTestFileName(compId,
-					compName, country, date), true));
+			File f = createTestFile(compId, compName, country,date);
+			if (f == null) {
+				log.warn("Test Pred file not found for {} {}", compName,
+						country);
+			} else {
+				bw = new BufferedWriter(new FileWriter(f, true));
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -102,6 +111,26 @@ public class AnalyticFileHandler {
 
 	public void appendCsv(String line) throws IOException {
 		bw.append(line + "\n");
+	}
+
+	public File createTestFile(int compId, String compName, String country,
+			LocalDate dat) {
+		File cFolder = new File(predTestFolder + "/" + country);
+		if (!cFolder.exists()) {
+			cFolder.mkdirs();
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separator);
+		sb.append(compName);
+		sb.append(wordSeparator);
+		sb.append(compId);
+		sb.append(wordSeparator);
+		sb.append("Test");
+		sb.append(wordSeparator);
+		sb.append(dat.toString());
+
+		File tFile = new File(cFolder + sb.toString());
+		return tFile;
 	}
 
 	public File getTestFileName(int compId, String compName, String country,
@@ -212,6 +241,23 @@ public class AnalyticFileHandler {
 		sb.append(ldl.last().toString());
 
 		return (new File(cFolder + sb.toString()));
+	}
+
+	public File createTrainFile(int compId, String compName, String country) {
+		File cFolder = new File(predDataFolder + "/" + country);
+		if (!cFolder.exists()) {
+			cFolder.mkdirs();
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separator);
+		sb.append(compName);
+		sb.append(wordSeparator);
+		sb.append(compId);
+		sb.append(wordSeparator);
+		sb.append("Data");
+
+		File tFile = new File(cFolder + sb.toString());
+		return tFile;
 	}
 
 	public File getTrainFileName(int compId, String compName, String country) {
@@ -366,7 +412,7 @@ public class AnalyticFileHandler {
 		CSVFormat format = CSVFormat.RFC4180;
 		// .withHeader(outcomesList.get(0) .csvHeader());
 		CSVPrinter csvFilePrinter = new CSVPrinter(fwrite, format);
-		List<String> studentDataRecord=null;
+		List<String> studentDataRecord = null;
 		fwrite.write(outcomesList.get(0).csvHeader() + "\n");
 		for (ReducedPredictionTestFile rf : outcomesList) {
 			studentDataRecord = new ArrayList<>();
@@ -392,7 +438,6 @@ public class AnalyticFileHandler {
 			e.printStackTrace();
 		}
 	}
-
 
 	private List<ReducedPredictionTestFile> addOutcomes(
 			List<StrStrTuple> teamsList, List<MatchObj> recentmatches) {

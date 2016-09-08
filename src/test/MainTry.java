@@ -19,10 +19,10 @@ public class MainTry {
 	public static void main(String[] args) throws SQLException, IOException {
 		 initCCAllStruct();
 		 Strategy strategy = new Strategy();
-//		 strategy.periodic();
+		 strategy.periodic();
 
 //		 strategy.task();
-		 strategy.tryTask();
+//		 strategy.tryTask();
 
 		// Soccerpunter_homePage sch= new Soccerpunter_homePage();
 		// sch.goGetCompetitions();
