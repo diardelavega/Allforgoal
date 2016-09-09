@@ -25,6 +25,7 @@ public class Demo {
 
 		initCCAllStruct();
 		funcGrab();
+//		trainFileFromMatches();
 	}
 
 	public static void initCCAllStruct() throws SQLException, IOException {
@@ -91,13 +92,15 @@ public class Demo {
 	}
 
 	public static void trainFileFromMatches() throws SQLException, IOException {
-		int compIdx = CountryCompetition.idToIdx.get(89);
+		int compId=  157;
+		int compIdx = CountryCompetition.idToIdx.get(compId);
 		//read from matches, get remaining data from punter
 		MatchesList ml = new MatchesList();
-		ml.readMatchesComp(compIdx);
+		ml.readMatchesComp(compId);
 		// recalculate and procede as normal
-		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-		 spm.remainingResultsGraber(compIdx);
+//		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
+//		 spm.remainingResultsGraber(compIdx);
+		 
 		 MatchToTableRenewal mttr;
 			for (Integer key : MatchesList.readMatches.keySet()) {
 				mttr = new MatchToTableRenewal(key);

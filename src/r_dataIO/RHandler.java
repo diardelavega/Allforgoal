@@ -1,6 +1,7 @@
 package r_dataIO;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -185,7 +186,7 @@ public class RHandler {
 	public void Rcall_DTF(List<String> slist) {
 		String trVec = listToRvector(slist);
 		Runnable r = () -> {
-			log.info("START: {}",LocalDateTime.now());
+			log.info("START: {}", LocalDateTime.now());
 			Rengine re = null;
 			try {
 				re = new Rengine(new String[] { "--no-save" }, false, null);
@@ -204,10 +205,7 @@ public class RHandler {
 		};
 
 		CompletableFuture.runAsync(r).thenAccept(
-				(c) -> log.info("succesfull R DTF completion  msg:{}", c)
-//				.thenAccept((v)->{
-//					log.info("FINISH: {}",LocalDateTime.now()); }
-				);
+				(c) -> log.info("FINISH :{}  \n succesfull R DTF completion  msg:{}",LocalDateTime.now(), c));
 	}
 
 	public void Rcall_Pred() {
@@ -283,8 +281,18 @@ public class RHandler {
 					.get(i));
 			File temptrFile = afh.getTrainFileName(ccs.getCompId(),
 					ccs.getCompetition(), ccs.getCountry());
-			if (temptrFile!=null) {
-				trlist.add(temptrFile.getAbsolutePath());
+			if (temptrFile != null) {
+				try {
+					log.info("{}",temptrFile.getCanonicalPath());
+					log.info("{}",temptrFile.getName());
+					log.info("{}",temptrFile.getParent());
+					log.info("{}",temptrFile.getAbsolutePath().replace("\\", "/"));
+					log.info("{}",temptrFile.getAbsolutePath());
+					log.info("{}",temptrFile.getPath());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				trlist.add(temptrFile.getAbsolutePath().replace("\\", "/"));
 			} else {
 				log.warn("Comp Id {} has no Training Prediction file", i);
 				un_foundImagesCompIds.remove(i);
@@ -303,11 +311,14 @@ public class RHandler {
 		String vecs = listToRvector(slist);
 
 		Runnable r = () -> {
+			log.info("START: {}", LocalDateTime.now());
 			Rengine re = null;
 			try {
 				re = new Rengine(new String[] { "--no-save" }, false, null);
 				re.eval(" source('C:/TotalPrediction/DTF_Create.R')");
-				re.eval("runAll(" + vecs + ")");
+				// re.eval("runAll(" + vecs + ")");
+				double d = re.eval("test(100," + vecs + ")").asDouble();
+				log.info("the double isssss= {}", d);
 				re.end();
 			} catch (Exception e) {
 				log.warn("SOMETHING WHENT WRONG");
@@ -324,7 +335,8 @@ public class RHandler {
 		CompletableFuture.runAsync(r)
 		// .exceptionally(() -> log.warn("aaaa, {}"))
 				.thenAccept(
-						(c) -> log.info("succesfull R DTF completion  msg:{}",
-								c));
+						(c) -> log.info(
+								" {} succesfull R DTF completion  msg:{}",
+								LocalDateTime.now(), c));
 	}
 }

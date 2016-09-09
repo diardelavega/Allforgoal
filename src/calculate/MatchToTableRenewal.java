@@ -1,5 +1,6 @@
 package calculate;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -194,10 +195,16 @@ public class MatchToTableRenewal {
 		}
 
 		pf = new PredictionFile();
-		if (!ctt.isTable()) {
+		AnalyticFileHandler afh= new AnalyticFileHandler();
+		File f = afh.getTrainFileName(compId, compName, country);
+		if(f==null){
 			// if file doesn't exists add a csv headder
 			matchesDF.add(pf.csvHeader());
 		}
+		
+//		if (!ctt.isTable()) {
+//			matchesDF.add(pf.csvHeader());
+		//		}
 
 		for (int i = matchesList.size() - 1; i >= 0; i--) {
 			mobj = matchesList.get(i);

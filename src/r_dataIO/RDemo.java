@@ -11,6 +11,7 @@ public class RDemo {
 		Demo.initCCAllStruct();
 		RHandler rh = new RHandler();
 //		rh.testRcall();
+		
 		rh.predictOne(157);
 
 	}
