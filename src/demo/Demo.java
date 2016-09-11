@@ -23,8 +23,9 @@ public class Demo {
 	public static void main(String[] args) throws IOException, SQLException {
 		// renovateCCall();
 
-		initCCAllStruct();
-		funcGrab();
+//		initCCAllStruct();
+//		funcGrab();
+		renovateCCall();
 	}
 
 	public static void initCCAllStruct() throws SQLException, IOException {

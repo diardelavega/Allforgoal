@@ -110,7 +110,7 @@ public class CountryCompetition {
 		// write the comp country to the db
 		Conn conn = new Conn();
 		conn.open();
-		String sql = "INSERT INTO ccallstruct2 VALUES (?,?,?,?,?,?)";
+		String sql = "INSERT INTO ccallstruct VALUES (?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(sql);
 
 		for (CCAllStruct obj : ccasList) {

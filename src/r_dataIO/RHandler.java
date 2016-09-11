@@ -287,7 +287,18 @@ public class RHandler {
 		CompletableFuture futureCount = CompletableFuture.runAsync(r)
 		// .exceptionally(() -> log.warn("aaaa, {}"))
 				.thenAccept(
-						(c) -> log.info("succesfull R DTF completion  msg:{}",
+						(c) -> log.info("succesfull R DTF completion  msg: {}",
 								c));
+	}
+	
+	public void test2(){
+//		Rengine re = null;
+//		try {
+//			re = new Rengine(new String[] { "--no-save" }, false, null);
+//			re.eval(" source('C:/TotalPrediction/DTF_Create.R')");
+////			re.eval("runAll(" + vecs + ")");
+//			 double d = re.eval("test(100," + vecs + ")").asDouble();
+//			 log.info("the double isssss= {}", d);
+//			re.end();
 	}
 }
