@@ -8,14 +8,13 @@ import extra.MatchOutcome;
 public class PredictionFile {
 	private static final Logger logger = LoggerFactory
 			.getLogger(PredictionFile.class);
-	
-	
+
 	private int week = 0;
-	private String headOutcome=MatchOutcome.missing; // MatchOutcome val 1/x/2
-	private String scoreOutcome=MatchOutcome.missing; // o/u
-	private String ht1pOutcome=MatchOutcome.missing; // y,n, m-> missing
-	private String ht2pOutcome=MatchOutcome.missing; // y,n, NA-> missing
-	private String ggOutcome=MatchOutcome.missing; // y,n
+	private String headOutcome = MatchOutcome.missing; // MatchOutcome val 1/x/2
+	private String scoreOutcome = MatchOutcome.missing; // o/u
+	private String ht1pOutcome = MatchOutcome.missing; // y,n, m-> missing
+	private String ht2pOutcome = MatchOutcome.missing; // y,n, NA-> missing
+	private String ggOutcome = MatchOutcome.missing; // y,n
 	private int totHtScore = -1;
 	private int totFtScore = -1;
 
@@ -81,15 +80,14 @@ public class PredictionFile {
 	private int t2LosesIn = 0;
 	private int t2LosesOut = 0;
 
-	//------extra new
+	// ------extra new
+	// TODO consider wheather the ht/ft scores shpuld e initiated at -1 or 0
 	private String matchTime;
-	private int t1Ht=0;
-	private int t2Ht=0;
-	private int t1Ft=0;
-	private int t2Ft=0;
-	
-	
-	
+	private int t1Ht = -1;
+	private int t2Ht = -1;
+	private int t1Ft = -1;
+	private int t2Ft = -1;
+
 	public int getTotHtScore() {
 		return totHtScore;
 	}
@@ -614,8 +612,7 @@ public class PredictionFile {
 		this.t2Defense = t2Defense;
 	}
 
-	
-	//-----------new funcs
+	// -----------new funcs
 	public String getMatchTime() {
 		return matchTime;
 	}
@@ -623,7 +620,7 @@ public class PredictionFile {
 	public void setMatchTime(String matchTime) {
 		this.matchTime = matchTime;
 	}
-	
+
 	public int getT1Ht() {
 		return t1Ht;
 	}
@@ -793,7 +790,7 @@ public class PredictionFile {
 		sb.append(bet_U);
 		sb.append(",");
 
-		//----------more data
+		// ----------more data
 		sb.append(t1Ht);
 		sb.append(",");
 		sb.append(t2Ht);
@@ -803,10 +800,8 @@ public class PredictionFile {
 		sb.append(t2Ft);
 		sb.append(",");
 		sb.append(matchTime);
-		
-		
-		
-//		logger.info(sb.toString());
+
+		// logger.info(sb.toString());
 
 		return sb.toString();
 	}
@@ -821,7 +816,7 @@ public class PredictionFile {
 		sb.append("ggOutcome,");
 		sb.append("totHtScore,");
 		sb.append("totFtScore,");
-		
+
 		sb.append("t1,");
 		sb.append("t1Points,");
 		sb.append("t1Classification,");
@@ -881,13 +876,12 @@ public class PredictionFile {
 		sb.append("bet_O,");
 		sb.append("bet_U,");
 
-		
 		sb.append("t1Ht,");
 		sb.append("t2Ht,");
 		sb.append("t1Ft,");
 		sb.append("t2Ft,");
 		sb.append("matchTime");
-		
+
 		return sb.toString();
 	}
 

@@ -11,8 +11,8 @@ public class MatchObj implements Serializable{
 	private String t2;
 	private int ft1;
 	private int ft2;
-	private int ht1;
-	private int ht2;
+	private int ht1=-1;
+	private int ht2=-1;
 	private double _1;
 	private double _2;
 	private double _x;

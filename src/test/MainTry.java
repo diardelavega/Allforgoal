@@ -1,5 +1,6 @@
 package test;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,18 +9,20 @@ import java.util.List;
 
 import strategyAction.Strategy;
 import structures.CountryCompetition;
-
+import structures.ReducedPredictionTestFile;
 import dbtry.Conn;
+import diskStore.AnalyticFileHandler;
 import extra.Unilang;
 
 public class MainTry {
 
 	public static void main(String[] args) throws SQLException, IOException {
-		initCCAllStruct();
-		Strategy strategy = new Strategy();
-		strategy.periodic();
-		// strategy.task();
-		// strategy.tryTask();
+		 initCCAllStruct();
+		 Strategy strategy = new Strategy();
+		 strategy.periodic();
+
+//		 strategy.task();
+//		 strategy.tryTask();
 
 		// Soccerpunter_homePage sch= new Soccerpunter_homePage();
 		// sch.goGetCompetitions();
@@ -40,6 +43,7 @@ public class MainTry {
 		// dater();
 		// distancer() ;
 		// odder();
+//		printer();
 	}
 
 	public static void initCCAllStruct() throws SQLException, IOException {
@@ -110,10 +114,14 @@ public class MainTry {
 		list.add(ao23);
 		list.add(ao24);
 		// print(list);
-
+		// changeList(list);
 		// Collections.shuffle(list);
 		Collections.sort(list);
 		print(list);
+	}
+
+	public static void changeList(List<ArrayObj> list) {
+		list.get(0).setAtt1(100);
 	}
 
 	public static void print(List<ArrayObj> list) {
@@ -134,4 +142,19 @@ public class MainTry {
 		}
 	}
 
+	public static void printer() {
+		ReducedPredictionTestFile rpf = new ReducedPredictionTestFile("tq",
+				"t2", "1", "o", "Y", "N", "10", "30");
+		List <ReducedPredictionTestFile> tl =  new ArrayList<ReducedPredictionTestFile>();
+		tl .add(rpf);
+		tl .add(rpf);
+		File file = new File("C:/ff1/hua.csv");
+		AnalyticFileHandler afh = new AnalyticFileHandler();
+		try {
+			afh.rewriteTestFile(file, tl);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

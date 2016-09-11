@@ -1,13 +1,9 @@
 package test;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,13 +21,10 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.corba.se.impl.orbutil.ObjectWriter;
-
 import structures.CountryCompetition;
 import basicStruct.CCAllStruct;
 import basicStruct.MatchObj;
 import extra.Status;
-import extra.StringSimilarity;
 import extra.Unilang;
 
 /**
@@ -49,7 +42,7 @@ public class MatchGetter {
 	public static List<Integer> reviewedAndEmptyOdds = new ArrayList<Integer>();
 
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";
-	private Unilang ul = new Unilang();
+	// private Unilang ul = new Unilang();
 	private CountryCompetition cc = new CountryCompetition();
 
 	private void scrapMatchesDate(LocalDate dat, String _status)
@@ -63,14 +56,13 @@ public class MatchGetter {
 		Document doc = null;
 		try {
 			logger.info("gettting url {}", url);
-			// doc = Jsoup.parse(new File(
-			// "C:/Users/Administrator/Desktop/skedina/xScores_01.html"),
-			// "UTF-8");
-			doc = Jsoup
-					.connect(url)
-					.userAgent(
-							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-					.maxBodySize(0).timeout(600000).get();
+//			doc = Jsoup.parse(new File(
+//					"C:/Users/Administrator/Desktop/xScores.html"), "UTF-8");
+			 doc = Jsoup
+			 .connect(url)
+			 .userAgent(
+			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+			 .maxBodySize(0).timeout(600000).get();
 			logger.info("Page Aquired!!");
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
@@ -264,21 +256,25 @@ public class MatchGetter {
 		 * competition because many competitions have the same name but allways
 		 * a unique combination of name&competition
 		 */
+		if (country.equals("SOUTH KOREA")) {
+			logger.info("STOPING FOR KOREA");
+		}
 		if (cc.notAllowedcomps.contains(couComComb(country, comp))) {
 			// if is one of the not allowed comps
 			return -1;
 		}
 
-		Integer searchCompIdx = cc.allowedcomps.get(couComComb(country, comp));
-		if (searchCompIdx != null) {// see if db ==1 -> available for processing
-			for (CCAllStruct c : cc.ccasList)
-				if (c.getCompId() == searchCompIdx)
-					if (c.getDb() == 1)
-						return searchCompIdx;
+		Integer searchCompId = cc.allowedcomps.get(couComComb(country, comp));
+		if (searchCompId != null) {// see if db ==1 -> available for processing
+
+			Integer idx = CountryCompetition.idToIdx.get(searchCompId);
+			if (cc.ccasList.get(idx).getDb() == 1) {
+				return searchCompId;
+			}
 			return -1;
 		} else {
 			// search for country&comp in scorerDataStruct
-			searchCompIdx = cc.scorerCompIdSearch(country, comp);
+			int searchCompIdx = cc.scorerCompIdSearch(country, comp);
 			if (searchCompIdx > -1) {
 				if (cc.sdsList.get(searchCompIdx).getDb() == 1) {
 					return cc.sdsList.get(searchCompIdx).getCompId();
@@ -337,8 +333,8 @@ public class MatchGetter {
 
 	// //////////////////////HELP FUNC/////////////
 	public void addToTomorrowComps(int compId) {
-		if (!CountryCompetition.tommorrowComps.contains(compId))
-			CountryCompetition.tommorrowComps.add(compId);
+		if (!CountryCompetition.tomorrowComps.contains(compId))
+			CountryCompetition.tomorrowComps.add(compId);
 	}
 
 	public void addToTodayComps() {
@@ -347,7 +343,7 @@ public class MatchGetter {
 		 * data in the scheduled matches will be of the same day thas we get it
 		 * all if the date is write
 		 */
-		CountryCompetition.todayComps = (List<Integer>) MatchGetter.schedNewMatches
-				.keySet();
+		CountryCompetition.todayComps.addAll(MatchGetter.schedNewMatches
+				.keySet());
 	}
 }

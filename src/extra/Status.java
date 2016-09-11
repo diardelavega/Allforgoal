@@ -9,4 +9,6 @@ public class Status {
 	public static String POSTPONED = "Post";
 	public static String ABANDONED = "Abd";
 	public static String INTERRUPTED = "Int";
+	
+	public static String ERROR = "err";
 }

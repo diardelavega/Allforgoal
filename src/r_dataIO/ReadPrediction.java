@@ -138,7 +138,7 @@ public class ReadPrediction {
 			switch (kind) {
 			case "pred":
 				parser = new CSVParser(new FileReader(
-						afh.getLeatestPredictionFileName(compId, compName,
+						afh.getLeatestRPredictionFileName(compId, compName,
 								country)), format);
 				break;
 			case "test":

@@ -18,16 +18,21 @@ import scrap.XscoreUpComing;
 import structures.CountryCompetition;
 import test.MatchGetter;
 import dbtry.Conn;
+import diskStore.AnalyticFileHandler;
 import extra.StandartResponses;
+import extra.Status;
 import extra.StringSimilarity;
 import extra.Unilang;
 import basicStruct.CCAllStruct;
 import basicStruct.MatchObj;
+import basicStruct.ScorerDataStruct;
 
 public class TempMatchFunctions {
 
 	public static final Logger logger = LoggerFactory
 			.getLogger(TempMatchFunctions.class);
+	public static List<Integer> skipDayCompIds = new ArrayList<>();
+
 	private Unilang ul = new Unilang(); // Original_Line
 	// public List<MatchObj> incomeTempMatchesListss = new ArrayList<>();
 	public List<MatchObj> readTempMatchesList = new ArrayList<>();
@@ -65,19 +70,14 @@ public class TempMatchFunctions {
 		List<String> dbTeams = new ArrayList<>();
 		int compId = -1;
 		int chosenDbIdx1 = -1, chosenDbIdx2 = -1;
-		// for (Integer key : XscoreUpComing.schedNewMatches.keySet()) {
-		// for (MatchObj m : XscoreUpComing.schedNewMatches.get(key)) {//
-		// Original_Line
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
 			for (int kk = 0; kk < MatchGetter.schedNewMatches.get(key).size(); kk++) {
-				// for (MatchObj m : MatchGetter.schedNewMatches.get(key)) {
 				MatchObj m = MatchGetter.schedNewMatches.get(key).get(kk);
 				// first search in unilang
 				String t = ul.scoreTeamToCcas(m.getT1());
 				if (t == null) {
 					if (m.getComId() != compId) {
-						// if a new competition appears delete the previous
-						// teams
+						// on new compId appears delete the previous comp teams
 						dbTeams.clear();
 						dbTeams = queryCompTeams(m.getComId());
 						if (dbTeams == null) {// not available competition
@@ -86,7 +86,6 @@ public class TempMatchFunctions {
 						compId = m.getComId();
 					}
 					float minDist = 100;
-
 					float curDist;
 					for (int i = 0; i < dbTeams.size(); i++) {
 						// iterate through all teams of that competition
@@ -124,13 +123,7 @@ public class TempMatchFunctions {
 				// second team corelation search
 				t = ul.scoreTeamToCcas(m.getT2());
 				if (t == null) {
-					// if (m.getComId() != compId) {
-					// dbTeams.clear();
-					// dbTeams = queryCompTeams(m.getComId());
-					// compId = m.getComId();
-					// }
 					float minDist = 100;
-					// int chosenIdx = -1;
 					float curDist;
 					for (int i = 0; i < dbTeams.size(); i++) {
 						curDist = StringSimilarity.levenshteinDistance(
@@ -145,6 +138,7 @@ public class TempMatchFunctions {
 							chosenDbIdx2 = i;
 						}
 					}
+					
 					if (chosenDbIdx2 >= 0) {
 						logger.info("m.T2= '{}'    db.t= '{}' ", m.getT2(),
 								dbTeams.get(chosenDbIdx2));
@@ -169,8 +163,10 @@ public class TempMatchFunctions {
 		storeToShortMatches(insert);
 	}
 
-	public void readFromRecentMatches(LocalDate dat) throws SQLException {
+	public List<MatchObj> readFromRecentMatches(LocalDate dat)
+			throws SQLException {
 		readFromShortMatches(dat, "recentmatches");
+		return readRecentMatchesList;
 	}
 
 	public boolean deleteFromRecentMatches(LocalDate ld) throws SQLException {
@@ -186,6 +182,11 @@ public class TempMatchFunctions {
 	}
 
 	public boolean deleteFromRecentMatches() throws SQLException {
+		/*
+		 * from recentmatches delete matches 3 days older than the suplied date
+		 * (supposedly the dupplied date is today at 00:00 , when the date
+		 * changes)
+		 */
 		openDBConn();
 		boolean b = conn
 				.getConn()
@@ -314,6 +315,11 @@ public class TempMatchFunctions {
 
 	// //////////////////////////////////////////
 	public void complete(LocalDate d) throws SQLException {
+		// TODO maybe to store in the temp matches the teams in scorer format
+		// instead of punter so that to have faster acces
+		// in case of comparison; without going through unilang conversion// ??
+		// ??maybe they are kep in punter format for the oddsadders
+
 		/*
 		 * intended to be used during the periodical check for results of
 		 * matches. Supposedly the readTempMatchesList is full of matches of a
@@ -325,6 +331,7 @@ public class TempMatchFunctions {
 
 		logger.info("--------------: COMPLETE");
 		// fill from db the readTempMatchesList List<>, order by t1
+		// matches in temp & recent db tabs is in the scorer syntax
 		readFromTempMatches(d);
 		if (readTempMatchesList.size() == 0) {
 			logger.info("No temp matches in db");
@@ -335,13 +342,16 @@ public class TempMatchFunctions {
 		 * will keep all the selected matches. Thean delete them from temp
 		 * matches table & insert to regular matches dbtable
 		 */
-		List<MatchObj> matches = new ArrayList<MatchObj>();
+		List<MatchObj> matches = new ArrayList<MatchObj>();// all matches
+
 		/*
 		 * will contain at any time match(es) from the same competition, matches
 		 * previously in the temp match db and test prediction file but now with
 		 * the score results. They will be calculated and inserted in the
 		 * competitions Train prediction file with all the matches data so far.
 		 */
+		// same comp matches of consecutive compids during search loops
+		// used for test prediction file
 		List<MatchObj> smallPredictionsList = new ArrayList<MatchObj>();
 		// for (MatchObj m : XscoreUpComing.finNewMatches) { Original_Line
 		int idx = -1;
@@ -381,14 +391,17 @@ public class TempMatchFunctions {
 						m.getT1(), m.getT2(), m.getComId());
 			}
 		}// for
-		deleteTempMatches(matches);// delete finished matches
-		insertMatches(matches);
+		deleteTempMatches(matches);// delete finished matches from tempdb
+		insertMatches(matches);// insertfinished matches from matches
+		updateRecentScores(matches);// set score to recent matches
 		logger.info("Competed standart Completion");
 
 		if (readTempMatchesList.size() > 0) {
 			/*
-			 * keep looping through the remaining matches from the db read to
-			 * delete the postponed or cancelled matches
+			 * it means that in the temporary matches table tempmatches there
+			 * are still matches unfinished or not properly finished, errors
+			 * canceled postponed etc; keep looping through the remaining
+			 * matches to account for the remaining ones
 			 */
 			logger.info("--------------: LOOP TO find postponed");
 			matches.clear();
@@ -400,32 +413,96 @@ public class TempMatchFunctions {
 				if (team != null) {
 					idx = binarySearch(team, 0, readTempMatchesList.size() - 1);
 					if (idx < 0) {
-						// logger.info("---Was not found t1 -{},  t2 {}    ",
-						// m.getT1(), m.getT2());
+						logger.info(
+								"--- broken ones loop; Was not found t1 -{},  t2 {}    ",
+								m.getT1(), m.getT2());
 						continue;
 					} else {
-						if (prevCompId != m.getComId()) {
-							prevCompId = m.getComId();
-							if (smallPredictionsList.size() > 0) {
-								predictionDataSet(smallPredictionsList);
-								smallPredictionsList.clear();
-							}
-						}
-
+						// if (prevCompId != m.getComId()) {
+						// prevCompId = m.getComId();
+						// if (smallPredictionsList.size() > 0) {
+						/*
+						 * error matches will not be added to the prediction
+						 * file
+						 */// predictionDataSet(smallPredictionsList);
+							// smallPredictionsList.clear();
+						// }
+						// }
 						MatchObj mobj = readTempMatchesList.get(idx);
-						mobj.setHt1(m.getHt1());
-						mobj.setHt2(m.getHt2());
-						mobj.setFt1(m.getFt1());
-						mobj.setFt2(m.getFt2());
+						/*
+						 * since the matches were canceled we dont need to
+						 * asigne scores to them
+						 */
+						// mobj.setHt1(m.getHt1());
+						// mobj.setHt2(m.getHt2());
+						// mobj.setFt1(m.getFt1());
+						// mobj.setFt2(m.getFt2());
+						mobj.setMatchTime("err");
 
-						smallPredictionsList.add(mobj);
+						// smallPredictionsList.add(mobj);
 						matches.add(mobj);
 					}
 				}
 			}// for
-			deleteTempMatches(matches);// delete cancelled matches
+				// delete cancelled matches from tempmatches table
+			deleteTempMatches(matches);
+			updateRecentError(matches);// set err to recent matches time
 			logger.info("Competed Old Completion");
 		}
+	}
+
+	private void updateRecentError(List<MatchObj> matches) throws SQLException {
+		PreparedStatement preparedStatement = null;
+
+		String updateTableSQL = "UPDATE recentmatches SET tim = ?  WHERE mid =?";
+
+		openDBConn();
+		for (MatchObj m : matches) {
+			// if (m.getFt1() != -1) {// update only matches with results
+			preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
+			preparedStatement.setString(1, Status.ERROR);
+			preparedStatement.setLong(2, m.getmId());
+			preparedStatement.addBatch();
+		}
+		// }
+		// execute update SQL stetement
+		preparedStatement.executeBatch();
+		// preparedStatement.executeUpdate();
+		closeDBConn();
+
+	}
+
+	private void updateRecentScores(List<MatchObj> matches) throws SQLException {
+		// update the score results of the recent matches table
+		// based on the idea that the mid of the matches is the same in the temp
+		// and recent tables, since the matches inserted into them are
+		// the same and simultaneous
+
+		PreparedStatement preparedStatement = null;
+
+		String updateTableSQL = "UPDATE recentmatches SET ft1 = ?,ft2 = ?,ht1 = ?,ht2 = ? "
+				+ " WHERE mid =?";
+
+		openDBConn();
+		for (MatchObj m : matches) {
+			if (m.getFt1() != -1) {// update only matches with results
+				preparedStatement = conn.getConn().prepareStatement(
+						updateTableSQL);
+
+				preparedStatement.setInt(1, m.getFt1());
+				preparedStatement.setInt(2, m.getFt2());
+				preparedStatement.setInt(3, m.getHt1());
+				preparedStatement.setInt(4, m.getHt2());
+				preparedStatement.setLong(5, m.getmId());
+
+				preparedStatement.addBatch();
+			}
+		}
+		// execute update SQL stetement
+		preparedStatement.executeBatch();
+		// preparedStatement.executeUpdate();
+		closeDBConn();
+
 	}
 
 	public void completeYesterday() throws SQLException {
@@ -542,11 +619,10 @@ public class TempMatchFunctions {
 		/*
 		 * get the team names for a certain competition
 		 */
-		String tab_competition = compNameGetter(compId);
-		if (tab_competition == null) {
-			logger.warn("competition not found");
-			return null;
-		}
+
+		int idx = CountryCompetition.idToIdx.get(compId);
+		CCAllStruct cc = CountryCompetition.ccasList.get(idx);
+		String tab_competition = (cc.getCompetition() + "$" + cc.getCountry());
 		// else
 		tab_competition = tab_competition.toLowerCase().replace(".", "")
 				.replaceAll(" ", "_")
@@ -584,16 +660,25 @@ public class TempMatchFunctions {
 	}
 
 	private String compNameGetter(int compId) {
-		for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
-			if (CountryCompetition.ccasList.get(i).getCompId() == compId) {
-				// country = CountryCompetition.ccasList.get(i).getCountry();
-				return CountryCompetition.ccasList.get(i).getCompetition();
-			}
-		}
-		return null;
+
+		int idx = CountryCompetition.idToIdx.get(compId);
+		CCAllStruct cc = CountryCompetition.ccasList.get(idx);
+		return cc.getCompetition();
+
+		// for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
+		// if (CountryCompetition.ccasList.get(i).getCompId() == compId) {
+		// // country = CountryCompetition.ccasList.get(i).getCountry();
+		// return CountryCompetition.ccasList.get(i).getCompetition();
+		// }
+		// }
+		// return null;
 	}
 
 	private void predictionDataSet(List<MatchObj> predictionsList) {
+		/*
+		 * add the concludet matches and the updated attributes corresponding to
+		 * them to the Prediction training file
+		 */
 		MatchToTableRenewal mttr = new MatchToTableRenewal();
 		try {
 			mttr.calculate(predictionsList);
@@ -602,4 +687,58 @@ public class TempMatchFunctions {
 		}
 	}
 
+	public void readDaySkips() throws SQLException {
+		/*
+		 * create a list of competition ids with competitions that started
+		 * yesterday but will finish today
+		 */
+
+		Date date = Date.valueOf(LocalDate.now().minusDays(1));
+		openDBConn();
+		conn.open();
+		ResultSet rs = conn
+				.getConn()
+				.createStatement()
+				.executeQuery(
+						"SELECT compid FROM tempmatch WHERE dat = '" + date
+								+ "'");
+		while (rs.next()) {
+			skipDayCompIds.add(rs.getInt(1));
+		}
+
+		closeDBConn();
+	}
+
+	/*
+	 * public void writeResultsToTestFile() throws SQLException { the data in
+	 * the test file that is about to be writtend doesn't have to contain all
+	 * the prediction file attributes just the prediction attributes id
+	 * 1,x,2,o,u,1p,2p,ht,ft. ******************************* The order in which
+	 * the data is written in the file matters though
+	 * 
+	 * // the writing will be done at the yesterday comps // get all the tets
+	 * files from yesterdayComps - the unfinished matches // of skipsday
+	 * List<Integer> workingIds = CountryCompetition.yesterdayComps;
+	 * workingIds.removeAll(TempMatchFunctions.skipDayCompIds); LocalDate
+	 * yesterDat = LocalDate.now().minusDays(1); AnalyticFileHandler afh = new
+	 * AnalyticFileHandler();
+	 * 
+	 * 
+	 * //read yesterdays matches from the db readFromRecentMatches(yesterDat);
+	 * for(int cid :workingIds){ CCAllStruct cc =
+	 * CountryCompetition.ccasList.get(CountryCompetition.idToIdx.get(cid));
+	 * afh.getTestFileName(cid, cc.getCompetition(), cc.getCountry(),
+	 * yesterDat); } // afh.getTestFileName(compId, compName, country, dat) //
+	 * readr recent matches @ tempMAtchFunctions
+	 * 
+	 * // get a list of testPathFiles (yesterday_comps-skipday)
+	 * 
+	 * // for list of testfile paths // read test file1; // get t1 & t2 for each
+	 * line // find t1 in recent by binary search // conferm by t2 check &
+	 * compId check // write in the file a reduced test file
+	 * {t1,t2,ht,sc,1p,2p,ht,ft} // (t1,t2)?? probably not necesary //write the
+	 * line in the order that the matches were
+	 * 
+	 * }
+	 */
 }
