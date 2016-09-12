@@ -37,8 +37,7 @@ import calculate.OutcomeCalculator;
 import com.google.gson.Gson;
 
 public class AnalyticFileHandler {
-	public static Logger log = LoggerFactory
-			.getLogger(AnalyticFileHandler.class);
+	public static Logger log = LoggerFactory.getLogger(AnalyticFileHandler.class);
 	// Gson gson = new Gson();
 	private File bastFileFolder = new File("C:/BastData");
 	private File predDataFolder = new File(bastFileFolder + "/Pred/Data");
@@ -64,8 +63,7 @@ public class AnalyticFileHandler {
 		}
 	}
 
-	public void openTrainOutput(int compId, String compName, String country)
-			throws IOException {
+	public void openTrainOutput(int compId, String compName, String country) throws IOException {
 		File f = createTrainFile(compId, compName, country);
 		if (f == null) {
 			log.warn("Train Pred file not found for {} {}", compName, country);
@@ -75,18 +73,16 @@ public class AnalyticFileHandler {
 
 	}
 
-	public void openTestOutput(int compId, String compName, String country,
-			LocalDate date) {
+	public void openTestOutput(int compId, String compName, String country, LocalDate date) {
 		/*
 		 * from the compId get country and competition and create a country
 		 * folder with competition_compId name for the prediction datafile
 		 */
 
 		try {
-			File f = createTestFile(compId, compName, country,date);
+			File f = createTestFile(compId, compName, country, date);
 			if (f == null) {
-				log.warn("Test Pred file not found for {} {}", compName,
-						country);
+				log.warn("Test Pred file not found for {} {}", compName, country);
 			} else {
 				bw = new BufferedWriter(new FileWriter(f, true));
 			}
@@ -113,8 +109,7 @@ public class AnalyticFileHandler {
 		bw.append(line + "\n");
 	}
 
-	public File createTestFile(int compId, String compName, String country,
-			LocalDate dat) {
+	public File createTestFile(int compId, String compName, String country, LocalDate dat) {
 		File cFolder = new File(predTestFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
@@ -133,8 +128,7 @@ public class AnalyticFileHandler {
 		return tFile;
 	}
 
-	public File getTestFileName(int compId, String compName, String country,
-			LocalDate dat) {
+	public File getTestFileName(int compId, String compName, String country, LocalDate dat) {
 		// create the folder file and a new test file of format
 		// folder/CompName_compId_Test_2016-10-10
 
@@ -162,8 +156,7 @@ public class AnalyticFileHandler {
 			return null;
 	}
 
-	public File getLeatestTestFileName(int compId, String compName,
-			String country) {
+	public File getLeatestTestFileName(int compId, String compName, String country) {
 		log.info("@ getLeatestTestFileName");
 		File cFolder = new File(predTestFolder + "/" + country);
 		if (!cFolder.exists()) {
@@ -179,15 +172,14 @@ public class AnalyticFileHandler {
 				continue;
 			}
 			try {
-				LocalDate ld = LocalDate.parse(temp[3],
-						DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				LocalDate ld = LocalDate.parse(temp[3], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 				ldl.add(ld);
 			} catch (Exception e) {
 				log.warn("afh Exception here");
 				e.printStackTrace();
 			}
 
-		}// for
+		} // for
 		log.info(ldl.last().toString());
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
@@ -202,8 +194,11 @@ public class AnalyticFileHandler {
 		return (new File(cFolder + sb.toString()));
 	}
 
-	public File getLeatestRPredictionFileName(int compId, String compName,
-			String country) {
+	public File getLeatestRPredictionFileName(int compId, String compName, String country) {
+		/*
+		 * get all the predictions of a competition sort them bu the date in the
+		 * file name and get the leatest one
+		 */
 		log.info("@ getLeatestPredictionFileName");
 		File cFolder = new File(dayPredFolder + "/" + country);
 		if (!cFolder.exists()) {
@@ -219,15 +214,14 @@ public class AnalyticFileHandler {
 				continue;
 			}
 			try {
-				LocalDate ld = LocalDate.parse(temp[3],
-						DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				LocalDate ld = LocalDate.parse(temp[3], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 				ldl.add(ld);
 			} catch (Exception e) {
 				log.warn("afh Exception here; un parsable date");
 				e.printStackTrace();
 			}
 
-		}// for
+		} // for
 			// rebuild the file path (~ = the folder)
 		log.info(ldl.last().toString());
 		StringBuilder sb = new StringBuilder();
@@ -286,7 +280,10 @@ public class AnalyticFileHandler {
 	}
 
 	public String getImageFileName(int compId, String compName, String country) {
-		/* see if image file exists and has data in it. Return its path or null */
+		/*
+		 * see if image file exists and has data in it. Return its path or null
+		 */
+		/* see if image folder exists and or if it has any content init */
 
 		// CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
 		File cFolder = new File(imageFolder + "/" + country);
@@ -300,17 +297,16 @@ public class AnalyticFileHandler {
 		sb.append(wordSeparator);
 		sb.append(compId);
 		// sb.append(wordSeparator);
-		sb.append(".dtf.RData");
+		// sb.append(".dtf.RData");
 
-		File tFile = new File(cFolder + sb.toString());
-		if (tFile.exists() && tFile.length() > 10) {
+		File tFolder = new File(cFolder + sb.toString());
+		if (tFolder.exists()) {
 			return (cFolder + sb.toString());
 		}
 		return null;
 	}
 
-	public boolean isTestFile(int compId, String compName, String country,
-			LocalDate dat) {
+	public boolean isTestFile(int compId, String compName, String country, LocalDate dat) {
 		File cFolder = new File(predDataFolder + "/" + country);
 		if (!cFolder.exists()) {
 			return false;
@@ -332,8 +328,7 @@ public class AnalyticFileHandler {
 		return false;
 	}
 
-	public int testFileDateDifference(int compId, String compName,
-			String country, LocalDate dat) {
+	public int testFileDateDifference(int compId, String compName, String country, LocalDate dat) {
 		/*
 		 * if file not found or other iregularities return 0 else return the
 		 * difference in days between the two files
@@ -349,11 +344,9 @@ public class AnalyticFileHandler {
 		String[] temp;
 		for (int i = 0; i < cFolder.list().length; i++) {
 			temp = cFolder.list()[i].split(wordSeparator);
-			if (temp[0].equals(File.separator + compName)
-					&& temp[1].equals(compId) && temp[2].equals("Test")) {
+			if (temp[0].equals(File.separator + compName) && temp[1].equals(compId) && temp[2].equals("Test")) {
 				try {
-					LocalDate ld = LocalDate.parse(temp[3],
-							DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+					LocalDate ld = LocalDate.parse(temp[3], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 					return (int) ChronoUnit.DAYS.between(ld, dat);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -365,8 +358,7 @@ public class AnalyticFileHandler {
 	}
 
 	// ///////////Write Results Section
-	public void writeResultsToTestFile() throws SQLException,
-			FileNotFoundException, IOException {
+	public void writeResultsToTestFile() throws SQLException, FileNotFoundException, IOException {
 		/* in the test files created write the actual results */
 		/*
 		 * the data in the test file that is about to be writtend doesn't have
@@ -386,23 +378,19 @@ public class AnalyticFileHandler {
 		List<MatchObj> recentmatches = tmf.readFromRecentMatches(yesterDat);
 
 		for (int cid : workingIds) {
-			CCAllStruct cc = CountryCompetition.ccasList
-					.get(CountryCompetition.idToIdx.get(cid));
-			File file = getTestFileName(cid, cc.getCompetition(),
-					cc.getCountry(), yesterDat);
+			CCAllStruct cc = CountryCompetition.ccasList.get(CountryCompetition.idToIdx.get(cid));
+			File file = getTestFileName(cid, cc.getCompetition(), cc.getCountry(), yesterDat);
 			List<StrStrTuple> teamsList = readTestFileContent(file);
 			if (teamsList == null)
 				continue;
 
-			List<ReducedPredictionTestFile> outcomesList = addOutcomes(
-					teamsList, recentmatches);
+			List<ReducedPredictionTestFile> outcomesList = addOutcomes(teamsList, recentmatches);
 
 			rewriteTestFile(file, outcomesList);
 		}
 	}
 
-	public void rewriteTestFile(File file,
-			List<ReducedPredictionTestFile> outcomesList) throws IOException {
+	public void rewriteTestFile(File file, List<ReducedPredictionTestFile> outcomesList) throws IOException {
 		/*
 		 * write to the test file the results needed for the reevaluation on the
 		 * prediction points by the R system. The original predictionFile dat
@@ -433,14 +421,12 @@ public class AnalyticFileHandler {
 			fwrite.close();
 			csvFilePrinter.close();
 		} catch (IOException e) {
-			System.out
-					.println("Error while flushing/closing fileWriter/csvPrinter !!!");
+			System.out.println("Error while flushing/closing fileWriter/csvPrinter !!!");
 			e.printStackTrace();
 		}
 	}
 
-	private List<ReducedPredictionTestFile> addOutcomes(
-			List<StrStrTuple> teamsList, List<MatchObj> recentmatches) {
+	private List<ReducedPredictionTestFile> addOutcomes(List<StrStrTuple> teamsList, List<MatchObj> recentmatches) {
 		OutcomeCalculator oc = new OutcomeCalculator();
 		List<ReducedPredictionTestFile> redpfList = new ArrayList<ReducedPredictionTestFile>();
 
@@ -448,25 +434,21 @@ public class AnalyticFileHandler {
 			String team = teamsList.get(i).getT1();
 			int teamIdx = binarySearchRecent(recentmatches, team);
 			if (teamIdx > -1) {
-				if (teamsList.get(i).getT2()
-						.equalsIgnoreCase(recentmatches.get(teamIdx).getT2())) {
+				if (teamsList.get(i).getT2().equalsIgnoreCase(recentmatches.get(teamIdx).getT2())) {
 
-					ReducedPredictionTestFile redpf = oc
-							.outcomeAsignment(recentmatches.get(teamIdx));
+					ReducedPredictionTestFile redpf = oc.outcomeAsignment(recentmatches.get(teamIdx));
 					redpfList.add(redpf);
 
 				} else {
-					log.warn("T2 is not the expected one {} - {}", team,
-							recentmatches.get(teamIdx).getT2());
+					log.warn("T2 is not the expected one {} - {}", team, recentmatches.get(teamIdx).getT2());
 				}
-			}// if -1
-		}// for
+			} // if -1
+		} // for
 		return redpfList;
 
 	}
 
-	private List<StrStrTuple> readTestFileContent(File file)
-			throws FileNotFoundException, IOException {
+	private List<StrStrTuple> readTestFileContent(File file) throws FileNotFoundException, IOException {
 		/* read t1 and t2 that the test file contains */
 		if (file == null)
 			return null;

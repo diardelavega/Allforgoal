@@ -17,6 +17,7 @@ import structures.CountryCompetition;
 import test.MatchGetter;
 import basicStruct.CCAllStruct;
 import diskStore.AnalyticFileHandler;
+import extra.AttsKind;
 
 /**
  * @author Administrator
@@ -55,25 +56,22 @@ public class RHandler {
 		foundImagePath.add(ret);
 
 		// add (the image corresponding) train file path in the list
-		File tempFile = afh.getTrainFileName(ccs.getCompId(),
-				ccs.getCompetition(), ccs.getCountry());
+		File tempFile = afh.getTrainFileName(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry());
 		if (tempFile != null) {
-			File testfile = afh.getTestFileName(ccs.getCompId(),
-					ccs.getCompetition(), ccs.getCountry(), LocalDate.now());
+			File testfile = afh.getTestFileName(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(),
+					LocalDate.now());
 			if (testfile != null) {
 				predTestPath.add(testfile.getAbsolutePath());
 				predTrainPath.add(tempFile.getAbsolutePath());
 			} else {
 				foundImagePath.remove(ret);
 				predTrainPath.remove(tempFile.getAbsolutePath());
-				log.warn("test file for {}, {}, {}  ", ccs.getCompId(),
-						ccs.getCompetition(), ccs.getCountry());
+				log.warn("test file for {}, {}, {}  ", ccs.getCompId(), ccs.getCompetition(), ccs.getCountry());
 			}
 		} else {
 			// if train file was not found remove the image found from the list
 			foundImagePath.remove(ret);
-			log.warn("train file for {}, {}, {}  ", ccs.getCompId(),
-					ccs.getCompetition(), ccs.getCountry());
+			log.warn("train file for {}, {}, {}  ", ccs.getCompId(), ccs.getCompetition(), ccs.getCountry());
 		}
 	}
 
@@ -99,8 +97,7 @@ public class RHandler {
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			String ret = afh.getImageFileName(ccs.getCompId(),
-					ccs.getCompetition(), ccs.getCountry());
+			String ret = afh.getImageFileName(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry());
 			if (ret != null) {
 				predListFiller(ccs, ret);
 			} else {
@@ -120,8 +117,7 @@ public class RHandler {
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			String ret = afh.getImageFileName(ccs.getCompId(),
-					ccs.getCompetition(), ccs.getCountry());
+			String ret = afh.getImageFileName(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry());
 			if (ret != null) {
 				predListFiller(ccs, ret);
 			} else {
@@ -140,8 +136,7 @@ public class RHandler {
 		/* predict the competitions given by the list of compeyiyions ids */
 		int idx = CountryCompetition.idToIdx.get(comp_Id);
 		CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-		String ret = afh.getImageFileName(ccs.getCompId(),
-				ccs.getCompetition(), ccs.getCountry());
+		String ret = afh.getImageFileName(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry());
 		if (ret != null) {
 			predListFiller(ccs, ret);
 		} else {
@@ -171,8 +166,7 @@ public class RHandler {
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			String ret = afh.getImageFileName(ccs.getCompId(),
-					ccs.getCompetition(), ccs.getCountry());
+			String ret = afh.getImageFileName(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry());
 			if (ret != null) {
 				predListFiller(ccs, ret);
 			} else {
@@ -183,7 +177,7 @@ public class RHandler {
 		Rcall_ReEvaluate();
 	}
 
-	public void Rcall_DTF(List<String> slist) {
+	public void Rcall_DTF(List<String> slist, String R_attKindVector) {
 		String trVec = listToRvector(slist);
 		Runnable r = () -> {
 			log.info("START: {}", LocalDateTime.now());
@@ -191,7 +185,7 @@ public class RHandler {
 			try {
 				re = new Rengine(new String[] { "--no-save" }, false, null);
 				re.eval(" source('C:/TotalPrediction/DTF_Create.R')");
-				re.eval("runAll(" + trVec + ")");
+				re.eval("runAll(" + trVec + "," + R_attKindVector + ")");
 			} catch (Exception e) {
 				log.warn("SOMETHING WHENT WRONG");
 				e.printStackTrace();
@@ -205,7 +199,7 @@ public class RHandler {
 		};
 
 		CompletableFuture.runAsync(r).thenAccept(
-				(c) -> log.info("FINISH :{}  \n succesfull R DTF completion  msg:{}",LocalDateTime.now(), c));
+				(c) -> log.info("FINISH :{}  \n succesfull R DTF completion  msg:{}", LocalDateTime.now(), c));
 	}
 
 	public void Rcall_Pred() {
@@ -218,8 +212,7 @@ public class RHandler {
 			try {
 				re = new Rengine(new String[] { "--no-save" }, false, null);
 				re.eval(" source('C:/TotalPrediction/Predict.R')");
-				re.eval("predictAll(" + dftVec + ", " + trVec + ", " + tsVec
-						+ ")");
+				re.eval("predictAll(" + dftVec + ", " + trVec + ", " + tsVec + ")");
 			} catch (Exception e) {
 				log.warn("SOMETHING WHENT WRONG");
 				e.printStackTrace();
@@ -229,14 +222,12 @@ public class RHandler {
 		};
 
 		// CompletableFuture futureCount = CompletableFuture
-		CompletableFuture.runAsync(r).thenAccept(
-				(c) -> log
-						.info("succesfull R Prediction completion  msg:{}", c));
+		CompletableFuture.runAsync(r).thenAccept((c) -> log.info("succesfull R Prediction completion  msg:{}", c));
 	}
 
 	public void Rcall_ReEvaluate() {
 		/*
-		 * TODO: reevaluate works on the bases that the test file prediction
+		 *  reevaluate works on the bases that the test file prediction
 		 * attributes are writen in the test file after the match.***********
 		 * HANDLE this
 		 */
@@ -258,15 +249,12 @@ public class RHandler {
 			}
 		};
 
-		CompletableFuture.runAsync(r).thenAccept(
-				(c) -> log.info("succesfull R reEvaluation completion  msg:{}",
-						c));
+		CompletableFuture.runAsync(r).thenAccept((c) -> log.info("succesfull R reEvaluation completion  msg:{}", c));
 
 	}
 
 	public void handleUnfound() {
 
-		// ///////TODO handle creae dtd
 		/*
 		 * for each of the unfound images for the competition ids () stored in
 		 * un_found get the train file in the prediction folder & call R to
@@ -277,18 +265,16 @@ public class RHandler {
 		List<String> trlist = new ArrayList<String>();
 
 		for (int i : un_foundImagesCompIds) {
-			ccs = CountryCompetition.ccasList.get(CountryCompetition.idToIdx
-					.get(i));
-			File temptrFile = afh.getTrainFileName(ccs.getCompId(),
-					ccs.getCompetition(), ccs.getCountry());
+			ccs = CountryCompetition.ccasList.get(CountryCompetition.idToIdx.get(i));
+			File temptrFile = afh.getTrainFileName(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry());
 			if (temptrFile != null) {
 				try {
-					log.info("{}",temptrFile.getCanonicalPath());
-					log.info("{}",temptrFile.getName());
-					log.info("{}",temptrFile.getParent());
-					log.info("{}",temptrFile.getAbsolutePath().replace("\\", "/"));
-					log.info("{}",temptrFile.getAbsolutePath());
-					log.info("{}",temptrFile.getPath());
+					log.info("{}", temptrFile.getCanonicalPath());
+					log.info("{}", temptrFile.getName());
+					log.info("{}", temptrFile.getParent());
+					log.info("{}", temptrFile.getAbsolutePath().replace("\\", "/"));
+					log.info("{}", temptrFile.getAbsolutePath());
+					log.info("{}", temptrFile.getPath());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -298,7 +284,7 @@ public class RHandler {
 				un_foundImagesCompIds.remove(i);
 			}
 		}
-		Rcall_DTF(trlist);
+		Rcall_DTF(trlist, AttsKind.hs);
 
 		// call R to predict next match matchline pred data
 		// predictSome(un_foundImagesCompIds);
@@ -333,21 +319,18 @@ public class RHandler {
 		};
 
 		CompletableFuture.runAsync(r)
-		// .exceptionally(() -> log.warn("aaaa, {}"))
-				.thenAccept(
-						(c) -> log.info(
-								" {} succesfull R DTF completion  msg:{}",
-								LocalDateTime.now(), c));
+				// .exceptionally(() -> log.warn("aaaa, {}"))
+				.thenAccept((c) -> log.info(" {} succesfull R DTF completion  msg:{}", LocalDateTime.now(), c));
 	}
 	
-	public void test2(){
-//		Rengine re = null;
-//		try {
-//			re = new Rengine(new String[] { "--no-save" }, false, null);
-//			re.eval(" source('C:/TotalPrediction/DTF_Create.R')");
-////			re.eval("runAll(" + vecs + ")");
-//			 double d = re.eval("test(100," + vecs + ")").asDouble();
-//			 log.info("the double isssss= {}", d);
-//			re.end();
+	public void test2() {
+		// Rengine re = null;
+		// try {
+		// re = new Rengine(new String[] { "--no-save" }, false, null);
+		// re.eval(" source('C:/TotalPrediction/DTF_Create.R')");
+		//// re.eval("runAll(" + vecs + ")");
+		// double d = re.eval("test(100," + vecs + ")").asDouble();
+		// log.info("the double isssss= {}", d);
+		// re.end();
 	}
 }

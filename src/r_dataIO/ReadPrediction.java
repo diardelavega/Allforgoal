@@ -36,8 +36,7 @@ import diskStore.AnalyticFileHandler;
  * 
  */
 public class ReadPrediction {
-	public static final Logger log = LoggerFactory
-			.getLogger(ReadPrediction.class);
+	public static final Logger log = LoggerFactory.getLogger(ReadPrediction.class);
 
 	// C:/BastData/WeekPredPoints/"country"/Eliteserien__112__Pred__2016-07-29
 	private Map<Integer, List<BaseMatchLinePred>> dayMatchLinePred;
@@ -56,8 +55,8 @@ public class ReadPrediction {
 		for (int id : compIds) {
 			int idx = CountryCompetition.idToIdx.get(id);
 			ccs = CountryCompetition.ccasList.get(idx);
-			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(),
-					test);
+			// read test file & get team names
+			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(), test);
 			List<BaseMatchLinePred> mlplist = new ArrayList<BaseMatchLinePred>();
 			for (CSVRecord record : p) {
 				BaseMatchLinePred mlp = new BaseMatchLinePred();
@@ -65,68 +64,130 @@ public class ReadPrediction {
 				mlp.setT2(record.get("t2"));
 				mlplist.add(mlp);
 			}
-			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(),
-					pred);
+			// read r prediction file & assign outcomes to matches
+			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(), pred);
 
 			/*
 			 * since the data table is switched rows/columns -> every record is
 			 * all the points of every match for a particular atrribute such as
-			 * _1, _x, _2 ... untill the two last rows which contain the points
-			 * for totHt & totFt;
+			 * _1, _x, _2 ... untill the twelve last rows which contain the
+			 * points for 6-totHt & 6-totFt;
 			 */
-			CSVRecord rec1 = p.getRecords().get(0);
-			CSVRecord recx = p.getRecords().get(1);
-			CSVRecord rec2 = p.getRecords().get(2);
-			CSVRecord reco = p.getRecords().get(3);
-			CSVRecord recu = p.getRecords().get(4);
-			CSVRecord recp1y = p.getRecords().get(5);
-			CSVRecord recp1n = p.getRecords().get(6);
-			CSVRecord recp2y = p.getRecords().get(7);
-			CSVRecord recp2n = p.getRecords().get(8);
-			CSVRecord rech = p.getRecords().get(9);
-			CSVRecord recf = p.getRecords().get(10);
-
-			for (int i = 0; i < mlplist.size(); i++) { // head 1
-				mlplist.get(i).set_1(rec1.get(i));
+			List<CSVRecord> recs = p.getRecords();
+			List<CSVRecord> smallrecslist;
+			String header = "";
+			CSVRecord rec1 = null, recx = null, rec2 = null, reco = null, recu = null, recY = null, recN = null,
+					rec2Y = null, rec2N = null;
+			List<Integer> htgoals = null;
+			List<Integer> ftgoals = null;
+			/*
+			 * read the prediction file. Get the header and based on it fill the
+			 * appropriate records.
+			 */
+			for (int j = 0; j < recs.size(); j++) {
+				if (recs.get(j).get(0).startsWith("#")) {
+					header = recs.get(j).get(0).split("#")[1];
+					continue;
+				}
+				switch (header) {
+				case "head":
+					rec1 = recs.get(j);
+					j++;
+					recx = recs.get(j);
+					j++;
+					rec2 = recs.get(j);
+					break;
+				case "score":
+					reco = recs.get(j);
+					j++;
+					recu = recs.get(j);
+					break;
+				case "p1":
+					recY = recs.get(j);
+					j++;
+					recN = recs.get(j);
+					break;
+				case "p2":
+					rec2Y = recs.get(j);
+					j++;
+					rec2N = recs.get(j);
+					break;
+				case "ht":
+					smallrecslist = new ArrayList<>();
+					for (int w = 0; w < 6; w++) {
+						smallrecslist.add(recs.get(w));
+					}
+					htgoals = maxOfRecs(smallrecslist);
+					break;
+				case "ft":
+					smallrecslist = new ArrayList<>();
+					for (int w = 0; w < 6; w++) {
+						smallrecslist.add(recs.get(w));
+					}
+					ftgoals = maxOfRecs(smallrecslist);
+					break;
+				default:
+					log.warn("TDEFAULT in read prediction SWITCH; THIS SHULD NOT BE SHOWING ");
+					break;
+				}
+				// }
 			}
-			for (int i = 0; i < mlplist.size(); i++) {// head x
-				mlplist.get(i).set_x(recx.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// head 2
-				mlplist.get(i).set_2(rec2.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// score o
-				mlplist.get(i).set_o(reco.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// score u
-				mlplist.get(i).set_u(recu.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht +1
-				mlplist.get(i).setP1y(recp1y.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht -1
-				mlplist.get(i).setP1n(recp1n.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht +2
-				mlplist.get(i).setP2y(recp2y.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht -2
-				mlplist.get(i).setP2n(recp2n.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht goals
-				mlplist.get(i).setHt(rech.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ft goals
-				mlplist.get(i).setFt(recf.get(i));
+			// Fill the BaseMatchPredLine list with the valid records
+			for (int k = 0; k < mlplist.size(); k++) { // head 1
+				if (recY != null) {
+					mlplist.get(k).setP1y(recY.get(k));
+					mlplist.get(k).setP1n(recN.get(k));
+				}
+				if (rec2Y != null) {
+					mlplist.get(k).setP2y(rec2Y.get(k));
+					mlplist.get(k).setP2n(rec2N.get(k));
+				}
+				if (reco != null) {
+					mlplist.get(k).set_o(reco.get(k));
+					mlplist.get(k).set_u(recu.get(k));
+				}
+				if (rec1 != null) {
+					mlplist.get(k).set_1(rec1.get(k));
+					mlplist.get(k).set_x(recx.get(k));
+					mlplist.get(k).set_2(rec2.get(k));
+				}
+				if (ftgoals != null) {
+					mlplist.get(k).setFt(ftgoals.get(k).toString());
+				}
+				if (htgoals != null) {
+					mlplist.get(k).setHt(htgoals.get(k).toString());
+				}
 			}
 
 			dayMatchLinePred.put(id, mlplist);
-		}// comp_id fors
+		} // comp_id fors
 
 	}
 
-	private CSVParser parser(int compId, String compName, String country,
-			String kind) {
+	private List<Integer> maxOfRecs(List<CSVRecord> smallrecslist) {
+		// get the index of the max value for each of the matches
+
+		List<Integer> preobGoals = new ArrayList<>();
+
+		// iterate the words (csv words)of a record
+		for (int j = 0; j < smallrecslist.get(0).size(); j++) {
+			float max = Float.parseFloat(smallrecslist.get(0).get(j));
+			int maxPos = 0;
+			// iterate the lines of the array
+			for (int i = 1; i < smallrecslist.size(); i++) {
+				float curent = Float.parseFloat(smallrecslist.get(i).get(j));
+				if (curent > max) {
+					max = curent;
+					maxPos = i;
+				}
+			}
+			preobGoals.add(maxPos);
+		}
+
+		return preobGoals;
+	}
+
+	private CSVParser parser(int compId, String compName, String country, String kind) {
 		/* get the leatest (today or in future pred files and reads it) */
 		CSVFormat format = CSVFormat.RFC4180;
 
@@ -137,14 +198,11 @@ public class ReadPrediction {
 			// "J2_League", "Japan")), format);
 			switch (kind) {
 			case "pred":
-				parser = new CSVParser(new FileReader(
-						afh.getLeatestRPredictionFileName(compId, compName,
-								country)), format);
+				parser = new CSVParser(new FileReader(afh.getLeatestRPredictionFileName(compId, compName, country)),
+						format);
 				break;
 			case "test":
-				parser = new CSVParser(new FileReader(
-						afh.getLeatestTestFileName(compId, compName, country)),
-						format);
+				parser = new CSVParser(new FileReader(afh.getLeatestTestFileName(compId, compName, country)), format);
 				break;
 
 			default:
@@ -161,7 +219,7 @@ public class ReadPrediction {
 	}
 
 	public List<String> getDominant(int compId) {
-		/* to return the preveiling attribute in head,score,p1,p2,ht,ft */
+		/* to return the prevailing attribute in head,score,p1,p2,ht,ft */
 		if (dayMatchLinePred == null) {
 			log.warn("Not initiated prediction proces");
 			return null;
@@ -220,6 +278,10 @@ public class ReadPrediction {
 			dominList.add(sb.toString());
 		}
 		return dominList;
+
+	}
+
+	public void htftMostPoint() {
 
 	}
 }
