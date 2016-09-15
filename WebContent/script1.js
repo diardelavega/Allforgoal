@@ -66,7 +66,7 @@ function idttr(id,text){
 
 
 function matchPredLineTrBuilder(resp){
-/* builds the prediction lines in tr element for the dayly matches of a competition*/	
+/* builds the prediction lines in tr element for the daily matches of a competition*/	
 	var compId=resp.compId;			//123;  		// parameter variable
 	var country=resp.country;		//'COUNTRY';  		// parameter variable
 	var comp=resp.competition			//'COMPETITION';  		// parameter variable
