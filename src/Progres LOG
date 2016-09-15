@@ -3,6 +3,15 @@
 ----------------------------------------------------------------------------
 
 
+*Optimizing the Api for the client side
+
+
+----------------------------------------------------------------------------
+**)Implemented the DTF Predict and reevaluate in a more modular and safe mode. testing it.
+Hopefully Dtf proved to be working without any problems, lets hope for the rest to do so.
+
+
+----------------------------------------------------------------
 **--) How To handle r re-evaluation for canceled matches:
 		assine them a special value to the resultVector that will be used for the evaluation.
 		This special simbol will cause the r function to skip the specified match 
