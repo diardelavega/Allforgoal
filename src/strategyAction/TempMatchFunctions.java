@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import calculate.MatchToTableRenewal;
+import r_dataIO.ReadPrediction;
 import scrap.XscoreUpComing;
 import structures.CountryCompetition;
 import test.MatchGetter;
@@ -24,6 +25,8 @@ import extra.Status;
 import extra.StringSimilarity;
 import extra.Unilang;
 import basicStruct.CCAllStruct;
+import basicStruct.FullMatchLine;
+import basicStruct.FullMatchPredLineToSubStructs;
 import basicStruct.MatchObj;
 import basicStruct.ScorerDataStruct;
 
@@ -36,7 +39,7 @@ public class TempMatchFunctions {
 	private Unilang ul = new Unilang(); // Original_Line
 	// public List<MatchObj> incomeTempMatchesListss = new ArrayList<>();
 	public List<MatchObj> readTempMatchesList = new ArrayList<>();
-	public List<MatchObj> readRecentMatchesList = new ArrayList<>();
+	public List<FullMatchLine> readRecentMatchesList = new ArrayList<>();
 
 	private Conn conn;
 
@@ -138,7 +141,7 @@ public class TempMatchFunctions {
 							chosenDbIdx2 = i;
 						}
 					}
-					
+
 					if (chosenDbIdx2 >= 0) {
 						logger.info("m.T2= '{}'    db.t= '{}' ", m.getT2(),
 								dbTeams.get(chosenDbIdx2));
@@ -163,7 +166,7 @@ public class TempMatchFunctions {
 		storeToShortMatches(insert);
 	}
 
-	public List<MatchObj> readFromRecentMatches(LocalDate dat)
+	public List<FullMatchLine> readFromRecentMatches(LocalDate dat)
 			throws SQLException {
 		readFromShortMatches(dat, "recentmatches");
 		return readRecentMatchesList;
@@ -303,11 +306,13 @@ public class TempMatchFunctions {
 					readTempMatchesList.size());
 			break;
 		case "recentmatches":
-			readRecentMatchesList.addAll(mali);
+			FullMatchPredLineToSubStructs fmplss = new FullMatchPredLineToSubStructs();
+			readRecentMatchesList.addAll(fmplss.mobjToFullMatchLine(mali));
 			logger.info("read-" + tab + "-MatchesList size ={}",
 					readTempMatchesList.size());
 			break;
 		default:
+			logger.warn("readfrom recent matches .. some error ocoured!");
 			break;
 		}
 		closeDBConn();
@@ -452,6 +457,8 @@ public class TempMatchFunctions {
 	}
 
 	private void updateRecentError(List<MatchObj> matches) throws SQLException {
+		// write the error message to the matches that where not finished
+		// normally
 		PreparedStatement preparedStatement = null;
 
 		String updateTableSQL = "UPDATE recentmatches SET tim = ?  WHERE mid =?";
@@ -592,6 +599,7 @@ public class TempMatchFunctions {
 	}
 
 	private int binarySearch(String team, int min, int max) {
+		// tempmatches binary search
 		try {
 			// logger.info("t__{}  min_{}   max__{}", team, min, max);
 			if (min > max) {
@@ -609,6 +617,31 @@ public class TempMatchFunctions {
 		} catch (Exception e) {
 			logger.info("t__{}  min_{}   max__{},  readTempMatchesList-:{}",
 					team, min, max, readTempMatchesList.size());
+			e.printStackTrace();
+		}
+		// return -1;
+		return -1;
+	}
+
+	private int binaryRecentSearch(String team, int min, int max) {
+		// tempmatches binary search
+		try {
+			// logger.info("t__{}  min_{}   max__{}", team, min, max);
+			if (min > max) {
+				return -1;
+			}
+			int mid = (max + min) / 2;
+			// logger.warn("mid__{}", mid);
+			if (readRecentMatchesList.get(mid).getT1().equals(team)) {
+				return mid;
+			} else if (readRecentMatchesList.get(mid).getT1().compareTo(team) > 0) {
+				return binarySearch(team, min, mid - 1);
+			} else {
+				return binarySearch(team, mid + 1, max);
+			}
+		} catch (Exception e) {
+			logger.info("t__{}  min_{}   max__{},  readRecentMatchesList-:{}",
+					team, min, max, readRecentMatchesList.size());
 			e.printStackTrace();
 		}
 		// return -1;
@@ -659,21 +692,6 @@ public class TempMatchFunctions {
 		}
 	}
 
-	private String compNameGetter(int compId) {
-
-		int idx = CountryCompetition.idToIdx.get(compId);
-		CCAllStruct cc = CountryCompetition.ccasList.get(idx);
-		return cc.getCompetition();
-
-		// for (int i = 0; i < CountryCompetition.ccasList.size(); i++) {
-		// if (CountryCompetition.ccasList.get(i).getCompId() == compId) {
-		// // country = CountryCompetition.ccasList.get(i).getCountry();
-		// return CountryCompetition.ccasList.get(i).getCompetition();
-		// }
-		// }
-		// return null;
-	}
-
 	private void predictionDataSet(List<MatchObj> predictionsList) {
 		/*
 		 * add the concludet matches and the updated attributes corresponding to
@@ -707,6 +725,49 @@ public class TempMatchFunctions {
 		}
 
 		closeDBConn();
+	}
+
+	public void addPredPoints(List<Integer> todayComps) throws IOException,
+			SQLException {
+		/* add the prediction points from file to recent table */
+		FullMatchPredLineToSubStructs fmplss = new FullMatchPredLineToSubStructs();
+
+		// read predictions from the pred files
+		ReadPrediction rp = new ReadPrediction();
+		rp.prediction(todayComps);
+		// read matches from the recent table
+		readFromRecentMatches(LocalDate.now());
+		// find the same matches from table and file
+		for (Integer key : rp.getDayMatchLinePred().keySet())
+			for (int i = 0; i < rp.getDayMatchLinePred().get(key).size(); i++) {
+				int ind = binaryRecentSearch(rp.getDayMatchLinePred().get(key)
+						.get(i).getT1(), 0, (readRecentMatchesList.size() - 1));
+				if (ind == -1) {
+					// todo dysplay error and
+					continue;
+				}
+				// make sure both teams correspond
+				if (rp.getDayMatchLinePred()
+						.get(key)
+						.get(i)
+						.getT2()
+						.equalsIgnoreCase(
+								readRecentMatchesList.get(ind).getT2())) {
+					// remove the original fullmpl with mobj atts only
+					readRecentMatchesList
+							.remove(readRecentMatchesList.get(ind));
+					// enhance the full match with base pred line atts & restore
+					readRecentMatchesList.add(fmplss
+							.baseMatchLinePredEnhanceFullLine(
+									readRecentMatchesList.get(ind), rp
+											.getDayMatchLinePred().get(key)
+											.get(i)));
+
+				}
+			}
+		// update the recent matches table with the pred points
+		// fill a map of <compId,list<predLine>>
+
 	}
 
 	/*

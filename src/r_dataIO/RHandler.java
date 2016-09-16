@@ -190,6 +190,12 @@ public class RHandler {
 		Rcall_ReEvaluate();
 	}
 
+	public void Rcall_DTF(List<String> trlist) {
+		// default dtf objects to be created are head and score
+		String R_attKindVector = AttsKind.hs;
+		Rcall_DTF(trlist, R_attKindVector);
+	}
+
 	public void Rcall_DTF(List<String> trlist, String R_attKindVector) {
 		String trVec = listToRvector(trlist);
 		Runnable r = () -> {
@@ -218,10 +224,16 @@ public class RHandler {
 	}
 
 	public void Rcall_Pred() {
+		// deafault prediction without defined atts is h,s,ft
+		String R_attKindVector = AttsKind.hs;
+		Rcall_Pred(R_attKindVector);
+	}
+
+	public void Rcall_Pred(String R_attKindVector) {
 		String dftVec = listToRvector(foundImagePath);
 		String trVec = listToRvector(predTrainPath);
 		String tsVec = listToRvector(predTestPath);
-		String kindVec = AttsKind.end;
+
 		Runnable r = () -> {
 			log.info("START: {}", LocalDateTime.now());
 			Rengine re = null;
@@ -229,7 +241,7 @@ public class RHandler {
 				re = new Rengine(new String[] { "--no-save" }, false, null);
 				re.eval(" source('C:/TotalPrediction/Predict.R')");
 				re.eval("predictAll(" + dftVec + ", " + trVec + ", " + tsVec
-						+ ", " + kindVec + ")");
+						+ ", " + R_attKindVector + ")");
 			} catch (Exception e) {
 				log.warn("SOMETHING WHENT WRONG");
 				e.printStackTrace();

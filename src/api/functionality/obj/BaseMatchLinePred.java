@@ -9,11 +9,11 @@ public class BaseMatchLinePred {
 	private int ft1;
 	private int ft2;
 
-	private String _1;
-	private String _x;
-	private String _2;
-	private String _o;
-	private String _u;
+	private String h1;
+	private String hx;
+	private String h2;
+	private String so;
+	private String su;
 
 	private String p1y;
 	private String p1n;
@@ -28,17 +28,17 @@ public class BaseMatchLinePred {
 		super();
 	}
 
-	public BaseMatchLinePred(String t1, String t2, String _1, String _x,
-			String _2, String _o, String _u, String p1y, String p1n,
+	public BaseMatchLinePred(String t1, String t2, String h1, String hx,
+			String h2, String so, String su, String p1y, String p1n,
 			String p2y, String p2n, String ht, String ft) {
 		super();
 		this.t1 = t1;
 		this.t2 = t2;
-		this._1 = _1;
-		this._x = _x;
-		this._2 = _2;
-		this._o = _o;
-		this._u = _u;
+		this.h1 = h1;
+		this.hx = hx;
+		this.h2 = h2;
+		this.so = so;
+		this.su = su;
 		this.p1y = p1y;
 		this.p1n = p1n;
 		this.p2y = p2y;
@@ -57,11 +57,11 @@ public class BaseMatchLinePred {
 		this.ht2 = ht2;
 		this.ft1 = ft1;
 		this.ft2 = ft2;
-		this._1 = _1;
-		this._x = _x;
-		this._2 = _2;
-		this._o = _o;
-		this._u = _u;
+		this.h1 = _1;
+		this.hx = _x;
+		this.h2 = _2;
+		this.so = _o;
+		this.su = _u;
 		this.p1y = p1y;
 		this.p1n = p1n;
 		this.p2y = p2y;
@@ -78,24 +78,44 @@ public class BaseMatchLinePred {
 		return t2;
 	}
 
-	public String get_1() {
-		return _1;
+	public String getH1() {
+		return h1;
 	}
 
-	public String get_x() {
-		return _x;
+	public String getHx() {
+		return hx;
 	}
 
-	public String get_2() {
-		return _2;
+	public String getH2() {
+		return h2;
 	}
 
-	public String get_o() {
-		return _o;
+	public String getSo() {
+		return so;
 	}
 
-	public String get_u() {
-		return _u;
+	public String getSu() {
+		return su;
+	}
+
+	public void setH1(String h1) {
+		this.h1 = h1;
+	}
+
+	public void setHx(String hx) {
+		this.hx = hx;
+	}
+
+	public void setH2(String h2) {
+		this.h2 = h2;
+	}
+
+	public void setSo(String so) {
+		this.so = so;
+	}
+
+	public void setSu(String su) {
+		this.su = su;
 	}
 
 	public String getP1y() {
@@ -130,26 +150,6 @@ public class BaseMatchLinePred {
 		this.t2 = t2;
 	}
 
-	public void set_1(String _1) {
-		this._1 = _1;
-	}
-
-	public void set_x(String _x) {
-		this._x = _x;
-	}
-
-	public void set_2(String _2) {
-		this._2 = _2;
-	}
-
-	public void set_o(String _o) {
-		this._o = _o;
-	}
-
-	public void set_u(String _u) {
-		this._u = _u;
-	}
-
 	public void setP1y(String p1y) {
 		this.p1y = p1y;
 	}
@@ -180,16 +180,16 @@ public class BaseMatchLinePred {
 		sb.append(" ");
 		sb.append(t2);
 		sb.append(" ");
-		sb.append(_1);
+		sb.append(h1);
 		sb.append(" ");
-		sb.append(_x);
+		sb.append(hx);
 		sb.append(" ");
-		sb.append(_2);
+		sb.append(h2);
 		sb.append(" ");
 
-		sb.append(_o);
+		sb.append(so);
 		sb.append(" ");
-		sb.append(_u);
+		sb.append(su);
 		sb.append(" ");
 
 		sb.append(p1y);
@@ -237,6 +237,14 @@ public class BaseMatchLinePred {
 
 	public void setFt2(int ft2) {
 		this.ft2 = ft2;
+	}
+
+	public String liner() {
+		String line = t1 + " " + ht1 + "  " + ht2 + " " + ft1 + " " + ft2 + " "
+				+ t2 + " " + h1 + " " + hx + " " + h2 + " " + so + " " + su
+				+ " " + p1y + " " + p1n + " " + p2y + " " + p2n + " " + ht
+				+ " " + ft;
+		return line;
 	}
 
 }

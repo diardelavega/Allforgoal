@@ -10,21 +10,25 @@ import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import demo.Demo;
 import diskStore.AnalyticFileHandler;
 import extra.AttsKind;
 
 public class RDemo {
+	public static final Logger log = LoggerFactory.getLogger(RDemo.class);
 
 	public static void main(String[] args) throws SQLException, IOException {
-		 Demo.initCCAllStruct();
-		 RHandler rh = new RHandler();
-		 rh.predictOne(112);
+		Demo.initCCAllStruct();
+//		RHandler rh = new RHandler();
+//		rh.predictOne(112);
 		// rh.testRcall();
 
 		// rh.predictOne(157);
-//		simDtf_Create();
+		// simDtf_Create();
+		sim_readPrediction();
 	}
 
 	public static void testReadPred() {
@@ -65,4 +69,20 @@ public class RDemo {
 		rh.Rcall_DTF(tempList, AttsKind.hs);
 	}
 
+	public static void sim_readPrediction() {
+		ReadPrediction rp = new ReadPrediction();
+		List<Integer> prefileid = new ArrayList<Integer>();
+		prefileid.add(112);
+		try {
+			rp.prediction(prefileid);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		for (Integer key : rp.getDayMatchLinePred().keySet())
+			for (int i = 0; i < rp.getDayMatchLinePred().get(key).size(); i++) {
+				log.info("{}", rp.getDayMatchLinePred().get(key).get(i).liner());
+			}
+	}
 }

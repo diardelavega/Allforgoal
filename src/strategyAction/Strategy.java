@@ -113,8 +113,9 @@ public class Strategy {
 				testPredFileMaker();// test file create
 				score.clearLists();
 				rh.predictSome(CountryCompetition.todayComps);
-				// rh.predictSome(CountryCompetition.tomorrowComps);
-				logger.info("NULL Last Ceck {}",LocalTime.now());
+				tmf.addPredPoints(CountryCompetition.todayComps);
+				// TODO write the predictions points ti the recent matches
+				logger.info("NULL Last Ceck {}", LocalTime.now());
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
 					lastDatCheck = LocalDate.now();
@@ -128,9 +129,9 @@ public class Strategy {
 					CountryCompetition.yesterdayComps = CountryCompetition.todayComps;
 					CountryCompetition.todayComps = CountryCompetition.tomorrowComps;
 					CountryCompetition.tomorrowComps.clear();// to bee refilled
-					
+
 					// ----------------Tomorrow's actions reparation line
-					
+
 					score.getScheduledTomorrow(); // tommorrowComps is updated
 					scheduledOddsAdderTomorrow(lastDatCheck);
 					tmf.corelatePunterXScorerTeams();
@@ -138,17 +139,19 @@ public class Strategy {
 
 					testPredFileMaker();// test file create
 					rh.predictSome(CountryCompetition.tomorrowComps);
+					tmf.addPredPoints(CountryCompetition.todayComps);
 
 					score.clearLists();
 					checkRemaining();
 					tmf.deleteFromRecentMatches();
-					logger.info("Last Ceck   BEFORE TODAY {}",LocalTime.now());
+					logger.info("Last Ceck   BEFORE TODAY {}", LocalTime.now());
 				} else {
 					// is still the same day get todays results
 					score.getFinishedToday();
 					tmf.completeToday();
 					score.clearLists();
-					logger.info("Last Ceck   Finished  TODAY {}",LocalTime.now());
+					logger.info("Last Ceck   Finished  TODAY {}",
+							LocalTime.now());
 				}
 			}
 		} finally {
@@ -159,9 +162,9 @@ public class Strategy {
 	private void storeToSmallDBsCondition(LocalDate checkdat)
 			throws SQLException, IOException {
 		/*
-		 * TODO a condition so that matches that have already been written
-		 * inside will not be rewritten maybe get the leatest date from db and
-		 * compare it to the today date
+		 * a condition so that matches that have already been written inside
+		 * will not be rewritten maybe get the leatest date from db and compare
+		 * it to the today date
 		 */
 		Conn conn = new Conn();
 		conn.open();
@@ -174,13 +177,14 @@ public class Strategy {
 		if (res.next()) {
 			latestDate = res.getDate(1).toLocalDate();
 			if (!latestDate.isBefore(checkdat)) {
-				// if leatest match in temp db is inserted before the curent
-				// check date then store the info gathered. Avoid duplicates in
-				// db and test file
+
 				conn.close();
 				return;
 			}
 		} else {
+			// if leatest match in temp db is inserted before the curent
+			// check date then store the info gathered. Avoid duplicates in
+			// db and test file
 			testPredFileMaker();
 			storeToSmallDBs();
 		}
@@ -201,13 +205,12 @@ public class Strategy {
 		try {
 			lastDatCheck = LocalDate.now();
 			score.getScheduledToday();
-//			score.getScheduledTomorrow();// today & tomorrow is created
+			// score.getScheduledTomorrow();// today & tomorrow is created
 			scheduledOddsAdderToday();
-//			scheduledOddsAdderTomorrow(lastDatCheck);
+			// scheduledOddsAdderTomorrow(lastDatCheck);
 			tmf.corelatePunterXScorerTeams();
-			
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			// tmf.closeDBConn();

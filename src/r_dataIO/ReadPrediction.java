@@ -36,7 +36,8 @@ import diskStore.AnalyticFileHandler;
  * 
  */
 public class ReadPrediction {
-	public static final Logger log = LoggerFactory.getLogger(ReadPrediction.class);
+	public static final Logger log = LoggerFactory
+			.getLogger(ReadPrediction.class);
 
 	// C:/BastData/WeekPredPoints/"country"/Eliteserien__112__Pred__2016-07-29
 	private Map<Integer, List<BaseMatchLinePred>> dayMatchLinePred;
@@ -56,7 +57,8 @@ public class ReadPrediction {
 			int idx = CountryCompetition.idToIdx.get(id);
 			ccs = CountryCompetition.ccasList.get(idx);
 			// read test file & get team names
-			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(), test);
+			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(),
+					test);
 			List<BaseMatchLinePred> mlplist = new ArrayList<BaseMatchLinePred>();
 			for (CSVRecord record : p) {
 				BaseMatchLinePred mlp = new BaseMatchLinePred();
@@ -65,7 +67,8 @@ public class ReadPrediction {
 				mlplist.add(mlp);
 			}
 			// read r prediction file & assign outcomes to matches
-			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(), pred);
+			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(),
+					pred);
 
 			/*
 			 * since the data table is switched rows/columns -> every record is
@@ -76,8 +79,7 @@ public class ReadPrediction {
 			List<CSVRecord> recs = p.getRecords();
 			List<CSVRecord> smallrecslist;
 			String header = "";
-			CSVRecord rec1 = null, recx = null, rec2 = null, reco = null, recu = null, recY = null, recN = null,
-					rec2Y = null, rec2N = null;
+			CSVRecord rec1 = null, recx = null, rec2 = null, reco = null, recu = null, recY = null, recN = null, rec2Y = null, rec2N = null;
 			List<Integer> htgoals = null;
 			List<Integer> ftgoals = null;
 			/*
@@ -143,13 +145,13 @@ public class ReadPrediction {
 					mlplist.get(k).setP2n(rec2N.get(k));
 				}
 				if (reco != null) {
-					mlplist.get(k).set_o(reco.get(k));
-					mlplist.get(k).set_u(recu.get(k));
+					mlplist.get(k).setSo(reco.get(k));
+					mlplist.get(k).setSu(recu.get(k));
 				}
 				if (rec1 != null) {
-					mlplist.get(k).set_1(rec1.get(k));
-					mlplist.get(k).set_x(recx.get(k));
-					mlplist.get(k).set_2(rec2.get(k));
+					mlplist.get(k).setH1(rec1.get(k));
+					mlplist.get(k).setHx(recx.get(k));
+					mlplist.get(k).setH2(rec2.get(k));
 				}
 				if (ftgoals != null) {
 					mlplist.get(k).setFt(ftgoals.get(k).toString());
@@ -187,9 +189,11 @@ public class ReadPrediction {
 		return preobGoals;
 	}
 
-	private CSVParser parser(int compId, String compName, String country, String kind) {
+	private CSVParser parser(int compId, String compName, String country,
+			String kind) {
 		/* get the leatest (today or in future pred files and reads it) */
-		CSVFormat format = CSVFormat.RFC4180;
+		CSVFormat format = null;
+		CSVFormat.RFC4180.withHeader();
 
 		AnalyticFileHandler afh = new AnalyticFileHandler();
 		CSVParser parser = null;
@@ -198,11 +202,17 @@ public class ReadPrediction {
 			// "J2_League", "Japan")), format);
 			switch (kind) {
 			case "pred":
-				parser = new CSVParser(new FileReader(afh.getLeatestRPredictionFileName(compId, compName, country)),
-						format);
+				// prediction file doesnt have a header
+				format = CSVFormat.RFC4180;
+				parser = new CSVParser(new FileReader(
+						afh.getLeatestRPredictionFileName(compId, compName,
+								country)), format);
 				break;
 			case "test":
-				parser = new CSVParser(new FileReader(afh.getLeatestTestFileName(compId, compName, country)), format);
+				format = CSVFormat.RFC4180.withHeader();
+				parser = new CSVParser(new FileReader(
+						afh.getLeatestTestFileName(compId, compName, country)),
+						format);
 				break;
 
 			default:
@@ -237,9 +247,9 @@ public class ReadPrediction {
 		StringBuilder sb;
 		for (BaseMatchLinePred mlp : dayMatchLinePred.get(compId)) {
 			sb = new StringBuilder();
-			float _1 = Float.parseFloat(mlp.get_1());
-			float _x = Float.parseFloat(mlp.get_x());
-			float _2 = Float.parseFloat(mlp.get_2());
+			float _1 = Float.parseFloat(mlp.getH1());
+			float _x = Float.parseFloat(mlp.getHx());
+			float _2 = Float.parseFloat(mlp.getH2());
 			if (_1 >= _x) {
 				if (_1 >= _2) {
 					sb.append("1,");
@@ -254,8 +264,8 @@ public class ReadPrediction {
 				}
 			}
 
-			float _o = Float.parseFloat(mlp.get_o());
-			float _u = Float.parseFloat(mlp.get_u());
+			float _o = Float.parseFloat(mlp.getSo());
+			float _u = Float.parseFloat(mlp.getSu());
 			if (_o >= _u)
 				sb.append("o,");
 			else
@@ -284,4 +294,14 @@ public class ReadPrediction {
 	public void htftMostPoint() {
 
 	}
+
+	public Map<Integer, List<BaseMatchLinePred>> getDayMatchLinePred() {
+		return dayMatchLinePred;
+	}
+
+	public void setDayMatchLinePred(
+			Map<Integer, List<BaseMatchLinePred>> dayMatchLinePred) {
+		this.dayMatchLinePred = dayMatchLinePred;
+	}
+
 }

@@ -3,12 +3,21 @@
 ----------------------------------------------------------------------------
 
 
+**--) The norway elitaserien mathes are not all ok. Valerenga apeared in two matches
+
+
+
+
+--------------------------------------------------
 *Optimizing the Api for the client side
 
 
 ----------------------------------------------------------------------------
 **)Implemented the DTF Predict and reevaluate in a more modular and safe mode. testing it.
 Hopefully Dtf proved to be working without any problems, lets hope for the rest to do so.
+Predict works aswell
+read prediction works 2.
+
 
 
 ----------------------------------------------------------------

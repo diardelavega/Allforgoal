@@ -1,9 +1,8 @@
 package basicStruct;
 
-import java.io.Serializable;
 import java.sql.Date;
 
-public class MatchObj implements Serializable{
+public class MatchObj {
 
 	private long mId;
 	private int comId;
