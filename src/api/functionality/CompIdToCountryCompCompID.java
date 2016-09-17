@@ -1,8 +1,6 @@
 package api.functionality;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import structures.CountryCompetition;
 import api.functionality.obj.CountryCompCompId;
 import basicStruct.CCAllStruct;
-import dbtry.Conn;
 
 public class CompIdToCountryCompCompID {
 

@@ -126,11 +126,11 @@ public class MatchPredLineHandler {
 
 	public WinDrawLoseWithPred matchPredSimulation(WinDrawLoseWithPred mpcomplex) {
 		// MatchPredWithWinDrawLose mpcomplex = new MatchPredWithWinDrawLose();
-		mpcomplex.set_1(randomProb());
-		mpcomplex.set_2(randomProb());
-		mpcomplex.set_x(randomProb());
-		mpcomplex.set_o(randomProb());
-		mpcomplex.set_u(randomProb());
+		mpcomplex.setH1(randomProb());
+		mpcomplex.setH2(randomProb());
+		mpcomplex.setHx(randomProb());
+		mpcomplex.setSo(randomProb());
+		mpcomplex.setSu(randomProb());
 
 		mpcomplex.setP1n(randomProb());
 		mpcomplex.setP1y(randomProb());
@@ -184,16 +184,16 @@ public class MatchPredLineHandler {
 		return ml;
 	}
 
-	private String randomProb() {
+	private float randomProb() {
 		Random rand = new Random();
-		return (rand.nextFloat() * (100 - 0) + 0) + "";
+		return (rand.nextFloat() * (100 - 0) + 0);
 	}
 
-	private String randomScore() {
+	private int randomScore() {
 		Random rand = new Random();
 		int rs = rand.nextInt(8 - 0 + 1) + 0;
 		log.info("{}", rs);
-		return rs + "";
+		return rs ;
 	}
 
 	public List<WinDrawLoseWithPred> getMatchPredLine() {

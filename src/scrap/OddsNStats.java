@@ -127,25 +127,25 @@ public class OddsNStats {
 			}
 
 			// get odds 1x2 & go to link & get o/u ods
-			double _1 = 1, _x = 1, _2 = 1, _o = 1, _u = 1;
+			float _1 = 1, _x = 1, _2 = 1, _o = 1, _u = 1;
 
 			if (trs.get(i).getElementsByTag("td").get(7).text() != " ") {
 				try {
-					_1 = Double.parseDouble(trs.get(i).getElementsByTag("td")
+					_1 = Float.parseFloat(trs.get(i).getElementsByTag("td")
 							.get(7).text().replace(",", "."));
 				} catch (NumberFormatException e) {
 				}
 			}
 			if (trs.get(i).getElementsByTag("td").get(9).text() != " ") {
 				try {
-					_x = Double.parseDouble(trs.get(i).getElementsByTag("td")
+					_x = Float.parseFloat(trs.get(i).getElementsByTag("td")
 							.get(9).text().replace(",", "."));
 				} catch (NumberFormatException e) {
 				}
 			}
 			if (trs.get(i).getElementsByTag("td").get(11).text() != " ") {
 				try {
-					_2 = Double.parseDouble(trs.get(i).getElementsByTag("td")
+					_2 = Float.parseFloat(trs.get(i).getElementsByTag("td")
 							.get(11).text().replace(",", "."));
 				} catch (NumberFormatException e) {
 				}

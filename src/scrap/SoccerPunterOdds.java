@@ -139,17 +139,17 @@ public class SoccerPunterOdds {
 					} else {
 						try {
 							MatchGetter.schedNewMatches.get(compId).get(k)
-									.set_1(Double.parseDouble(_1));
+									.set_1(Float.parseFloat(_1));
 						} catch (Exception e) {
 						}
 						try {
 							MatchGetter.schedNewMatches.get(compId).get(k)
-									.set_x(Double.parseDouble(_X));
+									.set_x(Float.parseFloat(_X));
 						} catch (Exception e) {
 						}
 						try {
 							MatchGetter.schedNewMatches.get(compId).get(k)
-									.set_2(Double.parseDouble(_2));
+									.set_2(Float.parseFloat(_2));
 						} catch (Exception e) {
 						}
 					}

@@ -56,13 +56,13 @@ public class MatchGetter {
 		Document doc = null;
 		try {
 			logger.info("gettting url {}", url);
-//			doc = Jsoup.parse(new File(
-//					"C:/Users/Administrator/Desktop/xScores.html"), "UTF-8");
-			 doc = Jsoup
-			 .connect(url)
-			 .userAgent(
-			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			 .maxBodySize(0).timeout(600000).get();
+			// doc = Jsoup.parse(new File(
+			// "C:/Users/Administrator/Desktop/xScores.html"), "UTF-8");
+			doc = Jsoup
+					.connect(url)
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+					.maxBodySize(0).timeout(600000).get();
 			logger.info("Page Aquired!!");
 		} catch (Exception e) {
 			logger.info("couldnf connect or parse the page");
@@ -188,12 +188,11 @@ public class MatchGetter {
 	}
 
 	public void getFinishedOnDate(LocalDate dat) {
-		// TODO search for matches of that date that are finished (status
+		// search for matches of that date that are finished (status
 		// 'Fin'); `8`8```*~*~ get cancelled & postponed matches
 		try {
 			scrapMatchesDate(dat, Status.FINISHED);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -333,6 +332,7 @@ public class MatchGetter {
 
 	// //////////////////////HELP FUNC/////////////
 	public void addToTomorrowComps(int compId) {
+		// get a list of competition ids that are to be played tomorrow
 		if (!CountryCompetition.tomorrowComps.contains(compId))
 			CountryCompetition.tomorrowComps.add(compId);
 	}

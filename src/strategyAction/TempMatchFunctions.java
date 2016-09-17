@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,22 +12,19 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import calculate.MatchToTableRenewal;
 import r_dataIO.ReadPrediction;
-import scrap.XscoreUpComing;
 import structures.CountryCompetition;
 import test.MatchGetter;
-import dbtry.Conn;
-import diskStore.AnalyticFileHandler;
-import extra.StandartResponses;
-import extra.Status;
-import extra.StringSimilarity;
-import extra.Unilang;
 import basicStruct.CCAllStruct;
 import basicStruct.FullMatchLine;
 import basicStruct.FullMatchPredLineToSubStructs;
 import basicStruct.MatchObj;
-import basicStruct.ScorerDataStruct;
+import calculate.MatchToTableRenewal;
+import dbtry.Conn;
+import extra.StandartResponses;
+import extra.Status;
+import extra.StringSimilarity;
+import extra.Unilang;
 
 public class TempMatchFunctions {
 
@@ -159,49 +155,155 @@ public class TempMatchFunctions {
 		}
 	}
 
+	public void complete(LocalDate d) throws SQLException {
+		// TODO maybe to store in the temp matches the teams in scorer format
+		// instead of punter so that to have faster acces
+		// in case of comparison; without going through unilang conversion// ??
+		// ??maybe they are kep in punter format for the oddsadders
+
+		/*
+		 * intended to be used during the periodical check for results of
+		 * matches. Supposedly the readTempMatchesList is full of matches of a
+		 * certain date ordered by home team for binary search. add results to
+		 * the finished matches; store them to "regular" matches delete them
+		 * from tempmatches db table. This func should be called after Xscore
+		 * class functions have gathered the scores of the finished matches
+		 */
+
+		logger.info("--------------: COMPLETE");
+		// fill from db the readTempMatchesList List<>, order by t1
+		// matches in temp & recent db tabs is in the scorer syntax
+		readFromTempMatches(d);
+		if (readTempMatchesList.size() == 0) {
+			logger.info("No temp matches in db");
+			return;
+		}
+
+		/*
+		 * will keep all the selected matches. Thean delete them from temp
+		 * matches table & insert to regular matches dbtable
+		 */
+		List<MatchObj> matches = new ArrayList<MatchObj>();// all matches
+
+		/*
+		 * will contain at any time match(es) from the same competition, matches
+		 * previously in the temp match db and test prediction file but now with
+		 * the score results. They will be calculated and inserted in the
+		 * competitions Train prediction file with all the matches data so far.
+		 */
+		// same comp matches of consecutive compids during search loops
+		// used for test prediction file
+		List<MatchObj> smallPredictionsList = new ArrayList<MatchObj>();
+		// for (MatchObj m : XscoreUpComing.finNewMatches) { Original_Line
+		int idx = -1;
+		int prevCompId = -1;
+		for (MatchObj m : MatchGetter.finNewMatches) {
+			// String team = ul.scoreTeamToCcas(m.getT1()); Original_Line
+			String team = ul.scoreTeamToCcas(m.getT1());
+			if (team != null) {
+				idx = binarySearch(readTempMatchesList, team);
+				if (idx < 0) {
+					logger.info("---Was not found t1 -{},  t2 {}    ",
+							m.getT1(), m.getT2());
+					continue;
+				} else {
+					if (prevCompId != m.getComId()) {
+						prevCompId = m.getComId();
+						if (smallPredictionsList.size() > 0) {
+							predictionDataSet(smallPredictionsList);
+							smallPredictionsList.clear();
+						}
+					}
+
+					MatchObj mobj = readTempMatchesList.get(idx);
+					mobj.setHt1(m.getHt1());
+					mobj.setHt2(m.getHt2());
+					mobj.setFt1(m.getFt1());
+					mobj.setFt2(m.getFt2());
+
+					smallPredictionsList.add(mobj);
+					matches.add(mobj);
+					readTempMatchesList.remove(idx);// for efficiency
+
+				}
+			} else {// if team not converted
+				logger.info(
+						"disply unconverted, Not found in temp matches {} - {}, __{}",
+						m.getT1(), m.getT2(), m.getComId());
+			}
+		}// for
+		deleteTempMatches(matches);// delete finished matches from tempdb
+		insertMatches(matches);// insertfinished matches from matches
+		updateRecentScores(matches);// set score to recent matches
+		logger.info("Competed standart Completion");
+
+		if (readTempMatchesList.size() > 0) {
+			/*
+			 * it means that in the temporary matches table tempmatches there
+			 * are still matches unfinished or not properly finished, errors
+			 * canceled postponed etc; keep looping through the remaining
+			 * matches to account for the remaining ones
+			 */
+			logger.info("--------------: LOOP TO find postponed");
+			matches.clear();
+			smallPredictionsList.clear();
+			// for (MatchObj m : XscoreUpComing.errorNewMatches) {
+			for (MatchObj m : MatchGetter.errorNewMatches) {
+				// String team = ul.scoreTeamToCcas(m.getT1()); Original_Line
+				String team = ul.scoreTeamToCcas(m.getT1());
+				if (team != null) {
+					idx = binarySearch(readTempMatchesList, team);
+					if (idx < 0) {
+						logger.info(
+								"--- broken ones loop; Was not found t1 -{},  t2 {}    ",
+								m.getT1(), m.getT2());
+						continue;
+					} else {
+						// if (prevCompId != m.getComId()) {
+						// prevCompId = m.getComId();
+						// if (smallPredictionsList.size() > 0) {
+						/*
+						 * error matches will not be added to the prediction
+						 * file
+						 */// predictionDataSet(smallPredictionsList);
+							// smallPredictionsList.clear();
+						// }
+						// }
+						MatchObj mobj = readTempMatchesList.get(idx);
+						/*
+						 * since the matches were canceled we dont need to
+						 * asigne scores to them
+						 */
+						// mobj.setHt1(m.getHt1());
+						// mobj.setHt2(m.getHt2());
+						// mobj.setFt1(m.getFt1());
+						// mobj.setFt2(m.getFt2());
+						mobj.setMatchTime("err");
+
+						// smallPredictionsList.add(mobj);
+						matches.add(mobj);
+					}
+				}
+			}// for
+				// delete cancelled matches from tempmatches table
+			deleteTempMatches(matches);
+			updateRecentError(matches);// set err to recent matches time
+			logger.info("Competed Old Completion");
+		}
+	}
+
+	public void completeYesterday() throws SQLException {
+		LocalDate dat = LocalDate.now().minusDays(1);
+		complete(dat);
+	}
+
+	public void completeToday() throws SQLException {
+		LocalDate dat = LocalDate.now();
+		complete(dat);
+	}
+
 	// //////////////////////////////////////////
 	// to write and read in the temp and recent matches db tables
-	public void storeToRecentMatchesDB() throws SQLException {
-		String insert = "insert into recentmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		storeToShortMatches(insert);
-	}
-
-	public List<FullMatchLine> readFromRecentMatches(LocalDate dat)
-			throws SQLException {
-		readFromShortMatches(dat, "recentmatches");
-		return readRecentMatchesList;
-	}
-
-	public boolean deleteFromRecentMatches(LocalDate ld) throws SQLException {
-		openDBConn();
-		boolean b = conn
-				.getConn()
-				.createStatement()
-				.execute(
-						"DELETE FROM tempmatches where dat = ("
-								+ Date.valueOf(ld.minusDays(3)) + ");");
-		closeDBConn();
-		return b;
-	}
-
-	public boolean deleteFromRecentMatches() throws SQLException {
-		/*
-		 * from recentmatches delete matches 3 days older than the suplied date
-		 * (supposedly the dupplied date is today at 00:00 , when the date
-		 * changes)
-		 */
-		openDBConn();
-		boolean b = conn
-				.getConn()
-				.createStatement()
-				.execute(
-						"DELETE FROM tempmatches where dat = ("
-								+ Date.valueOf(LocalDate.now().minusDays(3))
-								+ ");");
-		closeDBConn();
-		return b;
-	}
-
 	public void storeToTempMatchesDB() throws SQLException {
 		// /*
 		// * store the matches scheduled for today and tomorrow in the temporary
@@ -216,6 +318,160 @@ public class TempMatchFunctions {
 		logger.info("--------------: Read From TempMatches");
 		readFromShortMatches(dat, "tempmatches");
 
+	}
+
+	// //////////////////////////////////////////
+	public List<String> getTempDates() throws SQLException {
+		// get different dates of matches in temp matches
+		openDBConn();
+		ResultSet rs = conn
+				.getConn()
+				.createStatement()
+				.executeQuery(
+						"SELECT dat FROM tempmatches GROUP BY dat ORDER BY dat asc ; ");
+		List<String> dats = new ArrayList<String>();
+		while (rs.next()) {
+			dats.add(rs.getString(1));
+		}
+		closeDBConn();
+		return dats;
+	}
+
+	public boolean deleteMatches(LocalDate dat) throws SQLException {
+		boolean b = conn
+				.getConn()
+				.createStatement()
+				.execute(
+						"DELETE FROM tempmatches where dat like '"
+								+ Date.valueOf(dat) + "');");
+		return b;
+	}
+
+	private boolean deleteTempMatches(List<MatchObj> ml) throws SQLException {
+		/* delete finished matches from the temp matches db */
+		logger.info("--------------: DELETE FROM TempMatches");
+		StringBuilder sb = new StringBuilder();
+		for (MatchObj m : ml) {
+			sb.append(m.getmId() + ", ");
+		}
+		sb.append("-1");
+		boolean b = conn
+				.getConn()
+				.createStatement()
+				.execute(
+						"DELETE FROM tempmatches where mid in ("
+								+ sb.toString() + ");");
+		return b;
+	}
+
+	private void insertMatches(List<MatchObj> finMatches) throws SQLException {
+		logger.info("--------------: INSERT to MATCHESS");
+		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		PreparedStatement ps = conn.getConn().prepareStatement(insert);
+		int i = 0;
+		for (MatchObj mobj : finMatches) {
+			ps.setNull(1, java.sql.Types.INTEGER);
+			// ps.setLong(1, mobj.getmId());
+			ps.setInt(2, mobj.getComId());
+			ps.setString(3, mobj.getT1());
+			ps.setString(4, mobj.getT2());
+			ps.setInt(5, mobj.getFt1());
+			ps.setInt(6, mobj.getFt2());
+			ps.setInt(7, mobj.getHt1());
+			ps.setInt(8, mobj.getHt2());
+			ps.setDouble(9, mobj.get_1());
+			ps.setDouble(10, mobj.get_x());
+			ps.setDouble(11, mobj.get_2());
+			ps.setDouble(12, mobj.get_o());
+			ps.setDouble(13, mobj.get_u());
+			ps.setDate(14, mobj.getDat());
+			// TODO consider for match time element addition #ta3
+			ps.addBatch();
+			i++;
+			if (i % 500 == 0) {
+				ps.executeBatch();
+				i = 0;
+			}
+		}
+		ps.executeBatch();
+
+	}
+
+	private List<String> queryCompTeams(int compId) {
+		/*
+		 * get the team names for a certain competition
+		 */
+
+		int idx = CountryCompetition.idToIdx.get(compId);
+		CCAllStruct cc = CountryCompetition.ccasList.get(idx);
+		String tab_competition = (cc.getCompetition() + "$" + cc.getCountry());
+		// else
+		tab_competition = tab_competition.toLowerCase().replace(".", "")
+				.replaceAll(" ", "_")
+				+ "_fulltable";
+		List<String> teamsList = new ArrayList<String>();
+		ResultSet rs;
+		try {
+
+			rs = conn.getConn().createStatement()
+					.executeQuery("SELECT team from " + tab_competition + " ;");
+
+			while (rs.next()) {
+				teamsList.add(rs.getString("team"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return teamsList;
+	}
+
+	// ********************Secondary/Common
+	public void openDBConn() throws SQLException {
+		if (conn == null) {
+			conn = new Conn();
+			conn.open();
+		} else if (conn.getConn().isClosed()) {
+			conn.open();
+		}
+	}
+
+	public void closeDBConn() {
+		if (conn != null) {
+			conn.close();
+		}
+	}
+
+	private void predictionDataSet(List<MatchObj> predictionsList) {
+		/*
+		 * add the concludet matches and the updated attributes corresponding to
+		 * them to the Prediction training file
+		 */
+		MatchToTableRenewal mttr = new MatchToTableRenewal();
+		try {
+			mttr.calculate(predictionsList);
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private int binarySearch(List<MatchObj> list, String team) {
+		int min = 0;
+		int max = list.size() - 1;
+		for (;;) {
+			if (min > max) {
+				return -1;
+			}
+			int mid = (max + min) / 2;
+
+			if (list.get(mid).getT1().equals(team)) {
+				return mid;
+			} else if (list.get(mid).getT1().compareTo(team) > 0) {
+				max = mid - 1;
+			} else {
+				min = mid + 1;
+			}
+		}
 	}
 
 	private void storeToShortMatches(String insertLine) throws SQLException {
@@ -318,393 +574,6 @@ public class TempMatchFunctions {
 		closeDBConn();
 	}
 
-	// //////////////////////////////////////////
-	public void complete(LocalDate d) throws SQLException {
-		// TODO maybe to store in the temp matches the teams in scorer format
-		// instead of punter so that to have faster acces
-		// in case of comparison; without going through unilang conversion// ??
-		// ??maybe they are kep in punter format for the oddsadders
-
-		/*
-		 * intended to be used during the periodical check for results of
-		 * matches. Supposedly the readTempMatchesList is full of matches of a
-		 * certain date ordered by home team for binary search. add results to
-		 * the finished matches; store them to "regular" matches delete them
-		 * from tempmatches db table. This func should be called after Xscore
-		 * class functions have gathered the scores of the finished matches
-		 */
-
-		logger.info("--------------: COMPLETE");
-		// fill from db the readTempMatchesList List<>, order by t1
-		// matches in temp & recent db tabs is in the scorer syntax
-		readFromTempMatches(d);
-		if (readTempMatchesList.size() == 0) {
-			logger.info("No temp matches in db");
-			return;
-		}
-
-		/*
-		 * will keep all the selected matches. Thean delete them from temp
-		 * matches table & insert to regular matches dbtable
-		 */
-		List<MatchObj> matches = new ArrayList<MatchObj>();// all matches
-
-		/*
-		 * will contain at any time match(es) from the same competition, matches
-		 * previously in the temp match db and test prediction file but now with
-		 * the score results. They will be calculated and inserted in the
-		 * competitions Train prediction file with all the matches data so far.
-		 */
-		// same comp matches of consecutive compids during search loops
-		// used for test prediction file
-		List<MatchObj> smallPredictionsList = new ArrayList<MatchObj>();
-		// for (MatchObj m : XscoreUpComing.finNewMatches) { Original_Line
-		int idx = -1;
-		int prevCompId = -1;
-		for (MatchObj m : MatchGetter.finNewMatches) {
-			// String team = ul.scoreTeamToCcas(m.getT1()); Original_Line
-			String team = ul.scoreTeamToCcas(m.getT1());
-			if (team != null) {
-				idx = binarySearch(team, 0, readTempMatchesList.size() - 1);
-				if (idx < 0) {
-					logger.info("---Was not found t1 -{},  t2 {}    ",
-							m.getT1(), m.getT2());
-					continue;
-				} else {
-					if (prevCompId != m.getComId()) {
-						prevCompId = m.getComId();
-						if (smallPredictionsList.size() > 0) {
-							predictionDataSet(smallPredictionsList);
-							smallPredictionsList.clear();
-						}
-					}
-
-					MatchObj mobj = readTempMatchesList.get(idx);
-					mobj.setHt1(m.getHt1());
-					mobj.setHt2(m.getHt2());
-					mobj.setFt1(m.getFt1());
-					mobj.setFt2(m.getFt2());
-
-					smallPredictionsList.add(mobj);
-					matches.add(mobj);
-					readTempMatchesList.remove(idx);// for efficiency
-
-				}
-			} else {// if team not converted
-				logger.info(
-						"disply unconverted, Not found in temp matches {} - {}, __{}",
-						m.getT1(), m.getT2(), m.getComId());
-			}
-		}// for
-		deleteTempMatches(matches);// delete finished matches from tempdb
-		insertMatches(matches);// insertfinished matches from matches
-		updateRecentScores(matches);// set score to recent matches
-		logger.info("Competed standart Completion");
-
-		if (readTempMatchesList.size() > 0) {
-			/*
-			 * it means that in the temporary matches table tempmatches there
-			 * are still matches unfinished or not properly finished, errors
-			 * canceled postponed etc; keep looping through the remaining
-			 * matches to account for the remaining ones
-			 */
-			logger.info("--------------: LOOP TO find postponed");
-			matches.clear();
-			smallPredictionsList.clear();
-			// for (MatchObj m : XscoreUpComing.errorNewMatches) {
-			for (MatchObj m : MatchGetter.errorNewMatches) {
-				// String team = ul.scoreTeamToCcas(m.getT1()); Original_Line
-				String team = ul.scoreTeamToCcas(m.getT1());
-				if (team != null) {
-					idx = binarySearch(team, 0, readTempMatchesList.size() - 1);
-					if (idx < 0) {
-						logger.info(
-								"--- broken ones loop; Was not found t1 -{},  t2 {}    ",
-								m.getT1(), m.getT2());
-						continue;
-					} else {
-						// if (prevCompId != m.getComId()) {
-						// prevCompId = m.getComId();
-						// if (smallPredictionsList.size() > 0) {
-						/*
-						 * error matches will not be added to the prediction
-						 * file
-						 */// predictionDataSet(smallPredictionsList);
-							// smallPredictionsList.clear();
-						// }
-						// }
-						MatchObj mobj = readTempMatchesList.get(idx);
-						/*
-						 * since the matches were canceled we dont need to
-						 * asigne scores to them
-						 */
-						// mobj.setHt1(m.getHt1());
-						// mobj.setHt2(m.getHt2());
-						// mobj.setFt1(m.getFt1());
-						// mobj.setFt2(m.getFt2());
-						mobj.setMatchTime("err");
-
-						// smallPredictionsList.add(mobj);
-						matches.add(mobj);
-					}
-				}
-			}// for
-				// delete cancelled matches from tempmatches table
-			deleteTempMatches(matches);
-			updateRecentError(matches);// set err to recent matches time
-			logger.info("Competed Old Completion");
-		}
-	}
-
-	private void updateRecentError(List<MatchObj> matches) throws SQLException {
-		// write the error message to the matches that where not finished
-		// normally
-		PreparedStatement preparedStatement = null;
-
-		String updateTableSQL = "UPDATE recentmatches SET tim = ?  WHERE mid =?";
-
-		openDBConn();
-		for (MatchObj m : matches) {
-			// if (m.getFt1() != -1) {// update only matches with results
-			preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
-			preparedStatement.setString(1, Status.ERROR);
-			preparedStatement.setLong(2, m.getmId());
-			preparedStatement.addBatch();
-		}
-		// }
-		// execute update SQL stetement
-		preparedStatement.executeBatch();
-		// preparedStatement.executeUpdate();
-		closeDBConn();
-
-	}
-
-	private void updateRecentScores(List<MatchObj> matches) throws SQLException {
-		// update the score results of the recent matches table
-		// based on the idea that the mid of the matches is the same in the temp
-		// and recent tables, since the matches inserted into them are
-		// the same and simultaneous
-
-		PreparedStatement preparedStatement = null;
-
-		String updateTableSQL = "UPDATE recentmatches SET ft1 = ?,ft2 = ?,ht1 = ?,ht2 = ? "
-				+ " WHERE mid =?";
-
-		openDBConn();
-		for (MatchObj m : matches) {
-			if (m.getFt1() != -1) {// update only matches with results
-				preparedStatement = conn.getConn().prepareStatement(
-						updateTableSQL);
-
-				preparedStatement.setInt(1, m.getFt1());
-				preparedStatement.setInt(2, m.getFt2());
-				preparedStatement.setInt(3, m.getHt1());
-				preparedStatement.setInt(4, m.getHt2());
-				preparedStatement.setLong(5, m.getmId());
-
-				preparedStatement.addBatch();
-			}
-		}
-		// execute update SQL stetement
-		preparedStatement.executeBatch();
-		// preparedStatement.executeUpdate();
-		closeDBConn();
-
-	}
-
-	public void completeYesterday() throws SQLException {
-		LocalDate dat = LocalDate.now().minusDays(1);
-		complete(dat);
-	}
-
-	public void completeToday() throws SQLException {
-		LocalDate dat = LocalDate.now();
-		complete(dat);
-	}
-
-	public List<String> getTempDates() throws SQLException {
-		// get different dates of matches in temp matches
-		openDBConn();
-		ResultSet rs = conn
-				.getConn()
-				.createStatement()
-				.executeQuery(
-						"SELECT dat FROM tempmatches GROUP BY dat ORDER BY dat asc ; ");
-		List<String> dats = new ArrayList<String>();
-		while (rs.next()) {
-			dats.add(rs.getString(1));
-		}
-		closeDBConn();
-		return dats;
-	}
-
-	public boolean deleteMatches(LocalDate dat) throws SQLException {
-		boolean b = conn
-				.getConn()
-				.createStatement()
-				.execute(
-						"DELETE FROM tempmatches where dat like '"
-								+ Date.valueOf(dat) + "');");
-		return b;
-	}
-
-	private boolean deleteTempMatches(List<MatchObj> ml) throws SQLException {
-		/* delete finished matches from the temp matches db */
-		logger.info("--------------: DELETE FROM TempMatches");
-		StringBuilder sb = new StringBuilder();
-		for (MatchObj m : ml) {
-			sb.append(m.getmId() + ", ");
-		}
-		sb.append("-1");
-		boolean b = conn
-				.getConn()
-				.createStatement()
-				.execute(
-						"DELETE FROM tempmatches where mid in ("
-								+ sb.toString() + ");");
-		return b;
-	}
-
-	private void insertMatches(List<MatchObj> finMatches) throws SQLException {
-		logger.info("--------------: INSERT to MATCHESS");
-		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		PreparedStatement ps = conn.getConn().prepareStatement(insert);
-		int i = 0;
-		for (MatchObj mobj : finMatches) {
-			ps.setNull(1, java.sql.Types.INTEGER);
-			// ps.setLong(1, mobj.getmId());
-			ps.setInt(2, mobj.getComId());
-			ps.setString(3, mobj.getT1());
-			ps.setString(4, mobj.getT2());
-			ps.setInt(5, mobj.getFt1());
-			ps.setInt(6, mobj.getFt2());
-			ps.setInt(7, mobj.getHt1());
-			ps.setInt(8, mobj.getHt2());
-			ps.setDouble(9, mobj.get_1());
-			ps.setDouble(10, mobj.get_x());
-			ps.setDouble(11, mobj.get_2());
-			ps.setDouble(12, mobj.get_o());
-			ps.setDouble(13, mobj.get_u());
-			ps.setDate(14, mobj.getDat());
-			// TODO consider for match time element addition #ta3
-			ps.addBatch();
-			i++;
-			if (i % 500 == 0) {
-				ps.executeBatch();
-				i = 0;
-			}
-		}
-		ps.executeBatch();
-
-	}
-
-	private int binarySearch(String team, int min, int max) {
-		// tempmatches binary search
-		try {
-			// logger.info("t__{}  min_{}   max__{}", team, min, max);
-			if (min > max) {
-				return -1;
-			}
-			int mid = (max + min) / 2;
-			// logger.warn("mid__{}", mid);
-			if (readTempMatchesList.get(mid).getT1().equals(team)) {
-				return mid;
-			} else if (readTempMatchesList.get(mid).getT1().compareTo(team) > 0) {
-				return binarySearch(team, min, mid - 1);
-			} else {
-				return binarySearch(team, mid + 1, max);
-			}
-		} catch (Exception e) {
-			logger.info("t__{}  min_{}   max__{},  readTempMatchesList-:{}",
-					team, min, max, readTempMatchesList.size());
-			e.printStackTrace();
-		}
-		// return -1;
-		return -1;
-	}
-
-	private int binaryRecentSearch(String team, int min, int max) {
-		// tempmatches binary search
-		try {
-			// logger.info("t__{}  min_{}   max__{}", team, min, max);
-			if (min > max) {
-				return -1;
-			}
-			int mid = (max + min) / 2;
-			// logger.warn("mid__{}", mid);
-			if (readRecentMatchesList.get(mid).getT1().equals(team)) {
-				return mid;
-			} else if (readRecentMatchesList.get(mid).getT1().compareTo(team) > 0) {
-				return binarySearch(team, min, mid - 1);
-			} else {
-				return binarySearch(team, mid + 1, max);
-			}
-		} catch (Exception e) {
-			logger.info("t__{}  min_{}   max__{},  readRecentMatchesList-:{}",
-					team, min, max, readRecentMatchesList.size());
-			e.printStackTrace();
-		}
-		// return -1;
-		return -1;
-	}
-
-	private List<String> queryCompTeams(int compId) {
-		/*
-		 * get the team names for a certain competition
-		 */
-
-		int idx = CountryCompetition.idToIdx.get(compId);
-		CCAllStruct cc = CountryCompetition.ccasList.get(idx);
-		String tab_competition = (cc.getCompetition() + "$" + cc.getCountry());
-		// else
-		tab_competition = tab_competition.toLowerCase().replace(".", "")
-				.replaceAll(" ", "_")
-				+ "_fulltable";
-		List<String> teamsList = new ArrayList<String>();
-		ResultSet rs;
-		try {
-
-			rs = conn.getConn().createStatement()
-					.executeQuery("SELECT team from " + tab_competition + " ;");
-
-			while (rs.next()) {
-				teamsList.add(rs.getString("team"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return teamsList;
-	}
-
-	public void openDBConn() throws SQLException {
-		if (conn == null) {
-			conn = new Conn();
-			conn.open();
-		} else if (conn.getConn().isClosed()) {
-			conn.open();
-		}
-	}
-
-	public void closeDBConn() {
-		if (conn != null) {
-			conn.close();
-		}
-	}
-
-	private void predictionDataSet(List<MatchObj> predictionsList) {
-		/*
-		 * add the concludet matches and the updated attributes corresponding to
-		 * them to the Prediction training file
-		 */
-		MatchToTableRenewal mttr = new MatchToTableRenewal();
-		try {
-			mttr.calculate(predictionsList);
-		} catch (SQLException | IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public void readDaySkips() throws SQLException {
 		/*
 		 * create a list of competition ids with competitions that started
@@ -727,79 +596,225 @@ public class TempMatchFunctions {
 		closeDBConn();
 	}
 
-	public void addPredPoints(List<Integer> todayComps) throws IOException,
+	// ********************RECENT MATCHES
+
+	public void storeToRecentMatchesDB() throws SQLException {
+		String insert = "insert into recentmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		storeToShortMatches(insert);
+	}
+
+	public List<FullMatchLine> readInitialFromRecentMatches(LocalDate dat)
+			throws SQLException {
+		// read the data match obj atts, before the addition on the pred points
+		readFromShortMatches(dat, "recentmatches");
+		return readRecentMatchesList;
+	}
+
+	public List<FullMatchLine> readFullFromRecentMatches(LocalDate dat)
+			throws SQLException {
+		// read the all the data of the db. The match obj atts and base red atts
+		// so: teams odds, scores, pred points. After the update of the tabel.
+		// use to read and fill the maps for the client side matches
+
+		openDBConn();
+		Date date = Date.valueOf(dat);
+		ResultSet rs = conn
+				.getConn()
+				.createStatement()
+				.executeQuery(
+						"SELECT * FROM recentmatches where dat ='" + date
+								+ "' order by t1 ;");
+
+		List<FullMatchLine> fmli = new ArrayList<>();
+		FullMatchLine f = null;
+		while (rs.next()) {
+			f = new FullMatchLine();
+			f.setmId(rs.getLong(1));
+			f.setComId(rs.getInt(2));
+			f.setT1(rs.getString(3));
+			f.setT2(rs.getString(4));
+			f.setFt1(rs.getInt(5));
+			f.setFt2(rs.getInt(6));
+			f.setHt1(rs.getInt(7));
+			f.setHt2(rs.getInt(8));
+			f.set_1(rs.getFloat(9));
+			f.set_x(rs.getFloat(10));
+			f.set_2(rs.getFloat(11));
+			f.set_o(rs.getFloat(12));
+			f.set_u(rs.getFloat(13));
+			f.setDat(rs.getDate(14));
+			f.setMatchTime(rs.getString(15));
+			f.setH1(rs.getFloat(16));
+			f.setHx(rs.getFloat(17));
+			f.setH2(rs.getFloat(18));
+			f.setSo(rs.getFloat(19));
+			f.setSu(rs.getFloat(20));
+			f.setP1y(rs.getFloat(21));
+			f.setP1n(rs.getFloat(22));
+			f.setP2y(rs.getFloat(23));
+			f.setP2n(rs.getFloat(24));
+			f.setHt(rs.getInt(25));
+			f.setFt(rs.getInt(26));
+			fmli.add(f);
+		}
+		closeDBConn();
+		return fmli;
+	}
+
+	public boolean deleteFromRecentMatches(LocalDate ld) throws SQLException {
+		openDBConn();
+		boolean b = conn
+				.getConn()
+				.createStatement()
+				.execute(
+						"DELETE FROM recentmatches where dat = ("
+								+ Date.valueOf(ld.minusDays(3)) + ");");
+		closeDBConn();
+		return b;
+	}
+
+	public boolean deleteFromRecentMatches() throws SQLException {
+		/*
+		 * from recentmatches delete matches 3 days older than the suplied date
+		 * (supposedly the dupplied date is today at 00:00 , when the date
+		 * changes)
+		 */
+		openDBConn();
+		boolean b = conn
+				.getConn()
+				.createStatement()
+				.execute(
+						"DELETE FROM recentmatches where dat = ("
+								+ Date.valueOf(LocalDate.now().minusDays(3))
+								+ ");");
+		closeDBConn();
+		return b;
+	}
+
+	public void addPredPoints(List<Integer> compsList) throws IOException,
 			SQLException {
 		/* add the prediction points from file to recent table */
 		FullMatchPredLineToSubStructs fmplss = new FullMatchPredLineToSubStructs();
-
 		// read predictions from the pred files
 		ReadPrediction rp = new ReadPrediction();
-		rp.prediction(todayComps);
+		rp.prediction(compsList);
 		// read matches from the recent table
-		readFromRecentMatches(LocalDate.now());
+		readInitialFromRecentMatches(LocalDate.now());
+
 		// find the same matches from table and file
-		for (Integer key : rp.getDayMatchLinePred().keySet())
-			for (int i = 0; i < rp.getDayMatchLinePred().get(key).size(); i++) {
-				int ind = binaryRecentSearch(rp.getDayMatchLinePred().get(key)
-						.get(i).getT1(), 0, (readRecentMatchesList.size() - 1));
+		for (Integer key : rp.getMatchLinePred().keySet()) {
+			for (int i = 0; i < rp.getMatchLinePred().get(key).size(); i++) {
+				int ind = binarySearch(
+						fmplss.fullMatchPredLineToMatchObj(readRecentMatchesList),
+						rp.getMatchLinePred().get(key).get(i).getT1());
 				if (ind == -1) {
 					// todo dysplay error and
+					logger.info("unfound relation file & db {}", rp
+							.getMatchLinePred().get(key).get(i).liner());
 					continue;
 				}
 				// make sure both teams correspond
-				if (rp.getDayMatchLinePred()
+				if (rp.getMatchLinePred()
 						.get(key)
 						.get(i)
 						.getT2()
 						.equalsIgnoreCase(
 								readRecentMatchesList.get(ind).getT2())) {
+					FullMatchLine temp = readRecentMatchesList.get(ind);
 					// remove the original fullmpl with mobj atts only
-					readRecentMatchesList
-							.remove(readRecentMatchesList.get(ind));
-					// enhance the full match with base pred line atts & restore
-					readRecentMatchesList.add(fmplss
-							.baseMatchLinePredEnhanceFullLine(
-									readRecentMatchesList.get(ind), rp
-											.getDayMatchLinePred().get(key)
-											.get(i)));
-
+					readRecentMatchesList.remove(temp);
+					// enhance the full match with base pred line atts
+					temp = fmplss.baseMatchLinePredEnhanceFullLine(temp, rp
+							.getMatchLinePred().get(key).get(i));
+					// restore to the list
+					readRecentMatchesList.add(temp);
 				}
 			}
+		}
 		// update the recent matches table with the pred points
 		// fill a map of <compId,list<predLine>>
 
 	}
 
-	/*
-	 * public void writeResultsToTestFile() throws SQLException { the data in
-	 * the test file that is about to be writtend doesn't have to contain all
-	 * the prediction file attributes just the prediction attributes id
-	 * 1,x,2,o,u,1p,2p,ht,ft. ******************************* The order in which
-	 * the data is written in the file matters though
-	 * 
-	 * // the writing will be done at the yesterday comps // get all the tets
-	 * files from yesterdayComps - the unfinished matches // of skipsday
-	 * List<Integer> workingIds = CountryCompetition.yesterdayComps;
-	 * workingIds.removeAll(TempMatchFunctions.skipDayCompIds); LocalDate
-	 * yesterDat = LocalDate.now().minusDays(1); AnalyticFileHandler afh = new
-	 * AnalyticFileHandler();
-	 * 
-	 * 
-	 * //read yesterdays matches from the db readFromRecentMatches(yesterDat);
-	 * for(int cid :workingIds){ CCAllStruct cc =
-	 * CountryCompetition.ccasList.get(CountryCompetition.idToIdx.get(cid));
-	 * afh.getTestFileName(cid, cc.getCompetition(), cc.getCountry(),
-	 * yesterDat); } // afh.getTestFileName(compId, compName, country, dat) //
-	 * readr recent matches @ tempMAtchFunctions
-	 * 
-	 * // get a list of testPathFiles (yesterday_comps-skipday)
-	 * 
-	 * // for list of testfile paths // read test file1; // get t1 & t2 for each
-	 * line // find t1 in recent by binary search // conferm by t2 check &
-	 * compId check // write in the file a reduced test file
-	 * {t1,t2,ht,sc,1p,2p,ht,ft} // (t1,t2)?? probably not necesary //write the
-	 * line in the order that the matches were
-	 * 
-	 * }
-	 */
+	public void updateRecentPredPoints() throws SQLException {
+		PreparedStatement preparedStatement = null;
+		String updateTableSQL = "UPDATE recentmatches SET h1 = ?, hx = ?, h2 = ?, so = ?, p1y = ?, p1n = ?, p2y = ?, p2n = ?, ht = ?, ft = ?"
+				+ " WHERE mid =?";
+		openDBConn();
+		preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
+		for (FullMatchLine f : readRecentMatchesList) {
+			preparedStatement.setFloat(1, f.getH1());
+			preparedStatement.setFloat(2, f.getHx());
+			preparedStatement.setFloat(3, f.getH2());
+			preparedStatement.setFloat(4, f.getSo());
+			preparedStatement.setFloat(5, f.getSu());
+			preparedStatement.setFloat(6, f.getP1y());
+			preparedStatement.setFloat(7, f.getP1n());
+			preparedStatement.setFloat(8, f.getP2y());
+			preparedStatement.setFloat(9, f.getP2n());
+			preparedStatement.setInt(10, f.getHt());
+			preparedStatement.setInt(11, f.getFt());
+			preparedStatement.setLong(12, f.getmId());
+			preparedStatement.addBatch();
+		}
+		// execute update SQL stetement
+		preparedStatement.executeBatch();
+		// preparedStatement.executeUpdate();
+		closeDBConn();
+	}
+
+	private void updateRecentError(List<MatchObj> matches) throws SQLException {
+		// write the error message to the matches that where not finished
+		// normally
+		PreparedStatement preparedStatement = null;
+
+		String updateTableSQL = "UPDATE recentmatches SET tim = ?  WHERE mid =?";
+		preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
+		openDBConn();
+		for (MatchObj m : matches) {
+			// if (m.getFt1() != -1) {// update only matches with results
+			preparedStatement.setString(1, Status.ERROR);
+			preparedStatement.setLong(2, m.getmId());
+			preparedStatement.addBatch();
+		}
+		// }
+		// execute update SQL stetement
+		preparedStatement.executeBatch();
+		// preparedStatement.executeUpdate();
+		closeDBConn();
+
+	}
+
+	private void updateRecentScores(List<MatchObj> matches) throws SQLException {
+		// update the score results of the recent matches table from temp
+		// matches table, based on the idea that the mid of the matches is the
+		// same in the temp and recent tables, since the matches inserted into
+		// them are the same and simultaneous
+
+		PreparedStatement preparedStatement = null;
+
+		String updateTableSQL = "UPDATE recentmatches SET ft1 = ?,ft2 = ?,ht1 = ?,ht2 = ? "
+				+ " WHERE mid =?";
+
+		openDBConn();
+		preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
+		for (MatchObj m : matches) {
+			if (m.getFt1() != -1) {// update only matches with results
+
+				preparedStatement.setInt(1, m.getFt1());
+				preparedStatement.setInt(2, m.getFt2());
+				preparedStatement.setInt(3, m.getHt1());
+				preparedStatement.setInt(4, m.getHt2());
+				preparedStatement.setLong(5, m.getmId());
+
+				preparedStatement.addBatch();
+			}
+		}
+		// execute update SQL stetement
+		preparedStatement.executeBatch();
+		// preparedStatement.executeUpdate();
+		closeDBConn();
+
+	}
+
 }

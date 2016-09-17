@@ -40,7 +40,7 @@ public class ReadPrediction {
 			.getLogger(ReadPrediction.class);
 
 	// C:/BastData/WeekPredPoints/"country"/Eliteserien__112__Pred__2016-07-29
-	private Map<Integer, List<BaseMatchLinePred>> dayMatchLinePred;
+	private Map<Integer, List<BaseMatchLinePred>> matchLinePred;
 
 	public void prediction(List<Integer> compIds) throws IOException {
 		/*
@@ -51,7 +51,7 @@ public class ReadPrediction {
 		String pred = "pred";
 		CSVParser p;
 		CCAllStruct ccs;
-		dayMatchLinePred = new HashMap<>();
+		matchLinePred = new HashMap<>();
 		// read the test file of that compid and get the team names
 		for (int id : compIds) {
 			int idx = CountryCompetition.idToIdx.get(id);
@@ -137,31 +137,31 @@ public class ReadPrediction {
 			// Fill the BaseMatchPredLine list with the valid records
 			for (int k = 0; k < mlplist.size(); k++) { // head 1
 				if (recY != null) {
-					mlplist.get(k).setP1y(recY.get(k));
-					mlplist.get(k).setP1n(recN.get(k));
+					mlplist.get(k).setP1y(Float.parseFloat(recY.get(k)));
+					mlplist.get(k).setP1n(Float.parseFloat(recN.get(k)));
 				}
 				if (rec2Y != null) {
-					mlplist.get(k).setP2y(rec2Y.get(k));
-					mlplist.get(k).setP2n(rec2N.get(k));
+					mlplist.get(k).setP2y(Float.parseFloat(rec2Y.get(k)));
+					mlplist.get(k).setP2n(Float.parseFloat(rec2N.get(k)));
 				}
 				if (reco != null) {
-					mlplist.get(k).setSo(reco.get(k));
-					mlplist.get(k).setSu(recu.get(k));
+					mlplist.get(k).setSo(Float.parseFloat(reco.get(k)));
+					mlplist.get(k).setSu(Float.parseFloat(recu.get(k)));
 				}
 				if (rec1 != null) {
-					mlplist.get(k).setH1(rec1.get(k));
-					mlplist.get(k).setHx(recx.get(k));
-					mlplist.get(k).setH2(rec2.get(k));
+					mlplist.get(k).setH1(Float.parseFloat(rec1.get(k)));
+					mlplist.get(k).setHx(Float.parseFloat(recx.get(k)));
+					mlplist.get(k).setH2(Float.parseFloat(rec2.get(k)));
 				}
 				if (ftgoals != null) {
-					mlplist.get(k).setFt(ftgoals.get(k).toString());
+					mlplist.get(k).setFt(ftgoals.get(k));
 				}
 				if (htgoals != null) {
-					mlplist.get(k).setHt(htgoals.get(k).toString());
+					mlplist.get(k).setHt(htgoals.get(k));
 				}
 			}
 
-			dayMatchLinePred.put(id, mlplist);
+			matchLinePred.put(id, mlplist);
 		} // comp_id fors
 
 	}
@@ -230,26 +230,26 @@ public class ReadPrediction {
 
 	public List<String> getDominant(int compId) {
 		/* to return the prevailing attribute in head,score,p1,p2,ht,ft */
-		if (dayMatchLinePred == null) {
+		if (matchLinePred == null) {
 			log.warn("Not initiated prediction proces");
 			return null;
 		}
-		if (dayMatchLinePred.size() == 0) {
+		if (matchLinePred.size() == 0) {
 			log.warn("No predictions found");
 			return null;
 		}
-		if (dayMatchLinePred.get(compId) == null) {
+		if (matchLinePred.get(compId) == null) {
 			log.warn("No predictions found today for that competition");
 			return null;
 		}
 		// else
 		List<String> dominList = new ArrayList<String>();
 		StringBuilder sb;
-		for (BaseMatchLinePred mlp : dayMatchLinePred.get(compId)) {
+		for (BaseMatchLinePred mlp : matchLinePred.get(compId)) {
 			sb = new StringBuilder();
-			float _1 = Float.parseFloat(mlp.getH1());
-			float _x = Float.parseFloat(mlp.getHx());
-			float _2 = Float.parseFloat(mlp.getH2());
+			float _1 = mlp.getH1();
+			float _x = mlp.getHx();
+			float _2 = mlp.getH2();
 			if (_1 >= _x) {
 				if (_1 >= _2) {
 					sb.append("1,");
@@ -264,22 +264,22 @@ public class ReadPrediction {
 				}
 			}
 
-			float _o = Float.parseFloat(mlp.getSo());
-			float _u = Float.parseFloat(mlp.getSu());
+			float _o = mlp.getSo();
+			float _u = mlp.getSu();
 			if (_o >= _u)
 				sb.append("o,");
 			else
 				sb.append("u,");
 
-			float _p1y = Float.parseFloat(mlp.getP1y());
-			float _p1n = Float.parseFloat(mlp.getP1n());
+			float _p1y = mlp.getP1y();
+			float _p1n = mlp.getP1n();
 			if (_p1y >= _p1n)
 				sb.append("_p1y,");
 			else
 				sb.append("_p1n,");
 
-			float _p2y = Float.parseFloat(mlp.getP2y());
-			float _p2n = Float.parseFloat(mlp.getP2n());
+			float _p2y = mlp.getP2y();
+			float _p2n = mlp.getP2n();
 			if (_p2y >= _p2n)
 				sb.append("_p2y,");
 			else
@@ -295,13 +295,13 @@ public class ReadPrediction {
 
 	}
 
-	public Map<Integer, List<BaseMatchLinePred>> getDayMatchLinePred() {
-		return dayMatchLinePred;
+	public Map<Integer, List<BaseMatchLinePred>> getMatchLinePred() {
+		return matchLinePred;
 	}
 
 	public void setDayMatchLinePred(
 			Map<Integer, List<BaseMatchLinePred>> dayMatchLinePred) {
-		this.dayMatchLinePred = dayMatchLinePred;
+		this.matchLinePred = dayMatchLinePred;
 	}
 
 }

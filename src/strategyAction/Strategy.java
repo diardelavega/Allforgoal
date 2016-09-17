@@ -112,9 +112,16 @@ public class Strategy {
 				storeToSmallDBsCondition(lastDatCheck);// store condition
 				testPredFileMaker();// test file create
 				score.clearLists();
+
+				// TODO predictSome is time consumming function which will tard
+				// in producing results; find an accepted way to call the
+				// addpoints in the then accept of the predcict async run
+
 				rh.predictSome(CountryCompetition.todayComps);
 				tmf.addPredPoints(CountryCompetition.todayComps);
-				// TODO write the predictions points ti the recent matches
+				rh.predictSome(CountryCompetition.tomorrowComps);
+				tmf.addPredPoints(CountryCompetition.tomorrowComps);
+				tmf.updateRecentPredPoints();
 				logger.info("NULL Last Ceck {}", LocalTime.now());
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
@@ -139,7 +146,8 @@ public class Strategy {
 
 					testPredFileMaker();// test file create
 					rh.predictSome(CountryCompetition.tomorrowComps);
-					tmf.addPredPoints(CountryCompetition.todayComps);
+					tmf.addPredPoints(CountryCompetition.tomorrowComps);
+					tmf.updateRecentPredPoints();
 
 					score.clearLists();
 					checkRemaining();
@@ -264,15 +272,15 @@ public class Strategy {
 		MatchToTableRenewal mttr = new MatchToTableRenewal();
 		// Key is the comp id not the index in the data structure!!!
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
+			todayDate = new ArrayList<MatchObj>();
+			tomorrowDate = new ArrayList<MatchObj>();
 			for (MatchObj m : MatchGetter.schedNewMatches.get(key)) {
-				todayDate = new ArrayList<MatchObj>();
-				tomorrowDate = new ArrayList<MatchObj>();
 				if (m.getDat().toLocalDate().equals(tdy)) {
 					todayDate.add(m);
 				} else if (m.getDat().toLocalDate().equals(tom)) {
 					tomorrowDate.add(m);
 				}
-			}
+			}// for
 			if (todayDate != null) {
 				if (todayDate.size() >= 1) {
 					mttr.testPredFileCreate(todayDate, key, tdy);

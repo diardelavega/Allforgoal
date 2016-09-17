@@ -3,37 +3,21 @@ package basicStruct;
 import java.sql.Date;
 import java.util.List;
 
-public class FullMatchLine {
-	private long mId;
-	private int comId;
-	private String t1;
-	private String t2;
+public class FullMatchLine extends MatchObj  {
 
-	// match obj data
-	private int ft1;
-	private int ft2;
-	private int ht1 = -1;
-	private int ht2 = -1;
-	private double _1;
-	private double _2;
-	private double _x;
-	private double _o;
-	private double _u;
-	private Date dat;
-	private String matchTime;
 
 	// pred points
-	private String h1;
-	private String hx;
-	private String h2;
-	private String so;
-	private String su;
-	private String p1y;
-	private String p1n;
-	private String p2y;
-	private String p2n;
-	private String ht;
-	private String ft;
+	private float h1;
+	private float hx;
+	private float h2;
+	private float so;
+	private float su;
+	private float p1y;
+	private float p1n;
+	private float p2y;
+	private float p2n;
+	private int ht;
+	private int ft;
 
 	public FullMatchLine() {
 		super();
@@ -60,10 +44,10 @@ public class FullMatchLine {
 	}
 
 	public FullMatchLine(long mId, int comId, String t1, String t2, int ft1,
-			int ft2, int ht1, int ht2, double _1, double _2, double _x,
-			double _o, double _u, Date dat, String matchTime, String h1,
-			String hx, String h2, String so, String su, String p1y, String p1n,
-			String p2y, String p2n, String ht, String ft) {
+			int ft2, int ht1, int ht2, float _1, float _2, float _x,
+			float _o, float _u, Date dat, String matchTime, float h1,
+			float hx, float h2, float so, float su, float p1y, float p1n,
+			float p2y, float p2n, int ht, int ft) {
 		super();
 		this.mId = mId;
 		this.comId = comId;
@@ -93,211 +77,93 @@ public class FullMatchLine {
 		this.ft = ft;
 	}
 
-	public long getmId() {
-		return mId;
-	}
 
-	public int getComId() {
-		return comId;
-	}
-
-	public String getT1() {
-		return t1;
-	}
-
-	public String getT2() {
-		return t2;
-	}
-
-	public int getFt1() {
-		return ft1;
-	}
-
-	public int getFt2() {
-		return ft2;
-	}
-
-	public int getHt1() {
-		return ht1;
-	}
-
-	public int getHt2() {
-		return ht2;
-	}
-
-	public double get_1() {
-		return _1;
-	}
-
-	public double get_2() {
-		return _2;
-	}
-
-	public double get_x() {
-		return _x;
-	}
-
-	public double get_o() {
-		return _o;
-	}
-
-	public double get_u() {
-		return _u;
-	}
-
-	public Date getDat() {
-		return dat;
-	}
-
-	public String getMatchTime() {
-		return matchTime;
-	}
-
-	public String getH1() {
+	public float getH1() {
 		return h1;
 	}
 
-	public String getHx() {
+	public float getHx() {
 		return hx;
 	}
 
-	public String getH2() {
+	public float getH2() {
 		return h2;
 	}
 
-	public String getSo() {
+	public float getSo() {
 		return so;
 	}
 
-	public String getSu() {
+	public float getSu() {
 		return su;
 	}
 
-	public String getP1y() {
+	public float getP1y() {
 		return p1y;
 	}
 
-	public String getP1n() {
+	public float getP1n() {
 		return p1n;
 	}
 
-	public String getP2y() {
+	public float getP2y() {
 		return p2y;
 	}
 
-	public String getP2n() {
+	public float getP2n() {
 		return p2n;
 	}
 
-	public String getHt() {
+	public int getHt() {
 		return ht;
 	}
 
-	public String getFt() {
+	public int getFt() {
 		return ft;
 	}
 
-	public void setmId(long mId) {
-		this.mId = mId;
-	}
 
-	public void setComId(int comId) {
-		this.comId = comId;
-	}
-
-	public void setT1(String t1) {
-		this.t1 = t1;
-	}
-
-	public void setT2(String t2) {
-		this.t2 = t2;
-	}
-
-	public void setFt1(int ft1) {
-		this.ft1 = ft1;
-	}
-
-	public void setFt2(int ft2) {
-		this.ft2 = ft2;
-	}
-
-	public void setHt1(int ht1) {
-		this.ht1 = ht1;
-	}
-
-	public void setHt2(int ht2) {
-		this.ht2 = ht2;
-	}
-
-	public void set_1(double _1) {
-		this._1 = _1;
-	}
-
-	public void set_2(double _2) {
-		this._2 = _2;
-	}
-
-	public void set_x(double _x) {
-		this._x = _x;
-	}
-
-	public void set_o(double _o) {
-		this._o = _o;
-	}
-
-	public void set_u(double _u) {
-		this._u = _u;
-	}
-
-	public void setDat(Date dat) {
-		this.dat = dat;
-	}
-
-	public void setMatchTime(String matchTime) {
-		this.matchTime = matchTime;
-	}
-
-	public void setH1(String h1) {
+	public void setH1(float h1) {
 		this.h1 = h1;
 	}
 
-	public void setHx(String hx) {
+	public void setHx(float hx) {
 		this.hx = hx;
 	}
 
-	public void setH2(String h2) {
+	public void setH2(float h2) {
 		this.h2 = h2;
 	}
 
-	public void setSo(String so) {
+	public void setSo(float so) {
 		this.so = so;
 	}
 
-	public void setSu(String su) {
+	public void setSu(float su) {
 		this.su = su;
 	}
 
-	public void setP1y(String p1y) {
+	public void setP1y(float p1y) {
 		this.p1y = p1y;
 	}
 
-	public void setP1n(String p1n) {
+	public void setP1n(float p1n) {
 		this.p1n = p1n;
 	}
 
-	public void setP2y(String p2y) {
+	public void setP2y(float p2y) {
 		this.p2y = p2y;
 	}
 
-	public void setP2n(String p2n) {
+	public void setP2n(float p2n) {
 		this.p2n = p2n;
 	}
 
-	public void setHt(String ht) {
+	public void setHt(int ht) {
 		this.ht = ht;
 	}
 
-	public void setFt(String ft) {
+	public void setFt(int ft) {
 		this.ft = ft;
 	}
 

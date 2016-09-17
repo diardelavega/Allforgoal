@@ -84,8 +84,10 @@ public class MainTry {
 					+ "not initialized corectly");
 		}
 		cp.readAllowedComps();
+		System.out.println("Allowed comp size= "+cp.allowedcomps);
 		cp.readNotAllowedComps();
-
+		System.out.println("NOT Allowed comp size= "+cp.notAllowedcomps);
+		
 		Unilang ul = new Unilang();
 		ul.init();
 		conn.close();

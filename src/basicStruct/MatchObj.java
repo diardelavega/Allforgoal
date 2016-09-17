@@ -4,26 +4,26 @@ import java.sql.Date;
 
 public class MatchObj {
 
-	private long mId;
-	private int comId;
-	private String t1;
-	private String t2;
-	private int ft1;
-	private int ft2;
-	private int ht1=-1;
-	private int ht2=-1;
-	private double _1;
-	private double _2;
-	private double _x;
+	protected long mId;
+	protected int comId;
+	protected String t1;
+	protected String t2;
+	protected int ft1;
+	protected int ft2;
+	protected int ht1 = -1;
+	protected int ht2 = -1;
+	protected float _1;
+	protected float _2;
+	protected float _x;
 
-	private double _o;
-	private double _u;
-	private Date dat;
-	private String matchTime;
+	protected float _o;
+	protected float _u;
+	protected Date dat;
+	protected String matchTime;
 
 	public MatchObj(long mId, int comId, String t1, String t2, int ft1,
-			int ft2, int ht1, int ht2, double _1, double _2, double _x,
-			double _o, double _u, Date dat) {
+			int ft2, int ht1, int ht2, float _1, float _2, float _x,
+			float _o, float _u, Date dat) {
 		super();
 		this.mId = mId;
 		this.comId = comId;
@@ -42,8 +42,8 @@ public class MatchObj {
 	}
 	
 	public MatchObj(long mId, int comId, String t1, String t2, int ft1,
-			int ft2, int ht1, int ht2, double _1, double _2, double _x,
-			double _o, double _u, Date dat, String mtime) {
+			int ft2, int ht1, int ht2, float _1, float _2, float _x,
+			float _o, float _u, Date dat, String mtime) {
 		super();
 		this.mId = mId;
 		this.comId = comId;
@@ -129,43 +129,43 @@ public class MatchObj {
 		this.ht2 = ht2;
 	}
 
-	public double get_1() {
+	public float get_1() {
 		return _1;
 	}
 
-	public void set_1(double _1) {
+	public void set_1(float _1) {
 		this._1 = _1;
 	}
 
-	public double get_2() {
+	public float get_2() {
 		return _2;
 	}
 
-	public void set_2(double _2) {
+	public void set_2(float _2) {
 		this._2 = _2;
 	}
 
-	public double get_x() {
+	public float get_x() {
 		return _x;
 	}
 
-	public void set_x(double _x) {
+	public void set_x(float _x) {
 		this._x = _x;
 	}
 
-	public double get_o() {
+	public float get_o() {
 		return _o;
 	}
 
-	public void set_o(double _o) {
+	public void set_o(float _o) {
 		this._o = _o;
 	}
 
-	public double get_u() {
+	public float get_u() {
 		return _u;
 	}
 
-	public void set_u(double _u) {
+	public void set_u(float _u) {
 		this._u = _u;
 	}
 

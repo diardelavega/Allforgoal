@@ -80,9 +80,9 @@ public class RDemo {
 			e.printStackTrace();
 		}
 
-		for (Integer key : rp.getDayMatchLinePred().keySet())
-			for (int i = 0; i < rp.getDayMatchLinePred().get(key).size(); i++) {
-				log.info("{}", rp.getDayMatchLinePred().get(key).get(i).liner());
+		for (Integer key : rp.getMatchLinePred().keySet())
+			for (int i = 0; i < rp.getMatchLinePred().get(key).size(); i++) {
+				log.info("{}", rp.getMatchLinePred().get(key).get(i).liner());
 			}
 	}
 }
