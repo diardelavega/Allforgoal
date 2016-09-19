@@ -13,6 +13,7 @@ import org.rosuda.JRI.Rengine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import strategyAction.ReqScheduler;
 import structures.CountryCompetition;
 import test.MatchGetter;
 import basicStruct.CCAllStruct;
@@ -120,7 +121,7 @@ public class RHandler {
 		}
 	}
 
-	public void predictSome(List<Integer> comp_Ids) {
+	public void predictSome(List<Integer> comp_Ids, String attsKind, int seri) {
 		/* predict the competitions given by the list of competition ids */
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
@@ -135,7 +136,7 @@ public class RHandler {
 		}
 		// after that the lists should be full
 		if (foundImagePath.size() > 0) {
-			Rcall_Pred();
+			Rcall_Pred(attsKind, seri);
 		} else if (un_foundImagesCompIds.size() > 0) {
 			handleUnfound();
 		}
@@ -226,10 +227,16 @@ public class RHandler {
 	public void Rcall_Pred() {
 		// deafault prediction without defined atts is h,s,ft
 		String R_attKindVector = AttsKind.hs;
-		Rcall_Pred(R_attKindVector);
+		Rcall_Pred(R_attKindVector, -1);
 	}
 
-	public void Rcall_Pred(String R_attKindVector) {
+	public void Rcall_Pred(int seri) {
+		// deafault prediction without defined atts is h,s,ft
+		String R_attKindVector = AttsKind.hs;
+		Rcall_Pred(R_attKindVector, seri);
+	}
+
+	public void Rcall_Pred(String R_attKindVector, int seri) {
 		String dftVec = listToRvector(foundImagePath);
 		String trVec = listToRvector(predTrainPath);
 		String tsVec = listToRvector(predTestPath);
@@ -251,10 +258,18 @@ public class RHandler {
 		};
 
 		// CompletableFuture futureCount = CompletableFuture
-		CompletableFuture.runAsync(r).thenAccept(
-				(c) -> log.info(
-						"FINISH :{}  \n succesfull R DTF completion  msg:{}",
-						LocalDateTime.now(), c));
+		CompletableFuture
+				.runAsync(r)
+				.thenAccept(
+						(c) -> {
+							log.info(
+									"FINISH :{}  \n succesfull R DTF completion  msg:{}",
+									LocalDateTime.now(), c);
+							if (seri > -1) {
+								ReqScheduler.getInstance().response(seri);
+							}
+							// else nothing
+						});
 	}
 
 	public void Rcall_ReEvaluate() {

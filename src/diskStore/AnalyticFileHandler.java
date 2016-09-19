@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import strategyAction.TempMatchFunctions;
 import structures.CountryCompetition;
 import structures.ReducedPredictionTestFile;
+import structures.TimeVariations;
 import api.functionality.obj.BaseMatchLinePred;
 import basicStruct.CCAllStruct;
 import basicStruct.FullMatchPredLineToSubStructs;
@@ -386,7 +387,7 @@ public class AnalyticFileHandler {
 		// the writing will be done at the yesterday comps
 		// get all the tets files from yesterdayComps - the unfinished matches
 		// of skipsday
-		List<Integer> workingIds = CountryCompetition.yesterdayComps;
+		List<Integer> workingIds = TimeVariations.yesterdayComps;
 		workingIds.removeAll(TempMatchFunctions.skipDayCompIds);
 		LocalDate yesterDat = LocalDate.now().minusDays(1);
 		TempMatchFunctions tmf = new TempMatchFunctions();

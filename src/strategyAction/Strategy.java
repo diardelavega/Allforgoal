@@ -23,6 +23,8 @@ import com.mysql.jdbc.Connection;
 import calculate.MatchToTableRenewal;
 import dbtry.Conn;
 import diskStore.AnalyticFileHandler;
+import extra.AsyncType;
+import basicStruct.AsyncRequest;
 import basicStruct.MatchObj;
 import r_dataIO.RHandler;
 import scrap.Bari91UpCommingOdds;
@@ -30,6 +32,7 @@ import scrap.OddsNStats;
 import scrap.SoccerPunterOdds;
 import scrap.XscoreUpComing;
 import structures.CountryCompetition;
+import structures.TimeVariations;
 import test.MatchGetter;
 import test.TestFile;
 
@@ -104,8 +107,9 @@ public class Strategy {
 		try {
 			if (lastDatCheck == null) {
 				lastDatCheck = LocalDate.now();
-				score.getScheduledToday(); // a list of compIds playing
-				score.getScheduledTomorrow();// today & tomorrow is created
+				score.getScheduledToday();
+				score.getScheduledTomorrow();
+				// a list of compIds playing today & tomorrow is created
 				scheduledOddsAdderToday();
 				scheduledOddsAdderTomorrow(lastDatCheck);
 				tmf.corelatePunterXScorerTeams();
@@ -117,10 +121,12 @@ public class Strategy {
 				// in producing results; find an accepted way to call the
 				// addpoints in the then accept of the predcict async run
 
-				rh.predictSome(CountryCompetition.todayComps);
-				tmf.addPredPoints(CountryCompetition.todayComps);
-				rh.predictSome(CountryCompetition.tomorrowComps);
-				tmf.addPredPoints(CountryCompetition.tomorrowComps);
+				schedulePrediction(TimeVariations.todayComps);
+				schedulePrediction(TimeVariations.tomorrowComps);
+//				rh.predictSome(TimeVariations.todayComps);
+//				tmf.addPredPoints(TimeVariations.todayComps);
+//				rh.predictSome(TimeVariations.tomorrowComps);
+//				tmf.addPredPoints(TimeVariations.tomorrowComps);
 				tmf.updateRecentPredPoints();
 				logger.info("NULL Last Ceck {}", LocalTime.now());
 			} else {
@@ -131,11 +137,11 @@ public class Strategy {
 
 					tmf.readDaySkips();
 					writeResultsToTest();
-					rh.reEvaluate(CountryCompetition.yesterdayComps);
+					rh.reEvaluate(TimeVariations.yesterdayComps);
 
-					CountryCompetition.yesterdayComps = CountryCompetition.todayComps;
-					CountryCompetition.todayComps = CountryCompetition.tomorrowComps;
-					CountryCompetition.tomorrowComps.clear();// to bee refilled
+					TimeVariations.yesterdayComps = TimeVariations.todayComps;
+					TimeVariations.todayComps = TimeVariations.tomorrowComps;
+					TimeVariations.tomorrowComps.clear();// to bee refilled
 
 					// ----------------Tomorrow's actions reparation line
 
@@ -145,8 +151,7 @@ public class Strategy {
 					storeToSmallDBs(); // store in temp and recent matches
 
 					testPredFileMaker();// test file create
-					rh.predictSome(CountryCompetition.tomorrowComps);
-					tmf.addPredPoints(CountryCompetition.tomorrowComps);
+					schedulePrediction(TimeVariations.tomorrowComps);
 					tmf.updateRecentPredPoints();
 
 					score.clearLists();
@@ -165,6 +170,12 @@ public class Strategy {
 		} finally {
 			tmf.closeDBConn();
 		}
+	}
+
+	private void schedulePrediction(List<Integer> list) {
+		ReqScheduler rs = ReqScheduler.getInstance();
+		rs.addReq(AsyncType.PRED, list, "");
+		rs.startReq();
 	}
 
 	private void storeToSmallDBsCondition(LocalDate checkdat)

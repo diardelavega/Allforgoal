@@ -49,10 +49,10 @@ public class CountryCompetition {
 	public static List<String> notAllowedcomps = new ArrayList<>();
 	FileHandler fh = new FileHandler();
 
-	// TODO implement lists of competition ids for yesterday, today & tomorrows
-	public static List<Integer> yesterdayComps = new ArrayList<>();
-	public static List<Integer> todayComps = new ArrayList<>();
-	public static List<Integer> tomorrowComps = new ArrayList<>();
+//	// TODO implement lists of competition ids for yesterday, today & tomorrows
+//	public static List<Integer> yesterdayComps = new ArrayList<>();
+//	public static List<Integer> todayComps = new ArrayList<>();
+//	public static List<Integer> tomorrowComps = new ArrayList<>();
 
 	// --------------------------
 

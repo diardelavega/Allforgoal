@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import structures.CountryCompetition;
+import structures.TimeVariations;
 import basicStruct.CCAllStruct;
 import basicStruct.MatchObj;
 import extra.Status;
@@ -333,8 +334,8 @@ public class MatchGetter {
 	// //////////////////////HELP FUNC/////////////
 	public void addToTomorrowComps(int compId) {
 		// get a list of competition ids that are to be played tomorrow
-		if (!CountryCompetition.tomorrowComps.contains(compId))
-			CountryCompetition.tomorrowComps.add(compId);
+		if (!TimeVariations.tomorrowComps.contains(compId))
+			TimeVariations.tomorrowComps.add(compId);
 	}
 
 	public void addToTodayComps() {
@@ -343,7 +344,7 @@ public class MatchGetter {
 		 * data in the scheduled matches will be of the same day thas we get it
 		 * all if the date is write
 		 */
-		CountryCompetition.todayComps.addAll(MatchGetter.schedNewMatches
+		TimeVariations.todayComps.addAll(MatchGetter.schedNewMatches
 				.keySet());
 	}
 }
