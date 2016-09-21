@@ -316,7 +316,11 @@ public class TempMatchFunctions {
 	public void readFromTempMatches(LocalDate dat) throws SQLException {
 		// intended to be used during periodic check for the finished matches
 		logger.info("--------------: Read From TempMatches");
-		readFromShortMatches(dat, "tempmatches");
+		Date date = Date.valueOf(dat);
+		String sql ="SELECT * FROM  tempmatches  where dat ='" + date
+				+ "' order by t1 ;";
+		
+		readFromShortMatches(sql, "tempmatches");
 
 	}
 
@@ -522,16 +526,15 @@ public class TempMatchFunctions {
 
 	}
 
-	private void readFromShortMatches(LocalDate dat, String tab)
+	
+	
+	private void readFromShortMatches( String sql, String tab)
 			throws SQLException {
 		openDBConn();
-		Date date = Date.valueOf(dat);
 		ResultSet rs = conn
 				.getConn()
 				.createStatement()
-				.executeQuery(
-						"SELECT * FROM " + tab + " where dat ='" + date
-								+ "' order by t1 ;");
+				.executeQuery(sql);
 
 		List<MatchObj> mali = new ArrayList<>();
 		MatchObj mobj = null;
@@ -552,7 +555,6 @@ public class TempMatchFunctions {
 			mobj.set_u(rs.getFloat(13));
 			mobj.setDat(rs.getDate(14));
 			mobj.setMatchTime(rs.getString(15));
-			// TODO consider for match time element addition #ta2
 			mali.add(mobj);
 		}
 		switch (tab) {
@@ -573,6 +575,8 @@ public class TempMatchFunctions {
 		}
 		closeDBConn();
 	}
+
+	
 
 	public void readDaySkips() throws SQLException {
 		/*
@@ -603,10 +607,23 @@ public class TempMatchFunctions {
 		storeToShortMatches(insert);
 	}
 
-	public List<FullMatchLine> readInitialFromRecentMatches(LocalDate dat)
+	public List<FullMatchLine> readInitialCompFromRecentMatches(LocalDate dat)
 			throws SQLException {
 		// read the data match obj atts, before the addition on the pred points
-		readFromShortMatches(dat, "recentmatches");
+		Date date = Date.valueOf(dat);
+		String sql ="SELECT * FROM  recentmatches  where dat ='" + date
+				+ "' order by compid ;";
+		readFromShortMatches(sql, "recentmatches");
+		return readRecentMatchesList;
+	}
+	
+	public List<FullMatchLine> readInitialTeamFromRecentMatches(LocalDate dat)
+			throws SQLException {
+		// read the data match obj atts, before the addition on the pred points
+		Date date = Date.valueOf(dat);
+		String sql ="SELECT * FROM  recentmatches  where dat ='" + date
+				+ "' order by t1 ;";
+		readFromShortMatches(sql, "recentmatches");
 		return readRecentMatchesList;
 	}
 
@@ -699,7 +716,7 @@ public class TempMatchFunctions {
 		ReadPrediction rp = new ReadPrediction();
 		rp.prediction(compsList);
 		// read matches from the recent table
-		readInitialFromRecentMatches(LocalDate.now());
+		readInitialTeamFromRecentMatches(LocalDate.now());
 
 		// find the same matches from table and file
 		for (Integer key : rp.getMatchLinePred().keySet()) {
@@ -731,14 +748,16 @@ public class TempMatchFunctions {
 				}
 			}
 		}
-		// update the recent matches table with the pred points
+		//TODO  update the recent matches table with the pred points
+		updateRecentPredPoints();
 		// fill a map of <compId,list<predLine>>
 
 	}
 
 	public void updateRecentPredPoints() throws SQLException {
 		PreparedStatement preparedStatement = null;
-		String updateTableSQL = "UPDATE recentmatches SET h1 = ?, hx = ?, h2 = ?, so = ?, p1y = ?, p1n = ?, p2y = ?, p2n = ?, ht = ?, ft = ?"
+		String updateTableSQL = "UPDATE recentmatches SET h1 = ?, hx = ?, h2 = ?, so = ?, p1y = ?, p1n = ?,"
+				+ " p2y = ?, p2n = ?, ht = ?, ft = ?"
 				+ " WHERE mid =?";
 		openDBConn();
 		preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
@@ -817,4 +836,7 @@ public class TempMatchFunctions {
 
 	}
 
+	
+	
+//		
 }

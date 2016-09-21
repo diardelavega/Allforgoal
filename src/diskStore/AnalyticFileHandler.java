@@ -395,7 +395,7 @@ public class AnalyticFileHandler {
 		// read yesterdays matches from the db
 		FullMatchPredLineToSubStructs fmpss = new FullMatchPredLineToSubStructs();
 		List<MatchObj> recentmatches = fmpss.fullMatchPredLineToMatchObj(tmf
-				.readInitialFromRecentMatches(yesterDat));
+				.readInitialTeamFromRecentMatches(yesterDat));
 
 		for (int cid : workingIds) {
 			CCAllStruct cc = CountryCompetition.ccasList

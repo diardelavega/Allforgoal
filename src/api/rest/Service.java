@@ -109,7 +109,22 @@ public class Service {
 		return "hello";
 	}
 
-	
 	//---------------------------------------
+	
+	@GET
+	@Path("/predline/{nr}")
+	public String matchPredictionLine(@PathParam("nr") int nr) throws SQLException {
+		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(112); 
+//				new CountryCompCompId("Sweden", "Superettan",
+//				164);
+
+		MatchPredLineHandler mph = new MatchPredLineHandler();
+		// mph.doer(164, "Superettan", "Sweden");
+		mph.doer(ccci);
+		Gson gson = new Gson();
+		ccci.setObj(mph.getMatchPredLine());
+		String jo = gson.toJson(ccci);
+		return jo;
+	}
 	
 }

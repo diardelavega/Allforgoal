@@ -10,6 +10,14 @@ import structures.TimeVariations;
 import extra.AsyncType;
 import basicStruct.AsyncRequest;
 
+/**
+ * @author Administrator
+ *
+ *         To be used for the competion of asyncronous tasks and their
+ *         counterpart , a syncronous task (supposesed to be executed after the
+ *         complition of the asynchronous one ) actualy waits and finds the data
+ *         that needs to complete
+ */
 public class ReqScheduler {
 	private static ReqScheduler rqs;
 
@@ -51,7 +59,18 @@ public class ReqScheduler {
 
 			break;
 		case AsyncType.RE_EVAL:
-			rh.reEvaluate(reqInHand.getList());
+			rh.reEvaluate(reqInHand.getList(), reqInHand.getSerialCode());
+			break;
+		case AsyncType.UP_PRE_POINT:
+			// update the recent matches data with the prediction points
+			// after the prediction request have been executed
+//			TempMatchFunctions tmf = new TempMatchFunctions();
+//			try {
+//				tmf.readInitialTeamFromRecentMatches(dat)
+//				tmf.updateRecentPredPoints();
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
 			break;
 
 		default:
@@ -62,26 +81,29 @@ public class ReqScheduler {
 	public void response(int k) {
 		if (k == reqInHand.getSerialCode()) {
 			que.remove(0);
-		}
 
-		switch (reqInHand.getType()) {
-		case AsyncType.PRED:
-			TempMatchFunctions tmf = new TempMatchFunctions();
-			try {
-				tmf.addPredPoints(TimeVariations.tomorrowComps);
-			} catch (IOException | SQLException e) {
-				e.printStackTrace();
+			switch (reqInHand.getType()) {
+			case AsyncType.PRED:
+				TempMatchFunctions tmf = new TempMatchFunctions();
+				try {
+					//TODO add pred point for today mathces predicted
+					tmf.addPredPoints(TimeVariations.tomorrowComps);
+				} catch (IOException | SQLException e) {
+					e.printStackTrace();
+				}
+				break;
+
+			case AsyncType.RE_EVAL:
+				// TODO Something elee
+				break;
+
+			default:
+				break;
 			}
-			break;
-
-		case AsyncType.RE_EVAL:
-			// TODO Something elee
-			break;
-
-		default:
-			break;
 		}
-
 	}
 
+	public void ignoreFirstTask() {
+		que.remove(0);
+	}
 }

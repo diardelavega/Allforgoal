@@ -112,21 +112,15 @@ public class Strategy {
 				// a list of compIds playing today & tomorrow is created
 				scheduledOddsAdderToday();
 				scheduledOddsAdderTomorrow(lastDatCheck);
+
 				tmf.corelatePunterXScorerTeams();
 				storeToSmallDBsCondition(lastDatCheck);// store condition
 				testPredFileMaker();// test file create
 				score.clearLists();
 
-				// TODO predictSome is time consumming function which will tard
-				// in producing results; find an accepted way to call the
-				// addpoints in the then accept of the predcict async run
-
 				schedulePrediction(TimeVariations.todayComps);
 				schedulePrediction(TimeVariations.tomorrowComps);
-//				rh.predictSome(TimeVariations.todayComps);
-//				tmf.addPredPoints(TimeVariations.todayComps);
-//				rh.predictSome(TimeVariations.tomorrowComps);
-//				tmf.addPredPoints(TimeVariations.tomorrowComps);
+
 				tmf.updateRecentPredPoints();
 				logger.info("NULL Last Ceck {}", LocalTime.now());
 			} else {
@@ -137,7 +131,7 @@ public class Strategy {
 
 					tmf.readDaySkips();
 					writeResultsToTest();
-					rh.reEvaluate(TimeVariations.yesterdayComps);
+					scheduleReEvaluation(TimeVariations.yesterdayComps);
 
 					TimeVariations.yesterdayComps = TimeVariations.todayComps;
 					TimeVariations.todayComps = TimeVariations.tomorrowComps;
@@ -172,10 +166,28 @@ public class Strategy {
 		}
 	}
 
+	private void uodatePredPoints(){
+//		ReqScheduler rs = ReqScheduler.getInstance();
+//		rs.addReq(AsyncType.PRED, list, "");
+//		rs.startReq();
+	}
+	
 	private void schedulePrediction(List<Integer> list) {
+		/*
+		 * schedule an asynchronous task so that the second part(a synchonous
+		 * task) that should be executed after the completion of the first task
+		 * does not foll int a null set of teequirements
+		 */
 		ReqScheduler rs = ReqScheduler.getInstance();
 		rs.addReq(AsyncType.PRED, list, "");
 		rs.startReq();
+	}
+
+	private void scheduleReEvaluation(List<Integer> list) {
+		ReqScheduler rs = ReqScheduler.getInstance();
+		rs.addReq(AsyncType.RE_EVAL, list, "");
+		rs.startReq();
+
 	}
 
 	private void storeToSmallDBsCondition(LocalDate checkdat)

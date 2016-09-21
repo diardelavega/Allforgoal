@@ -163,7 +163,7 @@ public class RHandler {
 		}
 	}
 
-	public void reEvaluate(List<Integer> comp_Ids) {
+	public void reEvaluate(List<Integer> comp_Ids, int seri) {
 		/*
 		 * To keep in mind that the reevaluation will be done for yesterday
 		 * matches (maybe for the today matches) but the list filler only
@@ -188,7 +188,7 @@ public class RHandler {
 			}
 		}
 		// after that the lists should be full
-		Rcall_ReEvaluate();
+		Rcall_ReEvaluate(seri);
 	}
 
 	public void Rcall_DTF(List<String> trlist) {
@@ -272,7 +272,7 @@ public class RHandler {
 						});
 	}
 
-	public void Rcall_ReEvaluate() {
+	public void Rcall_ReEvaluate(int seri) {
 		/*
 		 * reevaluate works on the bases that the test file prediction
 		 * attributes are writen in the test file after the match.***********
@@ -297,10 +297,17 @@ public class RHandler {
 			}
 		};
 
-		CompletableFuture.runAsync(r).thenAccept(
-				(c) -> log.info(
-						"FINISH :{}  \n succesfull R DTF completion  msg:{}",
-						LocalDateTime.now(), c));
+		CompletableFuture
+				.runAsync(r)
+				.thenAccept(
+						(c) -> {
+							log.info(
+									"FINISH :{}  \n succesfull R DTF completion  msg:{}",
+									LocalDateTime.now(), c);
+							if (seri > -1) {
+								ReqScheduler.getInstance().response(seri);
+							}
+						});
 
 	}
 
