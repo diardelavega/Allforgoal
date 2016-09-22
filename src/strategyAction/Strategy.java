@@ -49,7 +49,7 @@ public class Strategy {
 	private LocalDate lastDatCheck;// = LocalDate.now().minusDays(1);
 	private TempMatchFunctions tmf = new TempMatchFunctions();
 	private MatchGetter score = new MatchGetter();
-	private RHandler rh = new RHandler();
+	private TimeVariations tv = new TimeVariations();
 
 	// private XscoreUpComing score =new XscoreUpComing();
 	// private int periode = 6; // 6 hours
@@ -118,10 +118,9 @@ public class Strategy {
 				testPredFileMaker();// test file create
 				score.clearLists();
 
-				schedulePrediction(TimeVariations.todayComps);
-				schedulePrediction(TimeVariations.tomorrowComps);
-
-				tmf.updateRecentPredPoints();
+				schedulePredictionToday();
+				schedulePredictionTomorrow();
+				tv.initMPL();
 				logger.info("NULL Last Ceck {}", LocalTime.now());
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
@@ -145,8 +144,7 @@ public class Strategy {
 					storeToSmallDBs(); // store in temp and recent matches
 
 					testPredFileMaker();// test file create
-					schedulePrediction(TimeVariations.tomorrowComps);
-					tmf.updateRecentPredPoints();
+					schedulePredictionTomorrow();
 
 					score.clearLists();
 					checkRemaining();
@@ -155,6 +153,9 @@ public class Strategy {
 				} else {
 					// is still the same day get todays results
 					score.getFinishedToday();
+					// completeToday : set score & error to the finished matches; deletes from
+					// temp & insert into matches; updates recentmatches & MPL
+					// map
 					tmf.completeToday();
 					score.clearLists();
 					logger.info("Last Ceck   Finished  TODAY {}",
@@ -166,26 +167,24 @@ public class Strategy {
 		}
 	}
 
-	private void uodatePredPoints(){
-//		ReqScheduler rs = ReqScheduler.getInstance();
-//		rs.addReq(AsyncType.PRED, list, "");
-//		rs.startReq();
-	}
-	
-	private void schedulePrediction(List<Integer> list) {
-		/*
-		 * schedule an asynchronous task so that the second part(a synchonous
-		 * task) that should be executed after the completion of the first task
-		 * does not foll int a null set of teequirements
-		 */
+	private void schedulePredictionToday() {
 		ReqScheduler rs = ReqScheduler.getInstance();
-		rs.addReq(AsyncType.PRED, list, "");
+		rs.addReq(AsyncType.PRED, TimeVariations.todayComps, "",
+				LocalDate.now());
+		rs.startReq();
+
+	}
+
+	private void schedulePredictionTomorrow() {
+		ReqScheduler rs = ReqScheduler.getInstance();
+		rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps, "", LocalDate
+				.now().plusDays(1));
 		rs.startReq();
 	}
 
 	private void scheduleReEvaluation(List<Integer> list) {
 		ReqScheduler rs = ReqScheduler.getInstance();
-		rs.addReq(AsyncType.RE_EVAL, list, "");
+		rs.addReq(AsyncType.RE_EVAL, list, "", null);
 		rs.startReq();
 
 	}

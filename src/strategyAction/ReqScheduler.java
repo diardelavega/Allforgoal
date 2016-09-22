@@ -2,6 +2,7 @@ package strategyAction;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +37,13 @@ public class ReqScheduler {
 		return rqs;
 	}
 
-	public void addReq(String type, List<Integer> list, String attKind) {
+	public void addReq(String type, List<Integer> list, String attKind,
+			LocalDate ld) {
 		serialNumber = que.get(que.size() - 1).getSerialCode() + 1;
 		if (serialNumber == 100)
 			serialNumber = 0;
-		AsyncRequest ar = new AsyncRequest(type, list, attKind, serialNumber);
+		AsyncRequest ar = new AsyncRequest(type, list, attKind, serialNumber,
+				ld);
 		que.add(ar);
 	}
 
@@ -64,13 +67,13 @@ public class ReqScheduler {
 		case AsyncType.UP_PRE_POINT:
 			// update the recent matches data with the prediction points
 			// after the prediction request have been executed
-//			TempMatchFunctions tmf = new TempMatchFunctions();
-//			try {
-//				tmf.readInitialTeamFromRecentMatches(dat)
-//				tmf.updateRecentPredPoints();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
+			// TempMatchFunctions tmf = new TempMatchFunctions();
+			// try {
+			// tmf.readInitialTeamFromRecentMatches(dat)
+			// tmf.updateRecentPredPoints();
+			// } catch (SQLException e) {
+			// e.printStackTrace();
+			// }
 			break;
 
 		default:
@@ -79,6 +82,12 @@ public class ReqScheduler {
 	}
 
 	public void response(int k) {
+		for (int i = 0; i < que.size(); i++) {
+			if (que.get(i).getSerialCode() == k) {
+				System.out.println(" SerialCode Found  ind: "+i);
+			}
+		}
+
 		if (k == reqInHand.getSerialCode()) {
 			que.remove(0);
 
@@ -86,8 +95,7 @@ public class ReqScheduler {
 			case AsyncType.PRED:
 				TempMatchFunctions tmf = new TempMatchFunctions();
 				try {
-					//TODO add pred point for today mathces predicted
-					tmf.addPredPoints(TimeVariations.tomorrowComps);
+					tmf.addPredPoints(reqInHand.getList(),reqInHand.getLd());
 				} catch (IOException | SQLException e) {
 					e.printStackTrace();
 				}

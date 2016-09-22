@@ -1,5 +1,6 @@
 package basicStruct;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class AsyncRequest {
@@ -8,6 +9,7 @@ public class AsyncRequest {
 	private List<Integer> list;
 	private String atts;
 	private int serialCode;
+	private LocalDate ld;
 
 	public AsyncRequest() {
 		super();
@@ -15,12 +17,13 @@ public class AsyncRequest {
 	}
 
 	public AsyncRequest(String type, List<Integer> list, String atts,
-			int serialCode) {
+			int serialCode, LocalDate ld) {
 		super();
 		this.type = type;
 		this.list = list;
 		this.atts = atts;
 		this.serialCode = serialCode;
+		this.ld = ld;
 	}
 
 	public String getType() {
@@ -53,6 +56,14 @@ public class AsyncRequest {
 
 	public void setSerialCode(int serialCode) {
 		this.serialCode = serialCode;
+	}
+
+	public LocalDate getLd() {
+		return ld;
+	}
+
+	public void setLd(LocalDate ld) {
+		this.ld = ld;
 	}
 
 }
