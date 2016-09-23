@@ -23,9 +23,9 @@ public class Demo {
 	public static void main(String[] args) throws IOException, SQLException {
 		// renovateCCall();
 
-//		initCCAllStruct();
-//		funcGrab();
-		renovateCCall();
+		initCCAllStruct();
+		funcGrab();
+//		renovateCCall();
 //		trainFileFromMatches();
 	}
 
@@ -64,7 +64,7 @@ public class Demo {
 	}
 
 	public static void funcGrab() throws IOException, SQLException {
-		int compIdx = CountryCompetition.idToIdx.get(157);
+		int compIdx = CountryCompetition.idToIdx.get(10);
 		// String link = CountryCompetition.ccasList.get(111).getCompLink();
 		// int compId = CountryCompetition.ccasList.get(111).getCompId();
 

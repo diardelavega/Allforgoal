@@ -57,6 +57,7 @@ public class TempMatchFunctions {
 	}
 
 	public void corelatePunterXScorerTeams() throws IOException {
+		logger.info("Corelating");
 		/*
 		 * for every xScorer team name in the list find the analog Punter
 		 * teamName, populate unilang Teams with it and convert the list team
@@ -115,7 +116,7 @@ public class TempMatchFunctions {
 								.setT1(dbTeams.get(chosenDbIdx1));
 						dbTeams.remove(chosenDbIdx1);
 					} else {
-						logger.info("uncorelated --:  m.T1= '{}'", m.getT1());
+//						logger.info("uncorelated --:  m.T1= '{}'", m.getT1());
 					}
 				} else {
 					MatchGetter.schedNewMatches.get(key).get(kk).setT1(t);
@@ -147,7 +148,7 @@ public class TempMatchFunctions {
 								.setT2(dbTeams.get(chosenDbIdx2));
 						dbTeams.remove(chosenDbIdx2);
 					} else {
-						logger.info("uncorelated --:  m.T2= '{}'", m.getT2());
+//						logger.info("uncorelated --:  m.T2= '{}'", m.getT2());
 					}
 				} else {
 					MatchGetter.schedNewMatches.get(key).get(kk).setT2(t);

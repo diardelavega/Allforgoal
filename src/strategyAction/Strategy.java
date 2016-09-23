@@ -23,6 +23,7 @@ import com.mysql.jdbc.Connection;
 import calculate.MatchToTableRenewal;
 import dbtry.Conn;
 import diskStore.AnalyticFileHandler;
+import diskStore.LastPeriodicDataGather;
 import extra.AsyncType;
 import basicStruct.AsyncRequest;
 import basicStruct.MatchObj;
@@ -50,6 +51,7 @@ public class Strategy {
 	private TempMatchFunctions tmf = new TempMatchFunctions();
 	private MatchGetter score = new MatchGetter();
 	private TimeVariations tv = new TimeVariations();
+	private LastPeriodicDataGather ldg = new LastPeriodicDataGather();
 
 	// private XscoreUpComing score =new XscoreUpComing();
 	// private int periode = 6; // 6 hours
@@ -107,15 +109,17 @@ public class Strategy {
 		try {
 			if (lastDatCheck == null) {
 				lastDatCheck = LocalDate.now();
+				if(!ldg.fileFilledCheck()){
 				score.getScheduledToday();
 				score.getScheduledTomorrow();
 				// a list of compIds playing today & tomorrow is created
 				scheduledOddsAdderToday();
 				scheduledOddsAdderTomorrow(lastDatCheck);
-
+				}
+				ldg.writeLastScheduled();
 				tmf.corelatePunterXScorerTeams();
 				storeToSmallDBsCondition(lastDatCheck);// store condition
-				testPredFileMaker();// test file create
+				
 				score.clearLists();
 
 				schedulePredictionToday();
@@ -143,7 +147,7 @@ public class Strategy {
 					tmf.corelatePunterXScorerTeams();
 					storeToSmallDBs(); // store in temp and recent matches
 
-					testPredFileMaker();// test file create
+//					testPredFileMaker();// test file create
 					schedulePredictionTomorrow();
 
 					score.clearLists();
@@ -191,6 +195,7 @@ public class Strategy {
 
 	private void storeToSmallDBsCondition(LocalDate checkdat)
 			throws SQLException, IOException {
+		logger.info("storing to small db");
 		/*
 		 * a condition so that matches that have already been written inside
 		 * will not be rewritten maybe get the leatest date from db and compare
@@ -207,9 +212,9 @@ public class Strategy {
 		if (res.next()) {
 			latestDate = res.getDate(1).toLocalDate();
 			if (!latestDate.isBefore(checkdat)) {
-
+				testPredFileMaker();// test file create
 				conn.close();
-				return;
+//				return true;
 			}
 		} else {
 			// if leatest match in temp db is inserted before the curent
@@ -217,13 +222,15 @@ public class Strategy {
 			// db and test file
 			testPredFileMaker();
 			storeToSmallDBs();
+//			return false;
 		}
-
 		conn.close();
+//		return false;
 	}
 
 	public void storeToSmallDBs() throws SQLException {
 		/* store to tempmatches and recentmatches */
+		logger.info("storing to temp and recent matches");
 		tmf.storeToTempMatchesDB();
 		tmf.storeToRecentMatchesDB();
 
@@ -280,6 +287,7 @@ public class Strategy {
 	}
 
 	public void testPredFileMaker() throws SQLException, IOException {
+		logger.info(" --- : testPredFileMaker");
 		/* for all the new matches create a prediction file */
 
 		// CREATE test prediction file for tomorrow group of matches of the same

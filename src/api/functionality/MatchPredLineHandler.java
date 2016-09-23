@@ -19,7 +19,7 @@ import dbtry.Conn;
 /**
  * @author Administrator
  *
- *         Curently simulate, latter maby read and handle the actual prediction
+ *         Handle the actual prediction
  *         values for each of the predicting atributes for all the matches of a
  *         competition
  */
