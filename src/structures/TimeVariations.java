@@ -8,12 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import strategyAction.TempMatchFunctions;
 import api.functionality.obj.BaseMatchLinePred;
 import basicStruct.FullMatchLine;
 
 public class TimeVariations {
-	// TODO implement lists of competition ids for yesterday, today & tomorrows
+	public static final Logger log = LoggerFactory
+			.getLogger(TimeVariations.class);
+	// implement lists of competition ids for yesterday, today & tomorrows
 	public static List<Integer> yesterdayComps = new ArrayList<>();
 	public static List<Integer> todayComps = new ArrayList<>();
 	public static List<Integer> tomorrowComps = new ArrayList<>();
@@ -72,13 +77,36 @@ public class TimeVariations {
 		List<LocalDate> loclis = new ArrayList<LocalDate>();
 		for (LocalDate key : mapMPL.keySet()) {
 			if (key.isAfter(ld.plusDays(1)) || key.isBefore(ld.minusDays(1))) {
-//				System.out.println(key + "    " + mapMPL.get(key));
+				// System.out.println(key + "    " + mapMPL.get(key));
 				loclis.add(key);
 			}
 		}
 
 		for (LocalDate k : loclis) {
 			mapMPL.remove(k);
+		}
+	}
+
+	public void countComps() {
+		log.info("yesterday size : {}", yesterdayComps.size());
+		if (yesterdayComps.size() > 0) {
+			for (int itn : yesterdayComps) {
+				log.info("{}", itn);
+			}
+		}
+		
+		log.info("todayComps size : {}", todayComps.size());
+		if (todayComps.size() > 0) {
+			for (int itn : todayComps) {
+				log.info("{}", itn);
+			}
+		}
+
+		log.info("tomorrowComps size : {}", tomorrowComps.size());
+		if (tomorrowComps.size() > 0) {
+			for (int itn : tomorrowComps) {
+				log.info("{}", itn);
+			}
 		}
 	}
 }

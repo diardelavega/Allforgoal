@@ -122,6 +122,7 @@ public class RHandler {
 	}
 
 	public void predictSome(List<Integer> comp_Ids, String attsKind, int seri) {
+		log.info("Predicting some");
 		/* predict the competitions given by the list of competition ids */
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
@@ -198,6 +199,7 @@ public class RHandler {
 	}
 
 	public void Rcall_DTF(List<String> trlist, String R_attKindVector) {
+		log.info("r cal dtf with {} ", R_attKindVector);
 		String trVec = listToRvector(trlist);
 		Runnable r = () -> {
 			log.info("START: {}", LocalDateTime.now());
@@ -237,6 +239,8 @@ public class RHandler {
 	}
 
 	public void Rcall_Pred(String R_attKindVector, int seri) {
+		log.info("r cal predict with {} ", R_attKindVector);
+
 		String dftVec = listToRvector(foundImagePath);
 		String trVec = listToRvector(predTrainPath);
 		String tsVec = listToRvector(predTestPath);
@@ -273,6 +277,7 @@ public class RHandler {
 	}
 
 	public void Rcall_ReEvaluate(int seri) {
+		log.info("r cal reevaluate with  ");
 		/*
 		 * reevaluate works on the bases that the test file prediction
 		 * attributes are writen in the test file after the match.***********
@@ -281,6 +286,8 @@ public class RHandler {
 
 		String dftVec = listToRvector(foundImagePath);
 		String tsVec = listToRvector(predTestPath);
+
+		log.info("r cal reevaluate with  {},  {}", dftVec, tsVec);
 
 		Runnable r = () -> {
 			log.info("START: {}", LocalDateTime.now());
@@ -312,6 +319,7 @@ public class RHandler {
 	}
 
 	public void handleUnfound() {
+		log.info("handeling unfound comps");
 
 		/*
 		 * for each of the unfound images for the competition ids () stored in

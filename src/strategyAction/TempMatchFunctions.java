@@ -92,9 +92,7 @@ public class TempMatchFunctions {
 						// iterate through all teams of that competition
 						curDist = StringSimilarity.levenshteinDistance(
 								m.getT1(), dbTeams.get(i));
-						logger.info(
-								"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
-								m.getT1(), dbTeams.get(i), curDist, minDist);
+//						logger.info(					"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}", m.getT1(), dbTeams.get(i), curDist, minDist);
 						if (curDist > StandartResponses.TEAM_DIST)
 							continue;
 						if (curDist < minDist) {
@@ -109,8 +107,8 @@ public class TempMatchFunctions {
 					 * search. change the team names on the list
 					 */
 					if (chosenDbIdx1 >= 0) {// if found coreleted team
-						logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
-								dbTeams.get(chosenDbIdx1));
+//						logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
+//								dbTeams.get(chosenDbIdx1));
 						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
 						MatchGetter.schedNewMatches.get(key).get(kk)
 								.setT1(dbTeams.get(chosenDbIdx1));
@@ -129,9 +127,9 @@ public class TempMatchFunctions {
 					for (int i = 0; i < dbTeams.size(); i++) {
 						curDist = StringSimilarity.levenshteinDistance(
 								m.getT2(), dbTeams.get(i));
-						logger.info(
-								"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
-								m.getT2(), dbTeams.get(i), curDist, minDist);
+//						logger.info(
+//								"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
+//								m.getT2(), dbTeams.get(i), curDist, minDist);
 						if (curDist >= m.getT2().length())
 							continue;
 						if (curDist < minDist) {
@@ -141,8 +139,8 @@ public class TempMatchFunctions {
 					}
 
 					if (chosenDbIdx2 >= 0) {
-						logger.info("m.T2= '{}'    db.t= '{}' ", m.getT2(),
-								dbTeams.get(chosenDbIdx2));
+//						logger.info("m.T2= '{}'    db.t= '{}' ", m.getT2(),
+//								dbTeams.get(chosenDbIdx2));
 						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
 						MatchGetter.schedNewMatches.get(key).get(kk)
 								.setT2(dbTeams.get(chosenDbIdx2));
@@ -709,6 +707,7 @@ public class TempMatchFunctions {
 
 	public void addPredPoints(List<Integer> compsList, LocalDate ld)
 			throws IOException, SQLException {
+		logger.info("adding prediction points ...");
 		/*
 		 * add the prediction points, as generated and stored in files by R,
 		 * from file to recent table
@@ -723,7 +722,6 @@ public class TempMatchFunctions {
 		rp.prediction(compsList);
 		// read matches from the recent table
 		readInitialTeamFromRecentMatches(ld);
-		// TODO .. read fore more than just todays date
 
 		// find the same matches from table and file
 		for (Integer key : rp.getMatchLinePred().keySet()) {

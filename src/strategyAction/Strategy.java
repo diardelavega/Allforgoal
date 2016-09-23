@@ -25,6 +25,7 @@ import dbtry.Conn;
 import diskStore.AnalyticFileHandler;
 import diskStore.LastPeriodicDataGather;
 import extra.AsyncType;
+import extra.AttsKind;
 import basicStruct.AsyncRequest;
 import basicStruct.MatchObj;
 import r_dataIO.RHandler;
@@ -99,7 +100,7 @@ public class Strategy {
 		 */
 	}
 
-	public void task() throws SQLException, IOException {
+	public void task() throws SQLException, IOException, ClassNotFoundException {
 		/*
 		 * set all the temp match scraping, transforming, calculating re-storing
 		 * and re-writing. All matches in hand are stored in the MatchGetter ||
@@ -109,17 +110,21 @@ public class Strategy {
 		try {
 			if (lastDatCheck == null) {
 				lastDatCheck = LocalDate.now();
-				if(!ldg.fileFilledCheck()){
-				score.getScheduledToday();
-				score.getScheduledTomorrow();
-				// a list of compIds playing today & tomorrow is created
-				scheduledOddsAdderToday();
-				scheduledOddsAdderTomorrow(lastDatCheck);
+				if (!ldg.fileFilledCheck()) {
+					score.getScheduledToday();
+					score.getScheduledTomorrow();
+					// a list of compIds playing today & tomorrow is created
+					scheduledOddsAdderToday();
+					scheduledOddsAdderTomorrow(lastDatCheck);
+					ldg.writeMatchStructs();
+					ldg.writeMeta(lastDatCheck);
+				} else {
+					ldg.readMatchStructs();
 				}
-				ldg.writeLastScheduled();
+				tv.countComps();
+
 				tmf.corelatePunterXScorerTeams();
 				storeToSmallDBsCondition(lastDatCheck);// store condition
-				
 				score.clearLists();
 
 				schedulePredictionToday();
@@ -139,15 +144,17 @@ public class Strategy {
 					TimeVariations.yesterdayComps = TimeVariations.todayComps;
 					TimeVariations.todayComps = TimeVariations.tomorrowComps;
 					TimeVariations.tomorrowComps.clear();// to bee refilled
-
+					tv.countComps();
 					// ----------------Tomorrow's actions reparation line
 
 					score.getScheduledTomorrow(); // tommorrowComps is updated
 					scheduledOddsAdderTomorrow(lastDatCheck);
+					ldg.writeMatchStructs();
+					ldg.writeMeta(lastDatCheck);
 					tmf.corelatePunterXScorerTeams();
 					storeToSmallDBs(); // store in temp and recent matches
 
-//					testPredFileMaker();// test file create
+					// testPredFileMaker();// test file create
 					schedulePredictionTomorrow();
 
 					score.clearLists();
@@ -157,7 +164,8 @@ public class Strategy {
 				} else {
 					// is still the same day get todays results
 					score.getFinishedToday();
-					// completeToday : set score & error to the finished matches; deletes from
+					// completeToday : set score & error to the finished
+					// matches; deletes from
 					// temp & insert into matches; updates recentmatches & MPL
 					// map
 					tmf.completeToday();
@@ -173,7 +181,7 @@ public class Strategy {
 
 	private void schedulePredictionToday() {
 		ReqScheduler rs = ReqScheduler.getInstance();
-		rs.addReq(AsyncType.PRED, TimeVariations.todayComps, "",
+		rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs,
 				LocalDate.now());
 		rs.startReq();
 
@@ -181,14 +189,14 @@ public class Strategy {
 
 	private void schedulePredictionTomorrow() {
 		ReqScheduler rs = ReqScheduler.getInstance();
-		rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps, "", LocalDate
-				.now().plusDays(1));
+		rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps, AttsKind.hs,
+				LocalDate.now().plusDays(1));
 		rs.startReq();
 	}
 
 	private void scheduleReEvaluation(List<Integer> list) {
 		ReqScheduler rs = ReqScheduler.getInstance();
-		rs.addReq(AsyncType.RE_EVAL, list, "", null);
+		rs.addReq(AsyncType.RE_EVAL, list, AttsKind.hs, null);
 		rs.startReq();
 
 	}
@@ -214,7 +222,7 @@ public class Strategy {
 			if (!latestDate.isBefore(checkdat)) {
 				testPredFileMaker();// test file create
 				conn.close();
-//				return true;
+				// return true;
 			}
 		} else {
 			// if leatest match in temp db is inserted before the curent
@@ -222,10 +230,10 @@ public class Strategy {
 			// db and test file
 			testPredFileMaker();
 			storeToSmallDBs();
-//			return false;
+			// return false;
 		}
 		conn.close();
-//		return false;
+		// return false;
 	}
 
 	public void storeToSmallDBs() throws SQLException {

@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import r_dataIO.RHandler;
 import structures.TimeVariations;
 import extra.AsyncType;
@@ -20,6 +23,7 @@ import basicStruct.AsyncRequest;
  *         that needs to complete
  */
 public class ReqScheduler {
+	public static final Logger log = LoggerFactory.getLogger(ReqScheduler.class);
 	private static ReqScheduler rqs;
 
 	private List<AsyncRequest> que = new ArrayList<AsyncRequest>();
@@ -39,7 +43,11 @@ public class ReqScheduler {
 
 	public void addReq(String type, List<Integer> list, String attKind,
 			LocalDate ld) {
-		serialNumber = que.get(que.size() - 1).getSerialCode() + 1;
+
+		if(que.size()>0){
+			serialNumber = que.get(que.size() - 1).getSerialCode() + 1;	
+		}
+		log.info("adding req {} {} {}",attKind,ld,serialNumber );
 		if (serialNumber == 100)
 			serialNumber = 0;
 		AsyncRequest ar = new AsyncRequest(type, list, attKind, serialNumber,
@@ -53,6 +61,7 @@ public class ReqScheduler {
 	}
 
 	public void runReq() {
+		log.info("run {}, {}",reqInHand.getType(),reqInHand.getSerialCode());
 		switch (reqInHand.getType()) {
 		case AsyncType.PRED:
 			rh.predictSome(reqInHand.getList(), reqInHand.getAtts(),
@@ -82,6 +91,7 @@ public class ReqScheduler {
 	}
 
 	public void response(int k) {
+		log.info("REQ response with code {}",k);
 		for (int i = 0; i < que.size(); i++) {
 			if (que.get(i).getSerialCode() == k) {
 				System.out.println(" SerialCode Found  ind: "+i);
