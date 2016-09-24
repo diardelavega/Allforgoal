@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +64,10 @@ public class RDemo {
 
 	public static void simDtf_Create() {
 		String trpath = "C:/BastData/Pred/Data/Norway/Eliteserien__112__Data";
-		List<String> tempList = new ArrayList<String>();
-		tempList.add(trpath);
+//		List<String> tempList = new ArrayList<String>();
+//		tempList.add(trpath);
+		List<Integer> tempList = new ArrayList<Integer>();
+		tempList.add(112);
 		RHandler rh = new RHandler();
 		rh.Rcall_DTF(tempList, AttsKind.hs);
 	}

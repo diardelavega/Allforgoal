@@ -18,6 +18,7 @@ import structures.CountryCompetition;
 import test.MatchGetter;
 import basicStruct.CCAllStruct;
 import diskStore.AnalyticFileHandler;
+import extra.AsyncType;
 import extra.AttsKind;
 
 /**
@@ -44,7 +45,7 @@ public class RHandler {
 	private List<Integer> un_foundImagesCompIds = new ArrayList<>();
 	private AnalyticFileHandler afh = new AnalyticFileHandler();
 
-	private void predListFiller(CCAllStruct ccs, String ret) {
+	private void predListFiller(CCAllStruct ccs, String ret, LocalDate ld) {
 		/*
 		 * handle the files for the prediction if the image file has been found
 		 * get the coresponding test and train files of that competition.
@@ -53,6 +54,7 @@ public class RHandler {
 		 * tomorrows.Thats why the test file we require has the today date
 		 */
 
+		ret = ret.replace("\\", "/");
 		// add the image *.dtf.RData file path in the list
 		foundImagePath.add(ret);
 
@@ -61,7 +63,7 @@ public class RHandler {
 				ccs.getCompetition(), ccs.getCountry());
 		if (tempFile != null) {
 			File testfile = afh.getTestFileName(ccs.getCompId(),
-					ccs.getCompetition(), ccs.getCountry(), LocalDate.now());
+					ccs.getCompetition(), ccs.getCountry(), ld);
 			if (testfile != null) {
 				predTestPath.add(testfile.getAbsolutePath().replace("\\", "/"));
 				predTrainPath
@@ -94,7 +96,7 @@ public class RHandler {
 
 	}
 
-	public void predictAll() throws SQLException {
+	public void predictAll(LocalDate ld) throws SQLException {
 		/*
 		 * read the scheduled matches competitions; search initially for the
 		 * dtf_objs image file of that competition; for the found images get the
@@ -108,7 +110,7 @@ public class RHandler {
 			String ret = afh.getImageFileName(ccs.getCompId(),
 					ccs.getCompetition(), ccs.getCountry());
 			if (ret != null) {
-				predListFiller(ccs, ret);
+				predListFiller(ccs, ret, ld);
 			} else {
 				un_foundImagesCompIds.add(key);
 			}
@@ -117,20 +119,22 @@ public class RHandler {
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred();
 		} else if (un_foundImagesCompIds.size() > 0) {
-			handleUnfound();
+			handleUnfound(ld);
 		}
 	}
 
-	public void predictSome(List<Integer> comp_Ids, String attsKind, int seri) {
+	public void predictSome(List<Integer> comp_Ids, String attsKind, int seri,
+			LocalDate ld) {
 		log.info("Predicting some");
 		/* predict the competitions given by the list of competition ids */
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
+			//TODO check if already has a prediction
 			String ret = afh.getImageFileName(ccs.getCompId(),
 					ccs.getCompetition(), ccs.getCountry());
 			if (ret != null) {
-				predListFiller(ccs, ret);
+				predListFiller(ccs, ret, ld);
 			} else {
 				un_foundImagesCompIds.add(key);
 			}
@@ -139,11 +143,11 @@ public class RHandler {
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred(attsKind, seri);
 		} else if (un_foundImagesCompIds.size() > 0) {
-			handleUnfound();
+			handleUnfound(ld);
 		}
 	}
 
-	public void predictOne(int comp_Id) {
+	public void predictOne(int comp_Id, LocalDate ld) {
 		/* predict the competitions given by the list of compeyiyions ids */
 		int idx = CountryCompetition.idToIdx.get(comp_Id);
 		CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
@@ -152,7 +156,7 @@ public class RHandler {
 
 		if (ret != null) {
 			ret = ret.replace("\\", "/");
-			predListFiller(ccs, ret);
+			predListFiller(ccs, ret, ld);
 		} else {
 			un_foundImagesCompIds.add(comp_Id);
 		}
@@ -160,11 +164,11 @@ public class RHandler {
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred();
 		} else if (un_foundImagesCompIds.size() > 0) {
-			handleUnfound();
+			handleUnfound(ld);
 		}
 	}
 
-	public void reEvaluate(List<Integer> comp_Ids, int seri) {
+	public void reEvaluate(List<Integer> comp_Ids, int seri, LocalDate ld) {
 		/*
 		 * To keep in mind that the reevaluation will be done for yesterday
 		 * matches (maybe for the today matches) but the list filler only
@@ -183,7 +187,7 @@ public class RHandler {
 			String ret = afh.getImageFileName(ccs.getCompId(),
 					ccs.getCompetition(), ccs.getCountry());
 			if (ret != null) {
-				predListFiller(ccs, ret);
+				predListFiller(ccs, ret, ld);
 			} else {
 				un_foundImagesCompIds.add(key);
 			}
@@ -192,14 +196,31 @@ public class RHandler {
 		Rcall_ReEvaluate(seri);
 	}
 
-	public void Rcall_DTF(List<String> trlist) {
+	public void Rcall_DTF(List<Integer> trlist) {
 		// default dtf objects to be created are head and score
 		String R_attKindVector = AttsKind.hs;
-		Rcall_DTF(trlist, R_attKindVector);
+		Rcall_DTF(trlist, R_attKindVector, -1);
 	}
 
-	public void Rcall_DTF(List<String> trlist, String R_attKindVector) {
+	public void Rcall_DTF(List<Integer> trlist, String R_attKindVector) {
+		// default dtf objects to be created are head and score
+		Rcall_DTF(trlist, R_attKindVector, -1);
+	}
+
+	public void Rcall_DTF(List<Integer> comp_Ids, String R_attKindVector,
+			int seri) {
 		log.info("r cal dtf with {} ", R_attKindVector);
+		List<String> trlist = new ArrayList<String>();
+		for (Integer key : comp_Ids) {
+			int idx = CountryCompetition.idToIdx.get(key);
+			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
+			String ret = afh.getImageFileName(ccs.getCompId(),
+					ccs.getCompetition(), ccs.getCountry());
+			if (ret != null) {
+				trlist.add(ret);
+			}
+		}
+
 		String trVec = listToRvector(trlist);
 		Runnable r = () -> {
 			log.info("START: {}", LocalDateTime.now());
@@ -220,10 +241,17 @@ public class RHandler {
 			}
 		};
 
-		CompletableFuture.runAsync(r).thenAccept(
-				(c) -> log.info(
-						"FINISH :{}  \n succesfull R DTF completion  msg:{}",
-						LocalDateTime.now(), c));
+		CompletableFuture
+				.runAsync(r)
+				.thenAccept(
+						(c) -> {
+							log.info(
+									"FINISH :{}  \n succesfull R DTF completion  msg:{}",
+									LocalDateTime.now(), c);
+							if (seri > -1) {
+								ReqScheduler.getInstance().response(seri);
+							}
+						});
 	}
 
 	public void Rcall_Pred() {
@@ -318,45 +346,39 @@ public class RHandler {
 
 	}
 
-	public void handleUnfound() {
+	public void handleUnfound(LocalDate ld) {
 		log.info("handeling unfound comps");
 
 		/*
-		 * for each of the unfound images for the competition ids () stored in
+		 * origina objective *********************************************** for
+		 * each of the unfound images for the competition ids () stored in
 		 * un_found get the train file in the prediction folder & call R to
 		 * initiate the DTF objects and execute a cros fold validation crfv for
-		 * that cometitiom
+		 * that cometitiom.
+		 * ******************************************************************
+		 * curent Objective: for all the unfoun img, add a request in the line
+		 * to create a dtf head and score file prediction
 		 */
-		CCAllStruct ccs;
-		List<String> trlist = new ArrayList<String>();
+		// CCAllStruct ccs;
+		// List<String> trlist = new ArrayList<String>();
 
-		for (int i : un_foundImagesCompIds) {
-			ccs = CountryCompetition.ccasList.get(CountryCompetition.idToIdx
-					.get(i));
-			File temptrFile = afh.getTrainFileName(ccs.getCompId(),
-					ccs.getCompetition(), ccs.getCountry());
-			if (temptrFile != null) {
-				try {
-					log.info("{}", temptrFile.getCanonicalPath());
-					log.info("{}", temptrFile.getName());
-					log.info("{}", temptrFile.getParent());
-					log.info("{}",
-							temptrFile.getAbsolutePath().replace("\\", "/"));
-					log.info("{}", temptrFile.getAbsolutePath());
-					log.info("{}", temptrFile.getPath());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				trlist.add(temptrFile.getAbsolutePath().replace("\\", "/"));
-			} else {
-				log.warn("Comp Id {} has no Training Prediction file", i);
-				un_foundImagesCompIds.remove(i);
-			}
-		}
-		Rcall_DTF(trlist, AttsKind.hs);
+		// for (int i : un_foundImagesCompIds) {
+		// ccs = CountryCompetition.ccasList.get(CountryCompetition.idToIdx
+		// .get(i));
+		// File temptrFile = afh.getTrainFileName(ccs.getCompId(),
+		// ccs.getCompetition(), ccs.getCountry());
+		// if (temptrFile != null) {
+		// log.info("{}", temptrFile.getAbsolutePath().replace("\\", "/"));
+		// trlist.add(temptrFile.getAbsolutePath().replace("\\", "/"));
+		// } else {
+		// log.warn("Comp Id {} has no Training Prediction file", i);
+		// un_foundImagesCompIds.remove(i);
+		// }
+		// }
+		ReqScheduler.getInstance().addReq(AsyncType.DTF, un_foundImagesCompIds,
+				AttsKind.hs, ld);
+		ReqScheduler.getInstance().startReq();
 
-		// call R to predict next match matchline pred data
-		// predictSome(un_foundImagesCompIds);
 	}
 
 	// ---------------------
@@ -405,4 +427,5 @@ public class RHandler {
 		// log.info("the double isssss= {}", d);
 		// re.end();
 	}
+
 }

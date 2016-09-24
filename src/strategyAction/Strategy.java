@@ -26,6 +26,7 @@ import diskStore.AnalyticFileHandler;
 import diskStore.LastPeriodicDataGather;
 import extra.AsyncType;
 import extra.AttsKind;
+import extra.PeriodicTimes;
 import basicStruct.AsyncRequest;
 import basicStruct.MatchObj;
 import r_dataIO.RHandler;
@@ -134,23 +135,29 @@ public class Strategy {
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
 					lastDatCheck = LocalDate.now();
-					score.getFinishedYesterday();
-					tmf.completeYesterday();
+					if (!ldg.fileFilledCheck()) {
+						score.getFinishedYesterday();
+						tmf.completeYesterday();
 
-					tmf.readDaySkips();
-					writeResultsToTest();
-					scheduleReEvaluation(TimeVariations.yesterdayComps);
+						tmf.readDaySkips();
+						writeResultsToTest();
+						scheduleReEvaluation(TimeVariations.yesterdayComps);
 
-					TimeVariations.yesterdayComps = TimeVariations.todayComps;
-					TimeVariations.todayComps = TimeVariations.tomorrowComps;
-					TimeVariations.tomorrowComps.clear();// to bee refilled
-					tv.countComps();
-					// ----------------Tomorrow's actions reparation line
+						TimeVariations.yesterdayComps = TimeVariations.todayComps;
+						TimeVariations.todayComps = TimeVariations.tomorrowComps;
+						TimeVariations.tomorrowComps.clear();// to bee refilled
+						tv.countComps();
+						// ----------------Tomorrow's actions reparation line
 
-					score.getScheduledTomorrow(); // tommorrowComps is updated
-					scheduledOddsAdderTomorrow(lastDatCheck);
-					ldg.writeMatchStructs();
-					ldg.writeMeta(lastDatCheck);
+						score.getScheduledTomorrow(); // tommorrowComps is
+														// updated
+						scheduledOddsAdderTomorrow(lastDatCheck);
+						ldg.writeMeta(lastDatCheck);
+						ldg.writeMatchStructs();
+						ldg.writeMeta(lastDatCheck);
+					} else {
+						ldg.readMatchStructs();
+					}
 					tmf.corelatePunterXScorerTeams();
 					storeToSmallDBs(); // store in temp and recent matches
 
@@ -380,9 +387,8 @@ public class Strategy {
 		};
 		// System.out.println("Scheduling: " + System.nanoTime());
 
-		int initialDelay = 0;
-		int period = 5;
-		executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.HOURS);
+		executor.scheduleAtFixedRate(task, PeriodicTimes.INIT_DELAY,
+				PeriodicTimes.PERIOD, TimeUnit.HOURS);
 	}
 
 	public void writeResultsToTest() throws FileNotFoundException,

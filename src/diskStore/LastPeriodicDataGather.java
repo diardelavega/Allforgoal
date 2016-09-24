@@ -7,10 +7,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import extra.PeriodicTimes;
 import basicStruct.MatchObj;
 import structures.TimeVariations;
 import test.MatchGetter;
@@ -167,25 +174,42 @@ public class LastPeriodicDataGather {
 
 	public boolean fileFilledCheck() throws ClassNotFoundException, IOException {
 		if (sch.exists() && sch.length() > 10) {
-			if (!readMeta().isBefore(LocalDate.now()))
+			long diff = 100;
+			try {
+				diff = ChronoUnit.HOURS
+						.between(readMeta(), LocalDateTime.now());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (diff < PeriodicTimes.PERIOD)
 				return true;
 		}
 		return false;
 	}
 
 	public void writeMeta(LocalDate ld) throws IOException {
+		LocalDateTime ldt = LocalDateTime.now();
 		FileOutputStream fos = new FileOutputStream(meta);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
-		oos.writeObject(ld);
+		oos.writeObject(ldt);
 		oos.close();
 	}
 
-	public LocalDate readMeta() throws IOException, ClassNotFoundException {
-		FileInputStream fis = new FileInputStream(meta);
-		ObjectInputStream ois = new ObjectInputStream(fis);
-		LocalDate ld = (LocalDate) ois.readObject();
-		ois.close();
-		return ld;
+	public LocalDateTime readMeta() throws IOException, ClassNotFoundException {
+		if (fileExzistence(meta)) {
+			FileInputStream fis = new FileInputStream(meta);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			LocalDateTime ldt = (LocalDateTime) ois.readObject();
+			ois.close();
+			return ldt;
+		}
+		return null;
+	}
+
+	private boolean fileExzistence(File f) {
+		if (f.exists())
+			return true;
+		return false;
 	}
 
 }
