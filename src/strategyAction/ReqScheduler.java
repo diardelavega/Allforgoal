@@ -45,13 +45,14 @@ public class ReqScheduler {
 	}
 
 	public void addReq(String type, List<Integer> list, String attKind, LocalDate ld) {
-
+		if (serialNumber == 100)
+			serialNumber = 0;
+		
 		if (que.size() > 0) {
 			serialNumber = que.get(que.size() - 1).getSerialCode() + 1;
 		}
 		log.info("adding req {} {} {}", attKind, ld, serialNumber);
-		if (serialNumber == 100)
-			serialNumber = 0;
+		
 		AsyncRequest ar = new AsyncRequest(type, list, attKind, serialNumber,
 				ld);
 		que.add(ar);
@@ -69,7 +70,8 @@ public class ReqScheduler {
 				log.info("No REQUESTS in Line");
 			}
 		} else {
-			log.info("this req #" + reqInHand.getSerialCode() + " is Waiting");
+			//TODO waiting is not the request in hand, the req in hand is running
+			log.info("this req #" + serialNumber + " is Waiting");
 		}
 	}
 

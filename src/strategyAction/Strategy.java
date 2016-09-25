@@ -152,7 +152,7 @@ public class Strategy {
 						score.getScheduledTomorrow(); // tommorrowComps is
 														// updated
 						scheduledOddsAdderTomorrow(lastDatCheck);
-						ldg.writeMeta(lastDatCheck);
+
 						ldg.writeMatchStructs();
 						ldg.writeMeta(lastDatCheck);
 					} else {
@@ -187,18 +187,24 @@ public class Strategy {
 	}
 
 	private void schedulePredictionToday() {
-		ReqScheduler rs = ReqScheduler.getInstance();
-		rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs,
-				LocalDate.now());
-		rs.startReq();
+		// TODO if list of competitons is empty, dont send a request, because it
+		// will not have anything to do
+		if (TimeVariations.todayComps.size() > 0) {
+			ReqScheduler rs = ReqScheduler.getInstance();
+			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs,
+					LocalDate.now());
+			rs.startReq();
+		}
 
 	}
 
 	private void schedulePredictionTomorrow() {
-		ReqScheduler rs = ReqScheduler.getInstance();
-		rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps, AttsKind.hs,
-				LocalDate.now().plusDays(1));
-		rs.startReq();
+		if (TimeVariations.tomorrowComps.size() > 0) {
+			ReqScheduler rs = ReqScheduler.getInstance();
+			rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps,
+					AttsKind.hs, LocalDate.now().plusDays(1));
+			rs.startReq();
+		}
 	}
 
 	private void scheduleReEvaluation(List<Integer> list) {
@@ -230,6 +236,13 @@ public class Strategy {
 				testPredFileMaker();// test file create
 				conn.close();
 				// return true;
+			} else {
+				// if leatest match in temp db is inserted before the curent
+				// check date then store the info gathered. Avoid duplicates in
+				// db and test file
+				testPredFileMaker();
+				storeToSmallDBs();
+				// return false;
 			}
 		} else {
 			// if leatest match in temp db is inserted before the curent

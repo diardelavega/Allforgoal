@@ -307,7 +307,7 @@ public class AnalyticFileHandler {
 		log.info("{}", (cFolder + sb.toString()));
 		File tFolder = new File(cFolder + sb.toString());
 		if (tFolder.exists())
-			if (tFolder.list().length > 0)
+//			if (tFolder.list().length > 0)
 				return (cFolder + sb.toString());
 
 		return null;

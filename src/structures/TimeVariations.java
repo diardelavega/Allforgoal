@@ -30,15 +30,15 @@ public class TimeVariations {
 		LocalDate ld = LocalDate.now();
 
 		// add today
-		if (mapMPL.containsKey(ld)) {
+		if (!mapMPL.containsKey(ld)) {
 			addToMPLMap(ld);
 		}
 		// add yesterday
-		if (mapMPL.containsKey(ld.minusDays(1))) {
+		if (!mapMPL.containsKey(ld.minusDays(1))) {
 			addToMPLMap(ld.minusDays(1));
 		}
 		// add tomorrow
-		if (mapMPL.containsKey(ld.plusDays(1))) {
+		if (!mapMPL.containsKey(ld.plusDays(1))) {
 			addToMPLMap(ld.plusDays(1));
 		}
 	}

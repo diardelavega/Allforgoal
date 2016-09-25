@@ -74,8 +74,8 @@ public class Demo {
 
 		// // ----------------TEST-----------
 		SoccerPrunterMAtches spm = new SoccerPrunterMAtches();
-		spm.competitionResultsGrabbers(compIdx);
-//		 spm.remainingResultsGraber(compIdx);
+//		spm.competitionResultsGrabbers(compIdx);
+		 spm.remainingResultsGraber(compIdx);
 
 		/*
 		 * re calculate prediction file from dab matches without re grabing

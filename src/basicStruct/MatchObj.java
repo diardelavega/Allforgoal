@@ -15,14 +15,14 @@ public class MatchObj implements Serializable{
 	protected String t2;
 	protected int ft1;
 	protected int ft2;
-	protected int ht1 = -1;
-	protected int ht2 = -1;
-	protected float _1;
-	protected float _2;
-	protected float _x;
+	protected int ht1  ;
+	protected int ht2  ;
+	protected float _1=1;
+	protected float _2=1;
+	protected float _x=1;
 
-	protected float _o;
-	protected float _u;
+	protected float _o=1;
+	protected float _u=1;
 	protected Date dat;
 	protected String matchTime;
 

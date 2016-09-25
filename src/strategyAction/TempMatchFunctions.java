@@ -92,7 +92,9 @@ public class TempMatchFunctions {
 						// iterate through all teams of that competition
 						curDist = StringSimilarity.levenshteinDistance(
 								m.getT1(), dbTeams.get(i));
-//						logger.info(					"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}", m.getT1(), dbTeams.get(i), curDist, minDist);
+						// logger.info(
+						// "m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
+						// m.getT1(), dbTeams.get(i), curDist, minDist);
 						if (curDist > StandartResponses.TEAM_DIST)
 							continue;
 						if (curDist < minDist) {
@@ -107,14 +109,15 @@ public class TempMatchFunctions {
 					 * search. change the team names on the list
 					 */
 					if (chosenDbIdx1 >= 0) {// if found coreleted team
-//						logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
-//								dbTeams.get(chosenDbIdx1));
+						// logger.info("m.T1= '{}'    db.t= '{}' ", m.getT1(),
+						// dbTeams.get(chosenDbIdx1));
 						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
 						MatchGetter.schedNewMatches.get(key).get(kk)
 								.setT1(dbTeams.get(chosenDbIdx1));
 						dbTeams.remove(chosenDbIdx1);
 					} else {
-//						logger.info("uncorelated --:  m.T1= '{}'", m.getT1());
+						// logger.info("uncorelated --:  m.T1= '{}'",
+						// m.getT1());
 					}
 				} else {
 					MatchGetter.schedNewMatches.get(key).get(kk).setT1(t);
@@ -127,9 +130,9 @@ public class TempMatchFunctions {
 					for (int i = 0; i < dbTeams.size(); i++) {
 						curDist = StringSimilarity.levenshteinDistance(
 								m.getT2(), dbTeams.get(i));
-//						logger.info(
-//								"m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
-//								m.getT2(), dbTeams.get(i), curDist, minDist);
+						// logger.info(
+						// "m.T1= '{}'    db.t= '{}'  curDist= {}  minDist= {}",
+						// m.getT2(), dbTeams.get(i), curDist, minDist);
 						if (curDist >= m.getT2().length())
 							continue;
 						if (curDist < minDist) {
@@ -139,14 +142,15 @@ public class TempMatchFunctions {
 					}
 
 					if (chosenDbIdx2 >= 0) {
-//						logger.info("m.T2= '{}'    db.t= '{}' ", m.getT2(),
-//								dbTeams.get(chosenDbIdx2));
+						// logger.info("m.T2= '{}'    db.t= '{}' ", m.getT2(),
+						// dbTeams.get(chosenDbIdx2));
 						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
 						MatchGetter.schedNewMatches.get(key).get(kk)
 								.setT2(dbTeams.get(chosenDbIdx2));
 						dbTeams.remove(chosenDbIdx2);
 					} else {
-//						logger.info("uncorelated --:  m.T2= '{}'", m.getT2());
+						// logger.info("uncorelated --:  m.T2= '{}'",
+						// m.getT2());
 					}
 				} else {
 					MatchGetter.schedNewMatches.get(key).get(kk).setT2(t);
@@ -234,7 +238,7 @@ public class TempMatchFunctions {
 		deleteTempMatches(matches);// delete finished matches from tempdb
 		insertMatches(matches);// ins finished matches from tempdb to matchesdb
 		updateRecentScores(matches);// set score to recent matches
-		synchronizeMPL_Map(matches,"score");
+		synchronizeMPL_Map(matches, "score");
 		logger.info("Competed standart Completion");
 
 		if (readTempMatchesList.size() > 0) {
@@ -286,7 +290,7 @@ public class TempMatchFunctions {
 				// delete cancelled matches from tempmatches table
 			deleteTempMatches(matches);
 			updateRecentError(matches);// set err to recent matches time
-			synchronizeMPL_Map(matches,"error");
+			synchronizeMPL_Map(matches, "error");
 			logger.info("Competed Old Completion");
 		}
 	}
@@ -487,12 +491,8 @@ public class TempMatchFunctions {
 		// should come after the correlation from newFormat to punter
 
 		openDBConn();
-		// String insert =
-		// "insert into tempmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(insertLine);
 		int i = 0;
-		// @ this point suppose xscore.shcedmatches is converted to punter teams
-		// for (MatchObj mobj : XscoreUpComing.schedNewMatches) {
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
 			for (MatchObj mobj : MatchGetter.schedNewMatches.get(key)) {// alt
 				ps.setLong(1, mobj.getmId());
@@ -595,7 +595,8 @@ public class TempMatchFunctions {
 	// ********************RECENT MATCHES
 
 	public void storeToRecentMatchesDB() throws SQLException {
-		String insert = "insert into recentmatches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		String insert = "insert into recentmatches (mid, compid, t1, t2, ft1, ft2, ht1, ht2,"
+				+ " _1, _x, _2, _o, _u, dat, tim) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		storeToShortMatches(insert);
 	}
 
@@ -841,8 +842,10 @@ public class TempMatchFunctions {
 	}
 
 	public void synchronizeMPL_Map(List<MatchObj> tempMatches, String updKind) {
-		 /*find the match from tempMatches to MPL map & set its {score or error}
-		 status*/
+		/*
+		 * find the match from tempMatches to MPL map & set its {score or error}
+		 * status
+		 */
 		LocalDate ld = LocalDate.now();
 
 		for (int i = 0; i < tempMatches.size(); i++) {
@@ -852,15 +855,20 @@ public class TempMatchFunctions {
 			for (int j = 0; j < TimeVariations.mapMPL.get(ld).get(cid).size(); j++) {
 				if (TimeVariations.mapMPL.get(ld).get(cid).get(j).getmId() == mid) {
 					if (updKind.equals("score")) {
-						//  update HT & FT SCORES
-						TimeVariations.mapMPL.get(ld).get(cid).get(j).setHt1(tempMatches.get(i).getHt1());
-						TimeVariations.mapMPL.get(ld).get(cid).get(j).setHt2(tempMatches.get(i).getHt2());
-						TimeVariations.mapMPL.get(ld).get(cid).get(j).setFt1(tempMatches.get(i).getFt1());
-						TimeVariations.mapMPL.get(ld).get(cid).get(j).setFt2(tempMatches.get(i).getFt2());
+						// update HT & FT SCORES
+						TimeVariations.mapMPL.get(ld).get(cid).get(j)
+								.setHt1(tempMatches.get(i).getHt1());
+						TimeVariations.mapMPL.get(ld).get(cid).get(j)
+								.setHt2(tempMatches.get(i).getHt2());
+						TimeVariations.mapMPL.get(ld).get(cid).get(j)
+								.setFt1(tempMatches.get(i).getFt1());
+						TimeVariations.mapMPL.get(ld).get(cid).get(j)
+								.setFt2(tempMatches.get(i).getFt2());
 					}
 					if (updKind.equals("error")) {
 						// set match time with err
-						TimeVariations.mapMPL.get(ld).get(cid).get(j).setMatchTime(Status.ERROR);
+						TimeVariations.mapMPL.get(ld).get(cid).get(j)
+								.setMatchTime(Status.ERROR);
 					}// if error
 				}// if mid
 			}// for j
