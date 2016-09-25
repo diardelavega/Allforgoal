@@ -1,15 +1,12 @@
 package diskStore;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -29,14 +26,11 @@ import strategyAction.TempMatchFunctions;
 import structures.CountryCompetition;
 import structures.ReducedPredictionTestFile;
 import structures.TimeVariations;
-import api.functionality.obj.BaseMatchLinePred;
+import api.functionality.obj.StrStrTuple;
 import basicStruct.CCAllStruct;
 import basicStruct.FullMatchPredLineToSubStructs;
 import basicStruct.MatchObj;
-import api.functionality.obj.StrStrTuple;
 import calculate.OutcomeCalculator;
-
-import com.google.gson.Gson;
 
 public class AnalyticFileHandler {
 	public static Logger log = LoggerFactory
@@ -249,7 +243,8 @@ public class AnalyticFileHandler {
 		return (new File(cFolder + sb.toString()));
 	}
 
-	public File createTrainFile(int compId, String compName, String country) {
+	public File createTrainFile(int compId, String compName, String country)
+			throws IOException {
 		File cFolder = new File(predDataFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
@@ -263,14 +258,12 @@ public class AnalyticFileHandler {
 		sb.append("Data");
 
 		File tFile = new File(cFolder + sb.toString());
+		tFile.createNewFile();
 		return tFile;
 	}
 
 	public File getTrainFileName(int compId, String compName, String country) {
-		// create the folder file and a new test file of format
-		// folder/CompName_compId_Data
 
-		// CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
 		File cFolder = new File(predDataFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
@@ -284,14 +277,15 @@ public class AnalyticFileHandler {
 		sb.append(wordSeparator);
 		sb.append("Data");
 
+		log.info("{}", (cFolder + sb.toString()));
 		File tFile = new File(cFolder + sb.toString());
-		if (tFile.length() > 10)
+		if (tFile.exists() && tFile.length() > 10)
 			return tFile;
 		else
 			return null;
 	}
 
-	public String getImageFileName(int compId, String compName, String country) {
+	public String getImageFolder(int compId, String compName, String country) {
 		/*
 		 * see if image file exists and has data in it. Return its path or null
 		 */
@@ -300,7 +294,7 @@ public class AnalyticFileHandler {
 		// CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
 		File cFolder = new File(imageFolder + "/" + country);
 		if (!cFolder.exists()) {
-			cFolder.mkdirs();
+			// cFolder.mkdirs();
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -309,12 +303,13 @@ public class AnalyticFileHandler {
 		sb.append(wordSeparator);
 		sb.append(compId);
 		// sb.append(wordSeparator);
-		// sb.append(".dtf.RData");
-
+		// sb.append(".dtf.RData");xxxx
+		log.info("{}", (cFolder + sb.toString()));
 		File tFolder = new File(cFolder + sb.toString());
-		if (tFolder.exists()) {
-			return (cFolder + sb.toString());
-		}
+		if (tFolder.exists())
+			if (tFolder.list().length > 0)
+				return (cFolder + sb.toString());
+
 		return null;
 	}
 
@@ -347,27 +342,43 @@ public class AnalyticFileHandler {
 		 * if file not found or other iregularities return 0 else return the
 		 * difference in days between the two files
 		 */
-		File cFolder = new File(predDataFolder + "/" + country);
-		if (!cFolder.exists()) {
-			return 0;
-		}
-		if (cFolder.list().length <= 0) {
-			return 0;
-		}
+		try {
+			String[] temp = getLeatestTestFileName(compId, compName, country)
+					.getAbsolutePath().split(wordSeparator);
 
-		String[] temp;
-		for (int i = 0; i < cFolder.list().length; i++) {
-			temp = cFolder.list()[i].split(wordSeparator);
 			if (temp[0].equals(File.separator + compName)
 					&& temp[1].equals(compId) && temp[2].equals("Test")) {
-				try {
-					LocalDate ld = LocalDate.parse(temp[3],
-							DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-					return (int) ChronoUnit.DAYS.between(ld, dat);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+
+				LocalDate ld = LocalDate.parse(temp[3],
+						DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				return (int) ChronoUnit.DAYS.between(ld, dat);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+
+	public int predFileDateDifference(int compId, String compName,
+			String country, LocalDate ld) {
+		/*
+		 * if file not found or other iregularities return 0 else return the
+		 * difference in days between the two files
+		 */
+		try {
+			String[] temp = getLeatestRPredictionFileName(compId, compName,
+					country).getAbsolutePath().split(wordSeparator);
+
+			if (temp[0].equals(File.separator + compName)
+					&& temp[1].equals(compId) && temp[2].equals("Pred")) {
+
+				LocalDate dat = LocalDate.parse(temp[3],
+						DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				return (int) ChronoUnit.DAYS.between(dat, ld);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return 0;

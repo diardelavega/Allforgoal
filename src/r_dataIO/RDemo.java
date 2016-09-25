@@ -28,8 +28,8 @@ public class RDemo {
 		// rh.testRcall();
 
 		// rh.predictOne(157);
-		// simDtf_Create();
-		sim_readPrediction();
+		 simDtf_Create();
+//		sim_readPrediction();
 	}
 
 	public static void testReadPred() {
@@ -68,6 +68,11 @@ public class RDemo {
 //		tempList.add(trpath);
 		List<Integer> tempList = new ArrayList<Integer>();
 		tempList.add(112);
+		tempList.add(164);
+		tempList.add(165);
+		tempList.add(157);
+		tempList.add(46);
+		tempList.add(4);
 		RHandler rh = new RHandler();
 		rh.Rcall_DTF(tempList, AttsKind.hs);
 	}
