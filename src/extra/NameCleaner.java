@@ -40,4 +40,8 @@ public class NameCleaner {
 		}
 		return sb.toString();
 	}
+
+public static String replacements(String s){
+	return s.replaceAll(" ", "_").replace(".", "");
+}
 }

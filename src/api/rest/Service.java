@@ -39,9 +39,9 @@ public class Service {
 	@GET
 	@Path("/predwdl")
 	public String competitionMatchPredLineWithWDL() throws SQLException {
-		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(112); 
-//				new CountryCompCompId("Sweden", "Superettan",
-//				164);
+		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(112);
+		// new CountryCompCompId("Sweden", "Superettan",
+		// 164);
 
 		MatchPredLineHandler mph = new MatchPredLineHandler();
 		// mph.doer(164, "Superettan", "Sweden");
@@ -109,14 +109,18 @@ public class Service {
 		return "hello";
 	}
 
-	//---------------------------------------
-	
+	// ---------------------------------------
+
 	@GET
 	@Path("/predline/{nr}")
-	public String matchPredictionLine(@PathParam("nr") int nr) throws SQLException {
-		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(112); 
-//				new CountryCompCompId("Sweden", "Superettan",
-//				164);
+	public String matchPredictionLine(@PathParam("nr") int nr)
+			throws SQLException {
+		// nr is the number of times a msg was sent (msg is a list of MPL from a
+		// competition || ore more than one comp
+		// depending on the size of them)
+		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(112);
+		// new CountryCompCompId("Sweden", "Superettan",
+		// 164);
 
 		MatchPredLineHandler mph = new MatchPredLineHandler();
 		// mph.doer(164, "Superettan", "Sweden");
@@ -126,5 +130,9 @@ public class Service {
 		String jo = gson.toJson(ccci);
 		return jo;
 	}
+
+	// TODO return week match data {the data from all the matches of a
+	// competition so far, to fill the graphs and stuff}
+	
 	
 }

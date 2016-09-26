@@ -111,54 +111,51 @@ public class Strategy {
 		try {
 			if (lastDatCheck == null) {
 				lastDatCheck = LocalDate.now();
-				if (!ldg.fileFilledCheck()) {
+				if (ldg.hourlyFileFilledCheck()) {
 					score.getScheduledToday();
 					score.getScheduledTomorrow();
 					// a list of compIds playing today & tomorrow is created
 					scheduledOddsAdderToday();
 					scheduledOddsAdderTomorrow(lastDatCheck);
+
+					// scheduled matches is updated
+					tmf.corelatePunterXScorerTeams();
+
 					ldg.writeMatchStructs();
 					ldg.writeMeta(lastDatCheck);
 				} else {
 					ldg.readMatchStructs();
 				}
-				tv.countComps();
-
-				tmf.corelatePunterXScorerTeams();
 				storeToSmallDBsCondition(lastDatCheck);// store condition
 				score.clearLists();
 
+				tv.initMPL();
 				schedulePredictionToday();
 				schedulePredictionTomorrow();
-				tv.initMPL();
-				logger.info("NULL Last Ceck {}", LocalTime.now());
+				logger.info("Empty ... Last Ceck @ {}", LocalTime.now());
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
 					lastDatCheck = LocalDate.now();
-					if (!ldg.fileFilledCheck()) {
-						score.getFinishedYesterday();
-						tmf.completeYesterday();
+					tv.compsDateRotate();
 
-						tmf.readDaySkips();
-						writeResultsToTest();
-						scheduleReEvaluation(TimeVariations.yesterdayComps);
+					// if (!ldg.hourlyFileFilledCheck()) {
+					score.getFinishedYesterday();
+					tmf.completeYesterday();
+					// at this point structs & db are updated
 
-						TimeVariations.yesterdayComps = TimeVariations.todayComps;
-						TimeVariations.todayComps = TimeVariations.tomorrowComps;
-						TimeVariations.tomorrowComps.clear();// to bee refilled
-						tv.countComps();
-						// ----------------Tomorrow's actions reparation line
+					tmf.readDaySkips();
+					writeResultsToTest();// write to file for reeval
+					scheduleReEvaluation(TimeVariations.yesterdayComps);
 
-						score.getScheduledTomorrow(); // tommorrowComps is
-														// updated
-						scheduledOddsAdderTomorrow(lastDatCheck);
+					// ----------------Tomorrow's actions reparation line
 
-						ldg.writeMatchStructs();
-						ldg.writeMeta(lastDatCheck);
-					} else {
-						ldg.readMatchStructs();
-					}
+					score.getScheduledTomorrow();
+					scheduledOddsAdderTomorrow(lastDatCheck);
 					tmf.corelatePunterXScorerTeams();
+
+					ldg.writeMatchStructs();
+					ldg.writeMeta(lastDatCheck);
+
 					storeToSmallDBs(); // store in temp and recent matches
 
 					// testPredFileMaker();// test file create
@@ -170,12 +167,16 @@ public class Strategy {
 					logger.info("Last Ceck   BEFORE TODAY {}", LocalTime.now());
 				} else {
 					// is still the same day get todays results
+					
+					// completeToday(); : set score & error to the finished
+					// matches; deletes from temp & insert into matches; updates
+					// recentmatches & MPL map
 					score.getFinishedToday();
-					// completeToday : set score & error to the finished
-					// matches; deletes from
-					// temp & insert into matches; updates recentmatches & MPL
-					// map
 					tmf.completeToday();
+					
+					ldg.writeMatchStructs();
+					ldg.writeMeta(lastDatCheck);
+					
 					score.clearLists();
 					logger.info("Last Ceck   Finished  TODAY {}",
 							LocalTime.now());
@@ -187,8 +188,11 @@ public class Strategy {
 	}
 
 	private void schedulePredictionToday() {
-		// TODO if list of competitons is empty, dont send a request, because it
-		// will not have anything to do
+		/*
+		 * if list of competitons is empty, dont send a request, because it will
+		 * not have anything to do. Prediction points are added at the end of
+		 * the exwcution,(after a response from the R functions har returned)
+		 */
 		if (TimeVariations.todayComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
 			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs,

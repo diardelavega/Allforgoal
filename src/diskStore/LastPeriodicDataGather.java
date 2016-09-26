@@ -172,7 +172,11 @@ public class LastPeriodicDataGather {
 		writeLasttomorrowComp();
 	}
 
-	public boolean fileFilledCheck() throws ClassNotFoundException, IOException {
+	public boolean hourlyFileFilledCheck() throws ClassNotFoundException,
+			IOException {
+		// calc the difference between the last stored datetime and the current
+		// one. Check if that differeence is smaller than the scheduled periodic
+		// time for re-grub&update
 		if (sch.exists() && sch.length() > 10) {
 			long diff = 100;
 			try {
@@ -181,7 +185,24 @@ public class LastPeriodicDataGather {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (diff < PeriodicTimes.PERIOD)
+			if (diff > PeriodicTimes.PERIOD)
+				return true;
+		}
+		return false;
+	}
+
+	public boolean yesterdayFilledCheck() {
+		// see if last scann was yesterday
+		if (sch.exists() && sch.length() > 10) {
+			long diff = 100;
+			LocalDateTime ldt = LocalDateTime.now();
+			try {
+				diff = ChronoUnit.HOURS.between(readMeta(), ldt);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			// before today(hours of this day), after the start of yesterday
+			if (diff < (24 + ldt.getHour()) && diff > ldt.getHour())
 				return true;
 		}
 		return false;
@@ -191,7 +212,7 @@ public class LastPeriodicDataGather {
 		LocalDateTime ldt = LocalDateTime.now();
 		FileOutputStream fos = new FileOutputStream(meta);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
-		oos.writeObject(ldt);
+		oos.writeUTF(ldt.toString());
 		oos.close();
 	}
 
@@ -199,7 +220,8 @@ public class LastPeriodicDataGather {
 		if (fileExzistence(meta)) {
 			FileInputStream fis = new FileInputStream(meta);
 			ObjectInputStream ois = new ObjectInputStream(fis);
-			LocalDateTime ldt = (LocalDateTime) ois.readObject();
+			LocalDateTime ldt = (LocalDateTime) LocalDateTime.parse(ois
+					.readUTF());
 			ois.close();
 			return ldt;
 		}

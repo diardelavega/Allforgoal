@@ -44,15 +44,16 @@ public class ReqScheduler {
 		return rqs;
 	}
 
-	public void addReq(String type, List<Integer> list, String attKind, LocalDate ld) {
+	public void addReq(String type, List<Integer> list, String attKind,
+			LocalDate ld) {
 		if (serialNumber == 100)
 			serialNumber = 0;
-		
+
 		if (que.size() > 0) {
 			serialNumber = que.get(que.size() - 1).getSerialCode() + 1;
 		}
 		log.info("adding req {} {} {}", attKind, ld, serialNumber);
-		
+
 		AsyncRequest ar = new AsyncRequest(type, list, attKind, serialNumber,
 				ld);
 		que.add(ar);
@@ -70,26 +71,28 @@ public class ReqScheduler {
 				log.info("No REQUESTS in Line");
 			}
 		} else {
-			//TODO waiting is not the request in hand, the req in hand is running
+			// TODO waiting is not the request in hand, the req in hand is
+			// running
 			log.info("this req #" + serialNumber + " is Waiting");
 		}
 	}
 
 	public void runReq() {
-		log.info("run {}, {}", reqInHand.getType(), reqInHand.getSerialCode());
+		log.info("run {}, #{}", reqInHand.getType(), reqInHand.getSerialCode());
 		reqInHand.show();
 		status = "running";
 		switch (reqInHand.getType()) {
 		case AsyncType.PRED:
 			rh.predictSome(reqInHand.getList(), reqInHand.getAtts(),
-					reqInHand.getSerialCode(),reqInHand.getLd());
+					reqInHand.getSerialCode(), reqInHand.getLd());
 			break;
 		case AsyncType.DTF:
 			rh.Rcall_DTF(reqInHand.getList(), reqInHand.getAtts(),
 					reqInHand.getSerialCode());
 			break;
 		case AsyncType.RE_EVAL:
-			rh.reEvaluate(reqInHand.getList(), reqInHand.getSerialCode(),reqInHand.getLd());
+			rh.reEvaluate(reqInHand.getList(), reqInHand.getSerialCode(),
+					reqInHand.getLd());
 			break;
 		case AsyncType.UP_PRE_POINT:
 			// update the recent matches data with the prediction points
@@ -110,11 +113,11 @@ public class ReqScheduler {
 
 	public void response(int k) {
 		log.info("REQ response with code {}", k);
-		for (int i = 0; i < que.size(); i++) {
-			if (que.get(i).getSerialCode() == k) {
-				System.out.println(" SerialCode Found  ind: " + i);
-			}
-		}
+		// for (int i = 0; i < que.size(); i++) {
+		// if (que.get(i).getSerialCode() == k) {
+		// System.out.println(" SerialCode Found  ind: " + i);
+		// }
+		// }
 
 		// if the serial code of the first req in line arrives => R has finished
 		// execution, so remove the first req in line
@@ -130,10 +133,9 @@ public class ReqScheduler {
 					log.info("Prediction Point addition finished");
 				} catch (IOException | SQLException e) {
 					e.printStackTrace();
-				} finally {
-					// ask the next task to run
-					startReq();
 				}
+				// ask the next task to run
+				startReq();
 				break;
 
 			case AsyncType.RE_EVAL:
@@ -146,7 +148,8 @@ public class ReqScheduler {
 				// TODO create a new request to predict the comps that just had
 				// a dtf file created
 				log.info("Stf creation finished");
-				addReq(AsyncType.PRED,reqInHand.getList(), reqInHand.getAtts(),  reqInHand.getLd());
+				// addReq(AsyncType.PRED,reqInHand.getList(),
+				// reqInHand.getAtts(), reqInHand.getLd());
 				startReq();
 				break;
 

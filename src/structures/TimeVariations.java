@@ -91,22 +91,33 @@ public class TimeVariations {
 		log.info("yesterday size : {}", yesterdayComps.size());
 		if (yesterdayComps.size() > 0) {
 			for (int itn : yesterdayComps) {
-				log.info("{}", itn);
+				System.out.print( itn+", ");
 			}
+			System.out.println();
 		}
-		
+
 		log.info("todayComps size : {}", todayComps.size());
 		if (todayComps.size() > 0) {
 			for (int itn : todayComps) {
-				log.info("{}", itn);
+				System.out.print( itn+", ");
 			}
+			System.out.println();
 		}
 
 		log.info("tomorrowComps size : {}", tomorrowComps.size());
 		if (tomorrowComps.size() > 0) {
 			for (int itn : tomorrowComps) {
-				log.info("{}", itn);
+				System.out.print( itn+", ");
 			}
+			System.out.println();
 		}
+	}
+
+	public void compsDateRotate() {
+		// when the daye changes, change the lists of the comps
+		yesterdayComps = todayComps;
+		todayComps = tomorrowComps;
+		tomorrowComps.clear();// to bee refilled
+		countComps();
 	}
 }

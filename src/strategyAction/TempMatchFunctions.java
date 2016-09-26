@@ -22,6 +22,7 @@ import basicStruct.FullMatchPredLineToSubStructs;
 import basicStruct.MatchObj;
 import calculate.MatchToTableRenewal;
 import dbtry.Conn;
+import extra.NameCleaner;
 import extra.StandartResponses;
 import extra.Status;
 import extra.StringSimilarity;
@@ -160,7 +161,7 @@ public class TempMatchFunctions {
 	}
 
 	public void complete(LocalDate d) throws SQLException {
-		// TODO maybe to store in the temp matches the teams in scorer format
+		// to store in the temp matches the teams in scorer format
 		// instead of punter so that to have faster acces
 		// in case of comparison; without going through unilang conversion// ??
 		// ??maybe they are kep in punter format for the oddsadders
@@ -234,11 +235,12 @@ public class TempMatchFunctions {
 						m.getT1(), m.getT2(), m.getComId());
 			}
 		}// for
+		openDBConn();// ------------------
 
 		deleteTempMatches(matches);// delete finished matches from tempdb
 		insertMatches(matches);// ins finished matches from tempdb to matchesdb
 		updateRecentScores(matches);// set score to recent matches
-		synchronizeMPL_Map(matches, "score");
+		synchronizeMPL_Map(matches, "score");// update MPL map
 		logger.info("Competed standart Completion");
 
 		if (readTempMatchesList.size() > 0) {
@@ -291,6 +293,7 @@ public class TempMatchFunctions {
 			deleteTempMatches(matches);
 			updateRecentError(matches);// set err to recent matches time
 			synchronizeMPL_Map(matches, "error");
+			closeDBConn();// ------------------------------
 			logger.info("Competed Old Completion");
 		}
 	}
@@ -413,9 +416,8 @@ public class TempMatchFunctions {
 		CCAllStruct cc = CountryCompetition.ccasList.get(idx);
 		String tab_competition = (cc.getCompetition() + "$" + cc.getCountry());
 		// else
-		tab_competition = tab_competition.toLowerCase().replace(".", "")
-				.replaceAll(" ", "_")
-				+ "_fulltable";
+		tab_competition = NameCleaner.replacements(tab_competition
+				.toLowerCase()) + "_fulltable";
 		List<String> teamsList = new ArrayList<String>();
 		ResultSet rs;
 		try {
@@ -573,7 +575,12 @@ public class TempMatchFunctions {
 	public void readDaySkips() throws SQLException {
 		/*
 		 * create a list of competition ids with competitions that started
-		 * yesterday but will finish today
+		 * yesterday but will finish today.
+		 * 
+		 * After the completion of yesterday matches, they are deletet from the
+		 * tempmatch db table so there only remain the unfinished ones which
+		 * started yesterday but are not finished yet even though the date
+		 * changed
 		 */
 
 		Date date = Date.valueOf(LocalDate.now().minusDays(1));

@@ -20,6 +20,7 @@ import dbhandler.BasicTableEntity;
 import diskStore.AnalyticFileHandler;
 import extra.ClassifiStatus;
 import extra.MatchOutcome;
+import extra.NameCleaner;
 import extra.TeamStatus;
 
 /**
@@ -75,8 +76,8 @@ public class MatchToTableRenewal {
 		country = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(compId)).getCountry();
 
-		compName = compName.replaceAll(" ", "_").replace(".", "");
-		country = country.replaceAll(" ", "_").replace(".", "");
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 	}
 
 	public MatchToTableRenewal() {
@@ -96,14 +97,14 @@ public class MatchToTableRenewal {
 				CountryCompetition.idToIdx.get(comp_Id)).getCompetition();
 		country = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(comp_Id)).getCountry();
-		compName = compName.replaceAll(" ", "_").replace(".", "");
-		country = country.replaceAll(" ", "_").replace(".", "");
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 
 		// check if file exists
 		if (afh.isTestFile(comp_Id, compName, country, date)) {
 			// check the dat to see if it is older or neweer than the curent
 			// date
-			if (afh.testFileDateDifference(comp_Id, compName, country, date) <= 0) {
+			if (afh.testFileDateDifference(comp_Id, compName, country, date) >= 0) {
 				logger.warn("Unable to create a new file a valid one exists!");
 				return;
 			}
@@ -957,11 +958,11 @@ public class MatchToTableRenewal {
 	}
 
 	public void setCompName(String compName) {
-		this.compName = compName.replaceAll(" ", "_").replace(".", "");
+		this.compName = NameCleaner.replacements(compName);
 	}
 
 	public void setCountry(String country) {
-		this.country = country.replaceAll(" ", "_").replace(".", "");
+		this.country = NameCleaner.replacements(country);
 	}
 
 }

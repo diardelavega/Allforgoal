@@ -20,6 +20,7 @@ import basicStruct.CCAllStruct;
 import diskStore.AnalyticFileHandler;
 import extra.AsyncType;
 import extra.AttsKind;
+import extra.NameCleaner;
 
 /**
  * @author Administrator
@@ -53,13 +54,13 @@ public class RHandler {
 		 * The prediction should be done only for the today matches not for
 		 * tomorrows.Thats why the test file we require has the today date
 		 */
-
+		
 		ret = ret.replace("\\", "/");
 		// add the image *.dtf.RData file path in the list
 		foundImagePath.add(ret);
 		String compName, country;
-		compName = ccs.getCompetition().replaceAll(" ", "_").replace(".", "");
-		country = ccs.getCountry().replaceAll(" ", "_").replace(".", "");
+		compName= NameCleaner.replacements(ccs.getCompetition());
+		country= NameCleaner.replacements(ccs.getCountry());
 		// add (the image corresponding) train file path in the list
 		File tempFile = afh
 				.getTrainFileName(ccs.getCompId(), compName, country);
@@ -109,11 +110,9 @@ public class RHandler {
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			compName = ccs.getCompetition().replaceAll(" ", "_")
-					.replace(".", "");
-			country = ccs.getCountry().replaceAll(" ", "_").replace(".", "");
-			String ret = afh.getImageFolder(ccs.getCompId(), compName,
-					country);
+			compName= NameCleaner.replacements(ccs.getCompetition());
+			country= NameCleaner.replacements(ccs.getCountry());
+			String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
 			if (ret != null) {
 				predListFiller(ccs, ret, ld);
 			} else {
@@ -124,7 +123,7 @@ public class RHandler {
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred();
 		} else if (un_foundImagesCompIds.size() > 0) {
-			handleUnfound(ld);
+			handleUnfound(ld,-1);
 		}
 	}
 
@@ -137,17 +136,15 @@ public class RHandler {
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			compName = ccs.getCompetition().replaceAll(" ", "_")
-					.replace(".", "");
-			country = ccs.getCountry().replaceAll(" ", "_").replace(".", "");
+			compName= NameCleaner.replacements(ccs.getCompetition());
+			country= NameCleaner.replacements(ccs.getCountry());
 			// check if already has a prediction
 			int datDiff = afh.predFileDateDifference(ccs.getCompId(), compName,
 					country, ld);
 			if (datDiff > 0) {
 				continue;
 			}
-			String ret = afh.getImageFolder(ccs.getCompId(), compName,
-					country);
+			String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
 			if (ret != null) {
 				predListFiller(ccs, ret, ld);
 			} else {
@@ -158,7 +155,7 @@ public class RHandler {
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred(attsKind, seri);
 		} else if (un_foundImagesCompIds.size() > 0) {
-			handleUnfound(ld);
+			handleUnfound(ld, seri);
 		}
 	}
 
@@ -166,9 +163,8 @@ public class RHandler {
 		/* predict the competitions given by the list of compeyiyions ids */
 		int idx = CountryCompetition.idToIdx.get(comp_Id);
 		CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-		String compName = ccs.getCompetition().replaceAll(" ", "_")
-				.replace(".", "");
-		String country = ccs.getCountry().replaceAll(" ", "_").replace(".", "");
+		String compName= NameCleaner.replacements(ccs.getCompetition());
+		String country= NameCleaner.replacements(ccs.getCountry());
 
 		String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
 
@@ -182,7 +178,7 @@ public class RHandler {
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred();
 		} else if (un_foundImagesCompIds.size() > 0) {
-			handleUnfound(ld);
+			handleUnfound(ld, -1);
 		}
 	}
 
@@ -202,12 +198,10 @@ public class RHandler {
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			compName = ccs.getCompetition().replaceAll(" ", "_")
-					.replace(".", "");
-			country = ccs.getCountry().replaceAll(" ", "_").replace(".", "");
+			compName= NameCleaner.replacements(ccs.getCompetition());
+			country= NameCleaner.replacements(ccs.getCountry());
 
-			String ret = afh.getImageFolder(ccs.getCompId(), compName,
-					country);
+			String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
 			if (ret != null) {
 				predListFiller(ccs, ret, ld);
 			} else {
@@ -238,15 +232,16 @@ public class RHandler {
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			compName = ccs.getCompetition().replaceAll(" ", "_") .replace(".", "");
-			country = ccs.getCountry().replaceAll(" ", "_").replace(".", "");
+			compName= NameCleaner.replacements(ccs.getCompetition());
+			country= NameCleaner.replacements(ccs.getCountry());
 
-			String ret = afh.getImageFolder(ccs.getCompId(), compName,
-					country);
+			String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
 			if (ret != null) {
-				log.info("Comp {},__{} is already DTF-ed", ccs.getCompetition(), ccs.getCompId());
+				log.info("Comp {},__{} is already DTF-ed",
+						ccs.getCompetition(), ccs.getCompId());
 			} else {
-				File f = afh.getTrainFileName(ccs.getCompId(), compName, country);
+				File f = afh.getTrainFileName(ccs.getCompId(), compName,
+						country);
 				if (f != null) {
 					ret = f.getAbsolutePath().replace("\\", "/");
 					trlist.add(ret);
@@ -379,7 +374,7 @@ public class RHandler {
 
 	}
 
-	public void handleUnfound(LocalDate ld) {
+	public void handleUnfound(LocalDate ld, int seri) {
 		log.info("handeling unfound comps");
 
 		/*
@@ -410,7 +405,11 @@ public class RHandler {
 		// }
 		ReqScheduler.getInstance().addReq(AsyncType.DTF, un_foundImagesCompIds,
 				AttsKind.hs, ld);
-		ReqScheduler.getInstance().startReq();
+		if (seri == -1)
+			ReqScheduler.getInstance().startReq();
+		else {
+			ReqScheduler.getInstance().response(seri);
+		}
 
 	}
 
