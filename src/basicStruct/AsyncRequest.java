@@ -67,8 +67,8 @@ public class AsyncRequest {
 	}
 
 	public void show() {
-		System.out.print("dat: " + ld + ", type: " + type + ", atts: " + atts
-				+ ", seri: " + serialCode + ",  list:[ ");
+		System.out.print("dat: " + ld + " || type: " + type + " || atts: " + atts
+				+ " || seri: " + serialCode + ",  list:[ ");
 		for (int i : list) {
 			System.out.print(i + ",");
 		}

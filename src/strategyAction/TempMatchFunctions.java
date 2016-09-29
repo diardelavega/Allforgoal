@@ -365,18 +365,21 @@ public class TempMatchFunctions {
 			sb.append(m.getmId() + ", ");
 		}
 		sb.append("-1");
+		openDBConn();
 		boolean b = conn
 				.getConn()
 				.createStatement()
 				.execute(
 						"DELETE FROM tempmatches where mid in ("
 								+ sb.toString() + ");");
+		closeDBConn();
 		return b;
 	}
 
 	private void insertMatches(List<MatchObj> finMatches) throws SQLException {
 		logger.info("--------------: INSERT to MATCHESS");
 		String insert = "insert into matches values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		openDBConn();
 		PreparedStatement ps = conn.getConn().prepareStatement(insert);
 		int i = 0;
 		for (MatchObj mobj : finMatches) {
@@ -404,7 +407,8 @@ public class TempMatchFunctions {
 			}
 		}
 		ps.executeBatch();
-
+		ps.close();
+		closeDBConn();
 	}
 
 	private List<String> queryCompTeams(int compId) {
@@ -522,7 +526,7 @@ public class TempMatchFunctions {
 			}
 		}
 		ps.executeBatch();
-
+		ps.close();
 		closeDBConn();
 
 	}
@@ -563,7 +567,7 @@ public class TempMatchFunctions {
 			FullMatchPredLineToSubStructs fmplss = new FullMatchPredLineToSubStructs();
 			readRecentMatchesList.addAll(fmplss.mobjToFullMatchLine(mali));
 			logger.info("read-" + tab + "-MatchesList size ={}",
-					readTempMatchesList.size());
+					readRecentMatchesList.size());
 			break;
 		default:
 			logger.warn("readfrom recent matches .. some error ocoured!");
@@ -590,7 +594,7 @@ public class TempMatchFunctions {
 				.getConn()
 				.createStatement()
 				.executeQuery(
-						"SELECT compid FROM tempmatch WHERE dat = '" + date
+						"SELECT compid FROM tempmatches WHERE dat = '" + date
 								+ "'");
 		while (rs.next()) {
 			skipDayCompIds.add(rs.getInt(1));
@@ -725,55 +729,80 @@ public class TempMatchFunctions {
 		}
 
 		FullMatchPredLineToSubStructs fmplss = new FullMatchPredLineToSubStructs();
-		// read predictions from the pred files
-		ReadPrediction rp = new ReadPrediction();
-		rp.prediction(compsList);
-		// read matches from the recent table
-		readInitialTeamFromRecentMatches(ld);
 
-		// find the same matches from table and file
-		for (Integer key : rp.getMatchLinePred().keySet()) {
-			for (int i = 0; i < rp.getMatchLinePred().get(key).size(); i++) {
+		ReadPrediction rpfile = new ReadPrediction();
+		rpfile.prediction(compsList);// read predictions from the pred files
+		readInitialTeamFromRecentMatches(ld);// read from recent db table
+		List<FullMatchLine> smallList = new ArrayList<>();// to update db
+
+		// find the same matches from db table and file
+		for (int cid : rpfile.getMatchLinePred().keySet()) {
+			for (int i = 0; i < rpfile.getMatchLinePred().get(cid).size(); i++) {
 				int ind = binarySearch(
 						fmplss.fullMatchPredLineToMatchObj(readRecentMatchesList),
-						rp.getMatchLinePred().get(key).get(i).getT1());
+						rpfile.getMatchLinePred().get(cid).get(i).getT1());
 				if (ind == -1) {
 					// todo dysplay error and
-					logger.info("unfound relation file & db {}", rp
-							.getMatchLinePred().get(key).get(i).liner());
+					logger.info("unfound relation file & db {}", rpfile
+							.getMatchLinePred().get(cid).get(i).liner());
 					continue;
 				}
 				// make sure both teams correspond
-				if (rp.getMatchLinePred()
-						.get(key)
+				if (rpfile
+						.getMatchLinePred()
+						.get(cid)
 						.get(i)
 						.getT2()
 						.equalsIgnoreCase(
 								readRecentMatchesList.get(ind).getT2())) {
 					FullMatchLine temp = readRecentMatchesList.get(ind);
-					// remove the original fullmpl with mobj atts only
-					readRecentMatchesList.remove(temp);
-					// enhance the full match with base pred line atts
-					temp = fmplss.baseMatchLinePredEnhanceFullLine(temp, rp
-							.getMatchLinePred().get(key).get(i));
-					// restore to the list
-					readRecentMatchesList.add(temp);
-				}
-			}
+					temp = fmplss.baseMatchLinePredEnhanceFullLine(temp, rpfile
+							.getMatchLinePred().get(cid).get(i));
+					smallList.add(temp);
+					// update MPL map with the pred points from
+					enrichMPLmap(ld, cid, temp);
+				}// if
+			}// for every match
+		}// for every competition
+
+		try {
+			// TODO enhance the recent matches table with the pred points
+			updateRecentPredPoints(smallList);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		// TODO update the recent matches table with the pred points
-		updateRecentPredPoints();
 		// fill a map of <compId,list<predLine>>
 
 	}
 
-	public void updateRecentPredPoints() throws SQLException {
+	private void enrichMPLmap(LocalDate ld, int cid, FullMatchLine temp) {
+		// find the element in the MPLmap list of that competition matches,
+		// remove the original element, add the enhanced one
+		if (TimeVariations.mapMPL.get(ld).size() == 0) {
+			return;
+		}
+		for (FullMatchLine loopvar : TimeVariations.mapMPL.get(ld).get(cid)) {
+			if (temp.getT1().equals(loopvar.getT1())) {
+				if (temp.getT2().equals(loopvar.getT2())) {
+					TimeVariations.mapMPL.get(ld).get(cid).remove(loopvar);
+					TimeVariations.mapMPL.get(ld).get(cid).add(temp);
+					return;
+				} else {
+					logger.warn("found similar t1 but nor t2 in : {},", cid);
+				}
+			}
+		}
+
+	}
+
+	public void updateRecentPredPoints(List<FullMatchLine> smallList)
+			throws SQLException {
 		PreparedStatement preparedStatement = null;
-		String updateTableSQL = "UPDATE recentmatches SET h1 = ?, hx = ?, h2 = ?, so = ?, p1y = ?, p1n = ?,"
+		String updateTableSQL = "UPDATE recentmatches SET h1 = ?, hx = ?, h2 = ?, so = ?, su = ?, p1y = ?, p1n = ?,"
 				+ " p2y = ?, p2n = ?, ht = ?, ft = ?" + " WHERE mid =?";
 		openDBConn();
 		preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
-		for (FullMatchLine f : readRecentMatchesList) {
+		for (FullMatchLine f : smallList) {
 			preparedStatement.setFloat(1, f.getH1());
 			preparedStatement.setFloat(2, f.getHx());
 			preparedStatement.setFloat(3, f.getH2());
@@ -791,6 +820,7 @@ public class TempMatchFunctions {
 		// execute update SQL stetement
 		preparedStatement.executeBatch();
 		// preparedStatement.executeUpdate();
+		preparedStatement.close();
 		closeDBConn();
 	}
 
@@ -812,6 +842,7 @@ public class TempMatchFunctions {
 		// execute update SQL stetement
 		preparedStatement.executeBatch();
 		// preparedStatement.executeUpdate();
+		preparedStatement.close();
 		closeDBConn();
 
 	}
@@ -844,6 +875,7 @@ public class TempMatchFunctions {
 		// execute update SQL stetement
 		preparedStatement.executeBatch();
 		// preparedStatement.executeUpdate();
+		preparedStatement.close();
 		closeDBConn();
 
 	}

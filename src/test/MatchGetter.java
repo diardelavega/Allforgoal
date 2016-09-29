@@ -90,7 +90,7 @@ public class MatchGetter {
 						|| clasVal[4].contains("TROPHY")
 						|| clasVal[4].contains("COUPE")
 						|| clasVal[4].contains("EURO")) {
-					continue;
+					continue; 
 				}
 				int compId = searchForCompIdx(clasVal[0], clasVal[4]);
 				if (compId < 0) {

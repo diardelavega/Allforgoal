@@ -63,8 +63,8 @@ public class AnalyticFileHandler {
 
 	public void openTrainOutput(int compId, String compName, String country)
 			throws IOException {
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		File f = createTrainFile(compId, compName, country);
 		if (f == null) {
 			log.warn("Train Pred file not found for {} {}", compName, country);
@@ -80,8 +80,8 @@ public class AnalyticFileHandler {
 		 * from the compId get country and competition and create a country
 		 * folder with competition_compId name for the prediction datafile
 		 */
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 
 		try {
 			File f = createTestFile(compId, compName, country, date);
@@ -116,8 +116,8 @@ public class AnalyticFileHandler {
 
 	public File createTestFile(int compId, String compName, String country,
 			LocalDate dat) {
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		File cFolder = new File(predTestFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
@@ -142,8 +142,8 @@ public class AnalyticFileHandler {
 		// folder/CompName_compId_Test_2016-10-10
 
 		// CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		File cFolder = new File(predTestFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
@@ -169,10 +169,10 @@ public class AnalyticFileHandler {
 
 	public File getLeatestTestFileName(int compId, String compName,
 			String country) {
-		//TODO replaces compName & country
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
-		
+		// TODO replaces compName & country
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
+
 		log.info("@ getLeatestTestFileName");
 		File cFolder = new File(predTestFolder + "/" + country);
 		if (!cFolder.exists()) {
@@ -197,7 +197,7 @@ public class AnalyticFileHandler {
 			}
 
 		} // for
-		log.info(ldl.last().toString());
+		// log.info(ldl.last().toString());
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
 		sb.append(compName);
@@ -207,8 +207,12 @@ public class AnalyticFileHandler {
 		sb.append("Test");
 		sb.append(wordSeparator);
 		sb.append(ldl.last().toString());
-
-		return (new File(cFolder + sb.toString()));
+		File tFile=new File(cFolder + sb.toString());
+		if(tFile.exists() && tFile.length()>10){
+			return tFile;
+		}
+		
+		return null;
 	}
 
 	public File getLeatestRPredictionFileName(int compId, String compName,
@@ -217,10 +221,10 @@ public class AnalyticFileHandler {
 		 * get all the predictions of a competition sort them bu the date in the
 		 * file name and get the leatest one
 		 */
-		
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
 		log.info("@ getLeatestPredictionFileName");
+
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		File cFolder = new File(dayPredFolder + "/" + country);
 		if (!cFolder.exists()) {
 			log.warn("afh Folder not found");
@@ -245,10 +249,10 @@ public class AnalyticFileHandler {
 
 		} // for
 			// rebuild the file path (~ = the folder)
-		if(ldl.size()==0){
+		if (ldl.size() == 0) {
 			return null;
 		}
-		log.info(ldl.last().toString());
+		// log.info(ldl.last().toString());
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
 		sb.append(compName);
@@ -264,8 +268,8 @@ public class AnalyticFileHandler {
 
 	public File createTrainFile(int compId, String compName, String country)
 			throws IOException {
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		File cFolder = new File(predDataFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
@@ -284,8 +288,8 @@ public class AnalyticFileHandler {
 	}
 
 	public File getTrainFileName(int compId, String compName, String country) {
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		File cFolder = new File(predDataFolder + "/" + country);
 		if (!cFolder.exists()) {
 			cFolder.mkdirs();
@@ -299,7 +303,7 @@ public class AnalyticFileHandler {
 		sb.append(wordSeparator);
 		sb.append("Data");
 
-		log.info("{}", (cFolder + sb.toString()));
+		// log.info("{}", (cFolder + sb.toString()));
 		File tFile = new File(cFolder + sb.toString());
 		if (tFile.exists() && tFile.length() > 10)
 			return tFile;
@@ -307,14 +311,11 @@ public class AnalyticFileHandler {
 			return null;
 	}
 
-	public String getImageFolder(int compId, String compName, String country) {
-		/*
-		 * see if image file exists and has data in it. Return its path or null
-		 */
-		/* see if image folder exists and or if it has any content init */
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
-		// CCAllStruct cc = CountryCompetition.ccasList.get(compId - 1);
+	public String getImageFolderName(int compId, String compName, String country) {
+
+		/* see if image folder (country/competition__compId) exists and */
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		File cFolder = new File(imageFolder + "/" + country);
 		if (!cFolder.exists()) {
 			// cFolder.mkdirs();
@@ -327,7 +328,7 @@ public class AnalyticFileHandler {
 		sb.append(compId);
 		// sb.append(wordSeparator);
 		// sb.append(".dtf.RData");xxxx
-		log.info("{}", (cFolder + sb.toString()));
+		// log.info("{}", (cFolder + sb.toString()));
 		File tFolder = new File(cFolder + sb.toString());
 		if (tFolder.exists())
 			// if (tFolder.list().length > 0)
@@ -338,9 +339,9 @@ public class AnalyticFileHandler {
 
 	public boolean isTestFile(int compId, String compName, String country,
 			LocalDate dat) {
-		
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
+
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		File cFolder = new File(predTestFolder + "/" + country);
 		if (!cFolder.exists()) {
 			return false;
@@ -359,7 +360,7 @@ public class AnalyticFileHandler {
 		if (tFile.exists())
 			if (tFile.length() > 10)
 				return true;
-		
+
 		return false;
 	}
 
@@ -369,9 +370,9 @@ public class AnalyticFileHandler {
 		 * if file not found or other iregularities return 0 else return the
 		 * difference in days between the two files
 		 */
-		
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
+
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		try {
 			String[] temp = getLeatestTestFileName(compId, compName, country)
 					.getAbsolutePath().split(wordSeparator);
@@ -396,13 +397,13 @@ public class AnalyticFileHandler {
 		 * if file not found or other iregularities return 0 else return the
 		 * difference in days between the two files
 		 */
-		
-		compName= NameCleaner.replacements(compName);
-		country= NameCleaner.replacements(country);
+
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 		try {
 			File f = getLeatestRPredictionFileName(compId, compName, country);
 			if (f == null) {
-				return 0;
+				return -1;
 			}
 			String[] temp = f.getAbsolutePath().split(wordSeparator);
 
@@ -417,7 +418,34 @@ public class AnalyticFileHandler {
 			e.printStackTrace();
 		}
 
-		return 0;
+		return -1;
+	}
+
+	public boolean isPredFile(int compId, String compName, String country,
+			LocalDate ld) {
+
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
+		File cFolder = new File(dayPredFolder + "/" + country);
+		if (!cFolder.exists()) {
+			return false;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separator);
+		sb.append(compName);
+		sb.append(wordSeparator);
+		sb.append(compId);
+		sb.append(wordSeparator);
+		sb.append("Pred");
+		sb.append(wordSeparator);
+		sb.append(ld.toString());
+
+		File tFile = new File(cFolder + sb.toString());
+		if (tFile.exists())
+			if (tFile.length() > 10)
+				return true;
+
+		return false;
 	}
 
 	// ///////////Write Results Section
@@ -476,16 +504,16 @@ public class AnalyticFileHandler {
 		List<String> matchRecord = null;
 		fwrite.write(outcomesList.get(0).csvHeader() + "\n");
 		for (ReducedPredictionTestFile rf : outcomesList) {
-			matchRecord  = new ArrayList<>();
-			matchRecord .add(String.valueOf(rf.getT2()));
-			matchRecord .add(String.valueOf(rf.getT1()));
-			matchRecord .add(String.valueOf(rf.getHeadOutcome()));
-			matchRecord .add(String.valueOf(rf.getScoreOutcome()));
-			matchRecord .add(String.valueOf(rf.getHt1pOutcome()));
-			matchRecord .add(String.valueOf(rf.getHt2pOutcome()));
-			matchRecord .add(String.valueOf(rf.getTotHtScore()));
-			matchRecord .add(String.valueOf(rf.getTotFtScore()));
-			csvFilePrinter.printRecord(matchRecord );
+			matchRecord = new ArrayList<>();
+			matchRecord.add(String.valueOf(rf.getT2()));
+			matchRecord.add(String.valueOf(rf.getT1()));
+			matchRecord.add(String.valueOf(rf.getHeadOutcome()));
+			matchRecord.add(String.valueOf(rf.getScoreOutcome()));
+			matchRecord.add(String.valueOf(rf.getHt1pOutcome()));
+			matchRecord.add(String.valueOf(rf.getHt2pOutcome()));
+			matchRecord.add(String.valueOf(rf.getTotHtScore()));
+			matchRecord.add(String.valueOf(rf.getTotFtScore()));
+			csvFilePrinter.printRecord(matchRecord);
 		}
 
 		System.out.println("CSV file was created successfully !!!");

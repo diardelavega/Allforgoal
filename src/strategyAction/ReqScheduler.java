@@ -29,9 +29,9 @@ public class ReqScheduler {
 
 	private List<AsyncRequest> que = new ArrayList<AsyncRequest>();
 	private AsyncRequest reqInHand;
-	private int serialNumber = 0;
+	private int serialNumber = 1;
 	private RHandler rh = new RHandler();
-	private String status = "idle";
+	private String run_status = "idle";
 
 	private ReqScheduler() {
 	}
@@ -47,7 +47,7 @@ public class ReqScheduler {
 	public void addReq(String type, List<Integer> list, String attKind,
 			LocalDate ld) {
 		if (serialNumber == 100)
-			serialNumber = 0;
+			serialNumber = 1;
 
 		if (que.size() > 0) {
 			serialNumber = que.get(que.size() - 1).getSerialCode() + 1;
@@ -60,27 +60,26 @@ public class ReqScheduler {
 	}
 
 	public void startReq() {
-		log.info("status: " + status);
-		if (status.equals("idle")) {
+		log.info("status: " + run_status);
+		if (run_status.equals("idle")) {
 			if (que.size() > 0) {
 				reqInHand = que.get(0);
-				log.info("this req #" + reqInHand.getSerialCode()
-						+ " is Running");
+				log.info("the req #" + reqInHand.getSerialCode()
+						+ " is ready to Run");
 				runReq();
 			} else {
 				log.info("No REQUESTS in Line");
 			}
 		} else {
-			// TODO waiting is not the request in hand, the req in hand is
-			// running
 			log.info("this req #" + serialNumber + " is Waiting");
 		}
 	}
 
 	public void runReq() {
-		log.info("run {}, #{}", reqInHand.getType(), reqInHand.getSerialCode());
+		// log.info("run {}, #{}", reqInHand.getType(),
+		// reqInHand.getSerialCode());
 		reqInHand.show();
-		status = "running";
+		run_status = "running";
 		switch (reqInHand.getType()) {
 		case AsyncType.PRED:
 			rh.predictSome(reqInHand.getList(), reqInHand.getAtts(),
@@ -113,17 +112,24 @@ public class ReqScheduler {
 
 	public void response(int k) {
 		log.info("REQ response with code {}", k);
-		// for (int i = 0; i < que.size(); i++) {
-		// if (que.get(i).getSerialCode() == k) {
-		// System.out.println(" SerialCode Found  ind: " + i);
-		// }
-		// }
 
 		// if the serial code of the first req in line arrives => R has finished
 		// execution, so remove the first req in line
+		boolean flag = false;
+		if (k > 100) {
+			// if the asynchronous request was not realised then skip the
+			// after-work
+			flag = true;
+			k = k - 100;
+			log.info("OUT OF ASYNCHRONOUS");
+		}
 		if (k == reqInHand.getSerialCode()) {
 			que.remove(0);
-			status = "idle";
+			run_status = "idle";
+			if (flag) {
+				startReq();
+				return;
+			}
 
 			switch (reqInHand.getType()) {
 			case AsyncType.PRED:

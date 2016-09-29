@@ -111,80 +111,112 @@ public class Strategy {
 		try {
 			if (lastDatCheck == null) {
 				lastDatCheck = LocalDate.now();
-				if (ldg.hourlyFileFilledCheck()) {
-					score.getScheduledToday();
-					score.getScheduledTomorrow();
-					// a list of compIds playing today & tomorrow is created
-					scheduledOddsAdderToday();
-					scheduledOddsAdderTomorrow(lastDatCheck);
-
-					// scheduled matches is updated
-					tmf.corelatePunterXScorerTeams();
-
-					ldg.writeMatchStructs();
-					ldg.writeMeta(lastDatCheck);
-				} else {
-					ldg.readMatchStructs();
-				}
-				storeToSmallDBsCondition(lastDatCheck);// store condition
-				score.clearLists();
-
-				tv.initMPL();
-				schedulePredictionToday();
-				schedulePredictionTomorrow();
-				logger.info("Empty ... Last Ceck @ {}", LocalTime.now());
+				startPartTask();
 			} else {
 				if (lastDatCheck.isBefore(LocalDate.now())) {
 					lastDatCheck = LocalDate.now();
-					tv.compsDateRotate();
+					dateChangePartTask();
 
-					// if (!ldg.hourlyFileFilledCheck()) {
-					score.getFinishedYesterday();
-					tmf.completeYesterday();
-					// at this point structs & db are updated
-
-					tmf.readDaySkips();
-					writeResultsToTest();// write to file for reeval
-					scheduleReEvaluation(TimeVariations.yesterdayComps);
-
-					// ----------------Tomorrow's actions reparation line
-
-					score.getScheduledTomorrow();
-					scheduledOddsAdderTomorrow(lastDatCheck);
-					tmf.corelatePunterXScorerTeams();
-
-					ldg.writeMatchStructs();
-					ldg.writeMeta(lastDatCheck);
-
-					storeToSmallDBs(); // store in temp and recent matches
-
-					// testPredFileMaker();// test file create
-					schedulePredictionTomorrow();
-
-					score.clearLists();
-					checkRemaining();
-					tmf.deleteFromRecentMatches();
-					logger.info("Last Ceck   BEFORE TODAY {}", LocalTime.now());
 				} else {
 					// is still the same day get todays results
-					
-					// completeToday(); : set score & error to the finished
-					// matches; deletes from temp & insert into matches; updates
-					// recentmatches & MPL map
-					score.getFinishedToday();
-					tmf.completeToday();
-					
-					ldg.writeMatchStructs();
-					ldg.writeMeta(lastDatCheck);
-					
-					score.clearLists();
-					logger.info("Last Ceck   Finished  TODAY {}",
-							LocalTime.now());
+					dailyPartTask();
 				}
 			}
 		} finally {
 			tmf.closeDBConn();
 		}
+	}
+
+	public void startPartTask() throws ClassNotFoundException, IOException,
+			SQLException {
+		if (ldg.hourlyFileFilledCheck()) {
+			score.getScheduledToday();
+			score.getScheduledTomorrow();
+			// a list of compIds playing today & tomorrow is created
+			scheduledOddsAdderToday();
+			scheduledOddsAdderTomorrow(lastDatCheck);
+
+			// scheduled matches is updated
+			tmf.corelatePunterXScorerTeams();
+
+			ldg.writeMatchStructs();
+			ldg.writeMeta(lastDatCheck);
+		} else {
+			ldg.readMatchStructs();
+		}
+		storeToSmallDBsCondition(lastDatCheck);// store condition
+		score.clearLists();
+
+		tv.initMPL();
+		schedulePredictionToday();
+		schedulePredictionTomorrow();
+		logger.info("Empty ... Last Ceck @ {}", LocalTime.now());
+	}
+
+	public void dateChangePartTask() throws SQLException,
+			FileNotFoundException, IOException {
+		tv.compsDateRotate();
+
+		// if (!ldg.hourlyFileFilledCheck()) {
+		score.getFinishedYesterday();
+		tmf.completeYesterday();
+		// at this point structs & db are updated
+
+		tmf.readDaySkips();
+		writeResultsToTest();// write to file for reeval
+		scheduleReEvaluation(TimeVariations.yesterdayComps);
+
+		// ----------------Tomorrow's actions reparation line
+
+		score.getScheduledTomorrow();
+		scheduledOddsAdderTomorrow(lastDatCheck);
+		tmf.corelatePunterXScorerTeams();
+
+		ldg.writeMatchStructs();
+		ldg.writeMeta(lastDatCheck);
+
+		storeToSmallDBs(); // store in temp and recent matches
+
+		// testPredFileMaker();// test file create
+		schedulePredictionTomorrow();
+
+		score.clearLists();
+		checkRemaining();
+		tmf.deleteFromRecentMatches();
+		logger.info("Last Ceck   BEFORE TODAY {}", LocalTime.now());
+	}
+
+	public void dailyPartTask() throws SQLException, IOException {
+		/*
+		 * completeToday(); : set score & error to the finished matches; deletes
+		 * from temp & insert into matches; updates recentmatches & MPL
+		 * map..............................................................
+		 * finished matches can not be completed if they were not scheduled &
+		 * stored in db
+		 */
+		score.getFinishedToday();
+		if (score.finNewMatches.size() > 0) {
+			tmf.completeToday();
+		}
+
+		ldg.writeMatchStructs();
+		ldg.writeMeta(lastDatCheck);
+
+		score.clearLists();
+		logger.info("Last Ceck   Daily..  TODAY {}", LocalTime.now());
+	}
+
+	public void yesterdayRun() throws SQLException, FileNotFoundException,
+			IOException {
+		score.getFinishedYesterday();
+		if (score.finNewMatches.size() > 0) {
+			tmf.completeYesterday();
+		}
+		// at this point structs & db are updated
+
+		tmf.readDaySkips();
+		writeResultsToTest();// write to file for reeval
+		scheduleReEvaluation(TimeVariations.yesterdayComps);
 	}
 
 	private void schedulePredictionToday() {
@@ -212,9 +244,11 @@ public class Strategy {
 	}
 
 	private void scheduleReEvaluation(List<Integer> list) {
-		ReqScheduler rs = ReqScheduler.getInstance();
-		rs.addReq(AsyncType.RE_EVAL, list, AttsKind.hs, null);
-		rs.startReq();
+		if (list.size() > 0) {
+			ReqScheduler rs = ReqScheduler.getInstance();
+			rs.addReq(AsyncType.RE_EVAL, list, AttsKind.hs, null);
+			rs.startReq();
+		}
 
 	}
 
@@ -228,15 +262,15 @@ public class Strategy {
 		 */
 		Conn conn = new Conn();
 		conn.open();
-		LocalDate latestDate = null;
+		LocalDate latestRecDate = null;
 		ResultSet res = conn
 				.getConn()
 				.createStatement()
 				.executeQuery(
 						"SELECT dat from tempmatches order by dat desc limit 1;");
 		if (res.next()) {
-			latestDate = res.getDate(1).toLocalDate();
-			if (!latestDate.isBefore(checkdat)) {
+			latestRecDate = res.getDate(1).toLocalDate();
+			if (!latestRecDate.isBefore(checkdat)) {
 				testPredFileMaker();// test file create
 				conn.close();
 				// return true;
@@ -322,10 +356,11 @@ public class Strategy {
 		logger.info(" --- : testPredFileMaker");
 		/* for all the new matches create a prediction file */
 
-		// CREATE test prediction file for tomorrow group of matches of the same
-		// competition and a test prediction file for the today group of matches
-		// for
-		// that same competition
+		/*
+		 * CREATE test prediction file for tomorrow group of matches of the same
+		 * competition and a test prediction file for the today group of matches
+		 * for that same competition
+		 */
 
 		LocalDate tdy = LocalDate.now(), tom = LocalDate.now().plusDays(1);
 		List<MatchObj> todayDate = null;//
@@ -333,10 +368,10 @@ public class Strategy {
 
 		MatchToTableRenewal mttr = new MatchToTableRenewal();
 		// Key is the comp id not the index in the data structure!!!
-		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
+		for (int compId : MatchGetter.schedNewMatches.keySet()) {
 			todayDate = new ArrayList<MatchObj>();
 			tomorrowDate = new ArrayList<MatchObj>();
-			for (MatchObj m : MatchGetter.schedNewMatches.get(key)) {
+			for (MatchObj m : MatchGetter.schedNewMatches.get(compId)) {
 				if (m.getDat().toLocalDate().equals(tdy)) {
 					todayDate.add(m);
 				} else if (m.getDat().toLocalDate().equals(tom)) {
@@ -345,12 +380,12 @@ public class Strategy {
 			}// for
 			if (todayDate != null) {
 				if (todayDate.size() >= 1) {
-					mttr.testPredFileCreate(todayDate, key, tdy);
+					mttr.testPredFileCreate(todayDate, compId, tdy);
 				}
 			}
 			if (tomorrowDate != null) {
 				if (tomorrowDate.size() >= 1) {
-					mttr.testPredFileCreate(tomorrowDate, key, tom);
+					mttr.testPredFileCreate(tomorrowDate, compId, tom);
 				}
 			}
 		}

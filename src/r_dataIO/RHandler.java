@@ -54,13 +54,13 @@ public class RHandler {
 		 * The prediction should be done only for the today matches not for
 		 * tomorrows.Thats why the test file we require has the today date
 		 */
-		
+
 		ret = ret.replace("\\", "/");
 		// add the image *.dtf.RData file path in the list
 		foundImagePath.add(ret);
 		String compName, country;
-		compName= NameCleaner.replacements(ccs.getCompetition());
-		country= NameCleaner.replacements(ccs.getCountry());
+		compName = NameCleaner.replacements(ccs.getCompetition());
+		country = NameCleaner.replacements(ccs.getCountry());
 		// add (the image corresponding) train file path in the list
 		File tempFile = afh
 				.getTrainFileName(ccs.getCompId(), compName, country);
@@ -72,22 +72,26 @@ public class RHandler {
 				predTrainPath
 						.add(tempFile.getAbsolutePath().replace("\\", "/"));
 			} else {
+				log.warn("TEST FILE NOT FOUND!!!1, THIS SHOULD NOT BE HAPPENING");
 				foundImagePath.remove(ret);
 				predTrainPath.remove(tempFile.getAbsolutePath().replace("\\",
 						"/"));
-				log.warn("test file for {}, {}, {}  ", ccs.getCompId(),
-						compName, country);
+				log.warn("removed for :TEST file for {}, {}, {}  ",
+						ccs.getCompId(), compName, country);
 			}
 		} else {
 			// if train file was not found remove the image found from the list
 			foundImagePath.remove(ret);
-			log.warn("train file for {}, {}, {}  ", ccs.getCompId(), compName,
-					country);
+			log.warn("removed for : TRAIN file for {}, {}, {}  ",
+					ccs.getCompId(), compName, country);
 		}
 	}
 
 	private String listToRvector(List<String> list) {
 		/* transform a java list to an R vector syntax based (java string) */
+		if (list.size() == 0)
+			return "";
+
 		StringBuilder sbf = new StringBuilder("c(");
 		int i = 0;
 		for (; i < list.size() - 1; i++) {
@@ -110,9 +114,10 @@ public class RHandler {
 		for (Integer key : MatchGetter.schedNewMatches.keySet()) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			compName= NameCleaner.replacements(ccs.getCompetition());
-			country= NameCleaner.replacements(ccs.getCountry());
-			String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
+			compName = NameCleaner.replacements(ccs.getCompetition());
+			country = NameCleaner.replacements(ccs.getCountry());
+			String ret = afh.getImageFolderName(ccs.getCompId(), compName,
+					country);
 			if (ret != null) {
 				predListFiller(ccs, ret, ld);
 			} else {
@@ -123,7 +128,8 @@ public class RHandler {
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred();
 		} else if (un_foundImagesCompIds.size() > 0) {
-			handleUnfound(ld,-1);
+			log.info(" un_foundImagesCompIds  require DTF : {}",
+					un_foundImagesCompIds);
 		}
 	}
 
@@ -136,15 +142,13 @@ public class RHandler {
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			compName= NameCleaner.replacements(ccs.getCompetition());
-			country= NameCleaner.replacements(ccs.getCountry());
-			// check if already has a prediction
-			int datDiff = afh.predFileDateDifference(ccs.getCompId(), compName,
-					country, ld);
-			if (datDiff > 0) {
+			compName = NameCleaner.replacements(ccs.getCompetition());
+			country = NameCleaner.replacements(ccs.getCountry());
+			// check if already has a prediction file of that date
+			if (afh.isPredFile(ccs.getCompId(), compName, country, ld))
 				continue;
-			}
-			String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
+			String ret = afh.getImageFolderName(ccs.getCompId(), compName,
+					country);
 			if (ret != null) {
 				predListFiller(ccs, ret, ld);
 			} else {
@@ -152,10 +156,19 @@ public class RHandler {
 			}
 		}
 		// after that the lists should be full
+
+		if (un_foundImagesCompIds.size() > 0) {
+			// handleUnfound(ld, seri);
+			log.info(" un_foundImagesCompIds  require DTF : {}",
+					un_foundImagesCompIds);
+		}
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred(attsKind, seri);
-		} else if (un_foundImagesCompIds.size() > 0) {
-			handleUnfound(ld, seri);
+		} else if (seri > -1) {
+			// add a response to the request waitinfg to be ompleted
+			// TODO relise the req in hand and let the next in line to run
+			// add 100 to seriNr because the reqs can only take up to #100
+			ReqScheduler.getInstance().response(100 + seri);
 		}
 	}
 
@@ -163,10 +176,10 @@ public class RHandler {
 		/* predict the competitions given by the list of compeyiyions ids */
 		int idx = CountryCompetition.idToIdx.get(comp_Id);
 		CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-		String compName= NameCleaner.replacements(ccs.getCompetition());
-		String country= NameCleaner.replacements(ccs.getCountry());
+		String compName = NameCleaner.replacements(ccs.getCompetition());
+		String country = NameCleaner.replacements(ccs.getCountry());
 
-		String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
+		String ret = afh.getImageFolderName(ccs.getCompId(), compName, country);
 
 		if (ret != null) {
 			ret = ret.replace("\\", "/");
@@ -178,7 +191,8 @@ public class RHandler {
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred();
 		} else if (un_foundImagesCompIds.size() > 0) {
-			handleUnfound(ld, -1);
+			log.info(" un_foundImagesCompIds  require DTF : {}",
+					un_foundImagesCompIds);
 		}
 	}
 
@@ -198,18 +212,30 @@ public class RHandler {
 		for (Integer key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			compName= NameCleaner.replacements(ccs.getCompetition());
-			country= NameCleaner.replacements(ccs.getCountry());
+			compName = NameCleaner.replacements(ccs.getCompetition());
+			country = NameCleaner.replacements(ccs.getCountry());
 
-			String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
+			String ret = afh.getImageFolderName(ccs.getCompId(), compName,
+					country);
 			if (ret != null) {
 				predListFiller(ccs, ret, ld);
 			} else {
 				un_foundImagesCompIds.add(key);
 			}
 		}
-		// after that the lists should be full
-		Rcall_ReEvaluate(seri);
+		if (un_foundImagesCompIds.size() > 0) {
+			log.info(" un_foundImagesCompIds  require DTF : {}",
+					un_foundImagesCompIds);
+		}
+		if (foundImagePath.size() > 0) {
+			Rcall_ReEvaluate(seri);
+		} else if (seri > -1) {
+			// add a response to the request waitinfg to be ompleted
+			// relise the req in hand and let the next in line to run
+			// add 100 to seriNr because the reqs can only take up to #100
+			ReqScheduler.getInstance().response(100 + seri);
+		}
+
 	}
 
 	public void Rcall_DTF(List<Integer> trlist) {
@@ -225,17 +251,18 @@ public class RHandler {
 
 	public void Rcall_DTF(List<Integer> comp_Ids, String R_attKindVector,
 			int seri) {
-		log.info("r cal dtf with {} ", R_attKindVector);
+		// log.info("r cal dtf with {} ", R_attKindVector);
 
 		String compName, country;
 		List<String> trlist = new ArrayList<String>();
-		for (Integer key : comp_Ids) {
+		for (int key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
-			compName= NameCleaner.replacements(ccs.getCompetition());
-			country= NameCleaner.replacements(ccs.getCountry());
+			compName = NameCleaner.replacements(ccs.getCompetition());
+			country = NameCleaner.replacements(ccs.getCountry());
 
-			String ret = afh.getImageFolder(ccs.getCompId(), compName, country);
+			String ret = afh.getImageFolderName(ccs.getCompId(), compName,
+					country);
 			if (ret != null) {
 				log.info("Comp {},__{} is already DTF-ed",
 						ccs.getCompetition(), ccs.getCompId());
@@ -295,7 +322,7 @@ public class RHandler {
 	}
 
 	public void Rcall_Pred(String R_attKindVector, int seri) {
-		log.info("r cal predict with {} ", R_attKindVector);
+		// log.info("r cal predict with {} ", R_attKindVector);
 
 		String dftVec = listToRvector(foundImagePath);
 		String trVec = listToRvector(predTrainPath);
@@ -343,7 +370,7 @@ public class RHandler {
 		String dftVec = listToRvector(foundImagePath);
 		String tsVec = listToRvector(predTestPath);
 
-		log.info("r cal reevaluate with  {},  {}", dftVec, tsVec);
+		// log.info("r cal reevaluate with  {},  {}", dftVec, tsVec);
 
 		Runnable r = () -> {
 			log.info("START: {}", LocalDateTime.now());
