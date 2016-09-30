@@ -32,6 +32,7 @@ public class CompetitionTeamTable {
 	private boolean isTable = false;
 	private String tableName;
 	private int rowSize;// rows in the db
+	private int week;// rows in the db
 
 	public CompetitionTeamTable(String tableName, String countryName) {
 		super();
@@ -55,11 +56,12 @@ public class CompetitionTeamTable {
 			isTable = true;
 			// resultSet = metadata.getColumns(null, null, dbName, "htScoreIn");
 			//take nw of rows in the db
-			resultSet=conn.getConn().createStatement().executeQuery("select count(*) from "+ tableName
+			resultSet=conn.getConn().createStatement().executeQuery("select count(*), max(matchesin+matchesout) from "+ tableName
 					+ "_FullTable;");
 			
 			if (resultSet.next()) {
 				rowSize=resultSet.getInt(1);
+				week=resultSet.getInt(2);
 			}
 		}
 		
@@ -513,6 +515,15 @@ logger.info("{}",o.line());
 		return rowSize;
 	}
 
+	public int getWeek() {
+		return week;
+	}
+
+	public void setWeek(int week) {
+		this.week = week;
+	}
+
+	
 	
 	
 }

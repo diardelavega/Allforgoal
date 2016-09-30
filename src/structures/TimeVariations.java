@@ -44,27 +44,24 @@ public class TimeVariations {
 	}
 
 	public void addToMPLMap(LocalDate ld) throws SQLException {
+		/* add the date specific matches from recent DB to MPL map */
+		log.info("adding to MPLmap {}",ld);
+		
 		if (!mapMPL.containsKey(ld)) {
 			TempMatchFunctions tmf = new TempMatchFunctions();
-			Map<Integer, List<FullMatchLine>> tempMap;
+			Map<Integer, List<FullMatchLine>> tempMap = new HashMap<Integer, List<FullMatchLine>>();
 			List<FullMatchLine> tempList = new ArrayList<FullMatchLine>();
 
-			// read and add to map ld dates matches data
-			tempMap = new HashMap<Integer, List<FullMatchLine>>();
 			List<FullMatchLine> list = tmf.readFullFromRecentMatches(ld);
-			int currentCompId = -1;
 			for (int i = 0; i < list.size(); i++) {
-				if (list.get(i).getComId() != currentCompId) {
-					// add list on map
-					if (tempList.size() > 0) {
-						tempMap.put(currentCompId, tempList);
-					}
-					// start new list
+				if(tempMap.keySet().contains(list.get(i).getComId())){
+					//map has data for this competition
+					tempMap.get(list.get(i).getComId()).add(list.get(i));
+				}
+				else{
 					tempList = new ArrayList<FullMatchLine>();
 					tempList.add(list.get(i));
-					currentCompId = list.get(i).getComId();
-				} else {
-					tempList.add(list.get(i));
+					tempMap.put(list.get(i).getComId(),tempList);
 				}
 			}
 			mapMPL.put(ld, tempMap);
@@ -91,7 +88,7 @@ public class TimeVariations {
 		log.info("yesterday size : {}", yesterdayComps.size());
 		if (yesterdayComps.size() > 0) {
 			for (int itn : yesterdayComps) {
-				System.out.print( itn+", ");
+				System.out.print(itn + ", ");
 			}
 			System.out.println();
 		}
@@ -99,7 +96,7 @@ public class TimeVariations {
 		log.info("todayComps size : {}", todayComps.size());
 		if (todayComps.size() > 0) {
 			for (int itn : todayComps) {
-				System.out.print( itn+", ");
+				System.out.print(itn + ", ");
 			}
 			System.out.println();
 		}
@@ -107,7 +104,7 @@ public class TimeVariations {
 		log.info("tomorrowComps size : {}", tomorrowComps.size());
 		if (tomorrowComps.size() > 0) {
 			for (int itn : tomorrowComps) {
-				System.out.print( itn+", ");
+				System.out.print(itn + ", ");
 			}
 			System.out.println();
 		}

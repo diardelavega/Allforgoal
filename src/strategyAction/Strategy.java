@@ -129,6 +129,7 @@ public class Strategy {
 
 	public void startPartTask() throws ClassNotFoundException, IOException,
 			SQLException {
+		// in case os partial usage.. check the timestamp in the file
 		if (ldg.hourlyFileFilledCheck()) {
 			score.getScheduledToday();
 			score.getScheduledTomorrow();
@@ -225,20 +226,19 @@ public class Strategy {
 		 * not have anything to do. Prediction points are added at the end of
 		 * the exwcution,(after a response from the R functions har returned)
 		 */
+		logger.info("sched pred today  size: {}", TimeVariations.todayComps.size());
 		if (TimeVariations.todayComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
-			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs,
-					LocalDate.now());
+			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs, LocalDate.now());
 			rs.startReq();
 		}
-
 	}
 
 	private void schedulePredictionTomorrow() {
+		logger.info("sched pred tomorow  size: {}", TimeVariations.tomorrowComps.size());
 		if (TimeVariations.tomorrowComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
-			rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps,
-					AttsKind.hs, LocalDate.now().plusDays(1));
+			rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps, AttsKind.hs, LocalDate.now().plusDays(1));
 			rs.startReq();
 		}
 	}

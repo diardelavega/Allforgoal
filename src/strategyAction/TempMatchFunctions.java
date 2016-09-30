@@ -830,8 +830,8 @@ public class TempMatchFunctions {
 		PreparedStatement preparedStatement = null;
 
 		String updateTableSQL = "UPDATE recentmatches SET tim = ?  WHERE mid =?";
-		preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
 		openDBConn();
+		preparedStatement = conn.getConn().prepareStatement(updateTableSQL);
 		for (MatchObj m : matches) {
 			// if (m.getFt1() != -1) {// update only matches with results
 			preparedStatement.setString(1, Status.ERROR);

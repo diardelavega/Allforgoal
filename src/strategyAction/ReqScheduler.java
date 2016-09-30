@@ -64,8 +64,7 @@ public class ReqScheduler {
 		if (run_status.equals("idle")) {
 			if (que.size() > 0) {
 				reqInHand = que.get(0);
-				log.info("the req #" + reqInHand.getSerialCode()
-						+ " is ready to Run");
+				log.info("the req #" + reqInHand.getSerialCode() + " is ready to Run");
 				runReq();
 			} else {
 				log.info("No REQUESTS in Line");
@@ -82,16 +81,13 @@ public class ReqScheduler {
 		run_status = "running";
 		switch (reqInHand.getType()) {
 		case AsyncType.PRED:
-			rh.predictSome(reqInHand.getList(), reqInHand.getAtts(),
-					reqInHand.getSerialCode(), reqInHand.getLd());
+			rh.predictSome(reqInHand.getList(), reqInHand.getAtts(), reqInHand.getSerialCode(), reqInHand.getLd());
 			break;
 		case AsyncType.DTF:
-			rh.Rcall_DTF(reqInHand.getList(), reqInHand.getAtts(),
-					reqInHand.getSerialCode());
+			rh.Rcall_DTF(reqInHand.getList(), reqInHand.getAtts(), reqInHand.getSerialCode());
 			break;
 		case AsyncType.RE_EVAL:
-			rh.reEvaluate(reqInHand.getList(), reqInHand.getSerialCode(),
-					reqInHand.getLd());
+			rh.reEvaluate(reqInHand.getList(), reqInHand.getSerialCode(), reqInHand.getLd());
 			break;
 		case AsyncType.UP_PRE_POINT:
 			// update the recent matches data with the prediction points
@@ -124,6 +120,7 @@ public class ReqScheduler {
 			log.info("OUT OF ASYNCHRONOUS");
 		}
 		if (k == reqInHand.getSerialCode()) {
+			log.info("CORESPONDING K = {}",k);
 			que.remove(0);
 			run_status = "idle";
 			if (flag) {

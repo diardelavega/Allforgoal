@@ -112,32 +112,42 @@ public class MatchToTableRenewal {
 		if (!ctt.isTable()) {// if there is no table
 			return;
 		}
-		if (ctt.getRowSize() == 0) {// if the table has 0 rows
+		N = ctt.getRowSize();
+		if (N == 0) {// if the table has 0 rows
 			return;
 		}
 
+		int week = ctt.getWeek()+1;
+		//TODO find a way to get the week of the matches
+		// is used to find the nr max nr of matches (the week)of comp
 //		mobj = ml.get(0);
 //		if (!testTeamDataPositions()) {
 //			return;
 //		}
 
 		// instanciate the pf class attribute
-		afh.openTestOutput(comp_Id, compName, country, date);
-		int week = Math.max(t1.getMatchesIn() + t1.getMatchesOut() + 1,
-				t2.getMatchesIn() + t2.getMatchesOut() + 1);
-		pf = new PredictionFile();
-		afh.appendCsv(pf.csvHeader());
-		for (int i = 0; i < ml.size(); i++) {
-			mobj = ml.get(i);
-			if (testTeamDataPositions()) {
-				pf = new PredictionFile();
-				predictionFileAttributeAsignment(false);
-				pf.setWeek(week);
-				pf.setMatchTime(mobj.getMatchTime());
-				afh.appendCsv(pf.liner());
+		try {
+			ctt.tableReader();
+			afh.openTestOutput(comp_Id, compName, country, date);
+			 logger.info("{} {} {} {} week:{}", comp_Id, compName, country, date,week);
+//			int week = Math.max(t1.getMatchesIn() + t1.getMatchesOut() + 1,
+//					t2.getMatchesIn() + t2.getMatchesOut() + 1);
+			pf = new PredictionFile();
+			afh.appendCsv(pf.csvHeader());
+			for (int i = 0; i < ml.size(); i++) {
+				mobj = ml.get(i);
+				if (testTeamDataPositions()) {
+					pf = new PredictionFile();
+					predictionFileAttributeAsignment(false);
+					pf.setWeek(week);
+					pf.setMatchTime(mobj.getMatchTime());
+					afh.appendCsv(pf.liner());
+				}
 			}
+			afh.closeOutput();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		afh.closeOutput();
 	}
 
 	private boolean testTeamDataPositions() throws SQLException {
@@ -627,7 +637,7 @@ public class MatchToTableRenewal {
 		// get the classification position on the team table for the two teams
 		// in hand
 		boolean flag = false;
-		N = ctt.getClassificationPos().size();
+		// N = ctt.getClassificationPos().size();
 		for (int i = 0; i < ctt.getClassificationPos().size(); i++) {
 			if (mobj.getT1()
 					.equals(ctt.getClassificationPos().get(i).getTeam())) {

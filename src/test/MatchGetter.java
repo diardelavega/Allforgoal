@@ -149,6 +149,7 @@ public class MatchGetter {
 						}
 						if (status.equals(Status.FINISHED)) {
 							String[] scores;
+//							logger.info("FINISHED ---  t1-{}  t2-{}", t1, t2);
 							// HT score - @ td_14
 							if (tds.get(13).text().length() >= 3) {// score-score
 								scores = tds.get(13).text().split("-");

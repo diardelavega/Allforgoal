@@ -62,28 +62,23 @@ public class RHandler {
 		compName = NameCleaner.replacements(ccs.getCompetition());
 		country = NameCleaner.replacements(ccs.getCountry());
 		// add (the image corresponding) train file path in the list
-		File tempFile = afh
-				.getTrainFileName(ccs.getCompId(), compName, country);
+		File tempFile = afh .getTrainFileName(ccs.getCompId(), compName, country);
 		if (tempFile != null) {
 			File testfile = afh.getTestFileName(ccs.getCompId(), compName,
 					country, ld);
 			if (testfile != null) {
 				predTestPath.add(testfile.getAbsolutePath().replace("\\", "/"));
-				predTrainPath
-						.add(tempFile.getAbsolutePath().replace("\\", "/"));
+				predTrainPath .add(tempFile.getAbsolutePath().replace("\\", "/"));
 			} else {
 				log.warn("TEST FILE NOT FOUND!!!1, THIS SHOULD NOT BE HAPPENING");
 				foundImagePath.remove(ret);
-				predTrainPath.remove(tempFile.getAbsolutePath().replace("\\",
-						"/"));
-				log.warn("removed for :TEST file for {}, {}, {}  ",
-						ccs.getCompId(), compName, country);
+				predTrainPath.remove(tempFile.getAbsolutePath().replace("\\", "/"));
+				log.warn("removed for :TEST file for {}, {}, {}  ", ccs.getCompId(), compName, country);
 			}
 		} else {
 			// if train file was not found remove the image found from the list
 			foundImagePath.remove(ret);
-			log.warn("removed for : TRAIN file for {}, {}, {}  ",
-					ccs.getCompId(), compName, country);
+			log.warn("removed for : TRAIN file for {}, {}, {}  ", ccs.getCompId(), compName, country);
 		}
 	}
 
@@ -133,8 +128,7 @@ public class RHandler {
 		}
 	}
 
-	public void predictSome(List<Integer> comp_Ids, String attsKind, int seri,
-			LocalDate ld) {
+	public void predictSome(List<Integer> comp_Ids, String attsKind, int seri, LocalDate ld) {
 		log.info("Predicting some");
 
 		String compName, country;
@@ -147,8 +141,7 @@ public class RHandler {
 			// check if already has a prediction file of that date
 			if (afh.isPredFile(ccs.getCompId(), compName, country, ld))
 				continue;
-			String ret = afh.getImageFolderName(ccs.getCompId(), compName,
-					country);
+			String ret = afh.getImageFolderName(ccs.getCompId(), compName, country);
 			if (ret != null) {
 				predListFiller(ccs, ret, ld);
 			} else {
@@ -159,8 +152,7 @@ public class RHandler {
 
 		if (un_foundImagesCompIds.size() > 0) {
 			// handleUnfound(ld, seri);
-			log.info(" un_foundImagesCompIds  require DTF : {}",
-					un_foundImagesCompIds);
+			log.info(" un_foundImagesCompIds  require DTF : {}", un_foundImagesCompIds);
 		}
 		if (foundImagePath.size() > 0) {
 			Rcall_Pred(attsKind, seri);
