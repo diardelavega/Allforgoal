@@ -1,23 +1,28 @@
 package basicStruct;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class MatchObj {
+public class MatchObj implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected long mId;
 	protected int comId;
 	protected String t1;
 	protected String t2;
 	protected int ft1;
 	protected int ft2;
-	protected int ht1 = -1;
-	protected int ht2 = -1;
-	protected float _1;
-	protected float _2;
-	protected float _x;
+	protected int ht1  ;
+	protected int ht2  ;
+	protected float _1=1;
+	protected float _2=1;
+	protected float _x=1;
 
-	protected float _o;
-	protected float _u;
+	protected float _o=1;
+	protected float _u=1;
 	protected Date dat;
 	protected String matchTime;
 

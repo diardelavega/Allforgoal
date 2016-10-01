@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class RDemo {
 		// rh.testRcall();
 
 		// rh.predictOne(157);
-		// simDtf_Create();
-		sim_readPrediction();
+		 simDtf_Create();
+//		sim_readPrediction();
 	}
 
 	public static void testReadPred() {
@@ -63,8 +64,15 @@ public class RDemo {
 
 	public static void simDtf_Create() {
 		String trpath = "C:/BastData/Pred/Data/Norway/Eliteserien__112__Data";
-		List<String> tempList = new ArrayList<String>();
-		tempList.add(trpath);
+//		List<String> tempList = new ArrayList<String>();
+//		tempList.add(trpath);
+		List<Integer> tempList = new ArrayList<Integer>();
+		tempList.add(112);
+		tempList.add(164);
+		tempList.add(165);
+		tempList.add(157);
+		tempList.add(46);
+		tempList.add(4);
 		RHandler rh = new RHandler();
 		rh.Rcall_DTF(tempList, AttsKind.hs);
 	}

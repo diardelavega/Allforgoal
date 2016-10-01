@@ -20,6 +20,7 @@ import dbhandler.BasicTableEntity;
 import diskStore.AnalyticFileHandler;
 import extra.ClassifiStatus;
 import extra.MatchOutcome;
+import extra.NameCleaner;
 import extra.TeamStatus;
 
 /**
@@ -75,8 +76,8 @@ public class MatchToTableRenewal {
 		country = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(compId)).getCountry();
 
-		compName = compName.replaceAll(" ", "_").replace(".", "");
-		country = country.replaceAll(" ", "_").replace(".", "");
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 	}
 
 	public MatchToTableRenewal() {
@@ -96,50 +97,57 @@ public class MatchToTableRenewal {
 				CountryCompetition.idToIdx.get(comp_Id)).getCompetition();
 		country = CountryCompetition.ccasList.get(
 				CountryCompetition.idToIdx.get(comp_Id)).getCountry();
-		compName = compName.replaceAll(" ", "_").replace(".", "");
-		country = country.replaceAll(" ", "_").replace(".", "");
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
 
 		// check if file exists
 		if (afh.isTestFile(comp_Id, compName, country, date)) {
-			// check the dat to see if it is older or neweer than the curent
-			// date
-			if (afh.testFileDateDifference(comp_Id, compName, country, date) <= 0) {
-				logger.warn("Unable to create a new file a valid one exists!");
-				return;
-			}
+			return;
 		}
 
 		// check all existence in db and teamtable struct
-		init();
-		if (N == 0) {
+		// init();
+		ctt = new CompetitionTeamTable(compName, country);
+		ctt.existsDb();
+		if (!ctt.isTable()) {// if there is no table
 			return;
 		}
-		mobj = ml.get(0);
-		if (!testTeamDataPositions()) {
+		N = ctt.getRowSize();
+		if (N == 0) {// if the table has 0 rows
 			return;
 		}
 
+		int week = ctt.getWeek()+1;
+		//TODO find a way to get the week of the matches
+		// is used to find the nr max nr of matches (the week)of comp
+//		mobj = ml.get(0);
+//		if (!testTeamDataPositions()) {
+//			return;
+//		}
+
 		// instanciate the pf class attribute
-		afh.openTestOutput(comp_Id, compName, country, date);
-		int week = Math.max(t1.getMatchesIn() + t1.getMatchesOut() + 1,
-				t2.getMatchesIn() + t2.getMatchesOut() + 1);
-		pf = new PredictionFile();
-		afh.appendCsv(pf.csvHeader());
-		for (int i = 0; i < ml.size(); i++) {
-			mobj = ml.get(i);
-			if (testTeamDataPositions()) {
-				pf = new PredictionFile();
-				predictionFileAttributeAsignment(false);
-				pf.setWeek(week);
-				pf.setMatchTime(mobj.getMatchTime());
-				// pf.setT1Ht(mobj.getHt1());
-				// pf.setT2Ht(mobj.getHt2());
-				// pf.setT1Ft(mobj.getFt1());
-				// pf.setT2Ft(mobj.getFt2());
-				afh.appendCsv(pf.liner());
+		try {
+			ctt.tableReader();
+			afh.openTestOutput(comp_Id, compName, country, date);
+			 logger.info("{} {} {} {} week:{}", comp_Id, compName, country, date,week);
+//			int week = Math.max(t1.getMatchesIn() + t1.getMatchesOut() + 1,
+//					t2.getMatchesIn() + t2.getMatchesOut() + 1);
+			pf = new PredictionFile();
+			afh.appendCsv(pf.csvHeader());
+			for (int i = 0; i < ml.size(); i++) {
+				mobj = ml.get(i);
+				if (testTeamDataPositions()) {
+					pf = new PredictionFile();
+					predictionFileAttributeAsignment(false);
+					pf.setWeek(week);
+					pf.setMatchTime(mobj.getMatchTime());
+					afh.appendCsv(pf.liner());
+				}
 			}
+			afh.closeOutput();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		afh.closeOutput();
 	}
 
 	private boolean testTeamDataPositions() throws SQLException {
@@ -195,16 +203,16 @@ public class MatchToTableRenewal {
 		}
 
 		pf = new PredictionFile();
-		AnalyticFileHandler afh= new AnalyticFileHandler();
+		AnalyticFileHandler afh = new AnalyticFileHandler();
 		File f = afh.getTrainFileName(compId, compName, country);
-		if(f==null){
+		if (f == null) {
 			// if file doesn't exists add a csv headder
 			matchesDF.add(pf.csvHeader());
 		}
-		
-//		if (!ctt.isTable()) {
-//			matchesDF.add(pf.csvHeader());
-		//		}
+
+		// if (!ctt.isTable()) {
+		// matchesDF.add(pf.csvHeader());
+		// }
 
 		for (int i = matchesList.size() - 1; i >= 0; i--) {
 			mobj = matchesList.get(i);
@@ -318,7 +326,8 @@ public class MatchToTableRenewal {
 
 		ctt.existsDb();
 		if (ctt.isTable()) {
-			logger.info("----- IT IS TABLE!!!   size {}", ctt.getRowSize());
+			logger.info("----- {}, {}  IT IS TABLE!!!   size {}", compName,
+					country, ctt.getRowSize());
 			if (ctt.getRowSize() >= 1)
 				ctt.tableReader();
 			// ctt.testPrint();
@@ -628,7 +637,7 @@ public class MatchToTableRenewal {
 		// get the classification position on the team table for the two teams
 		// in hand
 		boolean flag = false;
-		N = ctt.getClassificationPos().size();
+		// N = ctt.getClassificationPos().size();
 		for (int i = 0; i < ctt.getClassificationPos().size(); i++) {
 			if (mobj.getT1()
 					.equals(ctt.getClassificationPos().get(i).getTeam())) {
@@ -957,11 +966,11 @@ public class MatchToTableRenewal {
 	}
 
 	public void setCompName(String compName) {
-		this.compName = compName.replaceAll(" ", "_").replace(".", "");
+		this.compName = NameCleaner.replacements(compName);
 	}
 
 	public void setCountry(String country) {
-		this.country = country.replaceAll(" ", "_").replace(".", "");
+		this.country = NameCleaner.replacements(country);
 	}
 
 }

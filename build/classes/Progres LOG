@@ -3,6 +3,25 @@
 ----------------------------------------------------------------------------
 
 
+***) problem when requesting to predict comps without dtf, => a new request for dtf prediction that waits
+		for the predictions to be executed. (mutual exclusion)!!!
+!-) during the storage in db of matches data some matches had "ft1" set to -1 and all the "ft2" where 0.
+	@ this time i had set the ht1&2 to -1 as default		
+
+Set odds to 1 if no odds found 
+	FIXed) DONE
+
+--------------------------------------------------------------------------
+**) FIxed most problems, even the r call apear to be running ok, some inconsistencies with the 
+asynchnous calls{To be looked closelly the serial number taken by the req in hand, the exe after the 
+compition and mesages dysplayed}.
+--) To implement the DTF creation of the comps not created yet
+		if a dtf file exists it will not be recreated( condition in r file "i(!f ishead()){}")
+--) to check for already predicted files so that not to re-run them again
+......................
+
+
+
 --------------------------------------------------
 
 **--) The norway elitaserien mathes are not all ok. Valerenga apeared in two matche

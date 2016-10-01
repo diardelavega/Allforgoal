@@ -1,5 +1,6 @@
 package r_dataIO;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,25 +43,28 @@ public class ReadPrediction {
 			.getLogger(ReadPrediction.class);
 
 	// C:/BastData/WeekPredPoints/"country"/Eliteserien__112__Pred__2016-07-29
-	private Map<Integer, List<BaseMatchLinePred>> matchLinePred;
+	private Map<Integer, List<BaseMatchLinePred>> matchLinePred = new HashMap<>();
 
+	/**
+	 * create a map of <comp_Id,List<BaseMatchLinePred>> do be served to the
+	 * client side
+	 */
 	public void prediction(List<Integer> compIds) throws IOException {
-		/*
-		 * create a map of <comp_Id, List<BaseMatchLinePred>> do be served to
-		 * the client side
-		 */
+
 		String test = "test";
 		String pred = "pred";
 		CSVParser p;
 		CCAllStruct ccs;
-		matchLinePred = new HashMap<>();
+		
 		// read the test file of that compid and get the team names
-		for (int id : compIds) {
-			int idx = CountryCompetition.idToIdx.get(id);
+		for (int cid : compIds) {
+			int idx = CountryCompetition.idToIdx.get(cid);
 			ccs = CountryCompetition.ccasList.get(idx);
 			// read test file & get team names
-			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(),
-					test);
+			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(), test);
+			if (p == null)
+				continue;
+
 			List<BaseMatchLinePred> mlplist = new ArrayList<BaseMatchLinePred>();
 			for (CSVRecord record : p) {
 				BaseMatchLinePred mlp = new BaseMatchLinePred();
@@ -69,8 +73,9 @@ public class ReadPrediction {
 				mlplist.add(mlp);
 			}
 			// read r prediction file & assign outcomes to matches
-			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(),
-					pred);
+			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(), pred);
+			if (p == null)
+				continue;
 
 			/*
 			 * since the data table is switched rows/columns -> every record is
@@ -163,7 +168,7 @@ public class ReadPrediction {
 				}
 			}
 
-			matchLinePred.put(id, mlplist);
+			matchLinePred.put(cid, mlplist);
 		} // comp_id fors
 
 	}
@@ -206,15 +211,23 @@ public class ReadPrediction {
 			case "pred":
 				// prediction file doesnt have a header
 				format = CSVFormat.RFC4180;
-				parser = new CSVParser(new FileReader(
-						afh.getLeatestRPredictionFileName(compId, compName,
-								country)), format);
+				File f = afh.getLeatestRPredictionFileName(compId, compName, country);
+				if (f != null) {
+					parser = new CSVParser(new FileReader(f), format);
+				}else{
+				log.warn("NO PREDICTION FILE  for {}, {}, {}", compId, compName, country);
+				parser = null;
+				}
 				break;
 			case "test":
 				format = CSVFormat.RFC4180.withHeader();
-				parser = new CSVParser(new FileReader(
-						afh.getLeatestTestFileName(compId, compName, country)),
-						format);
+				 f = afh.getLeatestTestFileName(compId, compName, country);
+				if (f != null) {
+					parser = new CSVParser(new FileReader(f), format);
+				}else{
+				log.warn("NO PREDICTION FILE  for {}, {}, {}", compId, compName, country);
+				parser = null;
+				}
 				break;
 
 			default:
@@ -226,7 +239,7 @@ public class ReadPrediction {
 			log.warn("Parsing exception");
 			e.printStackTrace();
 		}
-		log.info(parser.toString());
+//		log.info(parser.toString());
 		return parser;
 	}
 
