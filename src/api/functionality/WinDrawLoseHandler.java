@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import api.functionality.obj.CountryCompCompId;
-import api.functionality.obj.MatchPredWithWinDrawLose;
+import api.functionality.obj.WinDrawLoseWithPred;
 import basicStruct.StrStrTuple;
 import dbtry.Conn;
 
@@ -31,7 +31,7 @@ public class WinDrawLoseHandler {
 			/* for every dayly match get its corresponding wdl of both teams */
 
 //			t.strstrshow();
-			MatchPredWithWinDrawLose mld = new MatchPredWithWinDrawLose();
+			WinDrawLoseWithPred mld = new WinDrawLoseWithPred();
 			mld.setT1(t.getS1());
 			String[] temp = wdll.get(t.getS1()).split(";");
 			mld.setT1wIn(Integer.parseInt(temp[0]));

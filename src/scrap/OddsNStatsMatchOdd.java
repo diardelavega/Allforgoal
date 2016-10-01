@@ -18,8 +18,8 @@ public class OddsNStatsMatchOdd {
 	public static final Logger logger = LoggerFactory
 			.getLogger(OddsNStatsMatchOdd.class);
 
-	private double over = 1;
-	private double under = 1;
+	private float over = 1;
+	private float under = 1;
 	private String matchOddUrl;
 
 	private String errorStatus = "OK";
@@ -98,11 +98,11 @@ public class OddsNStatsMatchOdd {
 		}
 	}
 
-	public double getOver() {
+	public float getOver() {
 		return over;
 	}
 
-	public double getUnder() {
+	public float getUnder() {
 		return under;
 	}
 
@@ -114,11 +114,11 @@ public class OddsNStatsMatchOdd {
 		return errorStatus;
 	}
 
-	public void setOver(double over) {
+	public void setOver(float over) {
 		this.over = over;
 	}
 
-	public void setUnder(double under) {
+	public void setUnder(float under) {
 		this.under = under;
 	}
 

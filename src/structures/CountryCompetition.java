@@ -49,10 +49,10 @@ public class CountryCompetition {
 	public static List<String> notAllowedcomps = new ArrayList<>();
 	FileHandler fh = new FileHandler();
 
-	// TODO implement lists of competition ids for yesterday, today & tomorrows
-	public static List<Integer> yesterdayComps = new ArrayList<>();
-	public static List<Integer> todayComps = new ArrayList<>();
-	public static List<Integer> tommorrowComps = new ArrayList<>();
+//	// TODO implement lists of competition ids for yesterday, today & tomorrows
+//	public static List<Integer> yesterdayComps = new ArrayList<>();
+//	public static List<Integer> todayComps = new ArrayList<>();
+//	public static List<Integer> tomorrowComps = new ArrayList<>();
 
 	// --------------------------
 
@@ -110,7 +110,7 @@ public class CountryCompetition {
 		// write the comp country to the db
 		Conn conn = new Conn();
 		conn.open();
-		String sql = "INSERT INTO ccallstruct2 VALUES (?,?,?,?,?,?)";
+		String sql = "INSERT INTO ccallstruct VALUES (?,?,?,?,?,?)";
 		PreparedStatement ps = conn.getConn().prepareStatement(sql);
 
 		for (CCAllStruct obj : ccasList) {
@@ -330,7 +330,7 @@ public class CountryCompetition {
 
 	private int smallScorerCompidxSearch(int initial, String country,
 			String comp) {
-		/* a small loob for all the competitions a country might have */
+		/* a small loop for all the competitions a country might have */
 		logger.info("{}", initial);
 		int i = initial;
 		// with levistein

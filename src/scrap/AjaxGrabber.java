@@ -194,22 +194,32 @@ public class AjaxGrabber {
 	}
 
 	public float getOver() {
+		if(over<1)
+			return 1;
 		return over;
 	}
 
 	public float getUnder() {
+		if(under<1)
+			return 1;
 		return under;
 	}
 
 	public float get_1() {
+		if(_1<1)
+			return 1;
 		return _1;
 	}
 
 	public float get_2() {
+		if(_2<1)
+			return 1;
 		return _2;
 	}
 
 	public float get_x() {
+		if(_x<1)
+			return 1;
 		return _x;
 	}
 

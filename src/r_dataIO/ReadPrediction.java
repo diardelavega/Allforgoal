@@ -1,7 +1,5 @@
 package r_dataIO;
 
-<<<<<<< HEAD
-=======
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +20,7 @@ import api.functionality.obj.BaseMatchLinePred;
 import basicStruct.CCAllStruct;
 import diskStore.AnalyticFileHandler;
 
->>>>>>> d89d2e0d5a3a27c888cf0d3be343a13bef471191
+
 /**
  * @author Administrator
  *
@@ -39,14 +37,12 @@ import diskStore.AnalyticFileHandler;
  * 
  */
 public class ReadPrediction {
-<<<<<<< HEAD
 
-=======
 	public static final Logger log = LoggerFactory
 			.getLogger(ReadPrediction.class);
 
 	// C:/BastData/WeekPredPoints/"country"/Eliteserien__112__Pred__2016-07-29
-	private Map<Integer, List<BaseMatchLinePred>> dayMatchLinePred;
+	private Map<Integer, List<BaseMatchLinePred>> matchLinePred;
 
 	public void prediction(List<Integer> compIds) throws IOException {
 		/*
@@ -57,11 +53,12 @@ public class ReadPrediction {
 		String pred = "pred";
 		CSVParser p;
 		CCAllStruct ccs;
-		dayMatchLinePred = new HashMap<>();
+		matchLinePred = new HashMap<>();
 		// read the test file of that compid and get the team names
 		for (int id : compIds) {
 			int idx = CountryCompetition.idToIdx.get(id);
 			ccs = CountryCompetition.ccasList.get(idx);
+			// read test file & get team names
 			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(),
 					test);
 			List<BaseMatchLinePred> mlplist = new ArrayList<BaseMatchLinePred>();
@@ -71,70 +68,134 @@ public class ReadPrediction {
 				mlp.setT2(record.get("t2"));
 				mlplist.add(mlp);
 			}
+			// read r prediction file & assign outcomes to matches
 			p = parser(ccs.getCompId(), ccs.getCompetition(), ccs.getCountry(),
 					pred);
 
 			/*
 			 * since the data table is switched rows/columns -> every record is
 			 * all the points of every match for a particular atrribute such as
-			 * _1, _x, _2 ... untill the two last rows which contain the points
-			 * for totHt & totFt;
+			 * _1, _x, _2 ... untill the twelve last rows which contain the
+			 * points for 6-totHt & 6-totFt;
 			 */
-			CSVRecord rec1 = p.getRecords().get(0);
-			CSVRecord recx = p.getRecords().get(1);
-			CSVRecord rec2 = p.getRecords().get(2);
-			CSVRecord reco = p.getRecords().get(3);
-			CSVRecord recu = p.getRecords().get(4);
-			CSVRecord recp1y = p.getRecords().get(5);
-			CSVRecord recp1n = p.getRecords().get(6);
-			CSVRecord recp2y = p.getRecords().get(7);
-			CSVRecord recp2n = p.getRecords().get(8);
-			CSVRecord rech = p.getRecords().get(9);
-			CSVRecord recf = p.getRecords().get(10);
+			List<CSVRecord> recs = p.getRecords();
+			List<CSVRecord> smallrecslist;
+			String header = "";
+			CSVRecord rec1 = null, recx = null, rec2 = null, reco = null, recu = null, recY = null, recN = null, rec2Y = null, rec2N = null;
+			List<Integer> htgoals = null;
+			List<Integer> ftgoals = null;
+			/*
+			 * read the prediction file. Get the header and based on it fill the
+			 * appropriate records.
+			 */
+			for (int j = 0; j < recs.size(); j++) {
+				if (recs.get(j).get(0).startsWith("#")) {
+					header = recs.get(j).get(0).split("#")[1];
+					continue;
+				}
+				switch (header) {
+				case "head":
+					rec1 = recs.get(j);
+					j++;
+					recx = recs.get(j);
+					j++;
+					rec2 = recs.get(j);
+					break;
+				case "score":
+					reco = recs.get(j);
+					j++;
+					recu = recs.get(j);
+					break;
+				case "p1":
+					recY = recs.get(j);
+					j++;
+					recN = recs.get(j);
+					break;
+				case "p2":
+					rec2Y = recs.get(j);
+					j++;
+					rec2N = recs.get(j);
+					break;
+				case "ht":
+					smallrecslist = new ArrayList<>();
+					for (int w = 0; w < 6; w++) {
+						smallrecslist.add(recs.get(w));
+					}
+					htgoals = maxOfRecs(smallrecslist);
+					break;
+				case "ft":
+					smallrecslist = new ArrayList<>();
+					for (int w = 0; w < 6; w++) {
+						smallrecslist.add(recs.get(w));
+					}
+					ftgoals = maxOfRecs(smallrecslist);
+					break;
+				default:
+					log.warn("TDEFAULT in read prediction SWITCH; THIS SHULD NOT BE SHOWING ");
+					break;
+				}
+				// }
+			}
+			// Fill the BaseMatchPredLine list with the valid records
+			for (int k = 0; k < mlplist.size(); k++) { // head 1
+				if (recY != null) {
+					mlplist.get(k).setP1y(Float.parseFloat(recY.get(k)));
+					mlplist.get(k).setP1n(Float.parseFloat(recN.get(k)));
+				}
+				if (rec2Y != null) {
+					mlplist.get(k).setP2y(Float.parseFloat(rec2Y.get(k)));
+					mlplist.get(k).setP2n(Float.parseFloat(rec2N.get(k)));
+				}
+				if (reco != null) {
+					mlplist.get(k).setSo(Float.parseFloat(reco.get(k)));
+					mlplist.get(k).setSu(Float.parseFloat(recu.get(k)));
+				}
+				if (rec1 != null) {
+					mlplist.get(k).setH1(Float.parseFloat(rec1.get(k)));
+					mlplist.get(k).setHx(Float.parseFloat(recx.get(k)));
+					mlplist.get(k).setH2(Float.parseFloat(rec2.get(k)));
+				}
+				if (ftgoals != null) {
+					mlplist.get(k).setFt(ftgoals.get(k));
+				}
+				if (htgoals != null) {
+					mlplist.get(k).setHt(htgoals.get(k));
+				}
+			}
 
-			for (int i = 0; i < mlplist.size(); i++) { // head 1
-				mlplist.get(i).set_1(rec1.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// head x
-				mlplist.get(i).set_x(recx.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// head 2
-				mlplist.get(i).set_2(rec2.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// score o
-				mlplist.get(i).set_o(reco.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// score u
-				mlplist.get(i).set_u(recu.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht +1
-				mlplist.get(i).setP1y(recp1y.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht -1
-				mlplist.get(i).setP1n(recp1n.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht +2
-				mlplist.get(i).setP2y(recp2y.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht -2
-				mlplist.get(i).setP2n(recp2n.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ht goals
-				mlplist.get(i).setHt(rech.get(i));
-			}
-			for (int i = 0; i < mlplist.size(); i++) {// ft goals
-				mlplist.get(i).setFt(recf.get(i));
-			}
+			matchLinePred.put(id, mlplist);
+		} // comp_id fors
 
-			dayMatchLinePred.put(id, mlplist);
-		}// comp_id fors
+	}
 
+	private List<Integer> maxOfRecs(List<CSVRecord> smallrecslist) {
+		// get the index of the max value for each of the matches
+
+		List<Integer> preobGoals = new ArrayList<>();
+
+		// iterate the words (csv words)of a record
+		for (int j = 0; j < smallrecslist.get(0).size(); j++) {
+			float max = Float.parseFloat(smallrecslist.get(0).get(j));
+			int maxPos = 0;
+			// iterate the lines of the array
+			for (int i = 1; i < smallrecslist.size(); i++) {
+				float curent = Float.parseFloat(smallrecslist.get(i).get(j));
+				if (curent > max) {
+					max = curent;
+					maxPos = i;
+				}
+			}
+			preobGoals.add(maxPos);
+		}
+
+		return preobGoals;
 	}
 
 	private CSVParser parser(int compId, String compName, String country,
 			String kind) {
 		/* get the leatest (today or in future pred files and reads it) */
-		CSVFormat format = CSVFormat.RFC4180;
+		CSVFormat format = null;
+		CSVFormat.RFC4180.withHeader();
 
 		AnalyticFileHandler afh = new AnalyticFileHandler();
 		CSVParser parser = null;
@@ -143,11 +204,14 @@ public class ReadPrediction {
 			// "J2_League", "Japan")), format);
 			switch (kind) {
 			case "pred":
+				// prediction file doesnt have a header
+				format = CSVFormat.RFC4180;
 				parser = new CSVParser(new FileReader(
-						afh.getLeatestPredictionFileName(compId, compName,
+						afh.getLeatestRPredictionFileName(compId, compName,
 								country)), format);
 				break;
 			case "test":
+				format = CSVFormat.RFC4180.withHeader();
 				parser = new CSVParser(new FileReader(
 						afh.getLeatestTestFileName(compId, compName, country)),
 						format);
@@ -167,27 +231,27 @@ public class ReadPrediction {
 	}
 
 	public List<String> getDominant(int compId) {
-		/* to return the preveiling attribute in head,score,p1,p2,ht,ft */
-		if (dayMatchLinePred == null) {
+		/* to return the prevailing attribute in head,score,p1,p2,ht,ft */
+		if (matchLinePred == null) {
 			log.warn("Not initiated prediction proces");
 			return null;
 		}
-		if (dayMatchLinePred.size() == 0) {
+		if (matchLinePred.size() == 0) {
 			log.warn("No predictions found");
 			return null;
 		}
-		if (dayMatchLinePred.get(compId) == null) {
+		if (matchLinePred.get(compId) == null) {
 			log.warn("No predictions found today for that competition");
 			return null;
 		}
 		// else
 		List<String> dominList = new ArrayList<String>();
 		StringBuilder sb;
-		for (BaseMatchLinePred mlp : dayMatchLinePred.get(compId)) {
+		for (BaseMatchLinePred mlp : matchLinePred.get(compId)) {
 			sb = new StringBuilder();
-			float _1 = Float.parseFloat(mlp.get_1());
-			float _x = Float.parseFloat(mlp.get_x());
-			float _2 = Float.parseFloat(mlp.get_2());
+			float _1 = mlp.getH1();
+			float _x = mlp.getHx();
+			float _2 = mlp.getH2();
 			if (_1 >= _x) {
 				if (_1 >= _2) {
 					sb.append("1,");
@@ -202,22 +266,22 @@ public class ReadPrediction {
 				}
 			}
 
-			float _o = Float.parseFloat(mlp.get_o());
-			float _u = Float.parseFloat(mlp.get_u());
+			float _o = mlp.getSo();
+			float _u = mlp.getSu();
 			if (_o >= _u)
 				sb.append("o,");
 			else
 				sb.append("u,");
 
-			float _p1y = Float.parseFloat(mlp.getP1y());
-			float _p1n = Float.parseFloat(mlp.getP1n());
+			float _p1y = mlp.getP1y();
+			float _p1n = mlp.getP1n();
 			if (_p1y >= _p1n)
 				sb.append("_p1y,");
 			else
 				sb.append("_p1n,");
 
-			float _p2y = Float.parseFloat(mlp.getP2y());
-			float _p2n = Float.parseFloat(mlp.getP2n());
+			float _p2y = mlp.getP2y();
+			float _p2n = mlp.getP2n();
 			if (_p2y >= _p2n)
 				sb.append("_p2y,");
 			else
@@ -228,5 +292,20 @@ public class ReadPrediction {
 		return dominList;
 
 	}
->>>>>>> d89d2e0d5a3a27c888cf0d3be343a13bef471191
+
+
+	public void htftMostPoint() {
+
+	}
+
+	public Map<Integer, List<BaseMatchLinePred>> getMatchLinePred() {
+		return matchLinePred;
+	}
+
+	public void setDayMatchLinePred(
+			Map<Integer, List<BaseMatchLinePred>> dayMatchLinePred) {
+		this.matchLinePred = dayMatchLinePred;
+	}
+
+
 }

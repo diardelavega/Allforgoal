@@ -166,39 +166,39 @@ public class Bari91UpCommingOdds {
 				}
 
 				// logger.info("{} {} {}", country, compName, level);
-				double _1 = 1, _x = 1, _2 = 1, _o = 1, _u = 1;
+				float _1 = 1, _x = 1, _2 = 1, _o = 1, _u = 1;
 
 				if (tr.getElementsByTag("td").get(3).text() != " ") {
 					try {
-						_1 = Double.parseDouble(tr.getElementsByTag("td")
+						_1 = Float.parseFloat(tr.getElementsByTag("td")
 								.get(3).text());
 					} catch (NumberFormatException e) {
 					}
 				}
 				if (tr.getElementsByTag("td").get(4).text() != " ") {
 					try {
-						_x = Double.parseDouble(tr.getElementsByTag("td")
+						_x = Float.parseFloat(tr.getElementsByTag("td")
 								.get(4).text());
 					} catch (NumberFormatException e) {
 					}
 				}
 				if (tr.getElementsByTag("td").get(5).text() != " ") {
 					try {
-						_2 = Double.parseDouble(tr.getElementsByTag("td")
+						_2 = Float.parseFloat(tr.getElementsByTag("td")
 								.get(5).text());
 					} catch (NumberFormatException e) {
 					}
 				}
 				if (tr.getElementsByTag("td").get(6).text() != " ") {
 					try {
-						_o = Double.parseDouble(tr.getElementsByTag("td")
+						_o = Float.parseFloat(tr.getElementsByTag("td")
 								.get(6).text());
 					} catch (NumberFormatException e) {
 					}
 				}
 				if (tr.getElementsByTag("td").get(7).text() != " ") {
 					try {
-						_u = Double.parseDouble(tr.getElementsByTag("td")
+						_u = Float.parseFloat(tr.getElementsByTag("td")
 								.get(7).text());
 					} catch (NumberFormatException e) {
 					}
