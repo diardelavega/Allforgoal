@@ -1,16 +1,29 @@
 package api.rest;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import api.functionality.CommonAdversariesHandler;
 import api.functionality.CompIdToCountryCompCompID;
 import api.functionality.MatchPredLineHandler;
 import api.functionality.WeekMatchHandler;
 import api.functionality.obj.CountryCompCompId;
+import api.functionality.obj.MPLPack;
+import basicStruct.CCAllStruct;
+import basicStruct.FullMatchLine;
+import extra.ServiceMsg;
+import structures.CountryCompetition;
+import structures.TimeVariations;
 
 import com.google.gson.Gson;
 
@@ -22,6 +35,9 @@ import com.google.gson.Gson;
 
 @Path("/services")
 public class Service {
+	public static final Logger log = LoggerFactory.getLogger(Service.class);
+
+	private CountryCompetition cc = new CountryCompetition();
 
 	@GET
 	@Path("/redweekly")
@@ -54,8 +70,7 @@ public class Service {
 
 	@GET
 	@Path("/predwdl/{compid}")
-	public String competitionMatchPredLineWithWDL(
-			@PathParam("compid") int compId) throws SQLException {
+	public String competitionMatchPredLineWithWDL(@PathParam("compid") int compId) throws SQLException {
 		// from compId get country & competition
 		CompIdToCountryCompCompID ctccci = new CompIdToCountryCompCompID();
 		CountryCompCompId ccci = ctccci.search(compId);
@@ -69,8 +84,7 @@ public class Service {
 
 	@GET
 	@Path("/wdldata/{compid}")
-	public String competitionWDL(@PathParam("compid") int compId)
-			throws SQLException {
+	public String competitionWDL(@PathParam("compid") int compId) throws SQLException {
 		/* get only the wdl data of this specific competition */
 		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
 		MatchPredLineHandler mph = new MatchPredLineHandler();
@@ -83,8 +97,7 @@ public class Service {
 
 	@GET
 	@Path("/redweekmatches/{compid}")
-	public String weekMatchesRed(@PathParam("compid") int compId)
-			throws SQLException {
+	public String weekMatchesRed(@PathParam("compid") int compId) throws SQLException {
 		/*
 		 * get the weekly data for a competition, including
 		 * form,atack,score,defence,etc.
@@ -96,8 +109,7 @@ public class Service {
 
 	@GET
 	@Path("/redcommon/{compid}")
-	public String commonAdversariesRed(@PathParam("compid") int compId)
-			throws SQLException {
+	public String commonAdversariesRed(@PathParam("compid") int compId) throws SQLException {
 		/*
 		 * Check to see if the static map has the data required
 		 */
@@ -112,27 +124,42 @@ public class Service {
 	// ---------------------------------------
 
 	@GET
-	@Path("/predline/{nr}")
-	public String matchPredictionLine(@PathParam("nr") int nr)
+	@Path("/predline/{datstamp}/{nr}")
+	public String matchPredictionLine(@PathParam("datstamp") String datstamp, @PathParam("nr") int nr)
 			throws SQLException {
-		// nr is the number of times a msg was sent (msg is a list of MPL from a
-		// competition || ore more than one comp
-		// depending on the size of them)
-		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(112);
-		// new CountryCompCompId("Sweden", "Superettan",
-		// 164);
+		LocalDate ld;
+		try {
+			ld = LocalDate.parse(datstamp);
+		} catch (Exception e) {
+			log.info(" received date string was not parsed correctly");
+			e.printStackTrace();
+			return ("{msg:'" + ServiceMsg.DATE_ERR_PARSE + "'}");
+		}
 
-		MatchPredLineHandler mph = new MatchPredLineHandler();
-		// mph.doer(164, "Superettan", "Sweden");
-		mph.doer(ccci);
+		List<Integer> keyList = new ArrayList<>(TimeVariations.mapMPL.get(ld).keySet());
+		nr++;// get the next set of matches
+		if (nr >= keyList.size()) {
+			return ("{msg:'" + ServiceMsg.SERI_END + "'}");
+		}
+
+		List<FullMatchLine> list_fml;// = new ArrayList<>();
+		List<MPLPack> packlist = new ArrayList<>();
+		do {
+			list_fml = new ArrayList<>();
+			list_fml.addAll(TimeVariations.mapMPL.get(ld).get(keyList.get(nr)));
+			CCAllStruct ccdata = ccalExtract(list_fml.get(0).getComId());
+			MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), nr, list_fml);
+			packlist.add(pack);
+			nr++;
+		} while (list_fml.size() < 10 || nr >= keyList.size());
+
 		Gson gson = new Gson();
-		ccci.setObj(mph.getMatchPredLine());
-		String jo = gson.toJson(ccci);
-		return jo;
+		String jo = gson.toJson(packlist);
+		return "jo";
 	}
 
-	// TODO return week match data {the data from all the matches of a
-	// competition so far, to fill the graphs and stuff}
-	
-	
+	private CCAllStruct ccalExtract(int cid) {
+		int ind = CountryCompetition.idToIdx.get(cid);
+		return CountryCompetition.ccasList.get(ind);
+	}
 }
