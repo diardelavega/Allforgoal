@@ -18,7 +18,7 @@ public class CompIdToCountryCompCompID {
 		int idx = CountryCompetition.idToIdx.get(compId);
 		CCAllStruct cc = CountryCompetition.ccasList.get(idx);
 		return (new CountryCompCompId(cc.getCountry(), cc.getCompetition(),
-				compId));
+				compId,0));
 
 		/*
 		 * Conn conn = new Conn(); conn.open();

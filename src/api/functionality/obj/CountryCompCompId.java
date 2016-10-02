@@ -4,11 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CountryCompCompId {
-public static Logger log = LoggerFactory.getLogger(CountryCompCompId.class);
-	
+	public static Logger log = LoggerFactory.getLogger(CountryCompCompId.class);
+
 	private String country;
 	private String competition;
 	private int compId;
+	private int serinr;
 	private Object obj;
 
 	public CountryCompCompId() {
@@ -16,11 +17,12 @@ public static Logger log = LoggerFactory.getLogger(CountryCompCompId.class);
 		// TODO Auto-generated constructor stub
 	}
 
-	public CountryCompCompId(String country, String competition, int compId) {
+	public CountryCompCompId(String country, String competition, int compId, int serinr) {
 		super();
 		this.country = country;
 		this.competition = competition;
 		this.compId = compId;
+		this.serinr = serinr;
 	}
 
 	public String getCountry() {
@@ -55,7 +57,15 @@ public static Logger log = LoggerFactory.getLogger(CountryCompCompId.class);
 		this.obj = obj;
 	}
 
-	public void showLine(){
-		log.info("{}   {}   {}",country,competition,compId);
+	public int getSerinr() {
+		return serinr;
+	}
+
+	public void setSerinr(int serinr) {
+		this.serinr = serinr;
+	}
+
+	public void showLine() {
+		log.info("{}   {}   {}", country, competition, compId);
 	}
 }
