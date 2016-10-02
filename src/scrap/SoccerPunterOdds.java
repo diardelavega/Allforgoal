@@ -201,10 +201,10 @@ public class SoccerPunterOdds {
 		for (int i = 0; i < MatchGetter.schedNewMatches.get(compId).size(); i++) {
 			if (MatchGetter.schedNewMatches.get(compId).get(i).getFt1() != -1) {
 				finishReviewingFlag = false;
-				d1 = StringSimilarity.levenshteinDistance(
+				d1 = StringSimilarity.teamSimilarity(
 						MatchGetter.schedNewMatches.get(compId).get(i).getT1(),
 						t1);
-				d2 = StringSimilarity.levenshteinDistance(
+				d2 = StringSimilarity.teamSimilarity(
 						MatchGetter.schedNewMatches.get(compId).get(i).getT2(),
 						t2);
 				if (d1 + d2 < td) {
