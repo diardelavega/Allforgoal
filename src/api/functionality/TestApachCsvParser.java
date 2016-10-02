@@ -116,7 +116,7 @@ public class TestApachCsvParser {
 
 	public static void matchPredWithWDL() throws SQLException {
 		CountryCompCompId ccci = new CountryCompCompId("Sweden", "Superettan",
-				164);
+				164,0);
 		ccci.showLine();
 		MatchPredLineHandler mph = new MatchPredLineHandler();
 		// mph.doer(164, "Superettan", "Sweden");
