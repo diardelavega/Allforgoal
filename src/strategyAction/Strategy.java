@@ -181,6 +181,7 @@ public class Strategy {
 		ldg.writeMatchStructs();
 		ldg.writeMeta(lastDatCheck);
 
+		testPredFileMaker();// create test files for the scheduled matches
 		storeToSmallDBs(); // store in temp and recent matches
 
 		// testPredFileMaker();// test file create
@@ -231,19 +232,23 @@ public class Strategy {
 		 * not have anything to do. Prediction points are added at the end of
 		 * the exwcution,(after a response from the R functions har returned)
 		 */
-		logger.info("sched pred today  size: {}", TimeVariations.todayComps.size());
+		logger.info("sched pred today  size: {}",
+				TimeVariations.todayComps.size());
 		if (TimeVariations.todayComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
-			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs, LocalDate.now());
+			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs,
+					LocalDate.now());
 			rs.startReq();
 		}
 	}
 
 	private void schedulePredictionTomorrow() {
-		logger.info("sched pred tomorow  size: {}", TimeVariations.tomorrowComps.size());
+		logger.info("sched pred tomorow  size: {}",
+				TimeVariations.tomorrowComps.size());
 		if (TimeVariations.tomorrowComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
-			rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps, AttsKind.hs, LocalDate.now().plusDays(1));
+			rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps,
+					AttsKind.hs, LocalDate.now().plusDays(1));
 			rs.startReq();
 		}
 	}
@@ -299,7 +304,7 @@ public class Strategy {
 		// return false;
 	}
 
-	public void storeToSmallDBs() throws SQLException {
+	public void storeToSmallDBs() throws SQLException, IOException {
 		/* store to tempmatches and recentmatches */
 		logger.info("storing to temp and recent matches");
 		tmf.storeToTempMatchesDB();

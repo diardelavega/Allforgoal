@@ -15,8 +15,8 @@ public class Conn {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			conn = DriverManager
 					.getConnection("jdbc:mysql://localhost:3306/bast?autoReconnect=true&useSSL=false", "root",
-							"root");//black butler
-//							"SanSalvador3#");//bolivari
+//							"root");//black butler
+							"SanSalvador3#");//bolivari
 			flag = true;
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException e) {

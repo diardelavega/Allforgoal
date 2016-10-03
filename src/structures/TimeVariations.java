@@ -51,8 +51,8 @@ public class TimeVariations {
 			TempMatchFunctions tmf = new TempMatchFunctions();
 			Map<Integer, List<FullMatchLine>> tempMap = new HashMap<Integer, List<FullMatchLine>>();
 			List<FullMatchLine> tempList = new ArrayList<FullMatchLine>();
-
 			List<FullMatchLine> list = tmf.readFullFromRecentMatches(ld);
+			
 			for (int i = 0; i < list.size(); i++) {
 				if(tempMap.keySet().contains(list.get(i).getComId())){
 					//map has data for this competition
@@ -65,6 +65,7 @@ public class TimeVariations {
 				}
 			}
 			mapMPL.put(ld, tempMap);
+			log.info(" in MPL map matches : {},  comps-{}",list.size(),mapMPL.size());
 		}
 	}
 

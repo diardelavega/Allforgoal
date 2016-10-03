@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import api.functionality.obj.MPLPack;
 import basicStruct.CCAllStruct;
@@ -24,7 +25,9 @@ public class ServTest {
 			.getLogger(ServTest.class);
 	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
-	log.info("{}",matchPredictionLine("2016-09-01",0));
+		TimeVariations tv = new TimeVariations();
+		tv.initMPL();
+	log.info("{}",matchPredictionLine("2016-10-03",0));
 	}
 
 	
@@ -36,9 +39,18 @@ public class ServTest {
 		} catch (Exception e) {
 			log.info(" received date string was not parsed correctly");
 			e.printStackTrace();
+			
 			return ("{msg:'" + ServiceMsg.DATE_ERR_PARSE + "'}");
+//			{msg:'DATE NO RECORDS'}
 		}
 
+		if(TimeVariations.mapMPL.get(ld)==null){
+			log.info("no matches @ that date");
+//			Gson gson = new Gson();
+//			String jo = gson.toJson(ServiceMsg.DATE_ERR_PARSE);
+//			return jo;
+			return ("{msg:'" + ServiceMsg.DATE_NO_REC+ "'}");
+		}
 		List<Integer> keyList = new ArrayList<>(TimeVariations.mapMPL.get(ld).keySet());
 		nr++;// get the next set of matches
 		if (nr >= keyList.size()) {
@@ -54,7 +66,7 @@ public class ServTest {
 			MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), nr, list_fml);
 			packlist.add(pack);
 			nr++;
-		} while (list_fml.size() < 10 || nr >= keyList.size());
+		} while (list_fml.size() < 10 || nr < keyList.size());
 
 		Gson gson = new Gson();
 		String jo = gson.toJson(packlist);
