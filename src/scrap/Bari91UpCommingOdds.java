@@ -90,7 +90,7 @@ public class Bari91UpCommingOdds {
 
 	private boolean remainingFlag = false;
 
-	private Gson gson = new Gson();
+	// private Gson gson = new Gson();
 	private CountryCompetition cc = new CountryCompetition();
 	private FileHandler fh = new FileHandler();
 
@@ -107,15 +107,15 @@ public class Bari91UpCommingOdds {
 		Document doc = null;
 		try {
 			logger.info("getting page : {}", url);
-//			doc = Jsoup.parse(new File(
-//					"C:/Users/Administrator/Desktop/skedina/bari91_1.html"),
-//					"UTF-8");
+			// doc = Jsoup.parse(new File(
+			// "C:/Users/Administrator/Desktop/skedina/bari91_1.html"),
+			// "UTF-8");
 
-			 doc = Jsoup
-			 .connect(url)
-			 .userAgent(
-			 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-			 .maxBodySize(0).timeout(600000).get();
+			doc = Jsoup
+					.connect(url)
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.101 Safari/537.36 OPR/40.0.2308.62")
+					.maxBodySize(0).timeout(600000).get();
 			logger.info("Page aquired");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -123,8 +123,12 @@ public class Bari91UpCommingOdds {
 			logger.warn("---------:Connection not possible  {}", errorStatus);
 			return;
 		}
-
-		Elements trs = doc.getElementsByClass("vrsta");
+		logger.info("{}", doc);
+		Element mid_tab = doc.getElementsByClass("middle-panel").get(0);
+		Element div = mid_tab.getElementsByClass("padding-10").get(0);
+		// Class("middle-panel").get(0);
+		Elements trs = div.getElementsByTag("table tbody tr");
+		// Class("vrsta");
 		int compId = 1;
 		for (Element tr : trs) {
 			String ss = tr.getElementsByTag("td").get(1).text();
@@ -133,7 +137,7 @@ public class Bari91UpCommingOdds {
 			}
 
 			ss = ss.replaceFirst("\u00A0", "");
-//			logger.info("'{}'",ss);
+			// logger.info("'{}'",ss);
 			// --------------------Check if already stored-------
 			if (tempBariToCompId.get(ss) == null) {
 				if (btpNotAllowed.contains(ss) == true) {
@@ -152,11 +156,12 @@ public class Bari91UpCommingOdds {
 
 			if (compId >= 0) {// valid comp id; search Scprer matches & add odds
 				if (MatchGetter.schedNewMatches.get(compId) == null) {
-					// there is no such competition matches @ scorer, xscorer 
+					// there is no such competition matches @ scorer, xscorer
 					continue;
 				}
 
-				String[] teams = tr.getElementsByTag("td").get(2).text().replaceFirst("\u00A0", "").split(" - ");
+				String[] teams = tr.getElementsByTag("td").get(2).text()
+						.replaceFirst("\u00A0", "").split(" - ");
 
 				int k = teamCombinationScorerBari(teams[0], teams[1], compId);
 				if (k == StandartResponses.DEFAULT_NULL)
@@ -170,36 +175,36 @@ public class Bari91UpCommingOdds {
 
 				if (tr.getElementsByTag("td").get(3).text() != " ") {
 					try {
-						_1 = Float.parseFloat(tr.getElementsByTag("td")
-								.get(3).text());
+						_1 = Float.parseFloat(tr.getElementsByTag("td").get(3)
+								.text());
 					} catch (NumberFormatException e) {
 					}
 				}
 				if (tr.getElementsByTag("td").get(4).text() != " ") {
 					try {
-						_x = Float.parseFloat(tr.getElementsByTag("td")
-								.get(4).text());
+						_x = Float.parseFloat(tr.getElementsByTag("td").get(4)
+								.text());
 					} catch (NumberFormatException e) {
 					}
 				}
 				if (tr.getElementsByTag("td").get(5).text() != " ") {
 					try {
-						_2 = Float.parseFloat(tr.getElementsByTag("td")
-								.get(5).text());
+						_2 = Float.parseFloat(tr.getElementsByTag("td").get(5)
+								.text());
 					} catch (NumberFormatException e) {
 					}
 				}
 				if (tr.getElementsByTag("td").get(6).text() != " ") {
 					try {
-						_o = Float.parseFloat(tr.getElementsByTag("td")
-								.get(6).text());
+						_o = Float.parseFloat(tr.getElementsByTag("td").get(6)
+								.text());
 					} catch (NumberFormatException e) {
 					}
 				}
 				if (tr.getElementsByTag("td").get(7).text() != " ") {
 					try {
-						_u = Float.parseFloat(tr.getElementsByTag("td")
-								.get(7).text());
+						_u = Float.parseFloat(tr.getElementsByTag("td").get(7)
+								.text());
 					} catch (NumberFormatException e) {
 					}
 				}
@@ -222,17 +227,17 @@ public class Bari91UpCommingOdds {
 		 * its odds altered with the scraped odds.
 		 */
 
-		//-------------------TEST
-//		for (Integer key : MatchGetter.schedNewMatches.keySet())
-//		Integer key =		compId;
-//			for (int i = 0; i < MatchGetter.schedNewMatches.get(key).size(); i++) {
-//				if (MatchGetter.schedNewMatches.get(key).get(i).getFt1() != -1) {
-//					logger.info("{},  {} - {}",key,MatchGetter.schedNewMatches.get(compId).get(i).getT2(),MatchGetter.schedNewMatches.get(compId).get(i).getT1());
-//				}
-//			}
-//		-------------
-		
-		
+		// -------------------TEST
+		// for (Integer key : MatchGetter.schedNewMatches.keySet())
+		// Integer key = compId;
+		// for (int i = 0; i < MatchGetter.schedNewMatches.get(key).size(); i++)
+		// {
+		// if (MatchGetter.schedNewMatches.get(key).get(i).getFt1() != -1) {
+		// logger.info("{},  {} - {}",key,MatchGetter.schedNewMatches.get(compId).get(i).getT2(),MatchGetter.schedNewMatches.get(compId).get(i).getT1());
+		// }
+		// }
+		// -------------
+
 		if (btsTeams.get(t1) != null) {
 			t1 = btsTeams.get(t1);
 		}
@@ -240,16 +245,22 @@ public class Bari91UpCommingOdds {
 			t2 = btsTeams.get(t2);
 		}
 
-		float d1 = 0, d2 = 0, td = 1000 ;
+		float d1 = 0, d2 = 0, td = 1000;
 		float mind1 = 1000, mind2 = 1000;
-		int k=-1;
+		int k = -1;
 
 		for (int i = 0; i < MatchGetter.schedNewMatches.get(compId).size(); i++) {
 			// dismis previously combined matches -1 the taken ones
 			if (MatchGetter.schedNewMatches.get(compId).get(i).getFt1() != -1) {
-				logger.info("{}  {}",MatchGetter.schedNewMatches.get(compId).get(i).getT1(),MatchGetter.schedNewMatches.get(compId).get(i).getT2());
-				d1 = StringSimilarity.teamSimilarity(MatchGetter.schedNewMatches.get(compId).get(i).getT1(),t1);
-				d2 = StringSimilarity.teamSimilarity(MatchGetter.schedNewMatches.get(compId).get(i).getT2(),t2);
+				logger.info("{}  {}", MatchGetter.schedNewMatches.get(compId)
+						.get(i).getT1(), MatchGetter.schedNewMatches
+						.get(compId).get(i).getT2());
+				d1 = StringSimilarity.teamSimilarity(
+						MatchGetter.schedNewMatches.get(compId).get(i).getT1(),
+						t1);
+				d2 = StringSimilarity.teamSimilarity(
+						MatchGetter.schedNewMatches.get(compId).get(i).getT2(),
+						t2);
 				if (d1 + d2 < td) {
 					k = i;
 					td = d1 + d2;
@@ -322,7 +333,7 @@ public class Bari91UpCommingOdds {
 			return cc.ccasList.get(compIdx).getCompId();
 		} else {
 
-//			logger.info("unaccepted ---- '{}'", ss);
+			// logger.info("unaccepted ---- '{}'", ss);
 			return compIdx;// -1
 		}
 
@@ -333,7 +344,7 @@ public class Bari91UpCommingOdds {
 		 * exctract the name of the country and copetition or country and
 		 * division level
 		 */
-//		s = s.replaceFirst("\u00A0", "");
+		// s = s.replaceFirst("\u00A0", "");
 		String[] ss;
 		if (s.contains(",")) {
 			ss = s.split(", ");
@@ -400,7 +411,6 @@ public class Bari91UpCommingOdds {
 		return level;
 	}
 
-	
 	// ////////////STORE & READ//////////////////
 	public void storeSched(Document d) {
 		File dir = new File("C:/m/");

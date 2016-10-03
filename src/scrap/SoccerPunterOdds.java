@@ -96,7 +96,7 @@ public class SoccerPunterOdds {
 						.first().text());
 
 				// TODO check if match is oddFree
-				int k = teamCombinationScorerOdder(t1, t1, compId);
+				int k = teamCombinationScorerOdder(t1, t2, compId);
 				// @ map with compId, @ the idx k of the list the match is it.
 				if (k < 0) {
 					continue;
