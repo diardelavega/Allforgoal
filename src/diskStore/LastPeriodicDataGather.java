@@ -41,6 +41,37 @@ public class LastPeriodicDataGather {
 
 	File meta = new File("C:/BastData/TempData/meta");
 
+	public void precheck() throws IOException {
+		File folder = new File("C:/BastData/TempData");
+		if (!folder.exists())
+			folder.mkdirs();
+		if (!meta.exists()) {
+			meta.createNewFile();
+			// meta.
+		}
+		if (!sch.exists()) {
+			sch.createNewFile();
+		}
+		if (!fin.exists()) {
+			fin.createNewFile();
+		}
+		if (!err.exists()) {
+			err.createNewFile();
+		}
+		if (!odd.exists()) {
+			odd.createNewFile();
+		}
+		if (!yes.exists()) {
+			yes.createNewFile();
+		}
+		if (!tod.exists()) {
+			tod.createNewFile();
+		}
+		if (!tom.exists()) {
+			tom.createNewFile();
+		}
+	}
+
 	public void writeLastSch() throws IOException {
 		FileOutputStream fos = new FileOutputStream(sch);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -52,8 +83,7 @@ public class LastPeriodicDataGather {
 		FileInputStream fis = new FileInputStream(sch);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		MatchGetter.schedNewMatches.clear();
-		MatchGetter.schedNewMatches = (Map<Integer, List<MatchObj>>) ois
-				.readObject();
+		MatchGetter.schedNewMatches = (Map<Integer, List<MatchObj>>) ois.readObject();
 		ois.close();
 	}
 
@@ -110,8 +140,7 @@ public class LastPeriodicDataGather {
 		oos.close();
 	}
 
-	public void readLastYesterdayComp() throws IOException,
-			ClassNotFoundException {
+	public void readLastYesterdayComp() throws IOException, ClassNotFoundException {
 		FileInputStream fis = new FileInputStream(yes);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		TimeVariations.yesterdayComps.clear();
@@ -141,8 +170,7 @@ public class LastPeriodicDataGather {
 		oos.close();
 	}
 
-	public void readLasttomorrowComps() throws IOException,
-			ClassNotFoundException {
+	public void readLasttomorrowComps() throws IOException, ClassNotFoundException {
 		FileInputStream fis = new FileInputStream(tom);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		TimeVariations.tomorrowComps.clear();
@@ -172,23 +200,22 @@ public class LastPeriodicDataGather {
 		writeLasttomorrowComp();
 	}
 
-	public boolean hourlyFileFilledCheck() throws ClassNotFoundException,
-			IOException {
+	public boolean hourlyFileFilledCheck() throws ClassNotFoundException, IOException {
 		// calc the difference between the last stored datetime and the current
 		// one. Check if that differeence is smaller than the scheduled periodic
 		// time for re-grub&update
 		if (sch.exists() && sch.length() > 10) {
 			long diff = 100;
 			try {
-				diff = ChronoUnit.HOURS
-						.between(readMeta(), LocalDateTime.now());
+				diff = ChronoUnit.HOURS.between(readMeta(), LocalDateTime.now());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			if (diff > PeriodicTimes.PERIOD)
 				return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	public boolean yesterdayFilledCheck() {
@@ -220,8 +247,7 @@ public class LastPeriodicDataGather {
 		if (fileExzistence(meta)) {
 			FileInputStream fis = new FileInputStream(meta);
 			ObjectInputStream ois = new ObjectInputStream(fis);
-			LocalDateTime ldt = (LocalDateTime) LocalDateTime.parse(ois
-					.readUTF());
+			LocalDateTime ldt = (LocalDateTime) LocalDateTime.parse(ois.readUTF());
 			ois.close();
 			return ldt;
 		}

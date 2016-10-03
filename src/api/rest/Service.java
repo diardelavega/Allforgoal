@@ -155,7 +155,7 @@ public class Service {
 
 		Gson gson = new Gson();
 		String jo = gson.toJson(packlist);
-		return "jo";
+		return jo;
 	}
 
 	private CCAllStruct ccalExtract(int cid) {

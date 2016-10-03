@@ -123,7 +123,7 @@ public class Bari91UpCommingOdds {
 			logger.warn("---------:Connection not possible  {}", errorStatus);
 			return;
 		}
-
+logger.info("{}",doc);
 		Elements trs = doc.getElementsByClass("vrsta");
 		int compId = 1;
 		for (Element tr : trs) {

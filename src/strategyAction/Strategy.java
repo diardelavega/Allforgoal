@@ -130,10 +130,16 @@ public class Strategy {
 	public void startPartTask() throws ClassNotFoundException, IOException,
 			SQLException {
 		// in case os partial usage.. check the timestamp in the file
+		ldg.precheck();
 		if (ldg.hourlyFileFilledCheck()) {
 			score.getScheduledToday();
 			score.getScheduledTomorrow();
 			// a list of compIds playing today & tomorrow is created
+			ldg.writeMatchStructs();
+			ldg.writeMeta(lastDatCheck);
+		} else {
+			ldg.readMatchStructs();
+		}
 			scheduledOddsAdderToday();
 			scheduledOddsAdderTomorrow(lastDatCheck);
 
@@ -142,9 +148,8 @@ public class Strategy {
 
 			ldg.writeMatchStructs();
 			ldg.writeMeta(lastDatCheck);
-		} else {
-			ldg.readMatchStructs();
-		}
+		
+//		}
 		storeToSmallDBsCondition(lastDatCheck);// store condition
 		score.clearLists();
 
@@ -325,8 +330,8 @@ public class Strategy {
 		 * go to the specific websites and get the odds for the matches to
 		 * analize.
 		 */
-		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
-		b91.scrapBariPage(lastDatCheck);
+//		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+//		b91.scrapBariPage(lastDatCheck);
 
 		// whent ofline
 		// OddsNStats ons = new OddsNStats();
