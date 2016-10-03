@@ -1,5 +1,7 @@
 package api.rest;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,9 +27,17 @@ public class ServTest {
 			.getLogger(ServTest.class);
 	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
-		TimeVariations tv = new TimeVariations();
-		tv.initMPL();
-	log.info("{}",matchPredictionLine("2016-10-03",0));
+		try { 
+			log.info("{}",InetAddress.getLocalHost().getHostName());
+		log.info("--{}",System.getenv("COMPUTERNAME"));
+			System.out.println(Runtime.getRuntime().exec("hostname"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		TimeVariations tv = new TimeVariations();
+//		tv.initMPL();
+//	log.info("{}",matchPredictionLine("2016-10-03",0));
 	}
 
 	

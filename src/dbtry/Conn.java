@@ -13,10 +13,17 @@ public class Conn {
 		boolean flag = false;
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			String nam = System.getenv("COMPUTERNAME");
+			String pasw = "";
+			if (nam.contains("248321")) {
+				pasw = "SanSalvador3#";// bolivari
+			}
+			if (nam.contains("718978")) {
+				pasw = "root#";// black butler
+			}
 			conn = DriverManager
-					.getConnection("jdbc:mysql://localhost:3306/bast?autoReconnect=true&useSSL=false", "root",
-//							"root");//black butler
-							"SanSalvador3#");//bolivari
+					.getConnection(
+							"jdbc:mysql://localhost:3306/bast?autoReconnect=true&useSSL=false", "root", pasw);
 			flag = true;
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException e) {
