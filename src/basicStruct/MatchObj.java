@@ -2,8 +2,9 @@ package basicStruct;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDate;
 
-public class MatchObj implements Serializable{
+public class MatchObj implements Serializable {
 
 	/**
 	 * 
@@ -15,20 +16,19 @@ public class MatchObj implements Serializable{
 	protected String t2;
 	protected int ft1;
 	protected int ft2;
-	protected int ht1  ;
-	protected int ht2  ;
-	protected float _1=1;
-	protected float _2=1;
-	protected float _x=1;
+	protected int ht1;
+	protected int ht2;
+	protected float _1 = 1;
+	protected float _2 = 1;
+	protected float _x = 1;
 
-	protected float _o=1;
-	protected float _u=1;
+	protected float _o = 1;
+	protected float _u = 1;
 	protected Date dat;
 	protected String matchTime;
 
-	public MatchObj(long mId, int comId, String t1, String t2, int ft1,
-			int ft2, int ht1, int ht2, float _1, float _2, float _x,
-			float _o, float _u, Date dat) {
+	public MatchObj(long mId, int comId, String t1, String t2, int ft1, int ft2, int ht1, int ht2, float _1, float _2,
+			float _x, float _o, float _u, Date dat) {
 		super();
 		this.mId = mId;
 		this.comId = comId;
@@ -44,29 +44,49 @@ public class MatchObj implements Serializable{
 		this._o = _o;
 		this._u = _u;
 		this.dat = dat;
-	}
-	
-	public MatchObj(long mId, int comId, String t1, String t2, int ft1,
-			int ft2, int ht1, int ht2, float _1, float _2, float _x,
-			float _o, float _u, Date dat, String mtime) {
-		super();
-		this.mId = mId;
-		this.comId = comId;
-		this.t1 = t1;
-		this.t2 = t2;
-		this.ft1 = ft1;
-		this.ft2 = ft2;
-		this.ht1 = ht1;
-		this.ht2 = ht2;
-		this._1 = _1;
-		this._2 = _2;
-		this._x = _x;
-		this._o = _o;
-		this._u = _u;
-		this.dat = dat;
-		this.matchTime=mtime;
 	}
 
+	public MatchObj(long mId, int comId, String t1, String t2, int ft1, int ft2, int ht1, int ht2, float _1, float _2,
+			float _x, float _o, float _u, Date dat, String mtime) {
+		super();
+		this.mId = mId;
+		this.comId = comId;
+		this.t1 = t1;
+		this.t2 = t2;
+		this.ft1 = ft1;
+		this.ft2 = ft2;
+		this.ht1 = ht1;
+		this.ht2 = ht2;
+		this._1 = _1;
+		this._2 = _2;
+		this._x = _x;
+		this._o = _o;
+		this._u = _u;
+		this.dat = dat;
+		this.matchTime = mtime;
+	}
+
+	public MatchObj(long mId, int comId, String t1, String t2, int ft1, int ft2, int ht1, int ht2, float _1, float _2,
+			float _x, float _o, float _u, LocalDate dat, String mtime) {
+		super();
+		this.mId = mId;
+		this.comId = comId;
+		this.t1 = t1;
+		this.t2 = t2;
+		this.ft1 = ft1;
+		this.ft2 = ft2;
+		this.ht1 = ht1;
+		this.ht2 = ht2;
+		this._1 = _1;
+		this._2 = _2;
+		this._x = _x;
+		this._o = _o;
+		this._u = _u;
+		this.dat = Date.valueOf(dat);
+		this.matchTime = mtime;
+	}
+
+	
 	public MatchObj() {
 	}
 
@@ -178,11 +198,18 @@ public class MatchObj implements Serializable{
 		return dat;
 	}
 
+	public LocalDate getLocalDat() {
+		return dat.toLocalDate();
+	}
+
+	public void setLocalDat(LocalDate dat) {
+		this.dat = Date.valueOf(dat);
+	}
+
 	public void setDat(Date dat) {
 		this.dat = dat;
 	}
 
-	
 	public String getMatchTime() {
 		return matchTime;
 	}
@@ -203,6 +230,8 @@ public class MatchObj implements Serializable{
 
 	public String printMatch() {
 		StringBuilder sb = new StringBuilder();
+		sb.append(mId);
+		sb.append(",  ");
 		sb.append(dat);
 		sb.append(",  ");
 		sb.append(matchTime);
@@ -230,8 +259,8 @@ public class MatchObj implements Serializable{
 		sb.append(_o);
 		sb.append(",  ");
 		sb.append(_u);
-//		sb.append(",  ");
-//		System.out.println(sb.toString());
+		// sb.append(", ");
+		// System.out.println(sb.toString());
 		return sb.toString();
 
 	}

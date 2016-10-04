@@ -1,5 +1,6 @@
 package api.rest;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import com.google.gson.JsonObject;
 import api.functionality.obj.MPLPack;
 import basicStruct.CCAllStruct;
 import basicStruct.FullMatchLine;
+import demo.Demo;
 import extra.ServiceMsg;
 import structures.CountryCompetition;
 import structures.TimeVariations;
@@ -25,9 +27,21 @@ public class ServTest {
 			.getLogger(ServTest.class);
 	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
-		TimeVariations tv = new TimeVariations();
-		tv.initMPL();
-	log.info("{}",matchPredictionLine("2016-10-03",0));
+//		TimeVariations tv = new TimeVariations();
+//		tv.initMPL();
+//	log.info("{}",matchPredictionLine("2016-10-03",0));
+		try {
+			Demo.initCCAllStruct();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		MPLFill mplfill = new MPLFill();
+		mplfill.fakeFiller();
+//		mplfill.spiller();
+//		mplfill .ranGen();
+//		mplfill .rntest();
+		log.info(matchPredictionLine("2016-10-04",0));
 	}
 
 	
