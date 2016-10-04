@@ -19,8 +19,9 @@ public class Conn {
 				pasw = "SanSalvador3#";// bolivari
 			}
 			if (nam.contains("718978")) {
-				pasw = "root#";// black butler
+				pasw = "root";// black butler
 			}
+			System.out.println(nam+" "+pasw);
 			conn = DriverManager
 					.getConnection(
 							"jdbc:mysql://localhost:3306/bast?autoReconnect=true&useSSL=false", "root", pasw);
