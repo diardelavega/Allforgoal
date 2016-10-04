@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<!-- <title id="tit">Test P1</title> -->
+<script type="text/javascript">
+	var d = new Date();
+	var datstamp;
+
+	function datFormat() {
+		var correctDate = (d.getDate() > 9 ? d.getDate() : "0".concat(d
+				.getDate()));
+		console.log(correctDate);
+		datstamp = "'".concat(d.getFullYear(), "-", d.getMonth() + 1, "-",
+				correctDate, "'");
+		console.log(datstamp);
+	}
+	//d.getFullYear+" "+d.getMonth()+" "+d.getDate();
+	var seri = -1;
+	var str = {
+		'menu' : {
+			'id' : 'file',
+			'value' : 'File',
+			'popup' : {
+				'menuitem' : [ {
+					'value' : 'New',
+					'onclick' : 'CreateNewDoc()'
+				}, {
+					'value' : 'Open',
+					'onclick' : 'OpenDoc()'
+				}, {
+					'value' : 'Close',
+					'onclick' : 'CloseDoc()'
+				} ]
+			}
+		}
+	}
+
+	function jsondisply() {
+		/* console.log(str);
+		console.log(str.menu.popup.menuitem[1].value); */
+		if (o > 10)
+			return;
+		$("#div1").append(o);
+		o++;
+		jsondisply(o);
+	}
+
+	function onloadfunc() {
+		datFormat();
+		console.log(datstamp, seri);
+		mlpCall(datstamp, seri);
+	}
+</script>
+</head>
+<body onload="onloadfunc();">
+	<h1>Hi, world!</h1>
+
+
+	<input type="button" value="doSomething" onclick="jsondisply(2)" />
+	<table>
+		<thead>
+			<tr>
+				<th><a href="./p-1.html">yesterdate</a></th>
+				<th><a href="./p1.html">todate</a></th>
+				<th><a href="./p+1.html">tomdate</a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="3"><div id="div1" align="center"></div></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<script type="text/javascript">
+		function onloadfunc2() {
+			console.log("hua");
+			$("#div1").append(datstamp);
+		}
+	</script>
+
+
+	<script src="./js.js"></script>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="../jquery-1.11.0/jquery.min.js"></script>
+
+	<script type="text/javascript"
+		src="../PapaParse-4.1.2/papaparse.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
+	<script src="../js/bootstrap.min.js"></script>
+
+</body>
+</html>
