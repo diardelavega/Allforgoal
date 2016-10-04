@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.geometry.Side;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,20 +71,29 @@ public class TempMatchFunctions {
 		 * smaller levenstain distance.
 		 */
 		/*
-		 * find the most similar terms; add the to Unilang; delete
-		 * them from dbTeamsList so to be more efficient in the next
-		 * search. change the team names on the list
+		 * find the most similar terms; add the to Unilang; delete them from
+		 * dbTeamsList so to be more efficient in the next search. change the
+		 * team names on the list
 		 */
-		
+
 		List<String> dbTeams = new ArrayList<>();
 		int compId = -1;
 		int chosenDbIdx1 = -1, chosenDbIdx2 = -1;
+		float dist1 = 1000, dist2 = 1000, dist=0;
+		boolean foundTeamFlag = false;
+
 		for (int key : MatchGetter.schedNewMatches.keySet()) {
 			for (int kk = 0; kk < MatchGetter.schedNewMatches.get(key).size(); kk++) {
 				MatchObj m = MatchGetter.schedNewMatches.get(key).get(kk);
+				dist1 = 1000;
+				dist2 = 1000;
+				chosenDbIdx1 = -1;
+				chosenDbIdx2 = -1;
+
 				// first search in unilang
-				String t = ul.scoreTeamToCcas(m.getT1());
-				if (t == null) {
+				String t1 = ul.scoreTeamToCcas(m.getT1());
+				if (t1 == null) {
+					foundTeamFlag = false;
 					if (m.getComId() != compId) {// on new competition
 						dbTeams.clear();
 						dbTeams = queryCompTeams(m.getComId());
@@ -91,59 +102,112 @@ public class TempMatchFunctions {
 						}
 						compId = m.getComId();
 					}
-					chosenDbIdx1=corelationLoop( m.getT2(),dbTeams );
-
-					if (chosenDbIdx1 >= 0) {// if found coreleted team
-						logger.info( " corelating T1 --| x: m.T1= '{}' with   p: db.t= '{}' ", m.getT1(), dbTeams.get(chosenDbIdx1));
-						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
-						MatchGetter.schedNewMatches.get(key).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
-						dbTeams.remove(chosenDbIdx1);
-					} else {
-						logger.info("uncorelated T1 --| x: m.T1= '{}'", m.getT1());
-					}
 				} else {// not null( found in unilang)
-					MatchGetter.schedNewMatches.get(key).get(kk).setT1(t);
+//					MatchGetter.schedNewMatches.get(key).get(kk).setT1(t1);
+					foundTeamFlag = true;
+				}
+				if (!foundTeamFlag) {
+					for (int i = 0; i < dbTeams.size(); i++) {
+						logger.info("{}   vs   {}", m.getT1(), dbTeams.get(i), dist);
+						dist = StringSimilarity.teamSimilarity(m.getT1(), dbTeams.get(i));
+						if (dist1 > dist) {
+							dist1 = dist;
+							chosenDbIdx1 = i;
+						}
+					}
 				}
 
 				// second team corelation search
-				t = ul.scoreTeamToCcas(m.getT2());
-				if (t == null) {
-					chosenDbIdx2=corelationLoop( m.getT2(),dbTeams );
-					if (chosenDbIdx2 >= 0) {
-						logger.info( "corelating T2 --| x: m.T2= '{}'   p: db.t= '{}' ", m.getT2(), dbTeams.get(chosenDbIdx2));
-						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
-						MatchGetter.schedNewMatches.get(key).get(kk) .setT2(dbTeams.get(chosenDbIdx2));
-						dbTeams.remove(chosenDbIdx2);
-					} else {
-						logger.info("uncorelated T2 --| x: m.T2= '{}'", m.getT2());
+				String t2 = ul.scoreTeamToCcas(m.getT2());
+				if (t2 == null) {
+					foundTeamFlag = false;
+					if (m.getComId() != compId) {// on new competition
+						dbTeams.clear();
+						dbTeams = queryCompTeams(m.getComId());
+						if (dbTeams == null) {// not available competition
+							continue;
+						}
+						compId = m.getComId();
 					}
 				} else {
-					MatchGetter.schedNewMatches.get(key).get(kk).setT2(t);
+//					MatchGetter.schedNewMatches.get(key).get(kk).setT2(t2);
+					foundTeamFlag = true;
 				}
+				if (!foundTeamFlag) {
+					for (int i = 0; i < dbTeams.size(); i++) {
+						dist = StringSimilarity.teamSimilarity(m.getT2(),
+								dbTeams.get(i));
+						logger.info("{}   vs   {}", m.getT2(), dbTeams.get(i),
+								dist1);
+						if (dist2 > dist) {
+							dist2 = dist;
+							chosenDbIdx2 = i;
+						}
+					}
+				}
+
+				if(t1!=null && t2!=null){
+					MatchGetter.schedNewMatches.get(key).get(kk).setT1(dbTeams.get(chosenDbIdx1));
+					MatchGetter.schedNewMatches.get(key).get(kk).setT2(dbTeams.get(chosenDbIdx2));
+					continue;
+				}
+				
+				if ( dist1 < StandartResponses.TEAM_DIST && dist2 <StandartResponses.TEAM_DIST) {
+					MatchGetter.schedNewMatches.get(key).get(kk).setT1(dbTeams.get(chosenDbIdx1));
+					MatchGetter.schedNewMatches.get(key).get(kk).setT2(dbTeams.get(chosenDbIdx2));
+					continue;
+				}
+				
+				// last chance of corelating the teams; based on the distance of
+				// the other team
+				if ( dist1 > StandartResponses.TEAM_DIST && t1==null) {
+					if(t2!=null){
+						logger.info(
+								"RELATING t2:{} {}~unilang; & by matchBind t1:{} {}  ",
+								m.getT2(), t2,
+								m.getT1(), dbTeams.get(chosenDbIdx1));
+						MatchGetter.schedNewMatches.get(key).get(kk).setT2(t2);
+						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
+						MatchGetter.schedNewMatches.get(key).get(kk).setT1(dbTeams.get(chosenDbIdx1));
+					}
+					else if ( dist2 < StandartResponses.TEAM_DIST) {
+						logger.info(
+								"RELATING t2:{} {}; & by matchBind t1:{} {}  ",
+								m.getT2(), dbTeams.get(chosenDbIdx2),
+								m.getT1(), dbTeams.get(chosenDbIdx1));
+						MatchGetter.schedNewMatches.get(key).get(kk).setT2(dbTeams.get(chosenDbIdx2));
+						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
+						MatchGetter.schedNewMatches.get(key).get(kk).setT1(dbTeams.get(chosenDbIdx1));
+					}
+				}
+				
+				if ( dist2 > StandartResponses.TEAM_DIST && t2==null) {
+					if(t1!=null){
+						logger.info(
+								"RELATING t1:{} {}~unilang; & by matchBind t2:{} {}  ",
+								m.getT1(), t1,
+								m.getT2(), dbTeams.get(chosenDbIdx2));
+						MatchGetter.schedNewMatches.get(key).get(kk).setT1(t1);
+						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
+						MatchGetter.schedNewMatches.get(key).get(kk).setT2(dbTeams.get(chosenDbIdx2));
+					}
+					else if ( dist1 < StandartResponses.TEAM_DIST) {
+						logger.info(
+								"RELATING t1:{} {}; & by matchBind t2:{} {}  ",
+								m.getT1(), dbTeams.get(chosenDbIdx1),
+								m.getT2(), dbTeams.get(chosenDbIdx2));
+//						MatchGetter.schedNewMatches.get(key).get(kk).setT1(dbTeams.get(chosenDbIdx1));
+						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
+						MatchGetter.schedNewMatches.get(key).get(kk).setT2(dbTeams.get(chosenDbIdx2));
+					}
+				}
+
 			}
 		}
 	}
 
-	private int corelationLoop(String matchTeam,List<String> dbTeams ) {
-		float minDist = 100;
-		float curDist;
-		int chosenDbIdx=-1 ;
-		for (int i = 0; i < dbTeams.size(); i++) {
-			curDist = StringSimilarity.teamSimilarity(
-					matchTeam, dbTeams.get(i));
-			if (curDist > StandartResponses.TEAM_DIST)
-				continue;
-//			if (curDist >= matchTeam.length())
-//				continue;
-			if (curDist < minDist) {
-				minDist = curDist;
-				chosenDbIdx = i;
-			}
-		}
-		return chosenDbIdx;
-	}
-//-----------------------------corelation end
-	
+	// -----------------------------corelation end
+
 	public void complete(LocalDate d) throws SQLException {
 		// to store in the temp matches the teams in scorer format
 		// instead of punter so that to have faster acces

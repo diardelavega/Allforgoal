@@ -135,21 +135,17 @@ public class Strategy {
 			score.getScheduledToday();
 			score.getScheduledTomorrow();
 			// a list of compIds playing today & tomorrow is created
+			scheduledOddsAdderToday();
+			scheduledOddsAdderTomorrow(lastDatCheck);
+			
+			tmf.corelatePunterXScorerTeams();
+			
 			ldg.writeMatchStructs();
 			ldg.writeMeta(lastDatCheck);
 		} else {
 			ldg.readMatchStructs();
 		}
-			scheduledOddsAdderToday();
-			scheduledOddsAdderTomorrow(lastDatCheck);
 
-			// scheduled matches is updated
-			tmf.corelatePunterXScorerTeams();
-
-			ldg.writeMatchStructs();
-			ldg.writeMeta(lastDatCheck);
-		
-//		}
 		storeToSmallDBsCondition(lastDatCheck);// store condition
 		score.clearLists();
 
@@ -232,7 +228,7 @@ public class Strategy {
 		 * not have anything to do. Prediction points are added at the end of
 		 * the exwcution,(after a response from the R functions har returned)
 		 */
-		logger.info("sched pred today  size: {}",
+		logger.info("sched pred today  sizeEEEEE: {}",
 				TimeVariations.todayComps.size());
 		if (TimeVariations.todayComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
