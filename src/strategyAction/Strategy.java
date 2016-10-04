@@ -135,21 +135,17 @@ public class Strategy {
 			score.getScheduledToday();
 			score.getScheduledTomorrow();
 			// a list of compIds playing today & tomorrow is created
+			scheduledOddsAdderToday();
+			scheduledOddsAdderTomorrow(lastDatCheck);
+			
+			tmf.corelatePunterXScorerTeams();
+			
 			ldg.writeMatchStructs();
 			ldg.writeMeta(lastDatCheck);
 		} else {
 			ldg.readMatchStructs();
 		}
-			scheduledOddsAdderToday();
-			scheduledOddsAdderTomorrow(lastDatCheck);
 
-			// scheduled matches is updated
-			tmf.corelatePunterXScorerTeams();
-
-			ldg.writeMatchStructs();
-			ldg.writeMeta(lastDatCheck);
-		
-//		}
 		storeToSmallDBsCondition(lastDatCheck);// store condition
 		score.clearLists();
 
@@ -232,7 +228,7 @@ public class Strategy {
 		 * not have anything to do. Prediction points are added at the end of
 		 * the exwcution,(after a response from the R functions har returned)
 		 */
-		logger.info("sched pred today  size: {}",
+		logger.info("sched pred today  sizeEEEEE: {}",
 				TimeVariations.todayComps.size());
 		if (TimeVariations.todayComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
@@ -342,8 +338,13 @@ public class Strategy {
 		// OddsNStats ons = new OddsNStats();
 		// ons.getOddsPage(lastDatCheck);
 
-		SoccerPunterOdds spo = new SoccerPunterOdds();
-		spo.getDailyOdds(lastDatCheck);
+		try {
+			SoccerPunterOdds spo = new SoccerPunterOdds();
+			spo.getDailyOdds(lastDatCheck);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void scheduledOddsAdderTomorrow(LocalDate todate) {
@@ -351,15 +352,20 @@ public class Strategy {
 		 * go to the specific websites and get the odds for the matches to
 		 * analize.
 		 */
-		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
-		b91.scrapBariPage(todate.plusDays(1));
+//		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+//		b91.scrapBariPage(todate.plusDays(1));
 
 		// whent ofline
 		// OddsNStats ons = new OddsNStats();
 		// ons.getOddsPage(todate.plusDays(1));
 
-		SoccerPunterOdds spo = new SoccerPunterOdds();
-		spo.getDailyOdds(todate.plusDays(1));
+		try {
+			SoccerPunterOdds spo = new SoccerPunterOdds();
+			spo.getDailyOdds(todate.plusDays(1));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void testPredFileMaker() throws SQLException, IOException {
