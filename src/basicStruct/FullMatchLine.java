@@ -1,10 +1,8 @@
 package basicStruct;
 
 import java.sql.Date;
-import java.util.List;
 
-public class FullMatchLine extends MatchObj  {
-
+public class FullMatchLine extends MatchObj {
 
 	// pred points
 	private float h1;
@@ -43,11 +41,9 @@ public class FullMatchLine extends MatchObj  {
 
 	}
 
-	public FullMatchLine(long mId, int comId, String t1, String t2, int ft1,
-			int ft2, int ht1, int ht2, float _1, float _2, float _x,
-			float _o, float _u, Date dat, String matchTime, float h1,
-			float hx, float h2, float so, float su, float p1y, float p1n,
-			float p2y, float p2n, int ht, int ft) {
+	public FullMatchLine(long mId, int comId, String t1, String t2, int ft1, int ft2, int ht1, int ht2, float _1,
+			float _2, float _x, float _o, float _u, Date dat, String matchTime, float h1, float hx, float h2, float so,
+			float su, float p1y, float p1n, float p2y, float p2n, int ht, int ft) {
 		super();
 		this.mId = mId;
 		this.comId = comId;
@@ -76,7 +72,6 @@ public class FullMatchLine extends MatchObj  {
 		this.ht = ht;
 		this.ft = ft;
 	}
-
 
 	public float getH1() {
 		return h1;
@@ -122,7 +117,6 @@ public class FullMatchLine extends MatchObj  {
 		return ft;
 	}
 
-
 	public void setH1(float h1) {
 		this.h1 = h1;
 	}
@@ -165,6 +159,25 @@ public class FullMatchLine extends MatchObj  {
 
 	public void setFt(int ft) {
 		this.ft = ft;
+	}
+
+	public String shower() {
+		// StringBuilder sb = new StringBuilder();
+		String s = s = super.printMatch();
+		s+=", ";
+		s += h1 + ", ";
+		s += hx + ", ";
+		s += h2 + ", ";
+		s += so + ", ";
+		s += su + ", ";
+		s += p1y + ", ";
+		s += p1n + ", ";
+		s += p2y + ", ";
+		s += p2n + ", ";
+		s += ht + ", ";
+		s += "ft:"+ft + " ";
+//		s = super.printMatch() + s;
+		return s;
 	}
 
 }

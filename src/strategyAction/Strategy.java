@@ -130,21 +130,22 @@ public class Strategy {
 	public void startPartTask() throws ClassNotFoundException, IOException,
 			SQLException {
 		// in case os partial usage.. check the timestamp in the file
+		ldg.precheck();
 		if (ldg.hourlyFileFilledCheck()) {
 			score.getScheduledToday();
 			score.getScheduledTomorrow();
 			// a list of compIds playing today & tomorrow is created
 			scheduledOddsAdderToday();
 			scheduledOddsAdderTomorrow(lastDatCheck);
-
-			// scheduled matches is updated
+			
 			tmf.corelatePunterXScorerTeams();
-
+			
 			ldg.writeMatchStructs();
 			ldg.writeMeta(lastDatCheck);
 		} else {
 			ldg.readMatchStructs();
 		}
+
 		storeToSmallDBsCondition(lastDatCheck);// store condition
 		score.clearLists();
 
@@ -176,6 +177,7 @@ public class Strategy {
 		ldg.writeMatchStructs();
 		ldg.writeMeta(lastDatCheck);
 
+		testPredFileMaker();// create test files for the scheduled matches
 		storeToSmallDBs(); // store in temp and recent matches
 
 		// testPredFileMaker();// test file create
@@ -226,19 +228,23 @@ public class Strategy {
 		 * not have anything to do. Prediction points are added at the end of
 		 * the exwcution,(after a response from the R functions har returned)
 		 */
-		logger.info("sched pred today  size: {}", TimeVariations.todayComps.size());
+		logger.info("sched pred today  sizeEEEEE: {}",
+				TimeVariations.todayComps.size());
 		if (TimeVariations.todayComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
-			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs, LocalDate.now());
+			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs,
+					LocalDate.now());
 			rs.startReq();
 		}
 	}
 
 	private void schedulePredictionTomorrow() {
-		logger.info("sched pred tomorow  size: {}", TimeVariations.tomorrowComps.size());
+		logger.info("sched pred tomorow  size: {}",
+				TimeVariations.tomorrowComps.size());
 		if (TimeVariations.tomorrowComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
-			rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps, AttsKind.hs, LocalDate.now().plusDays(1));
+			rs.addReq(AsyncType.PRED, TimeVariations.tomorrowComps,
+					AttsKind.hs, LocalDate.now().plusDays(1));
 			rs.startReq();
 		}
 	}
@@ -294,7 +300,7 @@ public class Strategy {
 		// return false;
 	}
 
-	public void storeToSmallDBs() throws SQLException {
+	public void storeToSmallDBs() throws SQLException, IOException {
 		/* store to tempmatches and recentmatches */
 		logger.info("storing to temp and recent matches");
 		tmf.storeToTempMatchesDB();
@@ -325,15 +331,20 @@ public class Strategy {
 		 * go to the specific websites and get the odds for the matches to
 		 * analize.
 		 */
-		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
-		b91.scrapBariPage(lastDatCheck);
+//		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+//		b91.scrapBariPage(lastDatCheck);
 
 		// whent ofline
 		// OddsNStats ons = new OddsNStats();
 		// ons.getOddsPage(lastDatCheck);
 
-		SoccerPunterOdds spo = new SoccerPunterOdds();
-		spo.getDailyOdds(lastDatCheck);
+		try {
+			SoccerPunterOdds spo = new SoccerPunterOdds();
+			spo.getDailyOdds(lastDatCheck);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void scheduledOddsAdderTomorrow(LocalDate todate) {
@@ -341,15 +352,20 @@ public class Strategy {
 		 * go to the specific websites and get the odds for the matches to
 		 * analize.
 		 */
-		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
-		b91.scrapBariPage(todate.plusDays(1));
+//		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+//		b91.scrapBariPage(todate.plusDays(1));
 
 		// whent ofline
 		// OddsNStats ons = new OddsNStats();
 		// ons.getOddsPage(todate.plusDays(1));
 
-		SoccerPunterOdds spo = new SoccerPunterOdds();
-		spo.getDailyOdds(todate.plusDays(1));
+		try {
+			SoccerPunterOdds spo = new SoccerPunterOdds();
+			spo.getDailyOdds(todate.plusDays(1));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void testPredFileMaker() throws SQLException, IOException {

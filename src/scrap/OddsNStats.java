@@ -190,8 +190,8 @@ public class OddsNStats {
 			// dismis previously combined matches -1 the taken ones
 			if (MatchGetter.schedNewMatches.get(compId).get(i).getFt1() != -1) {
 				finishReviewingFlag = false;
-				d1 = StringSimilarity.levenshteinDistance(MatchGetter.schedNewMatches.get(compId).get(i).getT1(),t1);
-				d2 = StringSimilarity.levenshteinDistance(MatchGetter.schedNewMatches.get(compId).get(i).getT2(),t2);
+				d1 = StringSimilarity.teamSimilarity(MatchGetter.schedNewMatches.get(compId).get(i).getT1(),t1);
+				d2 = StringSimilarity.teamSimilarity(MatchGetter.schedNewMatches.get(compId).get(i).getT2(),t2);
 				if (d1 + d2 < td) {
 					k = i;
 					td = d1 + d2;

@@ -96,7 +96,7 @@ public class SoccerPunterOdds {
 						.first().text());
 
 				// TODO check if match is oddFree
-				int k = teamCombinationScorerOdder(t1, t1, compId);
+				int k = teamCombinationScorerOdder(t1, t2, compId);
 				// @ map with compId, @ the idx k of the list the match is it.
 				if (k < 0) {
 					continue;
@@ -114,7 +114,7 @@ public class SoccerPunterOdds {
 					continue;
 				} else {
 					oddlink = a.attr("href");
-				
+
 					String mid = a.attr("href").split("_id=|&home")[1];
 					AjaxGrabber ag = new AjaxGrabber();
 					if (_1.equals(" ") || _X.equals(" ") || _2.equals(" ")) {
@@ -192,19 +192,19 @@ public class SoccerPunterOdds {
 		 * team2) from the list of scorer matches with the same compId
 		 */
 
-		float d1 = 0, d2 = 0, td = 1000 ;
+		float d1 = 0, d2 = 0, td = 1000;
 		float mind1 = 1000, mind2 = 1000;
-		int k=-1;
+		int k = -1;
 		// Loop through the scheduled matches of competition
 		// TODO change it Xscorer vs MatchGetter
 		boolean finishReviewingFlag = true;
 		for (int i = 0; i < MatchGetter.schedNewMatches.get(compId).size(); i++) {
 			if (MatchGetter.schedNewMatches.get(compId).get(i).getFt1() != -1) {
 				finishReviewingFlag = false;
-				d1 = StringSimilarity.levenshteinDistance(
+				d1 = StringSimilarity.teamSimilarity(
 						MatchGetter.schedNewMatches.get(compId).get(i).getT1(),
 						t1);
-				d2 = StringSimilarity.levenshteinDistance(
+				d2 = StringSimilarity.teamSimilarity(
 						MatchGetter.schedNewMatches.get(compId).get(i).getT2(),
 						t2);
 				if (d1 + d2 < td) {
@@ -235,12 +235,16 @@ public class SoccerPunterOdds {
 				MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 				return k;
 			} else {
+				// if t2 could not be adequately corelated, use the corelation
+				// of the first team as a secure binder and add the second(the
+				// uncorelated team) in the file so that it will be found next
+				// time
 				punterToScorerTeams.put(t2,
 						MatchGetter.schedNewMatches.get(compId).get(k).getT2());
 				fh.appendPunterToScorerTeams(t2, MatchGetter.schedNewMatches
 						.get(compId).get(k).getT2());
-//				fh.appendOdderToScorerTeams(t2, MatchGetter.schedNewMatches
-//						.get(compId).get(k).getT2());
+				// fh.appendOdderToScorerTeams(t2, MatchGetter.schedNewMatches
+				// .get(compId).get(k).getT2());
 				MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 				return k;
 			}
@@ -248,10 +252,10 @@ public class SoccerPunterOdds {
 			// t1 is already proved bigger than team_dist
 			punterToScorerTeams.put(t1, MatchGetter.schedNewMatches.get(compId)
 					.get(k).getT1());
-			fh.appendPunterToScorerTeams(t1, MatchGetter.schedNewMatches
-					.get(compId).get(k).getT1());
-//			fh.appendOdderToScorerTeams(t1,
-//					MatchGetter.schedNewMatches.get(compId).get(k).getT1());
+			fh.appendPunterToScorerTeams(t1,
+					MatchGetter.schedNewMatches.get(compId).get(k).getT1());
+			// fh.appendOdderToScorerTeams(t1,
+			// MatchGetter.schedNewMatches.get(compId).get(k).getT1());
 			MatchGetter.schedNewMatches.get(compId).get(k).setFt1(-1);
 			return k;
 		} else {

@@ -3,6 +3,9 @@
 ----------------------------------------------------------------------------
 
 
+*-!)LEVINSTAIN distance doesnt work very well.....
+a separation is needed between the team and other kinds of distance.
+--------------------------------------------------------------------------
 ***) problem when requesting to predict comps without dtf, => a new request for dtf prediction that waits
 		for the predictions to be executed. (mutual exclusion)!!!
 !-) during the storage in db of matches data some matches had "ft1" set to -1 and all the "ft2" where 0.
