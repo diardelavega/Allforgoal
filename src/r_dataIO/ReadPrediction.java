@@ -21,6 +21,7 @@ import api.functionality.obj.BaseMatchLinePred;
 import basicStruct.CCAllStruct;
 import diskStore.AnalyticFileHandler;
 
+
 /**
  * @author Administrator
  *
@@ -37,6 +38,7 @@ import diskStore.AnalyticFileHandler;
  * 
  */
 public class ReadPrediction {
+
 	public static final Logger log = LoggerFactory
 			.getLogger(ReadPrediction.class);
 
@@ -304,6 +306,7 @@ public class ReadPrediction {
 
 	}
 
+
 	public void htftMostPoint() {
 
 	}
@@ -316,5 +319,6 @@ public class ReadPrediction {
 			Map<Integer, List<BaseMatchLinePred>> dayMatchLinePred) {
 		this.matchLinePred = dayMatchLinePred;
 	}
+
 
 }
