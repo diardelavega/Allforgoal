@@ -98,7 +98,7 @@ public class LastPeriodicDataGather {
 		FileInputStream fis = new FileInputStream(fin);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		MatchGetter.finNewMatches.clear();
-		MatchGetter.finNewMatches = (List<MatchObj>) ois.readObject();
+		MatchGetter.finNewMatches = (Map<Integer, List<MatchObj>>) ois.readObject();
 		ois.close();
 	}
 
@@ -113,7 +113,7 @@ public class LastPeriodicDataGather {
 		FileInputStream fis = new FileInputStream(err);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		MatchGetter.errorNewMatches.clear();
-		MatchGetter.errorNewMatches = (List<MatchObj>) ois.readObject();
+		MatchGetter.errorNewMatches = (Map<Integer, List<MatchObj>>) ois.readObject();
 		ois.close();
 	}
 

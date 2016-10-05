@@ -36,8 +36,10 @@ public class MatchGetter {
 
 	// public static List<MatchObj> schedNewMatches = new ArrayList<>();
 	public static Map<Integer, List<MatchObj>> schedNewMatches = new HashMap<>();
-	public static List<MatchObj> finNewMatches = new ArrayList<>();
-	public static List<MatchObj> errorNewMatches = new ArrayList<>();
+	public static Map<Integer, List<MatchObj>> finNewMatches = new HashMap<>();
+	public static Map<Integer, List<MatchObj>> errorNewMatches = new HashMap<>();
+	// public static List<MatchObj> finNewMatches = new ArrayList<>();
+	// public static List<MatchObj> errorNewMatches = new ArrayList<>();
 
 	// list of comp ids with all odds set. (to be used by odd adder sites)
 	public static List<Integer> reviewedAndEmptyOdds = new ArrayList<Integer>();
@@ -90,7 +92,7 @@ public class MatchGetter {
 						|| clasVal[4].contains("TROPHY")
 						|| clasVal[4].contains("COUPE")
 						|| clasVal[4].contains("EURO")) {
-					continue; 
+					continue;
 				}
 				int compId = searchForCompIdx(clasVal[0], clasVal[4]);
 				if (compId < 0) {
@@ -143,13 +145,24 @@ public class MatchGetter {
 						if (status.equals(Status.ABANDONED)
 								|| status.equals(Status.CANCELED)
 								|| status.equals(Status.POSTPONED)) {
+
 							// find interrupted matches to delete them
-							errorNewMatches.add(mobj);
+							if (errorNewMatches.get(compId) == null) {
+								List<MatchObj> mol = new ArrayList<>();
+								mol.add(mobj);
+								errorNewMatches.put(compId, mol);
+							} else {
+								errorNewMatches.get(compId).add(mobj);
+							}
+							// errorNewMatches.add(mobj); original, list version
 							logger.info("ABANDONED ---  t1-{}  t2-{}", t1, t2);
 						}
 						if (status.equals(Status.FINISHED)) {
 							String[] scores;
-//							logger.info("FINISHED ---  t1-{}  t2-{}", t1, t2);
+							mobj.setDat(Date.valueOf(dat));
+							mobj.setComId(compId);
+							// logger.info("FINISHED ---  t1-{}  t2-{}", t1,
+							// t2);
 							// HT score - @ td_14
 							if (tds.get(13).text().length() >= 3) {// score-score
 								scores = tds.get(13).text().split("-");
@@ -177,7 +190,14 @@ public class MatchGetter {
 									"FINISHED ---  t1-{} vs t2-{} ;; {} , {}  ",
 									t1, t2, tds.get(13).text(), tds.get(14)
 											.text());
-							finNewMatches.add(mobj);
+							if (finNewMatches.get(compId) == null) {
+								List<MatchObj> mol = new ArrayList<>();
+								mol.add(mobj);
+								finNewMatches.put(compId, mol);
+							} else {
+								finNewMatches.get(compId).add(mobj);
+							}
+//							finNewMatches.add(mobj);
 						}// fin status
 					}
 				}
@@ -345,7 +365,6 @@ public class MatchGetter {
 		 * data in the scheduled matches will be of the same day thas we get it
 		 * all if the date is write
 		 */
-		TimeVariations.todayComps.addAll(MatchGetter.schedNewMatches
-				.keySet());
+		TimeVariations.todayComps.addAll(MatchGetter.schedNewMatches.keySet());
 	}
 }

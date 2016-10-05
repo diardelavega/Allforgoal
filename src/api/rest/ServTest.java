@@ -41,7 +41,6 @@ public class ServTest {
 		try {
 			Demo.initCCAllStruct();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		MPLFill mplfill = new MPLFill();
