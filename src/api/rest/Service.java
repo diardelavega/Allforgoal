@@ -36,7 +36,7 @@ import com.google.gson.Gson;
 @Path("/services")
 public class Service {
 	public static final Logger log = LoggerFactory.getLogger(Service.class);
-	private boolean flag = false;
+	private static boolean flag = false;
 	private CountryCompetition cc = new CountryCompetition();
 
 	@GET
@@ -127,18 +127,29 @@ public class Service {
 	@Path("/mpl/{datstamp}/{nr}")
 	public String matchPredictionLine(@PathParam("datstamp") String datstamp, @PathParam("nr") int nr)
 			throws SQLException {
-		if (!flag) {
-			// init MPL map
-			MPLFill mplfill = new MPLFill();
-			mplfill.fakeFiller();
-			log.info("fillin MPL");
-		}
+		log.info("-----------------------------------------\n");
+		int allMatchesIn = 0;
 		LocalDate ld;
+		List<Integer> keyList;
+		List<FullMatchLine> list_fml;// = new ArrayList<>();
+		List<MPLPack> packlist;
+		TestHelp.initAll();
+//		
+//		log.info("flag:{}",flag);
+//		 log.info("allMatchesIn: {}", allMatchesIn);
+//		if (!flag) {
+//			// init MPL map
+//			MPLFill mplfill = new MPLFill();
+//			mplfill.fakeFiller();
+//			log.info("fillin MPL");
+//			flag=true;
+//		}
+//		log.info("flag:{}",flag);
+//		 log.info("allMatchesIn: {}", allMatchesIn);
+//		
 		try {
-			datstamp="2016-10-05";
-			log.info("datstamp ={}",datstamp);
+			datstamp = "2016-10-05";
 			ld = LocalDate.parse(datstamp);
-			log.info("ld={}",ld);
 		} catch (Exception e) {
 			log.info(" received date string was not parsed correctly");
 			return ("{msg:'" + ServiceMsg.DATE_ERR_PARSE + "'}");
@@ -147,26 +158,27 @@ public class Service {
 			log.info("no matches @ that date");
 			return ("{msg:'" + ServiceMsg.DATE_NO_REC + "'}");
 		}
-		List<Integer> keyList = new ArrayList<>(TimeVariations.mapMPL.get(ld).keySet());
+		keyList = new ArrayList<>(TimeVariations.mapMPL.get(ld).keySet());
 		nr++;// get the next set of matches
+		log.info("nr: {}, keys.size:{} ",nr,keyList.size() );
 		if (nr >= keyList.size()) {
+			log.info("msg:' + ServiceMsg.SERI_END ");
 			return ("{msg:'" + ServiceMsg.SERI_END + "'}");
 		}
-
-		List<FullMatchLine> list_fml;// = new ArrayList<>();
-		List<MPLPack> packlist = new ArrayList<>();
-		int allMatchesIn = 0;
+		
+		packlist = new ArrayList<>();
 		do {
 			list_fml = new ArrayList<>();
 			list_fml.addAll(TimeVariations.mapMPL.get(ld).get(keyList.get(nr)));
 			allMatchesIn += list_fml.size();
-			// log.info("{}", allMatchesIn);
+			 log.info("allMatchesIn: {}", allMatchesIn);
 			CCAllStruct ccdata = ccalExtract(list_fml.get(0).getComId());
 			MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), nr, list_fml);
 			packlist.add(pack);
 			nr++;
 		} while (allMatchesIn < 10 && nr < keyList.size());
-
+		
+		log.info("packlist : {}", packlist.size());
 		Gson gson = new Gson();
 		String jo = gson.toJson(packlist);
 		return jo;
@@ -174,7 +186,7 @@ public class Service {
 
 	private CCAllStruct ccalExtract(int cid) {
 		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
-//		int ind = CountryCompetition.idToIdx.get(cid);
-//		return CountryCompetition.ccasList.get(ind);
+		// int ind = CountryCompetition.idToIdx.get(cid);
+		// return CountryCompetition.ccasList.get(ind);
 	}
 }

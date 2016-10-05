@@ -7,6 +7,18 @@
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 <!-- <title id="tit">Test P1</title> -->
 <script type="text/javascript">
+	function onloadfunc2() {
+		console.log("hua");
+		datFormat();
+		$("#div1").append(datstamp);
+		if (str.hasOwnProperty('value')) {
+			console.log("IIITTT DOES");
+		} else if (str.hasOwnProperty('menu')) {
+			console.log("MENUUU");
+		}
+	}
+</script>
+<script type="text/javascript">
 	var d = new Date();
 	var datstamp;
 
@@ -20,28 +32,8 @@
 	}
 	//d.getFullYear+" "+d.getMonth()+" "+d.getDate();
 	var seri = -1;
-	var str = {
-		'menu' : {
-			'id' : 'file',
-			'value' : 'File',
-			'popup' : {
-				'menuitem' : [ {
-					'value' : 'New',
-					'onclick' : 'CreateNewDoc()'
-				}, {
-					'value' : 'Open',
-					'onclick' : 'OpenDoc()'
-				}, {
-					'value' : 'Close',
-					'onclick' : 'CloseDoc()'
-				} ]
-			}
-		}
-	}
 
 	function jsondisply() {
-		/* console.log(str);
-		console.log(str.menu.popup.menuitem[1].value); */
 		if (o > 10)
 			return;
 		$("#div1").append(o);
@@ -66,7 +58,7 @@
 			<tr>
 				<th><a href="./p-1.html">yesterdate</a></th>
 				<th><a href="./p1.html">todate</a></th>
-				<th><a href="./p+1.html">tomdate</a></th>
+				<th><a href="./p--1.html">tomdate</a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -76,12 +68,7 @@
 		</tbody>
 	</table>
 
-	<script type="text/javascript">
-		function onloadfunc2() {
-			console.log("hua");
-			$("#div1").append(datstamp);
-		}
-	</script>
+
 
 
 	<script src="./js.js"></script>
