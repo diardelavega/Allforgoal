@@ -7,4 +7,6 @@ public class ServiceMsg {
 	public static final String DATE_NO_REC="DATE NO RECORDS";
 	public static final String MPL_PACK="STANDART MPL PACKET";
 	
+	public static final String UNFOUND_ID="THE COMP ID WAS NOT FOUND";
+	
 }

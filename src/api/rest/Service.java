@@ -19,9 +19,11 @@ import api.functionality.MatchPredLineHandler;
 import api.functionality.WeekMatchHandler;
 import api.functionality.obj.CountryCompCompId;
 import api.functionality.obj.MPLPack;
+import api.functionality.obj.WeekMatchesCSV;
 import basicStruct.CCAllStruct;
 import basicStruct.FullMatchLine;
 import extra.ServiceMsg;
+import extra.StandartResponses;
 import structures.CountryCompetition;
 import structures.TimeVariations;
 
@@ -102,9 +104,16 @@ public class Service {
 		 * get the weekly data for a competition, including
 		 * form,atack,score,defence,etc.
 		 */
+		int ind = CountryCompetition.idToIdx.get(compId);
+		if (ind < 0) {
+			log.warn("no competition found with that id");
+			return "{msg:" + ServiceMsg.UNFOUND_ID + "}";
+		}
+		CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
+
 		WeekMatchHandler wmh = new WeekMatchHandler();
-		// Gson gson = new Gson();
-		return wmh.redWeekMatches(compId);
+
+		return wmh.redWeekMatches(compId, ccal.getCompetition(), ccal.getCountry());
 	}
 
 	@GET
@@ -134,19 +143,19 @@ public class Service {
 		List<FullMatchLine> list_fml;// = new ArrayList<>();
 		List<MPLPack> packlist;
 		TestHelp.initAll();
-//		
-//		log.info("flag:{}",flag);
-//		 log.info("allMatchesIn: {}", allMatchesIn);
-//		if (!flag) {
-//			// init MPL map
-//			MPLFill mplfill = new MPLFill();
-//			mplfill.fakeFiller();
-//			log.info("fillin MPL");
-//			flag=true;
-//		}
-//		log.info("flag:{}",flag);
-//		 log.info("allMatchesIn: {}", allMatchesIn);
-//		
+		//
+		// log.info("flag:{}",flag);
+		// log.info("allMatchesIn: {}", allMatchesIn);
+		// if (!flag) {
+		// // init MPL map
+		// MPLFill mplfill = new MPLFill();
+		// mplfill.fakeFiller();
+		// log.info("fillin MPL");
+		// flag=true;
+		// }
+		// log.info("flag:{}",flag);
+		// log.info("allMatchesIn: {}", allMatchesIn);
+		//
 		try {
 			datstamp = "2016-10-05";
 			ld = LocalDate.parse(datstamp);
@@ -160,27 +169,50 @@ public class Service {
 		}
 		keyList = new ArrayList<>(TimeVariations.mapMPL.get(ld).keySet());
 		nr++;// get the next set of matches
-		log.info("nr: {}, keys.size:{} ",nr,keyList.size() );
+		log.info("nr: {}, keys.size:{} ", nr, keyList.size());
 		if (nr >= keyList.size()) {
 			log.info("msg:' + ServiceMsg.SERI_END ");
 			return ("{msg:'" + ServiceMsg.SERI_END + "'}");
 		}
-		
+
 		packlist = new ArrayList<>();
 		do {
 			list_fml = new ArrayList<>();
 			list_fml.addAll(TimeVariations.mapMPL.get(ld).get(keyList.get(nr)));
 			allMatchesIn += list_fml.size();
-			 log.info("allMatchesIn: {}", allMatchesIn);
+			log.info("allMatchesIn: {}", allMatchesIn);
 			CCAllStruct ccdata = ccalExtract(list_fml.get(0).getComId());
 			MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), nr, list_fml);
 			packlist.add(pack);
 			nr++;
-		} while (allMatchesIn < 10 && nr < keyList.size());
-		
+		} while (allMatchesIn < StandartResponses.MPL_PACK_SIZE && nr < keyList.size());
+
 		log.info("packlist : {}", packlist.size());
 		Gson gson = new Gson();
 		String jo = gson.toJson(packlist);
+		return jo;
+	}
+
+	@GET
+	@Path("/reducedweeksmatches/{compid}")
+	public String reducedWeeksMatches(@PathParam("compid") int compId) throws SQLException {
+		/*
+		 * get the weekly data for a competition, including
+		 * form,atack,score,defence,etc.
+		 */
+		int ind = CountryCompetition.idToIdx.get(compId);
+		if (ind < 0) {
+			log.warn("no competition found with that id");
+			return "{msg:" + ServiceMsg.UNFOUND_ID + "}";
+		}
+		CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
+
+		WeekMatchHandler wmh = new WeekMatchHandler();
+		String csv = wmh.redWeekMatches(compId, ccal.getCompetition(), ccal.getCountry());
+		int linesRead = wmh.getLinesRead();
+		WeekMatchesCSV wmcsv = new WeekMatchesCSV(ccal.getCountry(), ccal.getCompetition(), compId, linesRead, csv);
+		Gson gson = new Gson();
+		String jo = gson.toJson(wmcsv);
 		return jo;
 	}
 
