@@ -17,12 +17,15 @@ import extra.Unilang;
 public class MainTry {
 
 	public static void main(String[] args) throws SQLException, IOException {
-		 initCCAllStruct();
-		 Strategy strategy = new Strategy();
-		 strategy.periodic();
+		initCCAllStruct();
+		Strategy strategy = new Strategy();
+		strategy.periodic();
 
-//		 strategy.task();
-//		 strategy.tryTask();
+		// strategy.yesterdayRun();
+		// strategy.oldRun();
+
+		// strategy.task();
+		// strategy.tryTask();
 
 		// Soccerpunter_homePage sch= new Soccerpunter_homePage();
 		// sch.goGetCompetitions();
@@ -43,7 +46,7 @@ public class MainTry {
 		// dater();
 		// distancer() ;
 		// odder();
-//		printer();
+		// printer();
 	}
 
 	public static void initCCAllStruct() throws SQLException, IOException {
@@ -84,10 +87,10 @@ public class MainTry {
 					+ "not initialized corectly");
 		}
 		cp.readAllowedComps();
-		System.out.println("Allowed comp size= "+cp.allowedcomps);
+		System.out.println("Allowed comp size= " + cp.allowedcomps);
 		cp.readNotAllowedComps();
-		System.out.println("NOT Allowed comp size= "+cp.notAllowedcomps);
-		
+		System.out.println("NOT Allowed comp size= " + cp.notAllowedcomps);
+
 		Unilang ul = new Unilang();
 		ul.init();
 		conn.close();
@@ -147,9 +150,9 @@ public class MainTry {
 	public static void printer() {
 		ReducedPredictionTestFile rpf = new ReducedPredictionTestFile("tq",
 				"t2", "1", "o", "Y", "N", "10", "30");
-		List <ReducedPredictionTestFile> tl =  new ArrayList<ReducedPredictionTestFile>();
-		tl .add(rpf);
-		tl .add(rpf);
+		List<ReducedPredictionTestFile> tl = new ArrayList<ReducedPredictionTestFile>();
+		tl.add(rpf);
+		tl.add(rpf);
 		File file = new File("C:/ff1/hua.csv");
 		AnalyticFileHandler afh = new AnalyticFileHandler();
 		try {

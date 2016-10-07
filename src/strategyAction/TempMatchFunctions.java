@@ -445,7 +445,7 @@ public class TempMatchFunctions {
 		logger.info("--------------: Read From TempMatches");
 		Date date = Date.valueOf(dat);
 		String sql = "SELECT * FROM  tempmatches  where dat ='" + date
-				+ "' order by dat ;";
+				+ "' order by compid ;";
 
 		readFromShortMatches(sql, "tempmatches");
 
@@ -1012,25 +1012,31 @@ public class TempMatchFunctions {
 		 */
 		// LocalDate ld = LocalDate.now();
 
-		for (int i = 0; i < tempMatches.size(); i++) {
-			int cid = tempMatches.get(i).getComId();
-			long mid = tempMatches.get(i).getmId();
+		try {
+			for (int i = 0; i < tempMatches.size(); i++) {
+				int cid = tempMatches.get(i).getComId();
+				long mid = tempMatches.get(i).getmId();
 
-			for (int j = 0; j < TimeVariations.mapMPL.get(ld).get(cid).size(); j++) {
-				if (TimeVariations.mapMPL.get(ld).get(cid).get(j).getmId() == mid) {
-					if (updKind.equals("score")) {
-						// update HT & FT SCORES
-						TimeVariations.mapMPL.get(ld).get(cid).get(j) .setHt1(tempMatches.get(i).getHt1());
-						TimeVariations.mapMPL.get(ld).get(cid).get(j) .setHt2(tempMatches.get(i).getHt2());
-						TimeVariations.mapMPL.get(ld).get(cid).get(j) .setFt1(tempMatches.get(i).getFt1());
-						TimeVariations.mapMPL.get(ld).get(cid).get(j) .setFt2(tempMatches.get(i).getFt2());
-					}
-					if (updKind.equals("error")) {
-						// set match time with err
-						TimeVariations.mapMPL.get(ld).get(cid).get(j) .setMatchTime(Status.ERROR);
-					}// if error
-				}// if mid
-			}// for j
-		}// for i
+				if(TimeVariations.mapMPL.containsKey(ld))
+					if(TimeVariations.mapMPL.get(ld).containsKey(cid))
+						for (int j = 0; j < TimeVariations.mapMPL.get(ld).get(cid).size(); j++) {
+							if (TimeVariations.mapMPL.get(ld).get(cid).get(j).getmId() == mid) {
+								if (updKind.equals("score")) {
+									// update HT & FT SCORES
+									TimeVariations.mapMPL.get(ld).get(cid).get(j) .setHt1(tempMatches.get(i).getHt1());
+									TimeVariations.mapMPL.get(ld).get(cid).get(j) .setHt2(tempMatches.get(i).getHt2());
+									TimeVariations.mapMPL.get(ld).get(cid).get(j) .setFt1(tempMatches.get(i).getFt1());
+									TimeVariations.mapMPL.get(ld).get(cid).get(j) .setFt2(tempMatches.get(i).getFt2());
+								}
+								if (updKind.equals("error")) {
+									// set match time with err
+									TimeVariations.mapMPL.get(ld).get(cid).get(j) .setMatchTime(Status.ERROR);
+								}// if error
+							}// if mid
+						}// for j
+			}// for i
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
