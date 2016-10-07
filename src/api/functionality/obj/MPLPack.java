@@ -5,6 +5,10 @@ import java.util.List;
 import basicStruct.FullMatchLine;
 import extra.ServiceMsg;
 
+/**
+ * @author Administrator
+ *To hold the match prediction line packets of data (packets from posibly more than one competiions)
+ */
 public class MPLPack {
 //	private String msg = ServiceMsg.MPL_PACK;
 	private String country;

@@ -7,6 +7,8 @@ var baseurl = "http://snf-718978.vm.okeanos.grnet.gr:";
 var localhost = "http://localhost:";
 var port = 8080;
 var httpurl = localhost + port;
+
+
 /**
  * Match prediction line. call the rest api that returns the data for the
  * competitions of the date and the newxt serinumber that we give it. Serinumber
@@ -59,6 +61,51 @@ function mlpCall(datstamp, seri) {
 			console.log(cod);
 		}
 	});
-}
+};
 
-;
+
+
+/**
+ * Call the service API that returns all the matches done so far in that specific competition 
+ */
+function compWeeksDataCall(cid) {
+	console.log(seri)
+	$.ajax({
+		url : httpurl + "/Bast/rest/services/reducedweeksmatches/" + cid,
+//		beforeSend : function(request) {
+//			request.setRequestHeader("Authorization", "Negotiate");
+//		},
+		type : 'GET',
+		crossDomain : true,
+		dataType : 'json',
+		success : function(response) {
+			console.log("in success");
+			if (response.hasOwnProperty('msg')) {
+				console.log("exit msg");
+				console.log(response.msg);
+				return;
+			}
+//			var i = 0;
+//			for (; i < response.length; i++) {
+				$("#div1").append("comp: " + response.competition + " ");
+				$("#div1").append("country: " + response.country + " ");
+				$("#div1").append("compId: " + response.compId + " ");
+				$("#div1").append("lines: " + response.size + " ");
+				$("#div1").append("</br>");
+					$("#div1").append("csv: "+ response.csvTxt + " ");
+//			}
+			$("#div1").append("</br>");
+//			mlpCall(datstamp, seri);
+			// matchPredLineTrBuilder(response);
+			// matchPredLineShow(response);
+			// wdlTableFiller(response);
+		},
+		error : function(error, stat, cod) {
+			console.log(error);
+			console.log(error.responseText);
+			console.log(error.length);
+			console.log(stat);
+			console.log(cod);
+		}
+	});
+};

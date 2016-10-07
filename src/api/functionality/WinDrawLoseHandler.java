@@ -16,21 +16,20 @@ import dbtry.Conn;
 
 public class WinDrawLoseHandler {
 	public static Logger log = LoggerFactory.getLogger(WinDrawLoseHandler.class);
-	
-	public void wdlOnly(CountryCompCompId ccci) throws SQLException{
+
+	public void wdlOnly(CountryCompCompId ccci) throws SQLException {
 		// get teams from the testpredfile
 		TestPredFile tpf = new TestPredFile();
-		List<StrStrTuple> advlist = tpf.daylyAdversaries(ccci.getCompId(), ccci.getCompetition(),
-				ccci.getCountry());
+		List<StrStrTuple> advlist = tpf.daylyAdversaries(ccci.getCompId(), ccci.getCompetition(), ccci.getCountry());
 
 		// get teams & wdl from db
 		WinDrawLoseHandler wdl = new WinDrawLoseHandler();
-		Map<String, String> wdll = wdl.windrawloseDbGet( ccci.getCompetition());
+		Map<String, String> wdll = wdl.windrawloseDbGet(ccci.getCompetition(), ccci.getCountry());
 
 		for (StrStrTuple t : advlist) {
 			/* for every dayly match get its corresponding wdl of both teams */
 
-//			t.strstrshow();
+			// t.strstrshow();
 			WinDrawLoseWithPred mld = new WinDrawLoseWithPred();
 			mld.setT1(t.getS1());
 			String[] temp = wdll.get(t.getS1()).split(";");
@@ -50,19 +49,39 @@ public class WinDrawLoseHandler {
 			mld.setT2lIn(Integer.parseInt(temp[4]));
 			mld.setT2lOut(Integer.parseInt(temp[5]));
 
-//			matchPredLine.add(mld);
 		}
 
 	}
-	
-	public Map<String, String> windrawloseDbGet(String  compName)
+
+	public Map<String, String> windrawloseDbGet(List<String> teams, String compName, String country)
 			throws SQLException {
+		compName = compName.replaceAll(" ", "_").replace(".", "");
+		country = country.replaceAll(" ", "_").replace(".", "");
+		String tableName = compName + "$" + country;
+		if (teams.size() == 0) {
+			return null;
+		}
+		String into = listToSqlIn(teams);
+		String query = "SELECT team, winsIn, winsOut, drawsIn,drawsOut,losesIn,losesOut FROM " + tableName
+				+ "_FullTable WHERE team in ( " + into + " ) ORDER BY team ;";
+		return dbWdlRetreival(query);
+	}
+
+	public Map<String, String> windrawloseDbGet(String compName, String country) throws SQLException {
 		/*
 		 * get wdl data from the db table of a competition and tore in a map of
 		 * <teamName,wIn;wout;din;dout;lin;lout>
 		 */
-		String query = "SELECT team, winsIn, winsOut, drawsIn,drawsOut,losesIn,losesOut FROM "
-				+ compName + "_FullTable ORDER BY team ;";
+		compName = compName.replaceAll(" ", "_").replace(".", "");
+		country = country.replaceAll(" ", "_").replace(".", "");
+		String tableName = compName + "$" + country;
+
+		String query = "SELECT team, winsIn, winsOut, drawsIn,drawsOut,losesIn,losesOut FROM " + tableName
+				+ "_FullTable ORDER BY team ;";
+		return dbWdlRetreival(query);
+	}
+
+	private Map<String, String> dbWdlRetreival(String query) throws SQLException {
 		Conn conn = new Conn();
 		conn.open();
 		ResultSet rs = conn.getConn().createStatement().executeQuery(query);
@@ -94,4 +113,15 @@ public class WinDrawLoseHandler {
 		return ml;
 	}
 
+	private String listToSqlIn(List<String> teams) {
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		while (i < teams.size() - 1) {
+			sb.append(teams.get(i));
+			sb.append(",");
+			i++;
+		}
+		sb.append(teams.get(i));
+		return sb.toString();
+	}
 }

@@ -2,7 +2,12 @@ package api.functionality;
 
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import api.functionality.obj.CountryCompCompId;
+import basicStruct.CCAllStruct;
+import structures.CountryCompetition;
 
 /**
  * @author Administrator
@@ -17,24 +22,33 @@ import api.functionality.obj.CountryCompCompId;
  *         remember what is called) for efficiency reasons
  */
 public class WeekMatchHandler {
+	public static Logger log = LoggerFactory.getLogger(WeekMatchHandler.class);
+	private int linesRead = -1;
 
-	public String redWeekMatches(int compId) throws SQLException {
-		TestPredFile tspf = new TestPredFile();
-		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
+	public String redWeekMatches(int compId, String competition, String country) throws SQLException {
+
+		// int ind = CountryCompetition.idToIdx.get(compId);
+		// if (ind < 0) {
+		// log.warn("no competition found with that id");
+		// return null;
+		// }
+		// CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
 		// get the test pred file first
-		String csvTxt = tspf.reducedCsv(compId, ccci.getCompetition(),
-				ccci.getCountry());
+		TestPredFile tspf = new TestPredFile();
+		String csvTxt = tspf.reducedCsv(compId, competition, country);
+		linesRead = tspf.getLinesRead();
 		// keep the week from lastRecWeek
-		int lastRecWeek = tspf.getLastRecWeek();
+		// int lastRecWeek = tspf.getLastRecWeek();
 
 		// get the train pred file after.
 		// for records with week <= lastRecWeek-10
 		// copy record in another csvtext holder
 		TrainPredFile tprf = new TrainPredFile();
-		tprf.setLastRecWeek(lastRecWeek);
-		String formData = tprf.reducedCsv(ccci);
-		
-		csvTxt = tprf.getLast10() + csvTxt;
+		// tprf.setLastRecWeek(lastRecWeek);
+		String formData = tprf.reducedCsv(compId, competition, country);
+		linesRead += tprf.getLinesRead();
+		// String a = tprf.getLast10();
+		// csvTxt = tprf.getLast10() + csvTxt;
 
 		// in the end we have the all weeks match csv text for the form data
 		// and a last 10 weeks matches+ curent week matches for common
@@ -42,8 +56,22 @@ public class WeekMatchHandler {
 
 		// store the comon adv csvtxt within a static map to have it ready on
 		// the next request
-		CommonAdversariesHandler.commonAdv.put(compId, csvTxt);
+		// CommonAdversariesHandler.commonAdv.put(compId, csvTxt);
 
-		return formData;
+		if (csvTxt == null)
+			return formData;
+		if (formData == null)
+			return null;
+		csvTxt += formData;
+		return csvTxt;
 	}
+
+	public int getLinesRead() {
+		return linesRead;
+	}
+
+	public void setLinesRead(int linesRead) {
+		this.linesRead = linesRead;
+	}
+
 }

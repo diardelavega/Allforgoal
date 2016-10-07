@@ -46,13 +46,18 @@
 		console.log(datstamp, seri);
 		mlpCall(datstamp, seri);
 	}
+	function something2() {
+		console.log("something2");
+		/* $("#div1").append(datstamp); */
+		compWeeksDataCall(89);
+	}
 </script>
 </head>
-<body onload="onloadfunc();">
+<body onload="onloadfunc1();">
 	<h1>Hi, world!</h1>
 
 
-	<input type="button" value="doSomething" onclick="jsondisply(2)" />
+	<input type="button" value="doSomething" onclick="something2()" />
 	<table>
 		<thead>
 			<tr>

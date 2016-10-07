@@ -1,3 +1,4 @@
+
 package strategyAction;
 
 import java.io.FileNotFoundException;
@@ -137,9 +138,9 @@ public class Strategy {
 			// a list of compIds playing today & tomorrow is created
 			scheduledOddsAdderToday();
 			scheduledOddsAdderTomorrow(lastDatCheck);
-
+			
 			tmf.corelatePunterXScorerTeams();
-
+			
 			ldg.writeMatchStructs();
 			ldg.writeMeta(lastDatCheck);
 		} else {
@@ -214,20 +215,6 @@ public class Strategy {
 		score.getFinishedYesterday();
 		if (score.finNewMatches.size() > 0) {
 			tmf.completeYesterday();
-		}
-		// at this point structs & db are updated
-
-		tmf.readDaySkips();
-		writeResultsToTest();// write to file for reeval
-		scheduleReEvaluation(TimeVariations.yesterdayComps);
-	}
-
-	public void oldRun() throws SQLException, FileNotFoundException,
-			IOException {
-		LocalDate chosenDate =LocalDate.now().minusDays(2);
-		score.getFinishedOnDate(chosenDate );
-		if (score.finNewMatches.size() > 0) {
-			tmf.complete(chosenDate );
 		}
 		// at this point structs & db are updated
 
@@ -345,8 +332,8 @@ public class Strategy {
 		 * go to the specific websites and get the odds for the matches to
 		 * analize.
 		 */
-		// Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
-		// b91.scrapBariPage(lastDatCheck);
+//		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+//		b91.scrapBariPage(lastDatCheck);
 
 		// whent ofline
 		// OddsNStats ons = new OddsNStats();
@@ -366,8 +353,8 @@ public class Strategy {
 		 * go to the specific websites and get the odds for the matches to
 		 * analize.
 		 */
-		// Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
-		// b91.scrapBariPage(todate.plusDays(1));
+//		Bari91UpCommingOdds b91 = new Bari91UpCommingOdds();
+//		b91.scrapBariPage(todate.plusDays(1));
 
 		// whent ofline
 		// OddsNStats ons = new OddsNStats();

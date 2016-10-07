@@ -1,5 +1,6 @@
 package api.functionality;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -19,9 +20,9 @@ public class TestPredFile implements CsvFileHandler {
 
 	public static Logger log = LoggerFactory.getLogger(TestPredFile.class);
 	private int lastRecWeek;
+	private int linesRead = 0;
 
-	public List<StrStrTuple> daylyAdversaries(int compId, String compName,
-			String country) {
+	public List<StrStrTuple> daylyAdversaries(int compId, String compName, String country) {
 		/*
 		 * parse the csv file specified by the parameters and collect and return
 		 * the adversary teams playing today
@@ -47,23 +48,19 @@ public class TestPredFile implements CsvFileHandler {
 		 * score : store as -1
 		 */
 		CSVParser parser = parser(compId, compName, country);
+		if (parser == null)
+			return null;
 		StringBuilder sb = new StringBuilder();
-
 		for (CSVRecord record : parser) {
-			sb.append(record.get("week") + "," + record.get("t1") + ","
-					+ record.get("t2") + "," + (-1) + "," + (-1) + "," + (-1)
-					+ "," + (-1) + "," + record.get("t1Form") + ","
-					+ record.get("t2Form") + "," + record.get("t1Atack") + ","
-					+ record.get("t2Atack") + "," + ","
-					+ record.get("t1Defense") + "," + record.get("t2Defense")
-					+ "," + record.get("t1AvgFtScoreIn") + ","
-					+ record.get("t1AvgFtScoreOut") + ","
-					+ record.get("t2AvgFtScoreIn") + ","
-					+ record.get("t2AvgFtScoreOut") + "\n");
+			linesRead++;
+			sb.append(record.get("week") + "," + record.get("t1") + "," + record.get("t2") + "," + (-1) + "," + (-1)
+					+ "," + (-1) + "," + (-1) + "," + record.get("t1Form") + "," + record.get("t2Form") + ","
+					+ record.get("t1Atack") + "," + record.get("t2Atack") + "," + "," + record.get("t1Defense") + ","
+					+ record.get("t2Defense") + "," + record.get("t1AvgFtScoreIn") + "," + record.get("t1AvgFtScoreOut")
+					+ "," + record.get("t2AvgFtScoreIn") + "," + record.get("t2AvgFtScoreOut") + "\n");
 		}
 		try {
-			lastRecWeek = Integer.parseInt(parser.getRecords().get(0)
-					.get("week"));
+			lastRecWeek = Integer.parseInt(parser.getRecords().get(0).get("week"));
 		} catch (NumberFormatException | IOException e) {
 			e.printStackTrace();
 		}
@@ -73,16 +70,16 @@ public class TestPredFile implements CsvFileHandler {
 	@Override
 	public String reducedCsv(int compId, String compName, String country) {
 		CSVParser parser = parser(compId, compName, country);
+		if (parser == null)
+			return null;
 		StringBuilder sb = new StringBuilder();
-
 		for (CSVRecord record : parser) {
-			adaptLastRecWeek(record.get("week"));
-			sb.append(record.get("week") + "," + record.get("t1") + ","
-					+ record.get("t2") + "," + (-1) + "," + (-1) + ","
-					+ record.get("t1Form") + "," + record.get("t2Form") + ","
-					+ record.get("t1Atack") + "," + record.get("t2Atack") + ","
-					+ "," + record.get("t1Defense") + ","
-					+ record.get("t2Defense") + "\n");
+			linesRead++;
+			// adaptLastRecWeek(record.get("week"));
+			sb.append(record.get("week") + "," + record.get("t1") + "," + record.get("t2") + "," + (-1) + "," + (-1)
+					+ "," + record.get("t1Form") + "," + record.get("t2Form") + "," + record.get("t1Atack") + ","
+					+ record.get("t2Atack") + "," + "," + record.get("t1Defense") + "," + record.get("t2Defense")
+					+ "\n");
 		}
 
 		return sb.toString();
@@ -98,8 +95,10 @@ public class TestPredFile implements CsvFileHandler {
 			// parser = new CSVParser(new FileReader(afh.getTrainFileName(89,
 			// "J2_League", "Japan")), format);
 
-			parser = new CSVParser(new FileReader(afh.getLeatestTestFileName(
-					compId, compName, country)), format);
+			File f = afh.getLeatestTestFileName(compId, compName, country);
+			if (f != null)
+				parser = new CSVParser(new FileReader(f), format);
+			log.info("file {} {} not found", compName, country);
 		} catch (IOException e) {
 			log.warn("Parsing exception");
 			e.printStackTrace();
@@ -118,6 +117,10 @@ public class TestPredFile implements CsvFileHandler {
 
 	private void adaptLastRecWeek(String week) {
 		lastRecWeek = Integer.parseInt(week);
+	}
+
+	public int getLinesRead() {
+		return linesRead;
 	}
 
 }
