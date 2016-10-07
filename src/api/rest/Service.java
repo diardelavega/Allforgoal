@@ -336,7 +336,7 @@ public class Service {
 		try {
 			Gson gson = new Gson();
 			String jo = gson.toJson(cth.readCompTable(ccal.getCompetition(), ccal.getCountry()));
-			log.info("size of: {}",jo.getBytes().length);
+			log.info("size of: {}", jo.getBytes().length);
 			return jo;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -345,6 +345,10 @@ public class Service {
 		}
 	}
 
+	//-------------Match Page ---------------------------
+	
+	
+	//------------------------------------END OF NEW---------
 	private CCAllStruct ccalExtract(int cid) {
 		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
 		// int ind = CountryCompetition.idToIdx.get(cid);
