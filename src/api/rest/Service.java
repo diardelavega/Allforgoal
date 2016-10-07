@@ -136,25 +136,13 @@ public class Service {
 	@Path("/mpl/{datstamp}/{nr}")
 	public String matchPredictionLine(@PathParam("datstamp") String datstamp, @PathParam("nr") int nr)
 			throws SQLException {
-		log.info("-----------------------------------------\n");
+		// log.info("-----------------------------------------\n");
 		int allMatchesIn = 0;
 		LocalDate ld;
 		List<Integer> keyList;
 		List<FullMatchLine> list_fml;// = new ArrayList<>();
 		List<MPLPack> packlist;
 		TestHelp.initAll();
-		//
-		// log.info("flag:{}",flag);
-		// log.info("allMatchesIn: {}", allMatchesIn);
-		// if (!flag) {
-		// // init MPL map
-		// MPLFill mplfill = new MPLFill();
-		// mplfill.fakeFiller();
-		// log.info("fillin MPL");
-		// flag=true;
-		// }
-		// log.info("flag:{}",flag);
-		// log.info("allMatchesIn: {}", allMatchesIn);
 		//
 		try {
 			datstamp = "2016-10-05";
@@ -172,7 +160,7 @@ public class Service {
 		log.info("nr: {}, keys.size:{} ", nr, keyList.size());
 		if (nr >= keyList.size()) {
 			log.info("msg:' + ServiceMsg.SERI_END ");
-			return ("{msg:'" + ServiceMsg.SERI_END + "'}");
+			return ("{msg:'" + ServiceMsg.END_OF_DATA + "'}");
 		}
 
 		packlist = new ArrayList<>();
@@ -190,6 +178,36 @@ public class Service {
 		log.info("packlist : {}", packlist.size());
 		Gson gson = new Gson();
 		String jo = gson.toJson(packlist);
+		return jo;
+	}
+
+	@GET
+	@Path("/onempl/{datstamp}/{cid}")
+	public String oneCompmatchPredictionLine(@PathParam("cid") int cid) {
+		/*
+		 * needed for the mpl in competition specific page (a lot of match
+		 * prediction lines from the same competition). No date no seri. ***
+		 * Just send one pack with all the data
+		 */
+		TestHelp.initAll();
+		List<FullMatchLine> list_fml = new ArrayList<>();
+
+		for (LocalDate dat : TimeVariations.mapMPL.keySet()) {
+			if (dat.isAfter(LocalDate.now().minusDays(15)))// 2 weeks past
+				if (TimeVariations.mapMPL.get(dat).containsKey(cid)) {
+					list_fml.addAll(TimeVariations.mapMPL.get(dat).get(cid));
+				}
+		}
+		if(list_fml.size()==0){
+			log.info("there is no more date in the MPLmap");
+			return ("{msg:'" + ServiceMsg.END_OF_DATA + "'}");
+		}
+		
+		CCAllStruct ccdata = ccalExtract(cid);
+		MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), 0, list_fml);
+
+		Gson gson = new Gson();
+		String jo = gson.toJson(pack);
 		return jo;
 	}
 
