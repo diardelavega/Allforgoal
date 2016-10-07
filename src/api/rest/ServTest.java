@@ -109,7 +109,7 @@ public class ServTest {
 		List<Integer> keyList = new ArrayList<>(TimeVariations.mapMPL.get(ld).keySet());
 		nr++;// get the next set of matches
 		if (nr >= keyList.size()) {
-			return ("{msg:'" + ServiceMsg.SERI_END + "'}");
+			return ("{msg:'" + ServiceMsg.END_OF_DATA + "'}");
 		}
 
 		List<FullMatchLine> list_fml;// = new ArrayList<>();
