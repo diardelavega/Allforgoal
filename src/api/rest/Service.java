@@ -346,7 +346,7 @@ public class Service {
 	}
 
 	//-------------Match Page ---------------------------
-	
+//	----
 	
 	//------------------------------------END OF NEW---------
 	private CCAllStruct ccalExtract(int cid) {
