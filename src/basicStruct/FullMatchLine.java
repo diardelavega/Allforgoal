@@ -2,6 +2,12 @@ package basicStruct;
 
 import java.sql.Date;
 
+/**
+ * @author Administrator
+ * 
+ *         contains the prediction points for one match, in addition to the
+ *         other data, pred-point data that is contained in the MatchObj class
+ */
 public class FullMatchLine extends MatchObj {
 
 	// pred points
@@ -15,7 +21,7 @@ public class FullMatchLine extends MatchObj {
 	private float p2y;
 	private float p2n;
 	private int ht;
-	private int ft;
+	private int ft; // pred points
 
 	public FullMatchLine() {
 		super();
@@ -164,7 +170,7 @@ public class FullMatchLine extends MatchObj {
 	public String shower() {
 		// StringBuilder sb = new StringBuilder();
 		String s = s = super.printMatch();
-		s+=", ";
+		s += ", ";
 		s += h1 + ", ";
 		s += hx + ", ";
 		s += h2 + ", ";
@@ -175,8 +181,8 @@ public class FullMatchLine extends MatchObj {
 		s += p2y + ", ";
 		s += p2n + ", ";
 		s += ht + ", ";
-		s += "ft:"+ft + " ";
-//		s = super.printMatch() + s;
+		s += "ft:" + ft + " ";
+		// s = super.printMatch() + s;
 		return s;
 	}
 

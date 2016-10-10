@@ -21,6 +21,15 @@ public class TestPredFile implements CsvFileHandler {
 	public static Logger log = LoggerFactory.getLogger(TestPredFile.class);
 	private int lastRecWeek;
 	private int linesRead = 0;
+//	private int points = 0;// for match specific page
+//	private float avgHtScoreIn= 0;// for match specific page
+//	private float avgHtScoreOut= 0;// for match specific page
+//	private float avgHtConcedeIn= 0;// for match specific page
+//	private float avgHtConcedeOut= 0;// for match specific page
+//	private float avgFtScoreIn= 0;// for match specific page
+//	private float avgFtScoreOut= 0;// for match specific page
+//	private float avgFtConcedeIn= 0;// for match specific page
+//	private float avgFtConcedeOut= 0;// for match specific page
 
 	public List<StrStrTuple> daylyAdversaries(int compId, String compName, String country) {
 		/*
@@ -53,17 +62,22 @@ public class TestPredFile implements CsvFileHandler {
 		StringBuilder sb = new StringBuilder();
 		for (CSVRecord record : parser) {
 			linesRead++;
+//			if(record.get("t1")||record.get("t2"))
 			sb.append(record.get("week") + "," + record.get("t1") + "," + record.get("t2") + "," + (-1) + "," + (-1)
 					+ "," + (-1) + "," + (-1) + "," + record.get("t1Form") + "," + record.get("t2Form") + ","
-					+ record.get("t1Atack") + "," + record.get("t2Atack") + "," + "," + record.get("t1Defense") + ","
-					+ record.get("t2Defense") + "," + record.get("t1AvgFtScoreIn") + "," + record.get("t1AvgFtScoreOut")
-					+ "," + record.get("t2AvgFtScoreIn") + "," + record.get("t2AvgFtScoreOut") + "\n");
+					+ record.get("t1AtackIn") + "," + record.get("t1AtackOut") + "," + record.get("t2AtackIn") + ","
+					+ record.get("t2AtackOut") + "," + record.get("t1DefenseIn") + "," + record.get("t1DefenseOut")
+					+ "," + record.get("t2DefenseIn") + "," + record.get("t2DefenseOut") 
+//					+ "," + record.get("t1AvgFtScoreIn") + "," + record.get("t1AvgFtScoreOut") + ","
+//					+ record.get("t2AvgFtScoreIn") + "," + record.get("t2AvgFtScoreOut") 
+					+ "\n");
 		}
-		try {
-			lastRecWeek = Integer.parseInt(parser.getRecords().get(0).get("week"));
-		} catch (NumberFormatException | IOException e) {
-			e.printStackTrace();
-		}
+		// try {
+		//// lastRecWeek =
+		// Integer.parseInt(parser.getRecords().get(0).get("week"));
+		// } catch (NumberFormatException | IOException e) {
+		// e.printStackTrace();
+		// }
 		return sb.toString();
 	}
 

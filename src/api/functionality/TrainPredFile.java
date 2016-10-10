@@ -48,9 +48,10 @@ public class TrainPredFile implements CsvFileHandler {
 					+ record.get("t2Ft") + "," + record.get("t1Form") + "," + record.get("t2Form") + ","
 					+ record.get("t1AtackIn") + "," + record.get("t1AtackOut") + "," + record.get("t2AtackIn") + ","
 					+ record.get("t2AtackOut") + "," + record.get("t1DefenseIn") + "," + record.get("t1DefenseOut")
-					+ "," + record.get("t2DefenseIn") + "," + record.get("t2DefenseOut") + ","
-					+ record.get("t1AvgFtScoreIn") + "," + record.get("t1AvgFtScoreOut") + ","
-					+ record.get("t2AvgFtScoreIn") + "," + record.get("t2AvgFtScoreOut") + "\n";
+					+ "," + record.get("t2DefenseIn") + "," + record.get("t2DefenseOut") 
+//					+ "," + record.get("t1AvgFtScoreIn") + "," + record.get("t1AvgFtScoreOut") + ","
+//					+ record.get("t2AvgFtScoreIn") + "," + record.get("t2AvgFtScoreOut") 
+					+ "\n";
 			sb.append(line);
 			commonAdvLines(line, record.get("week"));
 		}

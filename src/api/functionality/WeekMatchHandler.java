@@ -27,36 +27,13 @@ public class WeekMatchHandler {
 
 	public String redWeekMatches(int compId, String competition, String country) throws SQLException {
 
-		// int ind = CountryCompetition.idToIdx.get(compId);
-		// if (ind < 0) {
-		// log.warn("no competition found with that id");
-		// return null;
-		// }
-		// CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
-		// get the test pred file first
 		TestPredFile tspf = new TestPredFile();
 		String csvTxt = tspf.reducedCsv(compId, competition, country);
 		linesRead = tspf.getLinesRead();
-		// keep the week from lastRecWeek
-		// int lastRecWeek = tspf.getLastRecWeek();
-
-		// get the train pred file after.
-		// for records with week <= lastRecWeek-10
-		// copy record in another csvtext holder
+		
 		TrainPredFile tprf = new TrainPredFile();
-		// tprf.setLastRecWeek(lastRecWeek);
 		String formData = tprf.reducedCsv(compId, competition, country);
 		linesRead += tprf.getLinesRead();
-		// String a = tprf.getLast10();
-		// csvTxt = tprf.getLast10() + csvTxt;
-
-		// in the end we have the all weeks match csv text for the form data
-		// and a last 10 weeks matches+ curent week matches for common
-		// adversaries
-
-		// store the comon adv csvtxt within a static map to have it ready on
-		// the next request
-		// CommonAdversariesHandler.commonAdv.put(compId, csvTxt);
 
 		if (csvTxt == null)
 			return formData;

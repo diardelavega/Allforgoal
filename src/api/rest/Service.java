@@ -326,6 +326,8 @@ public class Service {
 	}
 
 	/* get from db the data needed for the competition data table */
+	@GET
+	@Path("/compTableData/{cid}")
 	public String compTableData(@PathParam("cid") int cid) {
 		CCAllStruct ccal = ccalExtract(cid);
 		if (ccal == null) {
@@ -345,10 +347,17 @@ public class Service {
 		}
 	}
 
-	//-------------Match Page ---------------------------
-//	----
-	
-	//------------------------------------END OF NEW---------
+	// -------------Match Page ---------------------------
+	@GET
+	@Path("/matchSpecificData/{cid}/{t1}/{t2}")
+	String matchSpecificData(@PathParam("t1") String t1, @PathParam("t2") String t2, @PathParam("cid") int cid) {
+		/* find all the data nedded regarding the two teams in hand */
+
+		
+		return t1;
+	}
+
+	// ------------------------------------END OF NEW---------
 	private CCAllStruct ccalExtract(int cid) {
 		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
 		// int ind = CountryCompetition.idToIdx.get(cid);

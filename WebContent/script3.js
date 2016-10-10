@@ -1,4 +1,5 @@
-	// to change the view with tables & rows for every competition or teams
+
+// to change the view with tables & rows for every competition or teams
 
 //=========================== change win draw lose tab view
 //function wdlTableFiller(t1, t2, idx){
