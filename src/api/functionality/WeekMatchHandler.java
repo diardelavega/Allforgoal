@@ -1,6 +1,7 @@
 package api.functionality;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,12 @@ public class WeekMatchHandler {
 	public static Logger log = LoggerFactory.getLogger(WeekMatchHandler.class);
 	private int linesRead = -1;
 
-	public String redWeekMatches(int compId, String competition, String country) throws SQLException {
+	public String redWeekMatches(int compId, String competition, String country, LocalDate ld) throws SQLException {
 
 		TestPredFile tspf = new TestPredFile();
-		String csvTxt = tspf.reducedCsv(compId, competition, country);
+		String csvTxt = tspf.reducedCsv(compId, competition, country, ld);
 		linesRead = tspf.getLinesRead();
-		
+
 		TrainPredFile tprf = new TrainPredFile();
 		String formData = tprf.reducedCsv(compId, competition, country);
 		linesRead += tprf.getLinesRead();
@@ -41,6 +42,41 @@ public class WeekMatchHandler {
 			return null;
 		csvTxt += formData;
 		return csvTxt;
+	}
+
+	public String redWeekMatches_TodTom(int compId, String competition, String country) {
+		/*
+		 * read the matches from test file of today & tomorrow so that to have
+		 * the needed data even for tomorrow
+		 */
+
+		TestPredFile tspf = new TestPredFile();
+		String csvTxtTod = tspf.reducedCsv(compId, competition, country, LocalDate.now());
+		linesRead = tspf.getLinesRead();
+
+		String csvTxtTom = tspf.reducedCsv(compId, competition, country, LocalDate.now().plusDays(1));
+		linesRead = tspf.getLinesRead();
+
+		TrainPredFile csvTprf = new TrainPredFile();
+		String formData = csvTprf.reducedCsv(compId, competition, country);
+		linesRead += csvTprf.getLinesRead();
+
+		if (formData == null)
+			return null;
+		if (csvTxtTom == null) {
+			if (csvTxtTod == null) {
+				return formData;
+			} else {
+				return (csvTxtTod + formData);
+			}
+		} else {// (csvTxtTom != null)
+			if (csvTxtTod == null) {
+				return (csvTxtTom + formData);
+			} else {
+				return (csvTxtTom + csvTxtTod + formData);
+			}
+		}
+
 	}
 
 	public int getLinesRead() {

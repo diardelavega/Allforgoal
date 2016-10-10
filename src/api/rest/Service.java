@@ -116,7 +116,7 @@ public class Service {
 
 		WeekMatchHandler wmh = new WeekMatchHandler();
 
-		return wmh.redWeekMatches(compId, ccal.getCompetition(), ccal.getCountry());
+		return wmh.redWeekMatches(compId, ccal.getCompetition(), ccal.getCountry(),LocalDate.now());
 	}
 
 	@GET
@@ -201,7 +201,7 @@ public class Service {
 		CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
 
 		WeekMatchHandler wmh = new WeekMatchHandler();
-		String csv = wmh.redWeekMatches(compId, ccal.getCompetition(), ccal.getCountry());
+		String csv = wmh.redWeekMatches_TodTom(compId, ccal.getCompetition(), ccal.getCountry());
 		int linesRead = wmh.getLinesRead();
 		WeekMatchesCSV wmcsv = new WeekMatchesCSV(ccal.getCountry(), ccal.getCompetition(), compId, linesRead, csv);
 		Gson gson = new Gson();
@@ -347,12 +347,29 @@ public class Service {
 		}
 	}
 
-	// -------------Match Page ---------------------------
+	// -------------Match Specific Page ---------------------------
 	@GET
-	@Path("/matchSpecificData/{cid}/{t1}/{t2}")
-	String matchSpecificData(@PathParam("t1") String t1, @PathParam("t2") String t2, @PathParam("cid") int cid) {
-		/* find all the data nedded regarding the two teams in hand */
-
+	@Path("/matchSpecificData/{datstamp}/{compId}/{t1}/{t2}")
+	String matchSpecificData(@PathParam("datstamp") String datstamp,@PathParam("t1") String t1, @PathParam("t2") String t2, @PathParam("compId") int compId) {
+		/* find all the data needed regarding the two teams in hand */
+		LocalDate ld ;
+		try {
+			datstamp = "2016-10-05";
+			ld = LocalDate.parse(datstamp);
+		} catch (Exception e) {
+			log.info(" received date string was not parsed correctly");
+			return msgWriter(ServiceMsg.DATE_ERR_PARSE);
+		}
+		if (!TimeVariations.mapMPL.keySet().contains(ld)) {
+			log.info("no matches @ that date");
+			return msgWriter(ServiceMsg.DATE_NO_REC);
+		}
+		int ind = CountryCompetition.idToIdx.get(compId);
+		if (ind < 0) {
+			log.warn("no competition found with that id");
+			return msgWriter(ServiceMsg.UNFOUND_ID);
+		}
+		CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
 		
 		return t1;
 	}

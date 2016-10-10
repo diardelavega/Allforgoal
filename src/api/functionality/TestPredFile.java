@@ -21,15 +21,6 @@ public class TestPredFile implements CsvFileHandler {
 	public static Logger log = LoggerFactory.getLogger(TestPredFile.class);
 	private int lastRecWeek;
 	private int linesRead = 0;
-//	private int points = 0;// for match specific page
-//	private float avgHtScoreIn= 0;// for match specific page
-//	private float avgHtScoreOut= 0;// for match specific page
-//	private float avgHtConcedeIn= 0;// for match specific page
-//	private float avgHtConcedeOut= 0;// for match specific page
-//	private float avgFtScoreIn= 0;// for match specific page
-//	private float avgFtScoreOut= 0;// for match specific page
-//	private float avgFtConcedeIn= 0;// for match specific page
-//	private float avgFtConcedeOut= 0;// for match specific page
 
 	public List<StrStrTuple> daylyAdversaries(int compId, String compName, String country) {
 		/*
@@ -72,18 +63,11 @@ public class TestPredFile implements CsvFileHandler {
 //					+ record.get("t2AvgFtScoreIn") + "," + record.get("t2AvgFtScoreOut") 
 					+ "\n");
 		}
-		// try {
-		//// lastRecWeek =
-		// Integer.parseInt(parser.getRecords().get(0).get("week"));
-		// } catch (NumberFormatException | IOException e) {
-		// e.printStackTrace();
-		// }
 		return sb.toString();
 	}
 
-	@Override
-	public String reducedCsv(int compId, String compName, String country) {
-		CSVParser parser = parser(compId, compName, country);
+	public String reducedCsv(int compId, String compName, String country,LocalDate ld) {
+		CSVParser parser = parser(compId, compName, country,ld);
 		if (parser == null)
 			return null;
 		StringBuilder sb = new StringBuilder();
@@ -99,6 +83,24 @@ public class TestPredFile implements CsvFileHandler {
 		return sb.toString();
 	}
 
+	private CSVParser parser(int compId, String compName, String country, LocalDate ld) {
+		CSVFormat format = CSVFormat.RFC4180.withHeader();
+
+		AnalyticFileHandler afh = new AnalyticFileHandler();
+		CSVParser parser = null;
+		try {
+			File f = afh.getTestFileName(compId, compName, country,ld);
+			if (f != null)
+				parser = new CSVParser(new FileReader(f), format);
+			log.info("file {} {} not found", compName, country);
+		} catch (IOException e) {
+			log.warn("Parsing exception");
+			e.printStackTrace();
+		}
+		log.info(parser.toString());
+		return parser;
+	}
+
 	private CSVParser parser(int compId, String compName, String country) {
 		/* get the leatest (today or in future test pred files and reads it) */
 		CSVFormat format = CSVFormat.RFC4180.withHeader();
@@ -106,9 +108,6 @@ public class TestPredFile implements CsvFileHandler {
 		AnalyticFileHandler afh = new AnalyticFileHandler();
 		CSVParser parser = null;
 		try {
-			// parser = new CSVParser(new FileReader(afh.getTrainFileName(89,
-			// "J2_League", "Japan")), format);
-
 			File f = afh.getLeatestTestFileName(compId, compName, country);
 			if (f != null)
 				parser = new CSVParser(new FileReader(f), format);
@@ -135,6 +134,18 @@ public class TestPredFile implements CsvFileHandler {
 
 	public int getLinesRead() {
 		return linesRead;
+	}
+
+	@Override
+	public String reducedCsv(int compId, String compName, String country) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String fullCsv(int compId, String compName, String country, LocalDate ld) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
