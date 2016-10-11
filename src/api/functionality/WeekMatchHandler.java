@@ -1,8 +1,15 @@
 package api.functionality;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import api.functionality.obj.CountryCompCompId;
+import api.functionality.obj.MatchSpecificLine;
+import basicStruct.CCAllStruct;
+import structures.CountryCompetition;
 
 /**
  * @author Administrator
@@ -17,33 +24,102 @@ import api.functionality.obj.CountryCompCompId;
  *         remember what is called) for efficiency reasons
  */
 public class WeekMatchHandler {
+	public static Logger log = LoggerFactory.getLogger(WeekMatchHandler.class);
+	private int linesRead = -1;
+	private MatchSpecificLine msl;
 
-	public String redWeekMatches(int compId) throws SQLException {
+	public String redWeekMatches(int compId, String competition, String country, LocalDate ld) {
+
 		TestPredFile tspf = new TestPredFile();
-		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
-		// get the test pred file first
-		String csvTxt = tspf.reducedCsv(compId, ccci.getCompetition(),
-				ccci.getCountry());
-		// keep the week from lastRecWeek
-		int lastRecWeek = tspf.getLastRecWeek();
+		String csvTxt = tspf.reducedCsv(compId, competition, country, ld);
+		linesRead = tspf.getLinesRead();
 
-		// get the train pred file after.
-		// for records with week <= lastRecWeek-10
-		// copy record in another csvtext holder
 		TrainPredFile tprf = new TrainPredFile();
-		tprf.setLastRecWeek(lastRecWeek);
-		String formData = tprf.reducedCsv(ccci);
-		
-		csvTxt = tprf.getLast10() + csvTxt;
+		String formData = tprf.reducedCsv(compId, competition, country);
+		linesRead += tprf.getLinesRead();
 
-		// in the end we have the all weeks match csv text for the form data
-		// and a last 10 weeks matches+ curent week matches for common
-		// adversaries
-
-		// store the comon adv csvtxt within a static map to have it ready on
-		// the next request
-		CommonAdversariesHandler.commonAdv.put(compId, csvTxt);
-
-		return formData;
+		if (csvTxt == null)
+			return formData;
+		if (formData == null)
+			return null;
+		csvTxt += formData;
+		return csvTxt;
 	}
+
+	public String redWeekMatches_TodTom(int compId, String competition, String country) {
+		/*
+		 * read the matches from test file of today & tomorrow so that to have
+		 * the needed data even for tomorrow in the all matches page.
+		 */
+
+		TestPredFile tspf = new TestPredFile();
+		String csvTxtTod = tspf.reducedCsv(compId, competition, country, LocalDate.now());
+		linesRead = tspf.getLinesRead();
+
+		String csvTxtTom = tspf.reducedCsv(compId, competition, country, LocalDate.now().plusDays(1));
+		linesRead = tspf.getLinesRead();
+
+		TrainPredFile csvTprf = new TrainPredFile();
+		String formData = csvTprf.reducedCsv(compId, competition, country);
+		linesRead += csvTprf.getLinesRead();
+
+		if (formData == null)
+			return null;
+		if (csvTxtTom == null) {
+			if (csvTxtTod == null) {
+				return formData;
+			} else {
+				return (csvTxtTod + formData);
+			}
+		} else {// (csvTxtTom != null)
+			if (csvTxtTod == null) {
+				return (csvTxtTom + formData);
+			} else {
+				return (csvTxtTom + csvTxtTod + formData);
+			}
+		}
+
+	}
+
+	public String fullWeekMatches(int compId, String competition, String country, LocalDate ld, String t1, String t2) {
+		TestPredFile tspf = new TestPredFile();
+		String csvTxtTod = tspf.fullCsv(compId, competition, country, ld, t1, t2);
+		linesRead = tspf.getLinesRead();
+
+		TrainPredFile csvTprf = new TrainPredFile();
+		String formData = csvTprf.fullCsv(compId, competition, country, t1, t2);
+		linesRead += csvTprf.getLinesRead();
+		msl.setT1Over_nr(csvTprf.getT1o());
+		msl.setT1Under_nr(csvTprf.getT1u());
+		msl.setT1GG_nr(csvTprf.getT1gg());
+		msl.setT2Over_nr(csvTprf.getT2o());
+		msl.setT2Under_nr(csvTprf.getT2u());
+		msl.setT2GG_nr(csvTprf.getT2gg());
+
+		if (formData == null)
+			return null;
+		if (csvTxtTod == null) {
+			return (formData);
+		} else {
+			return (csvTxtTod + formData);
+		}
+
+	}
+
+	public int getLinesRead() {
+		return linesRead;
+	}
+
+	public void setLinesRead(int linesRead) {
+		this.linesRead = linesRead;
+	}
+
+	public MatchSpecificLine getMsl() {
+		return msl;
+	}
+
+	public void setMsl(MatchSpecificLine msl) {
+		this.msl = msl;
+	}
+
 }

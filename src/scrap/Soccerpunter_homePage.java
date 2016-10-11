@@ -15,8 +15,6 @@ import basicStruct.CCAllStruct;
 import basicStruct.CompIdLinkSoccerPlunter;
 import basicStruct.CountryCompObj;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Commons;
-
 import structures.CountryCompetition;
 import extra.NameCleaner;
 

@@ -166,7 +166,7 @@ public class CompetitionTeamTable {
 			tm.setFormDefenceIn(rs.getFloat("formDefenceIn"));
 			tm.setFormDefenceOut(rs.getFloat("formDefenceOut"));
 
-			tm.setAvgWinCont(rs.getInt("winsIn"));
+			tm.setAvgWinCont(rs.getInt("avgWinCont"));
 			tm.setAvgDrawCont(rs.getInt("avgDrawCont"));
 			tm.setAvgLoseCont(rs.getInt("avgLoseCont"));
 
@@ -180,7 +180,7 @@ public class CompetitionTeamTable {
 			tm.setHtGg(rs.getInt("htgg"));
 
 			// if (isFullTable) {
-			// tm.setHtScoreIn(rs.getInt("htscorein"));
+//			 tm.setHtScoreIn(rs.getInt("htscorein"));
 			// tm.setHtScoreOut(rs.getInt("htscoreout"));
 			// tm.setHtConcededOut(rs.getInt("htconcedeout"));
 			// tm.setHtConcededIn(rs.getInt("htconcedein"));

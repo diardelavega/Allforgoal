@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
-import com.sun.org.apache.bcel.internal.generic.ALOAD;
 
 import basicStruct.CCAllStruct;
 import basicStruct.CompIdLinkSoccerPlunter;

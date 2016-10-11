@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import structures.CountryCompetition;
-import sun.swing.StringUIClientPropertyKey;
 import api.functionality.TestPredFile;
 import api.functionality.obj.BaseMatchLinePred;
 import basicStruct.CCAllStruct;

@@ -19,6 +19,7 @@ public class CorelationAtempt {
 		log.info("Corelating");
 
 		List<MatchObj> corelatedTeamMAtches= new ArrayList<MatchObj>();
+		List<MatchObj> smallForPredList= new ArrayList<MatchObj>();
 		Map<Integer, List<MatchObj>> scrapmap = null;
 		if (finerr.equals("fin")) {
 			scrapmap = MatchGetter.finNewMatches;
@@ -33,13 +34,21 @@ public class CorelationAtempt {
 		int chosenDbIdx1 = -1, chosenDbIdx2 = -1;
 		float dist1 = 1000, dist2 = 1000, dist = 0;
 		boolean foundTeamFlag = false;
-		int cid = -1;
+		int cid = -1, prevCid=-1;
 
 		// TODO read from tempmatches ordered by compid
 		for (MatchObj m : dbmatches) {
 			cid = m.getComId();
+			
+			if(prevCid!=cid){
+				prevCid=cid;
+				if(smallForPredList.size()>0){
+	//				addToPredTrainDataSet(smallForPredList);
+	//				smallForPredList.clear();
+				}
+			}
 			if (!scrapmap.keySet().contains(cid)) {
-				log.warn("unfinished matches with cid:{}", cid);
+				log.warn("contained matches with cid:{}", cid);
 				continue;
 			}
 			dist1 = 1000;
@@ -95,7 +104,9 @@ public class CorelationAtempt {
 				mobj.setHt2(scrapmap.get(cid).get(chosenDbIdx1).getHt2());
 				mobj.setFt1(scrapmap.get(cid).get(chosenDbIdx1).getFt1());
 				mobj.setFt2(scrapmap.get(cid).get(chosenDbIdx1).getFt2());
+				smallForPredList.add(mobj);
 				corelatedTeamMAtches.add(mobj);
+				scrapmap.get(cid).remove(chosenDbIdx1);
 
 			} else {// if t1 not found
 				// loop to find the t2 of the team and go on from there

@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +15,16 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import structures.CountryCompetition;
 import structures.PredictionFile;
 import api.functionality.obj.CountryCompCompId;
+import basicStruct.CCAllStruct;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import diskStore.AnalyticFileHandler;
+import extra.ServiceMsg;
 
 public class TestApachCsvParser {
 	public static Logger log = LoggerFactory
@@ -150,8 +154,18 @@ public class TestApachCsvParser {
 		int compId = 112;
 		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
 		ccci.showLine();
+		
+		int ind = CountryCompetition.idToIdx.get(compId);
+		if (ind < 0) {
+			log.warn("no competition found with that id");
+//			return "{msg:" + ServiceMsg.UNFOUND_ID + "}";
+		}
+		CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
+
 		WeekMatchHandler wmh = new WeekMatchHandler();
-		wmh.redWeekMatches(compId);
+		wmh.redWeekMatches(compId,ccal.getCompetition(),ccal.getCountry(), LocalDate.now());
+//		WeekMatchHandler wmh = new WeekMatchHandler();
+//		wmh.redWeekMatches(compId);
 //		System.out.println("FORM DATA");
 //		log.info("{}", wmh.redWeekMatches(compId));
 

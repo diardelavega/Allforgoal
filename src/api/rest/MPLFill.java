@@ -15,6 +15,11 @@ import basicStruct.FullMatchLine;
 import basicStruct.MatchObj;
 import structures.TimeVariations;
 
+/**
+ * @author Administrator
+ *
+ *HEPL CLASS TO fill with data simulating the match prediction line
+ */
 public class MPLFill {
 	public static final Logger log = LoggerFactory.getLogger(MPLFill.class);
 	private Random r = new Random();
