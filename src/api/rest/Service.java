@@ -18,10 +18,12 @@ import api.functionality.CommonAdversariesHandler;
 import api.functionality.CompIdToCountryCompCompID;
 import api.functionality.CompTableHandler;
 import api.functionality.MatchPredLineHandler;
+import api.functionality.MatchSpecificHandler;
 import api.functionality.WeekMatchHandler;
 import api.functionality.WinDrawLoseHandler;
 import api.functionality.obj.CountryCompCompId;
 import api.functionality.obj.MPLPack;
+import api.functionality.obj.MatchSpecificLine;
 import api.functionality.obj.WeekMatchesCSV;
 import basicStruct.CCAllStruct;
 import basicStruct.FullMatchLine;
@@ -376,19 +378,30 @@ public class Service {
 		}
 		CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
 		boolean teamflag = false;
+		int idx = -1;
 		for (int i = 0; i < TimeVariations.mapMPL.get(ld).get(compId).size(); i++) {
-			if (TimeVariations.mapMPL.get(ld).get(compId).get(i).getT1().equals(t1))
-				if (TimeVariations.mapMPL.get(ld).get(compId).get(i).getT2().equals(t2)) {
-					teamflag = true;
-					break;
-				}
+			if (TimeVariations.mapMPL.get(ld).get(compId).get(i).getT1().equals(t1)
+					&& TimeVariations.mapMPL.get(ld).get(compId).get(i).getT2().equals(t2)) {
+				idx = i;
+				teamflag = true;
+				break;
+			}
 		}
-		if(!teamflag){
+		if (!teamflag) {
 			log.warn("no teams were not found in the map");
 			return msgWriter(ServiceMsg.UNFOUND_ID);
 		}
+		MatchSpecificHandler msh = new MatchSpecificHandler();
+		String csv = msh.getweekSpecificData(ccal, ld, t1, t2);
+		if (csv == null) {
+			log.warn("CSV recuperation problems");
+			return msgWriter(ServiceMsg.RETR_ERROR_CSV);
+		}
+		// msl.setFml(TimeVariations.mapMPL.get(ld).get(compId).get(idx));
 
-		return t1;
+		// get data from competitions table
+
+		return null;
 	}
 
 	// ------------------------------------END OF NEW---------

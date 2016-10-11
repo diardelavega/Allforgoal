@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -162,7 +163,7 @@ public class TestApachCsvParser {
 		CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
 
 		WeekMatchHandler wmh = new WeekMatchHandler();
-		wmh.redWeekMatches(compId,ccal.getCompetition(),ccal.getCountry());
+		wmh.redWeekMatches(compId,ccal.getCompetition(),ccal.getCountry(), LocalDate.now());
 //		WeekMatchHandler wmh = new WeekMatchHandler();
 //		wmh.redWeekMatches(compId);
 //		System.out.println("FORM DATA");

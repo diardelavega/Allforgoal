@@ -8,7 +8,8 @@ public interface CsvFileHandler {
 	
 	public   String reducedCsv(int compId, String compName, String country);
 	
-public   String fullCsv(int compId, String compName, String country,LocalDate ld);
 	
 	public   String reducedCsv(int compId, String compName, String country,LocalDate ld);
+
+	String fullCsv(int compId, String compName, String country, LocalDate ld, String t1, String t2);
 }

@@ -11,16 +11,23 @@ public class MatchSpecificLine {
 	// comp data, teams, odds, pred points, date time.
 	private FullMatchLine fml = new FullMatchLine();
 
-	private float t1avgWinCont = 0;
+	private float t1avgWinIn = 0; //db
+	private float t1avgWinOut = 0; //db
+	private float t1avgDrawIn = 0; //db
+	private float t1avgDrawOut = 0; //db
+	private float t1avgLoseIn = 0; //db
+	private float t1avgLoseOut = 0; //db
+	private float t1avgWinCont = 0; //db
 	private float t1avgDrawCont = 0;
 	private float t1avgLoseCont = 0;
-	private float t1avgHtGG = 0;
+	private float t1avgHtGG = 0;// db gg/matches
 	private float t1avgFtGG = 0;
-	private int t1Over_nr= 0;
-	private int t1Under_nr= 0;
-	private int t1GG_nr= 0;
+	private int t1Over_nr= 0;//train
+	private int t1Under_nr= 0;//train
+	private int t1GG_nr= 0;//db
 
 	private int t1point = 0;
+	private float t1form= 0;
 	private float t1avgHtScoreIn = 0;// for match specific page
 	private float t1avgHtScoreOut = 0;// for match specific page
 	private float t1avgHtConcedeIn = 0;// for match specific page
@@ -30,6 +37,12 @@ public class MatchSpecificLine {
 	private float t1avgFtConcedeIn = 0;// for match specific page
 	private float t1avgFtConcedeOut = 0;// for match specific page
 
+	private float t2avgWinIn = 0; //db
+	private float t2avgWinOut = 0; //db
+	private float t2avgDrawIn = 0; //db
+	private float t2avgDrawOut = 0; //db
+	private float t2avgLoseIn = 0; //db
+	private float t2avgLoseOut = 0; //db
 	private float t2avgWinCont = 0;
 	private float t2avgDrawCont = 0;
 	private float t2avgLoseCont = 0;
@@ -40,6 +53,7 @@ public class MatchSpecificLine {
 	private int t2GG_nr= 0;
 
 	private int t2point = 0;
+	private float t2form= 0;
 	private float t2avgHtScoreIn = 0;// for match specific page
 	private float t2avgHtScoreOut = 0;// for match specific page
 	private float t2avgHtConcedeIn = 0;// for match specific page
@@ -101,6 +115,24 @@ public class MatchSpecificLine {
 		msl.t2Over_nr = t2Over_nr;
 		msl.t2Under_nr = t2Under_nr;
 		msl.t2GG_nr = t2gg_nr;
+	}
+
+	
+	
+	public float getT1form() {
+		return t1form;
+	}
+
+	public void setT1form(float t1form) {
+		this.t1form = t1form;
+	}
+
+	public float getT2form() {
+		return t2form;
+	}
+
+	public void setT2form(float t2form) {
+		this.t2form = t2form;
 	}
 
 	public int getT1point() {
@@ -383,5 +415,102 @@ public class MatchSpecificLine {
 		t2GG_nr = t2gg_nr;
 	}
 
+	public float getT1avgWinIn() {
+		return t1avgWinIn;
+	}
+
+	public void setT1avgWinIn(float t1avgWinIn) {
+		this.t1avgWinIn = t1avgWinIn;
+	}
+
+	public float getT1avgWinOut() {
+		return t1avgWinOut;
+	}
+
+	public void setT1avgWinOut(float t1avgWinOut) {
+		this.t1avgWinOut = t1avgWinOut;
+	}
+
+	public float getT1avgDrawIn() {
+		return t1avgDrawIn;
+	}
+
+	public void setT1avgDrawIn(float t1avgDrawIn) {
+		this.t1avgDrawIn = t1avgDrawIn;
+	}
+
+	public float getT1avgDrawOut() {
+		return t1avgDrawOut;
+	}
+
+	public void setT1avgDrawOut(float t1avgDrawOut) {
+		this.t1avgDrawOut = t1avgDrawOut;
+	}
+
+	public float getT1avgLoseIn() {
+		return t1avgLoseIn;
+	}
+
+	public void setT1avgLoseIn(float t1avgLoseIn) {
+		this.t1avgLoseIn = t1avgLoseIn;
+	}
+
+	public float getT1avgLoseOut() {
+		return t1avgLoseOut;
+	}
+
+	public void setT1avgLoseOut(float t1avgLoseOut) {
+		this.t1avgLoseOut = t1avgLoseOut;
+	}
+
+	public float getT2avgWinIn() {
+		return t2avgWinIn;
+	}
+
+	public void setT2avgWinIn(float t2avgWinIn) {
+		this.t2avgWinIn = t2avgWinIn;
+	}
+
+	public float getT2avgWinOut() {
+		return t2avgWinOut;
+	}
+
+	public void setT2avgWinOut(float t2avgWinOut) {
+		this.t2avgWinOut = t2avgWinOut;
+	}
+
+	public float getT2avgDrawIn() {
+		return t2avgDrawIn;
+	}
+
+	public void setT2avgDrawIn(float t2avgDrawIn) {
+		this.t2avgDrawIn = t2avgDrawIn;
+	}
+
+	public float getT2avgDrawOut() {
+		return t2avgDrawOut;
+	}
+
+	public void setT2avgDrawOut(float t2avgDrawOut) {
+		this.t2avgDrawOut = t2avgDrawOut;
+	}
+
+	public float getT2avgLoseIn() {
+		return t2avgLoseIn;
+	}
+
+	public void setT2avgLoseIn(float t2avgLoseIn) {
+		this.t2avgLoseIn = t2avgLoseIn;
+	}
+
+	public float getT2avgLoseOut() {
+		return t2avgLoseOut;
+	}
+
+	public void setT2avgLoseOut(float t2avgLoseOut) {
+		this.t2avgLoseOut = t2avgLoseOut;
+	}
+
+	
 	
 }

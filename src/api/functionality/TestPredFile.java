@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import api.functionality.obj.MatchSpecificLine;
 import basicStruct.StrStrTuple;
 import diskStore.AnalyticFileHandler;
 
@@ -42,23 +43,26 @@ public class TestPredFile implements CsvFileHandler {
 	}
 
 	@Override
-	public String fullCsv(int compId, String compName, String country,LocalDate ld) {
+	public String fullCsv(int compId, String compName, String country, LocalDate ld, String homeTeam, String awayTeam) {
 		/*
-		 * store the data that we have, and for what we dont have such as the
-		 * score : store as -1
+		 * read data for match specific page. so get the data only for the two
+		 * teams provided
 		 */
 		CSVParser parser = parser(compId, compName, country);
 		if (parser == null)
 			return null;
 		StringBuilder sb = new StringBuilder();
 		for (CSVRecord record : parser) {
-			linesRead++;
-			// if(record.get("t1")||record.get("t2"))
-			sb.append(record.get("week") + "," + record.get("t1") + "," + record.get("t2") + "," + (-1) + "," + (-1)
-					+ "," + (-1) + "," + (-1) + "," + record.get("t1Form") + "," + record.get("t2Form") + ","
-					+ record.get("t1AtackIn") + "," + record.get("t1AtackOut") + "," + record.get("t2AtackIn") + ","
-					+ record.get("t2AtackOut") + "," + record.get("t1DefenseIn") + "," + record.get("t1DefenseOut")
-					+ "," + record.get("t2DefenseIn") + "," + record.get("t2DefenseOut") + "\n");
+			
+			if (record.get("t1").equals(homeTeam) || record.get("t2").equals(homeTeam)
+					|| record.get("t1").equals(awayTeam) || record.get("t2").equals(awayTeam)) {
+				linesRead++;
+				sb.append(record.get("week") + "," + record.get("t1") + "," + record.get("t2") + "," + (-1) + "," + (-1)
+						+ "," + (-1) + "," + (-1) + "," + record.get("t1Form") + "," + record.get("t2Form") + ","
+						+ record.get("t1AtackIn") + "," + record.get("t1AtackOut") + "," + record.get("t2AtackIn") + ","
+						+ record.get("t2AtackOut") + "," + record.get("t1DefenseIn") + "," + record.get("t1DefenseOut")
+						+ "," + record.get("t2DefenseIn") + "," + record.get("t2DefenseOut") + "\n");
+			}
 		}
 		return sb.toString();
 	}
@@ -144,5 +148,6 @@ public class TestPredFile implements CsvFileHandler {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

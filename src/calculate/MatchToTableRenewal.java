@@ -93,10 +93,8 @@ public class MatchToTableRenewal {
 		 * file. In the afh when we open it we can decide if it is going to be
 		 * for writing to TrainDataFile or to TestDataFile.
 		 */
-		compName = CountryCompetition.ccasList.get(
-				CountryCompetition.idToIdx.get(comp_Id)).getCompetition();
-		country = CountryCompetition.ccasList.get(
-				CountryCompetition.idToIdx.get(comp_Id)).getCountry();
+		compName = CountryCompetition.ccasList.get( CountryCompetition.idToIdx.get(comp_Id)).getCompetition();
+		country = CountryCompetition.ccasList.get( CountryCompetition.idToIdx.get(comp_Id)).getCountry();
 		compName = NameCleaner.replacements(compName);
 		country = NameCleaner.replacements(country);
 
@@ -457,8 +455,7 @@ public class MatchToTableRenewal {
 			if (t1.getPrevRes() == TeamStatus.WIN)
 				t1.addContinuanceCounter();
 			else {
-				avgVal = (t1.getAvgWinCont() * t1.getWinStreams() + t1
-						.getContResCounter()) / (t1.getWinStreams() + 1);
+				avgVal = (t1.getAvgWinCont() * t1.getWinStreams() + t1 .getContResCounter()) / (t1.getWinStreams() + 1);
 				t1.setAvgWinCont(avgVal);
 				t1.resetContinuanceCounter();
 				t1.addWinStreams();
@@ -467,8 +464,7 @@ public class MatchToTableRenewal {
 			if (t2.getPrevRes() == TeamStatus.LOSE) {
 				t2.addContinuanceCounter();
 			} else {
-				avgVal = (t2.getAvgLoseCont() * t2.getLoseStreams() + t2
-						.getContResCounter()) / (t2.getLoseStreams() + 1);
+				avgVal = (t2.getAvgLoseCont() * t2.getLoseStreams() + t2 .getContResCounter()) / (t2.getLoseStreams() + 1);
 				t2.setAvgLoseCont(avgVal);
 				t2.resetContinuanceCounter();
 				t2.addLoseStreams();
@@ -481,8 +477,7 @@ public class MatchToTableRenewal {
 			if (t1.getPrevRes() == TeamStatus.LOSE)
 				t1.addContinuanceCounter();
 			else {
-				avgVal = (t1.getAvgLoseCont() * t1.getLoseStreams() + t1
-						.getContResCounter()) / (t1.getLoseStreams() + 1);
+				avgVal = (t1.getAvgLoseCont() * t1.getLoseStreams() + t1 .getContResCounter()) / (t1.getLoseStreams() + 1);
 				t1.setAvgLoseCont(avgVal);
 				t1.resetContinuanceCounter();
 				t1.addLoseStreams();
@@ -492,8 +487,7 @@ public class MatchToTableRenewal {
 			if (t2.getPrevRes() == TeamStatus.WIN) {
 				t2.addContinuanceCounter();
 			} else {
-				avgVal = (t2.getAvgWinCont() * t2.getWinStreams() + t2
-						.getContResCounter()) / (t2.getWinStreams() + 1);
+				avgVal = (t2.getAvgWinCont() * t2.getWinStreams() + t2 .getContResCounter()) / (t2.getWinStreams() + 1);
 				t2.setAvgLoseCont(avgVal);
 				t2.resetContinuanceCounter();
 				t2.addWinStreams();
@@ -504,8 +498,7 @@ public class MatchToTableRenewal {
 			if (t1.getPrevRes() == TeamStatus.DRAW)
 				t1.addContinuanceCounter();
 			else {
-				avgVal = (t1.getAvgDrawCont() * t1.getDrawStreams() + t1
-						.getContResCounter()) / (t1.getDrawStreams() + 1);
+				avgVal = (t1.getAvgDrawCont() * t1.getDrawStreams() + t1 .getContResCounter()) / (t1.getDrawStreams() + 1);
 				t1.setAvgDrawCont(avgVal);
 				t1.resetContinuanceCounter();
 				t1.addDrawStreams();
@@ -514,8 +507,7 @@ public class MatchToTableRenewal {
 			if (t2.getPrevRes() == TeamStatus.DRAW) {
 				t2.addContinuanceCounter();
 			} else {
-				avgVal = (t2.getAvgDrawCont() * t2.getDrawStreams() + t2
-						.getContResCounter()) / (t2.getDrawStreams() + 1);
+				avgVal = (t2.getAvgDrawCont() * t2.getDrawStreams() + t2 .getContResCounter()) / (t2.getDrawStreams() + 1);
 				t2.setAvgDrawCont(avgVal);
 				t2.resetContinuanceCounter();
 				t2.addDrawStreams();
@@ -551,11 +543,9 @@ public class MatchToTableRenewal {
 			t2Defence = 0;
 		} else {
 			t1Atack = (float) mobj.getFt1() / (mobj.getFt1() + mobj.getFt2());
-			t1Defence = -(float) mobj.getFt2()
-					/ (mobj.getFt1() + mobj.getFt2());
+			t1Defence = -(float) mobj.getFt2() / (mobj.getFt1() + mobj.getFt2());
 			t2Atack = (float) mobj.getFt2() / (mobj.getFt1() + mobj.getFt2());
-			t2Defence = -(float) mobj.getFt1()
-					/ (mobj.getFt1() + mobj.getFt2());
+			t2Defence = -(float) mobj.getFt1() / (mobj.getFt1() + mobj.getFt2());
 		}
 
 		// classification points
@@ -565,20 +555,16 @@ public class MatchToTableRenewal {
 					t1Form += (float) 1 / 2;
 					t2Form -= (float) 1 / 2;
 				} else {
-					t1Form += (float) Math.abs(t1.getPoints() - t2.getPoints())
-							/ t1.getPoints();
-					t2Form -= (float) Math.abs(t1.getPoints() - t2.getPoints())
-							/ t1.getPoints();
+					t1Form += (float) Math.abs(t1.getPoints() - t2.getPoints()) / t1.getPoints();
+					t2Form -= (float) Math.abs(t1.getPoints() - t2.getPoints()) / t1.getPoints();
 				}
 			} else if (mobj.getFt1() < mobj.getFt2()) {
 				if (t2.getPoints() == 0) {
 					t1Form -= (float) 1 / 2;
 					t2Form += (float) 1 / 2;
 				} else {
-					t1Form -= (float) Math.abs(t1.getPoints() - t2.getPoints())
-							/ t2.getPoints();
-					t2Form += (float) Math.abs(t1.getPoints() - t2.getPoints())
-							/ t2.getPoints();
+					t1Form -= (float) Math.abs(t1.getPoints() - t2.getPoints()) / t2.getPoints();
+					t2Form += (float) Math.abs(t1.getPoints() - t2.getPoints()) / t2.getPoints();
 				}
 			} else {// in case of draw
 				if (t1.getPoints() > t2.getPoints()) {
@@ -586,24 +572,16 @@ public class MatchToTableRenewal {
 						t1Form -= (float) 1 / 4;
 						t2Form += (float) 1 / 4;
 					} else {
-						t1Form -= (float) Math.abs(t1.getPoints()
-								- t2.getPoints())
-								/ t2.getPoints();
-						t2Form += (float) Math.abs(t1.getPoints()
-								- t2.getPoints())
-								/ t2.getPoints();
+						t1Form -= (float) Math.abs(t1.getPoints() - t2.getPoints()) / t2.getPoints();
+						t2Form += (float) Math.abs(t1.getPoints() - t2.getPoints()) / t2.getPoints();
 					}
 				} else if (t1.getPoints() < t2.getPoints()) {
 					if (t1.getPoints() == 0) {
 						t1Form += (float) 1 / 4;
 						t2Form -= (float) 1 / 4;
 					} else {
-						t1Form += (float) Math.abs(t1.getPoints()
-								- t2.getPoints())
-								/ t1.getPoints();
-						t2Form -= (float) Math.abs(t1.getPoints()
-								- t2.getPoints())
-								/ t1.getPoints();
+						t1Form += (float) Math.abs(t1.getPoints() - t2.getPoints()) / t1.getPoints();
+						t2Form -= (float) Math.abs(t1.getPoints() - t2.getPoints()) / t1.getPoints();
 					}
 				}
 			}
@@ -728,7 +706,7 @@ public class MatchToTableRenewal {
 		 * for the train or test prediction file
 		 */
 
-		// outcomes is used to diferentiate between train and test data
+		// outcomes is used to differentiate between train and test data
 		// pf.setWeek(totMatches);
 		BasicTableEntity Elem = ctt.getClassificationPos().get(posT1);
 		pf.setT1(Elem.getTeam());
@@ -747,26 +725,20 @@ public class MatchToTableRenewal {
 
 		float avg;
 		if (Elem.getMatchesIn() > 0) {
-			avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
-					/ Elem.getMatchesIn();
+			avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn()) / Elem.getMatchesIn();
 			pf.setT1AvgHtScoreIn(avg);
-			avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
-					/ Elem.getMatchesIn();
+			avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn()) / Elem.getMatchesIn();
 			pf.setT1AvgFtScoreIn(avg);
 		}
 		if (Elem.getMatchesOut() > 0) {
-			avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
-					/ Elem.getMatchesOut();
+			avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut()) / Elem.getMatchesOut();
 			pf.setT1AvgHtScoreOut(avg);
-			avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
-					/ Elem.getMatchesOut();
+			avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut()) / Elem.getMatchesOut();
 			pf.setT1AvgFtScoreOut(avg);
 		}
 		if (Elem.getMatchesIn() + Elem.getMatchesOut() > 0) {
-			pf.setT1AvgFtGgResult(Elem.getFtGg()
-					/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
-			pf.setT1AvgHtGgResult(Elem.getHtGg()
-					/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+			pf.setT1AvgFtGgResult(Elem.getFtGg() / (Elem.getMatchesIn() + Elem.getMatchesOut()));
+			pf.setT1AvgHtGgResult(Elem.getHtGg() / (Elem.getMatchesIn() + Elem.getMatchesOut()));
 		}
 
 		pf.setT1WinsIn(Elem.getWinsIn());
@@ -792,26 +764,20 @@ public class MatchToTableRenewal {
 		pf.setT2DefenseOut(Elem.getFormDefenceOut());
 
 		if (Elem.getMatchesIn() > 0) {
-			avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn())
-					/ Elem.getMatchesIn();
+			avg = (Elem.getHtScoreIn() + Elem.getHtConcededIn()) / Elem.getMatchesIn();
 			pf.setT2AvgHtScoreIn(avg);
-			avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn())
-					/ Elem.getMatchesIn();
+			avg = (Elem.getFtScoreIn() + Elem.getFtConcededIn()) / Elem.getMatchesIn();
 			pf.setT2AvgFtScoreIn(avg);
 		}
 		if (Elem.getMatchesOut() > 0) {
-			avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut())
-					/ Elem.getMatchesOut();
+			avg = (Elem.getHtScoreOut() + Elem.getHtConcededOut()) / Elem.getMatchesOut();
 			pf.setT2AvgHtScoreOut(avg);
-			avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut())
-					/ Elem.getMatchesOut();
+			avg = (Elem.getFtScoreOut() + Elem.getFtConcededOut()) / Elem.getMatchesOut();
 			pf.setT2AvgFtScoreOut(avg);
 		}
 		if (Elem.getMatchesIn() + Elem.getMatchesOut() > 0) {
-			pf.setT2AvgFtGgResult(Elem.getFtGg()
-					/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
-			pf.setT2AvgHtGgResult(Elem.getHtGg()
-					/ (Elem.getMatchesIn() + Elem.getMatchesOut()));
+			pf.setT2AvgFtGgResult(Elem.getFtGg() / (Elem.getMatchesIn() + Elem.getMatchesOut()));
+			pf.setT2AvgHtGgResult(Elem.getHtGg() / (Elem.getMatchesIn() + Elem.getMatchesOut()));
 		}
 
 		pf.setT2WinsIn(Elem.getWinsIn());
