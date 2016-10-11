@@ -116,7 +116,7 @@ public class Service {
 
 		WeekMatchHandler wmh = new WeekMatchHandler();
 
-		return wmh.redWeekMatches(compId, ccal.getCompetition(), ccal.getCountry(),LocalDate.now());
+		return wmh.redWeekMatches(compId, ccal.getCompetition(), ccal.getCountry(), LocalDate.now());
 	}
 
 	@GET
@@ -350,9 +350,10 @@ public class Service {
 	// -------------Match Specific Page ---------------------------
 	@GET
 	@Path("/matchSpecificData/{datstamp}/{compId}/{t1}/{t2}")
-	String matchSpecificData(@PathParam("datstamp") String datstamp,@PathParam("t1") String t1, @PathParam("t2") String t2, @PathParam("compId") int compId) {
+	String matchSpecificData(@PathParam("datstamp") String datstamp, @PathParam("t1") String t1,
+			@PathParam("t2") String t2, @PathParam("compId") int compId) {
 		/* find all the data needed regarding the two teams in hand */
-		LocalDate ld ;
+		LocalDate ld;
 		try {
 			datstamp = "2016-10-05";
 			ld = LocalDate.parse(datstamp);
@@ -364,13 +365,29 @@ public class Service {
 			log.info("no matches @ that date");
 			return msgWriter(ServiceMsg.DATE_NO_REC);
 		}
+		if (!TimeVariations.mapMPL.get(ld).keySet().contains(compId)) {
+			log.info("no matches @ that date");
+			return msgWriter(ServiceMsg.DATE_ID_NO_REC);
+		}
 		int ind = CountryCompetition.idToIdx.get(compId);
 		if (ind < 0) {
 			log.warn("no competition found with that id");
 			return msgWriter(ServiceMsg.UNFOUND_ID);
 		}
 		CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
-		
+		boolean teamflag = false;
+		for (int i = 0; i < TimeVariations.mapMPL.get(ld).get(compId).size(); i++) {
+			if (TimeVariations.mapMPL.get(ld).get(compId).get(i).getT1().equals(t1))
+				if (TimeVariations.mapMPL.get(ld).get(compId).get(i).getT2().equals(t2)) {
+					teamflag = true;
+					break;
+				}
+		}
+		if(!teamflag){
+			log.warn("no teams were not found in the map");
+			return msgWriter(ServiceMsg.UNFOUND_ID);
+		}
+
 		return t1;
 	}
 

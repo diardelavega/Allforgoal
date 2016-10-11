@@ -9,6 +9,7 @@ public class ServiceMsg {
 	public static final String MPL_PACK="STANDART MPL PACKET";
 	
 	public static final String UNFOUND_ID="THE COMP ID WAS NOT FOUND";
+	public static final String UNFOUND_TEAM="THE TEAMS WERE NOT FOUND";
 	public static final String RETR_ERROR_MAP="RETRIVAL ERROR IN MAP";	
 	public static final String RETR_ERROR_DB="RETRIVAL ERROR IN DB";
 	public static final String ERROR_ERROR="ERROR SHOULD NOT HAVE HAPENED ";

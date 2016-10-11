@@ -42,7 +42,7 @@ public class TestPredFile implements CsvFileHandler {
 	}
 
 	@Override
-	public String fullCsv(int compId, String compName, String country) {
+	public String fullCsv(int compId, String compName, String country,LocalDate ld) {
 		/*
 		 * store the data that we have, and for what we dont have such as the
 		 * score : store as -1
@@ -53,21 +53,18 @@ public class TestPredFile implements CsvFileHandler {
 		StringBuilder sb = new StringBuilder();
 		for (CSVRecord record : parser) {
 			linesRead++;
-//			if(record.get("t1")||record.get("t2"))
+			// if(record.get("t1")||record.get("t2"))
 			sb.append(record.get("week") + "," + record.get("t1") + "," + record.get("t2") + "," + (-1) + "," + (-1)
 					+ "," + (-1) + "," + (-1) + "," + record.get("t1Form") + "," + record.get("t2Form") + ","
 					+ record.get("t1AtackIn") + "," + record.get("t1AtackOut") + "," + record.get("t2AtackIn") + ","
 					+ record.get("t2AtackOut") + "," + record.get("t1DefenseIn") + "," + record.get("t1DefenseOut")
-					+ "," + record.get("t2DefenseIn") + "," + record.get("t2DefenseOut") 
-//					+ "," + record.get("t1AvgFtScoreIn") + "," + record.get("t1AvgFtScoreOut") + ","
-//					+ record.get("t2AvgFtScoreIn") + "," + record.get("t2AvgFtScoreOut") 
-					+ "\n");
+					+ "," + record.get("t2DefenseIn") + "," + record.get("t2DefenseOut") + "\n");
 		}
 		return sb.toString();
 	}
 
-	public String reducedCsv(int compId, String compName, String country,LocalDate ld) {
-		CSVParser parser = parser(compId, compName, country,ld);
+	public String reducedCsv(int compId, String compName, String country, LocalDate ld) {
+		CSVParser parser = parser(compId, compName, country, ld);
 		if (parser == null)
 			return null;
 		StringBuilder sb = new StringBuilder();
@@ -89,7 +86,7 @@ public class TestPredFile implements CsvFileHandler {
 		AnalyticFileHandler afh = new AnalyticFileHandler();
 		CSVParser parser = null;
 		try {
-			File f = afh.getTestFileName(compId, compName, country,ld);
+			File f = afh.getTestFileName(compId, compName, country, ld);
 			if (f != null)
 				parser = new CSVParser(new FileReader(f), format);
 			log.info("file {} {} not found", compName, country);
@@ -143,7 +140,7 @@ public class TestPredFile implements CsvFileHandler {
 	}
 
 	@Override
-	public String fullCsv(int compId, String compName, String country, LocalDate ld) {
+	public String fullCsv(int compId, String compName, String country) {
 		// TODO Auto-generated method stub
 		return null;
 	}

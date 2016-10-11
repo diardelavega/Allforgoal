@@ -26,7 +26,7 @@ public class WeekMatchHandler {
 	public static Logger log = LoggerFactory.getLogger(WeekMatchHandler.class);
 	private int linesRead = -1;
 
-	public String redWeekMatches(int compId, String competition, String country, LocalDate ld) throws SQLException {
+	public String redWeekMatches(int compId, String competition, String country, LocalDate ld){
 
 		TestPredFile tspf = new TestPredFile();
 		String csvTxt = tspf.reducedCsv(compId, competition, country, ld);
@@ -79,6 +79,10 @@ public class WeekMatchHandler {
 
 	}
 
+	
+	public String fullWeekMatches(int compId, String competition, String country, LocalDate ld){
+		return country;}
+	
 	public int getLinesRead() {
 		return linesRead;
 	}
