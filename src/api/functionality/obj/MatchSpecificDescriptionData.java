@@ -7,7 +7,7 @@ import basicStruct.FullMatchLine;
  *
  *         data for the match specific page
  */
-public class MatchSpecificLine {
+public class MatchSpecificDescriptionData {
 	// comp data, teams, odds, pred points, date time.
 	private FullMatchLine fml = new FullMatchLine();
 
@@ -65,12 +65,12 @@ public class MatchSpecificLine {
 	private float t2avgFtConcedeIn;// for match specific page
 	private float t2avgFtConcedeOut;// for match specific page
 
-	public MatchSpecificLine() {
+	public MatchSpecificDescriptionData() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public void addTo_t1(MatchSpecificLine msl, float t1avgWinCont, float t1avgDrawCont, float t1avgLoseCont,
+	public void addTo_t1(MatchSpecificDescriptionData msl, float t1avgWinCont, float t1avgDrawCont, float t1avgLoseCont,
 			float t1avgHtGG, float t1avgFtGG, int t1point, float t1avgHtScoreIn, float t1avgHtScoreOut,
 			float t1avgHtConcedeIn, float t1avgHtConcedeOut, float t1avgFtScoreIn, float t1avgFtScoreOut,
 			float t1avgFtConcedeIn, float t1avgFtConcedeOut) {
@@ -90,7 +90,7 @@ public class MatchSpecificLine {
 		msl.t1avgFtConcedeOut = t1avgFtConcedeOut;
 	}
 
-	public void addTo_t2(MatchSpecificLine msl, float t2avgWinCont, float t2avgDrawCont, float t2avgLoseCont,
+	public void addTo_t2(MatchSpecificDescriptionData msl, float t2avgWinCont, float t2avgDrawCont, float t2avgLoseCont,
 			float t2avgHtGG, float t2avgFtGG, int t2point, float t2avgHtScoreIn, float t2avgHtScoreOut,
 			float t2avgHtConcedeIn, float t2avgHtConcedeOut, float t2avgFtScoreIn, float t2avgFtScoreOut,
 			float t2avgFtConcedeIn, float t2avgFtConcedeOut) {
@@ -110,7 +110,7 @@ public class MatchSpecificLine {
 		msl.t2avgFtConcedeOut = t2avgFtConcedeOut;
 	}
 
-	public void addTo(MatchSpecificLine msl, int t1Over_nr, int t1Under_nr, int t1gg_nr, int t2Over_nr, int t2Under_nr,
+	public void addTo(MatchSpecificDescriptionData msl, int t1Over_nr, int t1Under_nr, int t1gg_nr, int t2Over_nr, int t2Under_nr,
 			int t2gg_nr) {
 		msl.t1Over_nr = t1Over_nr;
 		msl.t1Under_nr = t1Under_nr;

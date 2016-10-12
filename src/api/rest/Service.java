@@ -23,7 +23,7 @@ import api.functionality.WeekMatchHandler;
 import api.functionality.WinDrawLoseHandler;
 import api.functionality.obj.CountryCompCompId;
 import api.functionality.obj.MPLPack;
-import api.functionality.obj.MatchSpecificLine;
+import api.functionality.obj.MatchSpecificObj;
 import api.functionality.obj.WeekMatchesCSV;
 import basicStruct.CCAllStruct;
 import basicStruct.FullMatchLine;
@@ -392,16 +392,16 @@ public class Service {
 			return msgWriter(ServiceMsg.UNFOUND_ID);
 		}
 		MatchSpecificHandler msh = new MatchSpecificHandler();
-		String csv = msh.getweekSpecificData(ccal, ld, t1, t2);
-		if (csv == null) {
+		MatchSpecificObj singleMatchData = msh.getweekSpecificData(idx,ccal, ld, t1, t2);
+		if (singleMatchData == null) {
 			log.warn("CSV recuperation problems");
 			return msgWriter(ServiceMsg.RETR_ERROR_CSV);
 		}
-		// msl.setFml(TimeVariations.mapMPL.get(ld).get(compId).get(idx));
+		Gson gson = new Gson();
+		String jo = gson.toJson(singleMatchData);
+		log.info("size of: {}", jo.getBytes().length);
 
-		// get data from competitions table
-
-		return null;
+		return jo;
 	}
 
 	// ------------------------------------END OF NEW---------

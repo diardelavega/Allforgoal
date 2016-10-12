@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import api.functionality.obj.CountryCompCompId;
-import api.functionality.obj.MatchSpecificLine;
+import api.functionality.obj.MatchSpecificDescriptionData;
 import basicStruct.CCAllStruct;
 import structures.CountryCompetition;
 
@@ -26,7 +26,7 @@ import structures.CountryCompetition;
 public class WeekMatchHandler {
 	public static Logger log = LoggerFactory.getLogger(WeekMatchHandler.class);
 	private int linesRead = -1;
-	private MatchSpecificLine msl;
+	private MatchSpecificDescriptionData msl;
 
 	public String redWeekMatches(int compId, String competition, String country, LocalDate ld) {
 
@@ -114,11 +114,11 @@ public class WeekMatchHandler {
 		this.linesRead = linesRead;
 	}
 
-	public MatchSpecificLine getMsl() {
+	public MatchSpecificDescriptionData getMsl() {
 		return msl;
 	}
 
-	public void setMsl(MatchSpecificLine msl) {
+	public void setMsl(MatchSpecificDescriptionData msl) {
 		this.msl = msl;
 	}
 
