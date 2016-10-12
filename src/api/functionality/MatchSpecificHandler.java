@@ -36,6 +36,7 @@ public class MatchSpecificHandler {
 			e.printStackTrace();
 		}
 		conn.close();
+		msl.setT1GG_nr(wmh.get);
 		
 		// do some calculations maybe
 
