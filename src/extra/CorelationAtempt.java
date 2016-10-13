@@ -47,7 +47,7 @@ public class CorelationAtempt {
 	//				smallForPredList.clear();
 				}
 			}
-			if (!scrapmap.keySet().contains(cid)) {
+			if (!scrapmap.containsKey(cid)) {
 				log.warn("contained matches with cid:{}", cid);
 				continue;
 			}

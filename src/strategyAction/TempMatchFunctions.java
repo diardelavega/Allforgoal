@@ -107,10 +107,8 @@ public class TempMatchFunctions {
 				}
 				if (!foundTeamFlag) {
 					for (int i = 0; i < dbTeams.size(); i++) {
-						logger.info("{}   vs   {}", m.getT1(), dbTeams.get(i),
-								dist);
-						dist = StringSimilarity.teamSimilarity(m.getT1(),
-								dbTeams.get(i));
+						logger.info("{}   vs   {}", m.getT1(), dbTeams.get(i), dist);
+						dist = StringSimilarity.teamSimilarity(m.getT1(), dbTeams.get(i));
 						if (dist1 > dist) {
 							dist1 = dist;
 							chosenDbIdx1 = i;
@@ -136,10 +134,8 @@ public class TempMatchFunctions {
 				}
 				if (!foundTeamFlag) {
 					for (int i = 0; i < dbTeams.size(); i++) {
-						dist = StringSimilarity.teamSimilarity(m.getT2(),
-								dbTeams.get(i));
-						logger.info("{}   vs   {}", m.getT2(), dbTeams.get(i),
-								dist1);
+						dist = StringSimilarity.teamSimilarity(m.getT2(), dbTeams.get(i));
+						logger.info("{}   vs   {}", m.getT2(), dbTeams.get(i), dist1);
 						if (dist2 > dist) {
 							dist2 = dist;
 							chosenDbIdx2 = i;
@@ -148,19 +144,14 @@ public class TempMatchFunctions {
 				}
 
 				if (t1 != null && t2 != null) {
-					MatchGetter.schedNewMatches.get(key).get(kk)
-							.setT1(dbTeams.get(chosenDbIdx1));
-					MatchGetter.schedNewMatches.get(key).get(kk)
-							.setT2(dbTeams.get(chosenDbIdx2));
+					MatchGetter.schedNewMatches.get(key).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
+					MatchGetter.schedNewMatches.get(key).get(kk) .setT2(dbTeams.get(chosenDbIdx2));
 					continue;
 				}
 
-				if (dist1 < StandartResponses.TEAM_DIST
-						&& dist2 < StandartResponses.TEAM_DIST) {
-					MatchGetter.schedNewMatches.get(key).get(kk)
-							.setT1(dbTeams.get(chosenDbIdx1));
-					MatchGetter.schedNewMatches.get(key).get(kk)
-							.setT2(dbTeams.get(chosenDbIdx2));
+				if (dist1 < StandartResponses.TEAM_DIST && dist2 < StandartResponses.TEAM_DIST) {
+					MatchGetter.schedNewMatches.get(key).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
+					MatchGetter.schedNewMatches.get(key).get(kk) .setT2(dbTeams.get(chosenDbIdx2));
 					continue;
 				}
 
@@ -169,23 +160,16 @@ public class TempMatchFunctions {
 				if (dist1 > StandartResponses.TEAM_DIST && t1 == null) {
 					if (t2 != null) {
 						logger.info(
-								"RELATING t2:{} {}~unilang; & by matchBind t1:{} {}  ",
-								m.getT2(), t2, m.getT1(),
-								dbTeams.get(chosenDbIdx1));
+								"RELATING t2:{} {}~unilang; & by matchBind t1:{} {}  ", m.getT2(), t2, m.getT1(), dbTeams.get(chosenDbIdx1));
 						MatchGetter.schedNewMatches.get(key).get(kk).setT2(t2);
 						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
-						MatchGetter.schedNewMatches.get(key).get(kk)
-								.setT1(dbTeams.get(chosenDbIdx1));
+						MatchGetter.schedNewMatches.get(key).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
 					} else if (dist2 < StandartResponses.TEAM_DIST) {
 						logger.info(
-								"RELATING t2:{} {}; & by matchBind t1:{} {}  ",
-								m.getT2(), dbTeams.get(chosenDbIdx2),
-								m.getT1(), dbTeams.get(chosenDbIdx1));
-						MatchGetter.schedNewMatches.get(key).get(kk)
-								.setT2(dbTeams.get(chosenDbIdx2));
+								"RELATING t2:{} {}; & by matchBind t1:{} {}  ", m.getT2(), dbTeams.get(chosenDbIdx2), m.getT1(), dbTeams.get(chosenDbIdx1));
+						MatchGetter.schedNewMatches.get(key).get(kk) .setT2(dbTeams.get(chosenDbIdx2));
 						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
-						MatchGetter.schedNewMatches.get(key).get(kk)
-								.setT1(dbTeams.get(chosenDbIdx1));
+						MatchGetter.schedNewMatches.get(key).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
 					}
 				}
 
@@ -193,21 +177,17 @@ public class TempMatchFunctions {
 					if (t1 != null) {
 						logger.info(
 								"RELATING t1:{} {}~unilang; & by matchBind t2:{} {}  ",
-								m.getT1(), t1, m.getT2(),
-								dbTeams.get(chosenDbIdx2));
+								m.getT1(), t1, m.getT2(), dbTeams.get(chosenDbIdx2));
 						MatchGetter.schedNewMatches.get(key).get(kk).setT1(t1);
 						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
-						MatchGetter.schedNewMatches.get(key).get(kk)
-								.setT2(dbTeams.get(chosenDbIdx2));
+						MatchGetter.schedNewMatches.get(key).get(kk) .setT2(dbTeams.get(chosenDbIdx2));
 					} else if (dist1 < StandartResponses.TEAM_DIST) {
 						logger.info(
 								"RELATING t1:{} {}; & by matchBind t2:{} {}  ",
-								m.getT1(), dbTeams.get(chosenDbIdx1),
-								m.getT2(), dbTeams.get(chosenDbIdx2));
+								m.getT1(), dbTeams.get(chosenDbIdx1), m.getT2(), dbTeams.get(chosenDbIdx2));
 						// MatchGetter.schedNewMatches.get(key).get(kk).setT1(dbTeams.get(chosenDbIdx1));
 						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
-						MatchGetter.schedNewMatches.get(key).get(kk)
-								.setT2(dbTeams.get(chosenDbIdx2));
+						MatchGetter.schedNewMatches.get(key).get(kk) .setT2(dbTeams.get(chosenDbIdx2));
 					}
 				}
 
@@ -354,9 +334,10 @@ public class TempMatchFunctions {
 			deleteTempMatches(matches);
 			updateRecentError(matches);// set err to recent matches time
 			synchronizeMPL_Map(matches, "error", d);
-			closeDBConn();// ------------------------------
+		
 			logger.info("Competed Old Completion");
 		}
+		closeDBConn();// ------------------------------
 	}
 
 	public void completeYesterday() throws SQLException {
