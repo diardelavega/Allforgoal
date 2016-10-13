@@ -2,6 +2,7 @@ package api.functionality;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import api.functionality.obj.CompTable;
@@ -14,7 +15,7 @@ public class CompTableHandler {
 		compName = compName.replaceAll(" ", "_").replace(".", "");
 		country = country.replaceAll(" ", "_").replace(".", "");
 		String tableName = compName + "$" + country;
-		List<CompTable> ctl=null;
+		List<CompTable> ctl=new ArrayList();
 		String query = "SELECT * FROM " + tableName
 				+ "_FullTable ORDER BY points DESC;";
 		Conn conn = new Conn();

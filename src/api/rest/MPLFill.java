@@ -18,29 +18,47 @@ import structures.TimeVariations;
 /**
  * @author Administrator
  *
- *HEPL CLASS TO fill with data simulating the match prediction line
+ *         HEPL CLASS TO fill with data simulating the match prediction line
  */
 public class MPLFill {
 	public static final Logger log = LoggerFactory.getLogger(MPLFill.class);
 	private Random r = new Random();
+	private boolean forFlag = true;
 	// public List<FullMatchLine> fl = new ArrayList<>();
 	// public List<MatchObj> ml= new ArrayList<>();
 
-	private String[] silable = new String[] { "lo", "bo", "ju", "ve", "ca", "li", "ve", "che", "la", "zio", "ro", "ma",
-			"int", "er", "mi", "me", "ta", "ku", "zeo", "tako", "suli", "breg", "whiskey", "tango", "foxtrot", "roky",
-			"sigma", "tera", "bravo", "union", "city", "new", "po", "rt", "ivo", "Co", "ru", "re", "al", "ba", "atlet",
-			"ico", "se", "vi", "la" };
+	private String[] silable = new String[] { "Aalesund", "Bodø / Glimt", "Brann", "Haugesund", "Lillestrøm", "Molde",
+			"Odd", "Rosenborg", "Sarpsborg 08", "Sogndal", "Stabæk", "Start", "Strømsgodset", "Tromsø", "Valerenga",
+			"Viking", };
+	// { "lo", "bo", "ju", "ve", "ca", "li", "ve", "che", "la", "zio", "ro",
+	// "ma",
+	// "int", "er", "mi", "me", "ta", "ku", "zeo", "tako", "suli", "breg",
+	// "whiskey", "tango", "foxtrot", "roky",
+	// "sigma", "tera", "bravo", "union", "city", "new", "po", "rt", "ivo",
+	// "Co", "ru", "re", "al", "ba", "atlet",
+	// "ico", "se", "vi", "la" };
 
 	public void fakeFiller() {
-		String t1, t2;
+//		String t1, t2;
 		FullMatchLine fml;
 		MatchObj mobj;
 		for (int n = 0; n < 100; n++) {// nr of matches
 			// fml = null;
-			LocalDate locd = datGen();
 			String tim = timGen();
-//			log.info("{}", locd);
-			mobj = new MatchObj(Long.parseLong(n + ""), cIdGen(), strGen(), strGen(), ftGen(), ftGen(), htGen(), htGen(), oddGen(), oddGen(), oddGen(), oddGen(), oddGen(), locd, tim);
+			LocalDate locd = datGen();
+			if (forFlag) {
+				locd = LocalDate.now().plusDays(1);
+				mobj = new MatchObj(Long.parseLong(n + ""), 112, "Sarpsborg 08", "Start", ftGen(), ftGen(),
+						htGen(), htGen(), oddGen(), oddGen(), oddGen(), oddGen(), oddGen(), LocalDate.now().plusDays(1), tim);
+				forFlag=false;
+			} else {
+				locd = datGen();
+				mobj = new MatchObj(Long.parseLong(n + ""), cIdGen(), strGen(), strGen(), ftGen(), ftGen(), htGen(),
+						htGen(), oddGen(), oddGen(), oddGen(), oddGen(), oddGen(), locd, tim);
+			}
+
+			// log.info("{}", locd);
+			
 			fml = new FullMatchLine(mobj);
 			if (locd.isBefore(LocalDate.now()) || locd.isEqual(LocalDate.now())) {
 				// fml = new FullMatchLine(mobj);
@@ -56,7 +74,7 @@ public class MPLFill {
 				fml.setHt(htGen());
 				fml.setFt(ftGen());
 			}
-//			log.info("{}", fml.shower());
+			// log.info("{}", fml.shower());
 
 			if (TimeVariations.mapMPL.containsKey(fml.getLocalDat())) {
 				if (TimeVariations.mapMPL.get(fml.getLocalDat()).containsKey(fml.getComId())) {
@@ -90,11 +108,12 @@ public class MPLFill {
 	}
 
 	public String strGen() {
-		String str = "";
-		while (str.length() < 8) {
-			str += silable[r.nextInt(silable.length)];
-		}
-		return str;
+		// String str = "";
+		// while (str.length() < 8) {
+		// str += silable[r.nextInt(silable.length)];
+		// }
+		// return str;
+		return silable[r.nextInt(silable.length)];
 	}
 
 	public int htGen() {

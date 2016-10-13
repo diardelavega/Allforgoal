@@ -2,6 +2,8 @@ package extra;
 
 public class StandartResponses {
 	public static String NOT_FOUND = "NOT_FOUND";
+	
+	public static int STD_DAYS_AGO = 15;// standard days ago
 
 	public static float SMALL_LEV_DISTANCE = 1;
 	public static float LEV_DISTANCE = 2;

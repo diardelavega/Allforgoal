@@ -23,6 +23,7 @@ import basicStruct.FullMatchPredLineToSubStructs;
 import basicStruct.MatchObj;
 import calculate.MatchToTableRenewal;
 import dbtry.Conn;
+import extra.CorelationAtempt;
 import extra.NameCleaner;
 import extra.StandartResponses;
 import extra.Status;
@@ -239,6 +240,13 @@ public class TempMatchFunctions {
 		// for (MatchObj m : XscoreUpComing.finNewMatches) { Original_Line
 		int idx = -1;
 		int prevCompId = -1;
+		CorelationAtempt ca =  new CorelationAtempt();
+		String finerr="fin";
+		try {
+			matches=	ca.corelatePunterXScorerTeams(finerr, readTempMatchesList);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 //		for (MatchObj m : MatchGetter.finNewMatches) {
 //			String team = ul.scoreTeamToCcas(m.getT1());
 //			if (team != null) {
@@ -293,7 +301,14 @@ public class TempMatchFunctions {
 			logger.info("--------------: LOOP TO find postponed");
 			matches.clear();
 			smallPredictionsList.clear();
-			logger.info("{}", MatchGetter.errorNewMatches.size());
+			logger.info("errorNewMatches.size {}", MatchGetter.errorNewMatches.size());
+			
+			 finerr="err";
+			try {
+				matches=	ca.corelatePunterXScorerTeams(finerr, readTempMatchesList);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 //			for (MatchObj m : MatchGetter.errorNewMatches) {
 //				String team = ul.scoreTeamToCcas(m.getT1());
 //				if (team != null) {
@@ -366,7 +381,8 @@ public class TempMatchFunctions {
 		logger.info("--------------: Read From TempMatches");
 		Date date = Date.valueOf(dat);
 		String sql = "SELECT * FROM  tempmatches  where dat ='" + date
-				+ "' order by t1 ;";
+				+ "' order by compid ;";
+		//original :: order by t1 ;
 
 		readFromShortMatches(sql, "tempmatches");
 

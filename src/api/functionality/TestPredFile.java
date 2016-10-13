@@ -98,7 +98,7 @@ public class TestPredFile implements CsvFileHandler {
 			log.warn("Parsing exception");
 			e.printStackTrace();
 		}
-		log.info(parser.toString());
+//		log.info(parser.toString());
 		return parser;
 	}
 

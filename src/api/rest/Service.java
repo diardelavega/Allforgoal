@@ -137,6 +137,10 @@ public class Service {
 
 	// ---------------------------------------NEW-------------
 	// --------------------All match page------------------------
+	/**
+	 * return the mpl of the teams playing on the date-dat in "nr" order in the
+	 * MPL map
+	 */
 	@GET
 	@Path("/mpl/{datstamp}/{nr}")
 	public String matchPredictionLine(@PathParam("datstamp") String datstamp, @PathParam("nr") int nr)
@@ -158,7 +162,7 @@ public class Service {
 			log.info(" received date string was not parsed correctly");
 			return msgWriter(ServiceMsg.DATE_ERR_PARSE);
 		}
-		if (!TimeVariations.mapMPL.keySet().contains(ld)) {
+		if (!TimeVariations.mapMPL.containsKey(ld)) {
 			log.info("no matches @ that date");
 			return msgWriter(ServiceMsg.DATE_NO_REC);
 		}
@@ -188,6 +192,10 @@ public class Service {
 		return jo;
 	}
 
+	/**
+	 * get the weekly data for a competition, including
+	 * form,atack,score,defence,etc.
+	 */
 	@GET
 	@Path("/reducedweeksmatches/{compid}")
 	public String reducedWeeksMatches(@PathParam("compid") int compId) throws SQLException {
@@ -211,6 +219,10 @@ public class Service {
 		return jo;
 	}
 
+	/**
+	 * return wdl for all the teams of the competition regardless of who is
+	 * playing today
+	 */
 	@GET
 	@Path("/onempl/{datstamp}/{cid}")
 	public String compWinDrawLose(@PathParam("cid") int cid) {
@@ -233,6 +245,7 @@ public class Service {
 		}
 	}
 
+	/** return wdl only for the teams playing today */
 	@GET
 	@Path("/onempl/{datstamp}/{cid}")
 	public String compDateWinDrawLose(@PathParam("datstamp") String datstamp, @PathParam("cid") int cid) {
@@ -240,7 +253,7 @@ public class Service {
 
 		LocalDate ld;
 		List<String> teams = null;
-		TestHelp.initAll();
+		// TestHelp.initAll();
 		//
 		try {
 			datstamp = "2016-10-05";
@@ -249,11 +262,11 @@ public class Service {
 			log.info(" received date string was not parsed correctly");
 			return msgWriter(ServiceMsg.DATE_ERR_PARSE);
 		}
-		if (!TimeVariations.mapMPL.keySet().contains(ld)) {
+		if (!TimeVariations.mapMPL.containsKey(ld)) {
 			log.info("no matches @ that date");
 			return msgWriter(ServiceMsg.DATE_NO_REC);
 		}
-		if (!TimeVariations.mapMPL.get(ld).keySet().contains(cid)) {
+		if (!TimeVariations.mapMPL.get(ld).containsKey(cid)) {
 			log.info("no matches of that competition @ that date");
 			return msgWriter(ServiceMsg.DATE_ID_NO_REC);
 		}
@@ -288,7 +301,7 @@ public class Service {
 	}
 
 	// --------------------Competition specific------------------------
-	/*
+	/**
 	 * needed for the mpl in competition specific page (a lot of match
 	 * prediction lines from the same competition). No date no seri. *** Just
 	 * send one pack with all the data
@@ -301,11 +314,15 @@ public class Service {
 		 * prediction lines from the same competition). No date no seri. ***
 		 * Just send one pack with all the data
 		 */
-		TestHelp.initAll();
+		// TestHelp.initAll();
+		/*
+		 * Will return all the matches available for this specific competition
+		 * since "STD_DAYS_AGO" and untill how many matches we have recorded in
+		 * the future.(curently one day in the future)
+		 */
 		List<FullMatchLine> list_fml = new ArrayList<>();
-
 		for (LocalDate dat : TimeVariations.mapMPL.keySet()) {
-			if (dat.isAfter(LocalDate.now().minusDays(15)))// 2 weeks past
+			if (dat.isAfter(LocalDate.now().minusDays(StandartResponses.STD_DAYS_AGO)))
 				if (TimeVariations.mapMPL.get(dat).containsKey(cid)) {
 					list_fml.addAll(TimeVariations.mapMPL.get(dat).get(cid));
 				}
@@ -327,7 +344,7 @@ public class Service {
 		return jo;
 	}
 
-	/* get from db the data needed for the competition data table */
+	/** get from db the data needed for the competition data table */
 	@GET
 	@Path("/compTableData/{cid}")
 	public String compTableData(@PathParam("cid") int cid) {
@@ -350,6 +367,10 @@ public class Service {
 	}
 
 	// -------------Match Specific Page ---------------------------
+	/**
+	 * find all the data needed regarding the two teams in hand, to dysplay them
+	 * in the single match specific page
+	 */
 	@GET
 	@Path("/matchSpecificData/{datstamp}/{compId}/{t1}/{t2}")
 	String matchSpecificData(@PathParam("datstamp") String datstamp, @PathParam("t1") String t1,
@@ -357,17 +378,17 @@ public class Service {
 		/* find all the data needed regarding the two teams in hand */
 		LocalDate ld;
 		try {
-			datstamp = "2016-10-05";
+//			datstamp = "2016-10-05";
 			ld = LocalDate.parse(datstamp);
 		} catch (Exception e) {
 			log.info(" received date string was not parsed correctly");
 			return msgWriter(ServiceMsg.DATE_ERR_PARSE);
 		}
-		if (!TimeVariations.mapMPL.keySet().contains(ld)) {
+		if (!TimeVariations.mapMPL.containsKey(ld)) {
 			log.info("no matches @ that date");
 			return msgWriter(ServiceMsg.DATE_NO_REC);
 		}
-		if (!TimeVariations.mapMPL.get(ld).keySet().contains(compId)) {
+		if (!TimeVariations.mapMPL.get(ld).containsKey(compId)) {
 			log.info("no matches @ that date");
 			return msgWriter(ServiceMsg.DATE_ID_NO_REC);
 		}
@@ -392,7 +413,7 @@ public class Service {
 			return msgWriter(ServiceMsg.UNFOUND_ID);
 		}
 		MatchSpecificHandler msh = new MatchSpecificHandler();
-		MatchSpecificObj singleMatchData = msh.getweekSpecificData(idx,ccal, ld, t1, t2);
+		MatchSpecificObj singleMatchData = msh.getweekSpecificData(idx, ccal, ld, t1, t2);
 		if (singleMatchData == null) {
 			log.warn("CSV recuperation problems");
 			return msgWriter(ServiceMsg.RETR_ERROR_CSV);
