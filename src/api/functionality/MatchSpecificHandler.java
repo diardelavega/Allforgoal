@@ -67,10 +67,17 @@ public class MatchSpecificHandler {
 		country = country.replaceAll(" ", "_").replace(".", "");
 		String tableName = compName + "$" + country;
 
-		String sql = "SELECET team, point, matchesin, matchesout, htscorein, htscoreout, htconcedein, htconcedeout, "
-				+ "ftscoreout,  ftscorein,ftconcedeout, ftconcedein, form, formAtack, formDefence, avgWinCont, "
+//		String tt = "team, teamid, points, matchesin, matchesout, "
+//				+ "htscorein, htscoreout, htconcedein, htconcedeout, "
+//				+ "ftscorein, ftscoreout, ftconcedein, ftconcedeout, "
+//				+ "form, form1, form2, form3, form4, formAtack, formAtackIn, formAtackOut, formDefence, formDefenceIn, formDefenceOut, "
+//				+ "avgWinCont, avgDrawCont, avgLoseCont, winsIn, winsOut, drawsIn, drawsOut, losesIn, losesOut, ftgg, htgg";
+
+		String sql = "SELECT team, points, matchesin, matchesout, htscorein, htscoreout, htconcedein, htconcedeout, "
+				+ "ftscorein, ftscoreout, ftconcedein, ftconcedeout, form, formAtack, formDefence, avgWinCont, "
 				+ "avgDrawCont, avgLoseCont, winsIn, winsOut, drawsIn, drawsOut,  losesIn, losesOut, ftgg, htgg "
-				+ "FROM  " + tableName + "_FullTable WHERE team in (" + t1 + ", " + t2 + ");";
+				+ "FROM  " + tableName + "_FullTable WHERE team in ( '" + t1 + "', '" + t2 + "' );";
+		System.out.println(sql);
 		ResultSet rs = conn.getConn().createStatement().executeQuery(sql);
 		MatchSpecificDBAtts[] msdb = new MatchSpecificDBAtts[2];
 		MatchSpecificDBAtts tm;
@@ -177,7 +184,8 @@ public class MatchSpecificHandler {
 
 		Conn conn = new Conn();
 		conn.open();
-		String sql = "SELECET team FROM  " + tableName + "_FullTable order by points desc";
+		String sql = "SELECT team FROM  " + tableName + "_FullTable order by points desc;";
+		System.out.println(sql);
 		ResultSet rs = conn.getConn().createStatement().executeQuery(sql);
 		int i = 1;
 		while (rs.next()) {

@@ -100,7 +100,7 @@ public class TrainPredFile implements CsvFileHandler {
 					+ record.get("t2Form") + "," + record.get("t1Atack") + "," + record.get("t2Atack") + ","
 					+ record.get("t1Defense") + "," + record.get("t2Defense") + "\n";
 			sb.append(line);
-			commonAdvLines(line, record.get("week"));
+//			commonAdvLines(line, record.get("week"));
 		}
 		return sb.toString();
 	}
@@ -121,7 +121,7 @@ public class TrainPredFile implements CsvFileHandler {
 			File f = afh.getTrainFileName(compId, compName, country);
 			if (f != null)
 				parser = new CSVParser(new FileReader(f), format);
-			log.info("file {} {} not found", compName, country);
+			else log.info("file {} {} not found", compName, country);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
