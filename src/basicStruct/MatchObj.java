@@ -10,7 +10,7 @@ import java.time.LocalDate;
  *         contains the specific data like odds, identifiers like competition,
  *         teams, date and time, related to a match
  */
-public class MatchObj implements Serializable {
+public class MatchObj extends MatchPredictionLine implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	protected long mId;
@@ -24,7 +24,6 @@ public class MatchObj implements Serializable {
 	protected float _1 = 1;// odds
 	protected float _2 = 1;
 	protected float _x = 1;
-
 	protected float _o = 1;
 	protected float _u = 1;// odds
 	protected Date dat;
@@ -70,7 +69,7 @@ public class MatchObj implements Serializable {
 	}
 
 	public MatchObj(long mId, int comId, String t1, String t2, int ft1, int ft2, int ht1, int ht2, float _1, float _2,
-			float _x, float _o, float _u, LocalDate dat, String mtime) {
+			float _x, float _o, float _u, LocalDate date, String mtime) {
 		super();
 		this.mId = mId;
 		this.comId = comId;
@@ -85,7 +84,7 @@ public class MatchObj implements Serializable {
 		this._x = _x;
 		this._o = _o;
 		this._u = _u;
-		this.dat = Date.valueOf(dat);
+		this.dat = Date.valueOf(date);
 		this.matchTime = mtime;
 	}
 

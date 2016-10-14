@@ -1,7 +1,6 @@
 package extra;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import test.MatchGetter;
 import basicStruct.MatchObj;
-import calculate.MatchToTableRenewal;
 
 public class CorelationAtempt {
 	public static Logger log = LoggerFactory.getLogger(CorelationAtempt.class);
 
-	public List<MatchObj> corelatePunterXScorerTeams(String finerr,
+	public void corelatePunterXScorerTeams(String finerr,
 			List<MatchObj> dbmatches) throws IOException {
 		log.info("Corelating");
 
@@ -25,10 +23,8 @@ public class CorelationAtempt {
 		Map<Integer, List<MatchObj>> scrapmap = null;
 		if (finerr.equals("fin")) {
 			scrapmap = MatchGetter.finNewMatches;
-			log.info("finNewMatches");
 		} else if (finerr.equals("err")) {
 			scrapmap = MatchGetter.errorNewMatches;
-			log.info("errorNewMatches");
 		}
 
 		Unilang ul = new Unilang();
@@ -47,11 +43,11 @@ public class CorelationAtempt {
 			if(prevCid!=cid){
 				prevCid=cid;
 				if(smallForPredList.size()>0){
-					addToPredTrainDataSet(smallForPredList);
-					smallForPredList.clear();
+	//				addToPredTrainDataSet(smallForPredList);
+	//				smallForPredList.clear();
 				}
 			}
-			if (!scrapmap.containsKey(cid)) {
+			if (!scrapmap.keySet().contains(cid)) {
 				log.warn("contained matches with cid:{}", cid);
 				continue;
 			}
@@ -158,18 +154,6 @@ public class CorelationAtempt {
 				
 			}// else t1 not found
 		}// for m : dbmatches
-		return corelatedTeamMAtches;
 	}
-	private void addToPredTrainDataSet(List<MatchObj> predictionsList) {
-		/*
-		 * add the concludet matches and the updated attributes corresponding to
-		 * them to the Prediction training file
-		 */
-		MatchToTableRenewal mttr = new MatchToTableRenewal();
-		try {
-			mttr.calculate(predictionsList);
-		} catch (SQLException | IOException e) {
-			e.printStackTrace();
-		}
-	}
+
 }

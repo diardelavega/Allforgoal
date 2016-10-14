@@ -3,6 +3,7 @@ package api.functionality.obj;
 import java.util.List;
 
 import basicStruct.FullMatchLine;
+import basicStruct.MatchPredictionLine;
 import extra.ServiceMsg;
 
 /**
@@ -15,9 +16,9 @@ public class MPLPack {
 	private String competition;
 	private int compId;
 	private int serinr;
-	private List<FullMatchLine> lfml;
+	private List< MatchPredictionLine> lfml;
 
-	public MPLPack(String country, String competition, int compId, int serinr, List<FullMatchLine> lfml) {
+	public MPLPack(String country, String competition, int compId, int serinr, List< MatchPredictionLine> lfml) {
 		super();
 		this.country = country;
 		this.competition = competition;
@@ -63,11 +64,11 @@ public class MPLPack {
 		this.serinr = serinr;
 	}
 
-	public List<FullMatchLine> getLfml() {
+	public List< MatchPredictionLine> getLfml() {
 		return lfml;
 	}
 
-	public void setLfml(List<FullMatchLine> lfml) {
+	public void setLfml(List<MatchPredictionLine> lfml) {
 		this.lfml = lfml;
 	}
 

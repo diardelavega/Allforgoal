@@ -24,15 +24,20 @@ import api.functionality.WinDrawLoseHandler;
 import api.functionality.obj.CountryCompCompId;
 import api.functionality.obj.MPLPack;
 import api.functionality.obj.MatchSpecificObj;
+import api.functionality.obj.Msg;
+import api.functionality.obj.RedMPL;
 import api.functionality.obj.WeekMatchesCSV;
 import basicStruct.CCAllStruct;
 import basicStruct.FullMatchLine;
+import basicStruct.FullMatchPredLineToSubStructs;
+import basicStruct.MatchPredictionLine;
 import extra.ServiceMsg;
 import extra.StandartResponses;
 import structures.CountryCompetition;
 import structures.TimeVariations;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * @author Administrator
@@ -45,95 +50,84 @@ public class Service {
 	public static final Logger log = LoggerFactory.getLogger(Service.class);
 	private static boolean flag = false;
 	private CountryCompetition cc = new CountryCompetition();
-
-	@GET
-	@Path("/redweekly")
-	public String reducedWeeklyMatches() {
-
-		return null;
-	}
-
-	@GET
-	@Path("/fullweekly")
-	public String fullWeeklyMatches() {
-		return null;
-	}
-
-	@GET
-	@Path("/predwdl")
-	public String competitionMatchPredLineWithWDL() throws SQLException {
-		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(112);
-		// new CountryCompCompId("Sweden", "Superettan",
-		// 164);
-
-		MatchPredLineHandler mph = new MatchPredLineHandler();
-		// mph.doer(164, "Superettan", "Sweden");
-		mph.doer(ccci);
-		Gson gson = new Gson();
-		ccci.setObj(mph.getMatchPredLine());
-		String jo = gson.toJson(ccci);
-		return jo;
-	}
-
-	@GET
-	@Path("/predwdl/{compid}")
-	public String competitionMatchPredLineWithWDL(@PathParam("compid") int compId) throws SQLException {
-		// from compId get country & competition
-		CompIdToCountryCompCompID ctccci = new CompIdToCountryCompCompID();
-		CountryCompCompId ccci = ctccci.search(compId);
-		MatchPredLineHandler mph = new MatchPredLineHandler();
-		mph.doer(ccci);
-		Gson gson = new Gson();
-		ccci.setObj(mph.getMatchPredLine());
-		String jo = gson.toJson(ccci);
-		return jo;
-	}
-
-	@GET
-	@Path("/wdldata/{compid}")
-	public String competitionWDL(@PathParam("compid") int compId) throws SQLException {
-		/* get only the wdl data of this specific competition */
-		CountryCompCompId ccci = new CompIdToCountryCompCompID().search(compId);
-		MatchPredLineHandler mph = new MatchPredLineHandler();
-		mph.wdlOnly(ccci);
-		Gson gson = new Gson();
-		ccci.setObj(mph.getMatchPredLine());
-		String jo = gson.toJson(ccci);
-		return jo;
-	}
-
-	@GET
-	@Path("/redweekmatches/{compid}")
-	public String weekMatchesRed(@PathParam("compid") int compId) throws SQLException {
+	private	Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
+	{
 		/*
+		 * @GET
+		 * 
+		 * @Path("/redweekly") public String reducedWeeklyMatches() {
+		 * 
+		 * return null; }
+		 * 
+		 * @GET
+		 * 
+		 * @Path("/fullweekly") public String fullWeeklyMatches() { return null;
+		 * }
+		 * 
+		 * @GET
+		 * 
+		 * @Path("/predwdl") public String competitionMatchPredLineWithWDL()
+		 * throws SQLException { CountryCompCompId ccci = new
+		 * CompIdToCountryCompCompID().search(112); // new
+		 * CountryCompCompId("Sweden", "Superettan", // 164);
+		 * 
+		 * MatchPredLineHandler mph = new MatchPredLineHandler(); //
+		 * mph.doer(164, "Superettan", "Sweden"); mph.doer(ccci); Gson gson =
+		 * new Gson(); ccci.setObj(mph.getMatchPredLine()); String jo =
+		 * gson.toJson(ccci); return jo; }
+		 * 
+		 * @GET
+		 * 
+		 * @Path("/predwdl/{compid}") public String
+		 * competitionMatchPredLineWithWDL(@PathParam("compid") int compId)
+		 * throws SQLException { // from compId get country & competition
+		 * CompIdToCountryCompCompID ctccci = new CompIdToCountryCompCompID();
+		 * CountryCompCompId ccci = ctccci.search(compId); MatchPredLineHandler
+		 * mph = new MatchPredLineHandler(); mph.doer(ccci); Gson gson = new
+		 * Gson(); ccci.setObj(mph.getMatchPredLine()); String jo =
+		 * gson.toJson(ccci); return jo; }
+		 * 
+		 * @GET
+		 * 
+		 * @Path("/wdldata/{compid}") public String
+		 * competitionWDL(@PathParam("compid") int compId) throws SQLException {
+		 * get only the wdl data of this specific competition CountryCompCompId
+		 * ccci = new CompIdToCountryCompCompID().search(compId);
+		 * MatchPredLineHandler mph = new MatchPredLineHandler();
+		 * mph.wdlOnly(ccci); Gson gson = new Gson();
+		 * ccci.setObj(mph.getMatchPredLine()); String jo = gson.toJson(ccci);
+		 * return jo; }
+		 * 
+		 * @GET
+		 * 
+		 * @Path("/redweekmatches/{compid}") public String
+		 * weekMatchesRed(@PathParam("compid") int compId) throws SQLException {
+		 * 
 		 * get the weekly data for a competition, including
 		 * form,atack,score,defence,etc.
-		 */
-		int ind = CountryCompetition.idToIdx.get(compId);
-		if (ind < 0) {
-			log.warn("no competition found with that id");
-			return "{msg:" + ServiceMsg.UNFOUND_ID + "}";
-		}
-		CCAllStruct ccal = CountryCompetition.ccasList.get(ind);
-
-		WeekMatchHandler wmh = new WeekMatchHandler();
-
-		return wmh.redWeekMatches(compId, ccal.getCompetition(), ccal.getCountry(), LocalDate.now());
-	}
-
-	@GET
-	@Path("/redcommon/{compid}")
-	public String commonAdversariesRed(@PathParam("compid") int compId) throws SQLException {
-		/*
+		 * 
+		 * int ind = CountryCompetition.idToIdx.get(compId); if (ind < 0) {
+		 * log.warn("no competition found with that id"); return "{msg:" +
+		 * ServiceMsg.UNFOUND_ID + "}"; } CCAllStruct ccal =
+		 * CountryCompetition.ccasList.get(ind);
+		 * 
+		 * WeekMatchHandler wmh = new WeekMatchHandler();
+		 * 
+		 * return wmh.redWeekMatches(compId, ccal.getCompetition(),
+		 * ccal.getCountry(), LocalDate.now()); }
+		 * 
+		 * @GET
+		 * 
+		 * @Path("/redcommon/{compid}") public String
+		 * commonAdversariesRed(@PathParam("compid") int compId) throws
+		 * SQLException {
+		 * 
 		 * Check to see if the static map has the data required
-		 */
-		if (CommonAdversariesHandler.commonAdv.get(compId) != null) {
-			return CommonAdversariesHandler.commonAdv.get(compId);
-		} else {
-			// search and recalculate
-		}
-		return "hello";
-	}
+		 * 
+		 * if (CommonAdversariesHandler.commonAdv.get(compId) != null) { return
+		 * CommonAdversariesHandler.commonAdv.get(compId); } else { // search
+		 * and recalculate } return "hello"; }
+		 */}
 
 	// ---------------------------------------NEW-------------
 	// --------------------All match page------------------------
@@ -148,15 +142,18 @@ public class Service {
 		// return the mpl of the teams playing on the date-dat in "nr" order in
 		// the MPL map
 		// log.info("-----------------------------------------\n");
+		TestHelp.initAll();
 		int allMatchesIn = 0;
 		LocalDate ld;
 		List<Integer> keyList;
-		List<FullMatchLine> list_fml;// = new ArrayList<>();
+		List<MatchPredictionLine> list_fml; //RedMPL
 		List<MPLPack> packlist;
-		TestHelp.initAll();
+		FullMatchPredLineToSubStructs fmpts;
+ 
 		//
 		try {
-			datstamp = "2016-10-05";
+			log.info("received dat : {}",datstamp);
+//			datstamp = "2016-10-14";
 			ld = LocalDate.parse(datstamp);
 		} catch (Exception e) {
 			log.info(" received date string was not parsed correctly");
@@ -173,23 +170,27 @@ public class Service {
 			log.info("msg:' + ServiceMsg.SERI_END ");
 			return msgWriter(ServiceMsg.END_OF_DATA);
 		}
-
+		fmpts = new FullMatchPredLineToSubStructs();
 		packlist = new ArrayList<>();
+		int compId;
 		do {
 			list_fml = new ArrayList<>();
-			list_fml.addAll(TimeVariations.mapMPL.get(ld).get(keyList.get(nr)));
+			compId = TimeVariations.mapMPL.get(ld).get(keyList.get(nr)).get(0).getComId();
+			list_fml.addAll(fmpts.reduceFullMAtchLine(TimeVariations.mapMPL.get(ld).get(keyList.get(nr))));
 			allMatchesIn += list_fml.size();
 			log.info("allMatchesIn: {}", allMatchesIn);
-			CCAllStruct ccdata = ccalExtract(list_fml.get(0).getComId());
+			CCAllStruct ccdata = ccalExtract(compId);
 			MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), nr, list_fml);
 			packlist.add(pack);
 			nr++;
 		} while (allMatchesIn < StandartResponses.MPL_PACK_SIZE && nr < keyList.size());
 
 		log.info("packlist : {}", packlist.size());
-		Gson gson = new Gson();
 		String jo = gson.toJson(packlist);
 		return jo;
+		// TODO send a different format of mpl data containing only the
+		// <t1,t2,ht&ft score, dat& time, 1x2 OU pred points>
+		// send the full data in the specific match match
 	}
 
 	/**
@@ -214,7 +215,8 @@ public class Service {
 		String csv = wmh.redWeekMatches_TodTom(compId, ccal.getCompetition(), ccal.getCountry());
 		int linesRead = wmh.getLinesRead();
 		WeekMatchesCSV wmcsv = new WeekMatchesCSV(ccal.getCountry(), ccal.getCompetition(), compId, linesRead, csv);
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create(); 
+//				new Gson();
 		String jo = gson.toJson(wmcsv);
 		return jo;
 	}
@@ -224,11 +226,11 @@ public class Service {
 	 * playing today
 	 */
 	@GET
-	@Path("/onempl/{datstamp}/{cid}")
+	@Path("/wdl/{cid}")
 	public String compWinDrawLose(@PathParam("cid") int cid) {
 		// return wdl for all the teams of the competition regardless of who is
 		// playing today
-
+		TestHelp.initAll();
 		CCAllStruct ccal = ccalExtract(cid);
 		if (ccal == null) {
 			log.info("no matches @ that Competition Id");
@@ -236,7 +238,8 @@ public class Service {
 		}
 		WinDrawLoseHandler wdlh = new WinDrawLoseHandler();
 		try {
-			Gson gson = new Gson();
+//			Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
+//			Gson gson = new Gson();
 			String jo = gson.toJson(wdlh.windrawloseDbGet(ccal.getCompetition(), ccal.getCountry()));
 			return jo;
 		} catch (SQLException e) {
@@ -247,16 +250,16 @@ public class Service {
 
 	/** return wdl only for the teams playing today */
 	@GET
-	@Path("/onempl/{datstamp}/{cid}")
+	@Path("/playwdl/{datstamp}/{cid}")
 	public String compDateWinDrawLose(@PathParam("datstamp") String datstamp, @PathParam("cid") int cid) {
 		// to return wdl only for the teams playing today
 
 		LocalDate ld;
 		List<String> teams = null;
-		// TestHelp.initAll();
+		TestHelp.initAll();
 		//
 		try {
-			datstamp = "2016-10-05";
+			// datstamp = "2016-10-14";
 			ld = LocalDate.parse(datstamp);
 		} catch (Exception e) {
 			log.info(" received date string was not parsed correctly");
@@ -287,7 +290,7 @@ public class Service {
 
 		WinDrawLoseHandler wdlh = new WinDrawLoseHandler();
 		try {
-			Gson gson = new Gson();
+//			Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
 			Map<String, String> teamMap = wdlh.windrawloseDbGet(teams, ccal.getCompetition(), ccal.getCountry());
 			if (teamMap == null) {
 				return msgWriter(ServiceMsg.RETR_ERROR_DB);
@@ -320,7 +323,7 @@ public class Service {
 		 * since "STD_DAYS_AGO" and untill how many matches we have recorded in
 		 * the future.(curently one day in the future)
 		 */
-		List<FullMatchLine> list_fml = new ArrayList<>();
+		List<MatchPredictionLine> list_fml = new ArrayList<>();
 		for (LocalDate dat : TimeVariations.mapMPL.keySet()) {
 			if (dat.isAfter(LocalDate.now().minusDays(StandartResponses.STD_DAYS_AGO)))
 				if (TimeVariations.mapMPL.get(dat).containsKey(cid)) {
@@ -339,7 +342,7 @@ public class Service {
 		}
 		MPLPack pack = new MPLPack(ccal.getCountry(), ccal.getCompetition(), ccal.getCompId(), 0, list_fml);
 
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
 		String jo = gson.toJson(pack);
 		return jo;
 	}
@@ -355,7 +358,7 @@ public class Service {
 		}
 		CompTableHandler cth = new CompTableHandler();
 		try {
-			Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
 			String jo = gson.toJson(cth.readCompTable(ccal.getCompetition(), ccal.getCountry()));
 			log.info("size of: {}", jo.getBytes().length);
 			return jo;
@@ -373,12 +376,12 @@ public class Service {
 	 */
 	@GET
 	@Path("/matchSpecificData/{datstamp}/{compId}/{t1}/{t2}")
-	String matchSpecificData(@PathParam("datstamp") String datstamp, @PathParam("t1") String t1,
+	public String matchSpecificData(@PathParam("datstamp") String datstamp, @PathParam("t1") String t1,
 			@PathParam("t2") String t2, @PathParam("compId") int compId) {
 		/* find all the data needed regarding the two teams in hand */
 		LocalDate ld;
 		try {
-//			datstamp = "2016-10-05";
+			// datstamp = "2016-10-05";
 			ld = LocalDate.parse(datstamp);
 		} catch (Exception e) {
 			log.info(" received date string was not parsed correctly");
@@ -418,7 +421,7 @@ public class Service {
 			log.warn("CSV recuperation problems");
 			return msgWriter(ServiceMsg.RETR_ERROR_CSV);
 		}
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
 		String jo = gson.toJson(singleMatchData);
 		log.info("size of: {}", jo.getBytes().length);
 
@@ -433,7 +436,9 @@ public class Service {
 	}
 
 	private String msgWriter(String sub) {
-		return ("{msg:'" + sub + "'}");
+		String jo = gson.toJson(new Msg(sub));
+		return jo;
+//		("{msg:'" + sub + "'}");
 	}
 
 }

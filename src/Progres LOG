@@ -2,11 +2,7 @@
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
 
-***-) Add the finished and errata matches correlation algo in the    Completion methods
-
-------------------------------------------
-!) testing the implemented services.... so far sim to be working well
-	DONE- test successful; Remaining the server side testing
+!) testing the implemented services.... so far sim to be working weel
 
 *--) TODO add a deletion date for the accumulated old matches in the MPL map & recent db table
 
@@ -17,7 +13,7 @@
 *-!)LEVINSTAIN distance doesnt work very well.....
 	a separation is needed between the team and other kinds of distance.
 	
-	FIXed)!! distance measure adjusted(sims to be working better)
+	!! distance measure adjusted(sims to be working better)
 
 --------------------------------------------------------------------------
 ***) problem when requesting to predict comps without dtf, => a new request for dtf prediction that waits

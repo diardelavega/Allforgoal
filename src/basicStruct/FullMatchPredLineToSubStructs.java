@@ -3,9 +3,14 @@ package basicStruct;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import api.functionality.obj.BaseMatchLinePred;
+import api.functionality.obj.RedMPL;
 
 public class FullMatchPredLineToSubStructs {
+	public static final Logger log = LoggerFactory.getLogger(FullMatchPredLineToSubStructs.class);
 
 	public MatchObj fullLineToMatchObj(FullMatchLine f) {
 		MatchObj m = new MatchObj();
@@ -18,7 +23,6 @@ public class FullMatchPredLineToSubStructs {
 		m.set_1(f.get_1());
 		m.set_x(f.get_x());
 		m.set_2(f.get_2());
-
 		m.set_u(f.get_o());
 		m.set_u(f.get_u());
 		m.setHt1(f.getHt1());
@@ -84,7 +88,25 @@ public class FullMatchPredLineToSubStructs {
 		return f;
 	}
 
-	
+	public RedMPL fullToRedMatchLine(FullMatchLine f) {
+		RedMPL r = new RedMPL();
+		r.setT1(f.getT1());
+		r.setT2(f.getT2());
+		r.setHt1(f.getHt1());
+		r.setHt2(f.getHt2());
+		r.setFt1(f.getFt1());
+		r.setFt2(f.getFt2());
+		r.setLocalDat(f.getLocalDat());
+		r.setMatchTime(f.getMatchTime());
+		r.setH1(f.getH1());
+		r.setHx(f.getHx());
+		r.setH2(f.getH2());
+		r.setSo(f.getSo());
+		r.setSu(f.getSu());
+
+		return r;
+	}
+
 	public FullMatchLine baseMatchLinePredEnhanceFullLine(FullMatchLine f, BaseMatchLinePred b) {
 		f.setH1(b.getH1());
 		f.setHx(b.getHx());
@@ -99,7 +121,7 @@ public class FullMatchPredLineToSubStructs {
 		f.setFt(b.getFt());
 		return f;
 	}
-	
+
 	public List<FullMatchLine> mobjToFullMatchLine(List<MatchObj> mobj) {
 		List<FullMatchLine> fml = new ArrayList<FullMatchLine>();
 		for (MatchObj m : mobj) {
@@ -114,6 +136,15 @@ public class FullMatchPredLineToSubStructs {
 		List<MatchObj> mol = new ArrayList<MatchObj>();
 		for (FullMatchLine f : fml) {
 			MatchObj m = fullLineToMatchObj(f);
+			mol.add(m);
+		}
+		return mol;
+	}
+
+	public List<RedMPL> reduceFullMAtchLine(List<FullMatchLine> fml) {
+		List<RedMPL> mol = new ArrayList<RedMPL>();
+		for (FullMatchLine f : fml) {
+			RedMPL m = fullToRedMatchLine(f);
 			mol.add(m);
 		}
 		return mol;

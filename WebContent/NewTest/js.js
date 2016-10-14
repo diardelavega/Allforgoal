@@ -8,7 +8,7 @@ var localhost = "http://localhost:";
 var port = 8080;
 var httpurl = localhost + port;
 
-
+var jj=0;
 /**
  * Match prediction line. call the rest api that returns the data for the
  * competitions of the date and the newxt serinumber that we give it. Serinumber
@@ -17,22 +17,28 @@ var httpurl = localhost + port;
  * mpl call calls all the service untill it returns a exit msg.
  */
 function mlpCall(datstamp, seri) {
-	console.log(seri)
+	console.log(seri,+" : "+jj);
+	jj++;
+	if(jj >10){
+		console.log("f it "+jj);
+	}
 	$.ajax({
-		url : httpurl + "/Bast/rest/services/mpl/" + datstamp + "/" + seri,
-		beforeSend : function(request) {
-			request.setRequestHeader("Authorization", "Negotiate");
-		},
+		url : httpurl + "/TT3/rest/services/mpl/" + datstamp + "/" + seri,
+//		beforeSend : function(request) {
+//			request.setRequestHeader("Authorization", "Negotiate");
+//		},
 		type : 'GET',
-		crossDomain : true,
+//		crossDomain : true,
 		dataType : 'json',
 		success : function(response) {
+//			console.log(response);
 			console.log("in success");
 			if (response.hasOwnProperty('msg')) {
 				console.log("exit msg");
 				console.log(response.msg);
 				return;
 			}
+			console.log("in AAAAAAAAA");
 			var i = 0;
 			for (; i < response.length; i++) {
 				$("#div1").append("coump: " + response[i].competition + " ");
@@ -40,8 +46,11 @@ function mlpCall(datstamp, seri) {
 				$("#div1").append("serinr: " + response[i].serinr + " ");
 				$("#div1").append( "i, lfml.length: " + i + ", " + response[i].lfml.length + " ");
 				$("#div1").append("</br>");
-				for (var j = 0; i < response[i].lfml.length; j++) {
-					$("#div1").append()
+				console.log(response[i].lfml.length);
+				console.log(response[i].lfml[0]);
+				for (var k = 0; k < response[i].lfml.length; k++) {
+					$("#div1").append("---"+JSON.stringify(response[i].lfml[k]));
+					$("#div1").append("</br>");
 				}
 			}
 			$("#div1").append("</br>");
