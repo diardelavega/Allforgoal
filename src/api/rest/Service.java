@@ -427,9 +427,9 @@ public class Service {
 
 	// ------------------------------------END OF NEW---------
 	private CCAllStruct ccalExtract(int cid) {
-		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
-		// int ind = CountryCompetition.idToIdx.get(cid);
-		// return CountryCompetition.ccasList.get(ind);
+//		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
+		 int ind = CountryCompetition.idToIdx.get(cid);
+		 return CountryCompetition.ccasList.get(ind);
 	}
 
 	private String msgWriter(String sub) {
