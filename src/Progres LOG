@@ -2,13 +2,20 @@
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
 
+
+---***) PROBlem writin the matchs in db acording to the Scorer format... capital letters (instead of the Punter format AS SHOULD BE)
+Upon insertion, (read new matches) all data is in correct format so the problem must be in the completion phase when the results are updated...
+
+
+----------------------------------------------------------------------------------------------------------------------
 ***-) Add the finished and errata matches correlation algo in the    Completion methods
+	DONE
 
 ------------------------------------------
 !) testing the implemented services.... so far sim to be working well
 	DONE- test successful; Remaining the server side testing
 
-*--) TODO add a deletion date for the accumulated old matches in the MPL map & recent db table
+*--) TODO add a deletion date for the accumulated old matches in the MPL map & recent db table, (DELETE older than 2 weeks)
 
 **-) Fix the run problems with the program
 
