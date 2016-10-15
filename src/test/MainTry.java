@@ -23,7 +23,7 @@ public class MainTry {
 
 //		 strategy.task();
 //		 strategy.tryTask();
-
+//		 strategy.dateChangePartTask();
 		// Soccerpunter_homePage sch= new Soccerpunter_homePage();
 		// sch.goGetCompetitions();
 		// SoccerPunterOdds spo = new SoccerPunterOdds();

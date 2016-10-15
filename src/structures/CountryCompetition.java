@@ -14,18 +14,15 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import basicStruct.CCAllStruct;
+import basicStruct.ScorerDataStruct;
+
 import com.google.gson.JsonSyntaxException;
 
-import basicStruct.CCAllStruct;
-import basicStruct.CompIdLinkSoccerPlunter;
-import basicStruct.CountryCompObj;
-import basicStruct.ScorerDataStruct;
 import dbtry.Conn;
-import demo.Demo;
 import diskStore.FileHandler;
 import extra.StandartResponses;
 import extra.StringSimilarity;
-import extra.Unilang;
 
 /**
  * @author Administrator
@@ -330,7 +327,7 @@ public class CountryCompetition {
 	private int smallScorerCompidxSearch(int initial, String country,
 			String comp) {
 		/* a small loop for all the competitions a country might have */
-		logger.info("{}", initial);
+//		logger.info("{}", initial);
 		int i = initial;
 		// with levistein
 		while (sdsList.get(i).getCountry().equalsIgnoreCase(country)) {

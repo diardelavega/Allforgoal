@@ -376,7 +376,7 @@ public class CompetitionTeamTable {
 		conn.open();
 		PreparedStatement ps = conn.getConn().prepareStatement(sql);
 		for (BasicTableEntity o : classificationPos) {
-logger.info("{}",o.line());
+//logger.info("{}",o.line());
 			ps.setInt(1, o.getPoints());
 			ps.setInt(2, o.getMatchesIn());
 			ps.setInt(3, o.getMatchesOut());
@@ -487,7 +487,6 @@ logger.info("{}",o.line());
 							.goalScored()
 							- classificationPos.get(i).goalConceded());
 		}
-		logger.info("------------------------------------------------");
 		logger.info("------------------------------------------------");
 	}
 

@@ -134,6 +134,7 @@ public class Strategy {
 		ldg.precheck();
 		if (ldg.hourlyFileFilledCheck()) {
 			score.getScheduledToday();
+			// store th
 			score.getScheduledTomorrow();
 			// a list of compIds playing today & tomorrow is created
 			scheduledOddsAdderToday();
@@ -167,6 +168,7 @@ public class Strategy {
 
 		tmf.readDaySkips();
 		writeResultsToTest();// write to file for reeval
+		logger.info("TimeVariations.yesterdayComps)--------------------{}",TimeVariations.yesterdayComps.size());
 		scheduleReEvaluation(TimeVariations.yesterdayComps);
 
 		// ----------------Tomorrow's actions reparation line
@@ -270,11 +272,7 @@ public class Strategy {
 		Conn conn = new Conn();
 		conn.open();
 		LocalDate latestRecDate = null;
-		ResultSet res = conn
-				.getConn()
-				.createStatement()
-				.executeQuery(
-						"SELECT dat from tempmatches order by dat desc limit 1;");
+		ResultSet res = conn.getConn().createStatement().executeQuery("SELECT dat from tempmatches order by dat desc limit 1;");
 		if (res.next()) {
 			latestRecDate = res.getDate(1).toLocalDate();
 			if (!latestRecDate.isBefore(checkdat)) {
