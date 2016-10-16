@@ -23,7 +23,7 @@ function mlpCall(datstamp, seri) {
 		console.log("f it "+jj);
 	}
 	$.ajax({
-		url : httpurl + "/TT3/rest/services/mpl/" + datstamp + "/" + seri,
+		url : httpurl + "/Bast/rest/services/mpl/" + datstamp + "/" + seri,
 //		beforeSend : function(request) {
 //			request.setRequestHeader("Authorization", "Negotiate");
 //		},
@@ -31,7 +31,7 @@ function mlpCall(datstamp, seri) {
 //		crossDomain : true,
 		dataType : 'json',
 		success : function(response) {
-//			console.log(response);
+			console.log(response);
 			console.log("in success");
 			if (response.hasOwnProperty('msg')) {
 				console.log("exit msg");
@@ -49,7 +49,7 @@ function mlpCall(datstamp, seri) {
 				console.log(response[i].lfml.length);
 				console.log(response[i].lfml[0]);
 				for (var k = 0; k < response[i].lfml.length; k++) {
-					$("#div1").append("---"+JSON.stringify(response[i].lfml[k]));
+					$("#div1").append(JSON.stringify(response[i].lfml[k]));
 					$("#div1").append("</br>");
 				}
 			}

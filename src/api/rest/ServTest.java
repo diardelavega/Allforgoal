@@ -1,14 +1,8 @@
 package api.rest;
 
 import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.URLConnection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,18 +15,13 @@ import javax.ws.rs.PathParam;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 import api.functionality.CompTableHandler;
 import api.functionality.MatchSpecificHandler;
@@ -42,7 +31,6 @@ import api.functionality.obj.MPLPack;
 import api.functionality.obj.MatchSpecificObj;
 import api.functionality.obj.WeekMatchesCSV;
 import basicStruct.CCAllStruct;
-import basicStruct.FullMatchLine;
 import basicStruct.MatchPredictionLine;
 import demo.Demo;
 import extra.ServiceMsg;
@@ -76,7 +64,7 @@ public class ServTest {
 //		MPLFill mplfill = new MPLFill();
 //		mplfill.fakeFiller();
 		int seri = -1;
-		 matchPredictionLine("2016-10-14", seri);//OK
+		 matchPredictionLine("2016-10-15", seri);//OK
 
 //		String ret = reducedWeeksMatches(112);//OK
 		

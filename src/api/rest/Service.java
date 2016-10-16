@@ -179,7 +179,7 @@ public class Service {
 			list_fml.addAll(fmpts.reduceFullMAtchLine(TimeVariations.mapMPL.get(ld).get(keyList.get(nr))));
 			allMatchesIn += list_fml.size();
 			log.info("allMatchesIn: {}", allMatchesIn);
-			CCAllStruct ccdata = ccalExtract(compId);
+			CCAllStruct ccdata = simCcalExtract(compId);
 			MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), nr, list_fml);
 			packlist.add(pack);
 			nr++;
@@ -231,7 +231,7 @@ public class Service {
 		// return wdl for all the teams of the competition regardless of who is
 		// playing today
 		TestHelp.initAll();
-		CCAllStruct ccal = ccalExtract(cid);
+		CCAllStruct ccal = realCcalExtract(cid);
 		if (ccal == null) {
 			log.info("no matches @ that Competition Id");
 			return msgWriter(ServiceMsg.UNFOUND_ID);
@@ -273,7 +273,7 @@ public class Service {
 			log.info("no matches of that competition @ that date");
 			return msgWriter(ServiceMsg.DATE_ID_NO_REC);
 		}
-		CCAllStruct ccal = ccalExtract(cid);
+		CCAllStruct ccal = realCcalExtract(cid);
 		if (ccal == null) {
 			log.info("no matches @ that Competition Id");
 			return msgWriter(ServiceMsg.UNFOUND_ID);
@@ -335,7 +335,7 @@ public class Service {
 			return msgWriter(ServiceMsg.END_OF_DATA);
 		}
 
-		CCAllStruct ccal = ccalExtract(cid);
+		CCAllStruct ccal = simCcalExtract(cid);
 		if (ccal == null) {
 			log.info("no matches @ that Competition Id");
 			return msgWriter(ServiceMsg.UNFOUND_ID);
@@ -351,7 +351,7 @@ public class Service {
 	@GET
 	@Path("/compTableData/{cid}")
 	public String compTableData(@PathParam("cid") int cid) {
-		CCAllStruct ccal = ccalExtract(cid);
+		CCAllStruct ccal = realCcalExtract(cid);
 		if (ccal == null) {
 			log.info("no matches @ that Competition Id");
 			return msgWriter(ServiceMsg.UNFOUND_ID);
@@ -429,12 +429,17 @@ public class Service {
 	}
 
 	// ------------------------------------END OF NEW---------
-	private CCAllStruct ccalExtract(int cid) {
+	private CCAllStruct simCcalExtract(int cid) {
+		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
+//		 int ind = CountryCompetition.idToIdx.get(cid);
+//		 return CountryCompetition.ccasList.get(ind);
+	}
+
+	private CCAllStruct realCcalExtract(int cid) {
 //		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
 		 int ind = CountryCompetition.idToIdx.get(cid);
 		 return CountryCompetition.ccasList.get(ind);
 	}
-
 	private String msgWriter(String sub) {
 		String jo = gson.toJson(new Msg(sub));
 		return jo;
