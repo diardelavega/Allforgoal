@@ -303,7 +303,7 @@ public class MatchGetter {
 			}
 			// a rejected comp goes to the not allowed ones
 			// cc.addNotAllowedComp(couComComb(country, comp));
-			logger.info("----{}  ", couComComb(country, comp));
+//			logger.info("----{}  ", couComComb(country, comp));
 			return searchCompIdx;
 		}
 	}
