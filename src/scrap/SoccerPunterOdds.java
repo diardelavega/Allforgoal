@@ -41,9 +41,8 @@ public class SoccerPunterOdds {
 		Document doc = null;
 		try {
 			logger.info("getting page : {}", url);
-			// doc = Jsoup.parse(new File(
-			// "C:/Users/Administrator/Desktop/scorerOdd_3.htm"), "UTF-8");
-
+//			 doc = Jsoup.parse(new File( "C:/Users/Administrator/Desktop/punter18.html"), "UTF-8");
+			
 			doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0") .maxBodySize(0).timeout(600000).get();
 			logger.info("Page aquired");
 		} catch (Exception e) {
@@ -68,7 +67,7 @@ public class SoccerPunterOdds {
 				coucomp = trs.get(i).getElementsByTag("td").first() .getElementsByTag("a").get(1).text().split(" - ");
 				// logger.info("'{}' - '{}'", coucomp[0], coucomp[1]);
 				coucomp[0] = nc.convertNonAscii(coucomp[0]);
-				coucomp[0].replace("[N] ", "");
+				coucomp[0].replace("[N] ", "");
 				coucomp[1] = nc.convertNonAscii(coucomp[1]);
 
 				if (skipComp(coucomp[1]))
@@ -85,6 +84,7 @@ public class SoccerPunterOdds {
 
 				// TODO continue with existing competition data
 				String t1 = nc.convertNonAscii(trs.get(i) .getElementsByTag("td").get(0).getElementsByTag("a").first().text());
+				t1=t1.replace("[N] ", "");
 				String t2 = nc.convertNonAscii(trs.get(i) .getElementsByTag("td").get(2).getElementsByTag("a").first().text());
 
 				// TODO check if match is oddFree
@@ -192,17 +192,24 @@ public class SoccerPunterOdds {
 		// Loop through the scheduled matches of competition
 		boolean finishReviewingFlag = true;
 		for (int i = 0; i < MatchGetter.schedNewMatches.get(compId).size(); i++) {
+			logger.info("match {}",MatchGetter.schedNewMatches.get(compId).get(i).printMatch());
 			if (MatchGetter.schedNewMatches.get(compId).get(i).getFt1() != -1) {
 				finishReviewingFlag = false;
 				ult1=ul.scoreTeamToCcas(MatchGetter.schedNewMatches.get(compId).get(i).getT1());
 				ult2=ul.scoreTeamToCcas(MatchGetter.schedNewMatches.get(compId).get(i).getT2());
 				
+				
+				
 				if(ult1!=null){
+					if(!ult1.equals(t1))
+						continue;
 					if(ult2!=null){
-						logger.info("Found with certainty t1 & t2 compatible!!");
+						if(!ult2.equals(t2))
+							continue;
+						logger.info("Found with certainty ult1 {} & ult2 {} compatible!!",ult1,ult2);
 						MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
 						//--------------------CORELATE FROM HERE-----------------------
-						logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+						logger.info("ul found changing ul {} - {}",t1,t2,ult1,ult2);
 						MatchGetter.schedNewMatches.get(compId).get(i).setT1(ult1);
 						MatchGetter.schedNewMatches.get(compId).get(i).setT2(ult2);
 						//-------------------------------------------
@@ -211,18 +218,9 @@ public class SoccerPunterOdds {
 						d1=0;
 						d2 = StringSimilarity.teamSimilarity( MatchGetter.schedNewMatches.get(compId).get(i).getT2(), t2);
 						if (d2 <= StandartResponses.TEAM_DIST) {
-////							mapPunterToScorerTeams.put(t2, MatchGetter.schedNewMatches.get(compId).get(i).getT2());
-//							fh.appendPunterToScorerTeams(t2, MatchGetter.schedNewMatches .get(compId).get(i).getT2());
-//							try {
-//								ul.addTeam(t2, MatchGetter.schedNewMatches.get(compId).get(i).getT2());
-//							} catch (IOException e) {
-//								e.printStackTrace();
-//							}
-							// set ft1 =-1 to be considered an already evaluated match
 							MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
-							
 							//--------------------CORELATE FROM HERE-----------------------
-							logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+							logger.info("t1-ul, t2<td, changing t1 {}, t2 {}/ alt ul 1:{} - 2:{}",t1,t2,ult1,ult2);
 							MatchGetter.schedNewMatches.get(compId).get(i).setT1(t1);
 							MatchGetter.schedNewMatches.get(compId).get(i).setT2(t2);
 							//-------------------------------------------
@@ -230,19 +228,14 @@ public class SoccerPunterOdds {
 						}
 					}
 				} else if(ult2!=null){// ult1 not in unilang 
+					if(!ult2.equals(t2))
+						continue;
 					d1 = StringSimilarity.teamSimilarity( MatchGetter.schedNewMatches.get(compId).get(i).getT1(), t1);
 					d2=0;
 					if (d1 <= StandartResponses.TEAM_DIST) {
-////						mapPunterToScorerTeams.put(t1, MatchGetter.schedNewMatches.get(compId).get(i).getT1());
-//						fh.appendPunterToScorerTeams(t1, MatchGetter.schedNewMatches .get(compId).get(i).getT1());
-//						try {
-//							ul.addTeam(t1, MatchGetter.schedNewMatches.get(compId).get(i).getT1());
-//						} catch (IOException e) {
-//							e.printStackTrace();
-//						}
 						MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
 						//--------------------CORELATE FROM HERE-----------------------
-						logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+						logger.info("t2-ul, t1<td, changing t1 {}, t2 {}/ alt ul {} - {}",t1,t2,ult1,ult2);
 						MatchGetter.schedNewMatches.get(compId).get(i).setT1(t1);
 						MatchGetter.schedNewMatches.get(compId).get(i).setT2(t2);
 						//-------------------------------------------
@@ -281,7 +274,7 @@ public class SoccerPunterOdds {
 			if (mind2 <= StandartResponses.TEAM_DIST) {
 				MatchGetter.schedNewMatches.get(compId).get(kk).setFt1(-1);
 				//--------------------CORELATE FROM HERE-----------------------
-				logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+				logger.info("t1,t2 <td, changing t1 {}, t2 {}/ alt ul {} - {}",t1,t2,ult1,ult2);
 				MatchGetter.schedNewMatches.get(compId).get(kk).setT1(t1);
 				MatchGetter.schedNewMatches.get(compId).get(kk).setT2(t2);
 				//-------------------------------------------
@@ -289,7 +282,6 @@ public class SoccerPunterOdds {
 			} else { //t1 <= team dist && t2 > team dist 
 				// if t2 could not be adequately corelated, use the corelation of the first team as a secure binder and add the second(the
 				// uncorelated team) in the file so that it will be found next time
-//				mapPunterToScorerTeams.put(t2, MatchGetter.schedNewMatches.get(compId).get(kk).getT2());
 				fh.appendPunterToScorerTeams(t2, MatchGetter.schedNewMatches .get(compId).get(kk).getT2());
 				try {
 					ul.addTeam(t2, MatchGetter.schedNewMatches.get(compId).get(kk).getT2());
@@ -298,7 +290,7 @@ public class SoccerPunterOdds {
 				}
 				MatchGetter.schedNewMatches.get(compId).get(kk).setFt1(-1);
 				//--------------------CORELATE FROM HERE-----------------------
-				logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+				logger.info("t1<td, t2ByBind, changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
 				MatchGetter.schedNewMatches.get(compId).get(kk).setT1(t1);
 				MatchGetter.schedNewMatches.get(compId).get(kk).setT2(t2);
 				//-------------------------------------------
@@ -306,7 +298,6 @@ public class SoccerPunterOdds {
 			}
 		} else if (mind2 <= StandartResponses.TEAM_DIST) {//t2 <= team dist && t1 > team dist
 			// t1 is already proved bigger than team_dist
-//			mapPunterToScorerTeams.put(t1, MatchGetter.schedNewMatches.get(compId) .get(kk).getT1());
 			// TODO check if team combo is already inside the file
 			fh.appendPunterToScorerTeams(t1,MatchGetter.schedNewMatches.get(compId).get(kk).getT1());
 			try {
@@ -316,7 +307,7 @@ public class SoccerPunterOdds {
 			}
 			MatchGetter.schedNewMatches.get(compId).get(kk).setFt1(-1);
 			//--------------------CORELATE FROM HERE-----------------------
-			logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+			logger.info("t2<td, t1 ByBind, changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
 			MatchGetter.schedNewMatches.get(compId).get(kk).setT1(t1);
 			MatchGetter.schedNewMatches.get(compId).get(kk).setT2(t2);
 			//-------------------------------------------

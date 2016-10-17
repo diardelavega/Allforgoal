@@ -21,6 +21,8 @@ import diskStore.AnalyticFileHandler;
 import extra.ClassifiStatus;
 import extra.MatchOutcome;
 import extra.NameCleaner;
+import extra.ServiceMsg;
+import extra.StandartResponses;
 import extra.TeamStatus;
 
 /**
@@ -134,11 +136,14 @@ public class MatchToTableRenewal {
 					pf.setWeek(week);
 					pf.setMatchTime(mobj.getMatchTime());
 					afh.appendCsv(pf.liner());
+				}else{
+					logger.info("{}",ServiceMsg.ERROR_ERROR);
+					logger.info("could not be found in all match table {}",mobj.printMatch());
 				}
-				logger.info("Table not initiated correctly ...............................\n ");
-				logger.info("could not be found {}",mobj.printMatch());
 			}
 			afh.closeOutput();
+			// if there is no match written inside-> destroy it
+			afh.testFileDestroyOnCondition(comp_Id, compName, country, date);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

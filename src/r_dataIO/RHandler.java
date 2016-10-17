@@ -132,7 +132,7 @@ public class RHandler {
 
 		String compName, country;
 		/* predict the competitions given by the list of competition ids */
-		for (Integer key : comp_Ids) {
+		for (int key : comp_Ids) {
 			int idx = CountryCompetition.idToIdx.get(key);
 			CCAllStruct ccs = CountryCompetition.ccasList.get(idx);
 			compName = NameCleaner.replacements(ccs.getCompetition());

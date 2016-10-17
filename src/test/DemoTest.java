@@ -21,28 +21,28 @@ public class DemoTest {
 		// score.getFinishedYesterday();
 		// tmf.completeYesterday();
 
-		// String s="aaaaa [w] bbbbb/ccccc!ddddd#eee";
-		// String s1=s.replace("[w]", "~");
-		// String s2=s.replace("[w]", "~");
-		// String s3=s.replaceFirst("[w] ", "~");
-		// System.out.println(s1);
-		// System.out.println(s2);
-		// System.out.println(s3);
+		 String s="[N] LASK Linz";
+		 String s1=s.replace("[N] ", "");
+		 String s2=s1.replace(" ", "~");
+		 String s3=s.replaceFirst("[N] ", "~");
+		 System.out.println(s1);
+		 System.out.println(s2);
+		 System.out.println(s3);
 
 		// String[] sss= s.split("[ /!]");
 		// for(String ss:sss)
 		// System.out.println(ss);
 
-		List<String> ls = new ArrayList<>();
-		ls.add("one");
-		ls.add("two");
-		ls.add("tre");
-
-		tt2(ls);
-		System.out.println("ls modified");
-		for(String s:ls){
-			System.out.println(s);
-		}
+//		List<String> ls = new ArrayList<>();
+//		ls.add("one");
+//		ls.add("two");
+//		ls.add("tre");
+//
+//		tt2(ls);
+//		System.out.println("ls modified");
+//		for(String s:ls){
+//			System.out.println(s);
+//		}
 
 	}
 

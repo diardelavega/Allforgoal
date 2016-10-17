@@ -2,25 +2,31 @@
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
 
+
+**--CORELATION PRIBLEMS finding the same time multiple times with different matches
+-------------------------------------------------------------
 !!+ did a small improvement in the insertion of the future matches in the db on the first run(when start from null)
-  & added uncorrelated teams in the  @correlation Class in a pending map to be examined by admin.
+  & added uncorrelated teams in the  @correlation Class in a pending map to be examined by admin. 
   
 !!+ to use soccerpunter odds to add the corelation match (using the match bind for the 2 team power)
-***************** TO BE CONSIDERED, this kind of impl ties the lingua franca of the program to the Punter   
+***************** TO BE CONSIDERED, this kind of impl ties the lingua franca of the program to the Punter
+	DONE!!!
+   
 
 ------------------------------------------------------------------------------------
 -**!) deny the prediction of competitions that are already predicted
 
 -- !! similar problem finishing with ..."[Thread-2] INFO r_dataIO.RHandler - START: 2016-10-17T04:05:40.806"
 		see if it can complete other requests && why doesn't complete this one
+		Aparently if it ends with error in R then task is not completed
 
 
 -----------------------------------------------------
 !-)Punter as odder corelation with Scorer. it is proven to be efficient thank to the match team binding (binding the team than can not be corelated)
-	- Work wiht it  remove "[N]" from the matches.  FIXED??  
+	- Work wiht it  remove "[N]" from the matches.  FIXED
 	! Use it to help the corelation in the scheduled matches phase.  DONE
-	- fix the multiple storage of the same teams.		FIXED-- NOT FIxed
-	- avoid duplicate entries in the files
+	- fix the multiple storage of the same teams.		FIXED fot the teams . whay we care-- NOT FIxed
+	- avoid duplicate entries in the files  NOT fixed for the odds combo punter-score 
 
 ----------------------------------------------------------------------------------------------------------------------
 !) testing the implemented services.... so far sim to be working weel

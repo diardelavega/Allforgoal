@@ -45,8 +45,8 @@ public class AnalyticFileHandler {
 	// private File csvFile = new File(bastFileFolder + "/matches.csv");
 	// private File mDataFile = new File(bastFileFolder + "/matchData.csv");
 	private String wordSeparator = "__";
-private int Kb= 1024;//kilobyte
-	
+	private int Kb = 1024;// kilobyte
+
 	private BufferedWriter bw = null;
 
 	public AnalyticFileHandler() {
@@ -198,7 +198,7 @@ private int Kb= 1024;//kilobyte
 			}
 
 		} // for
-		// log.info(ldl.last().toString());
+			// log.info(ldl.last().toString());
 		StringBuilder sb = new StringBuilder();
 		sb.append(File.separator);
 		sb.append(compName);
@@ -208,11 +208,11 @@ private int Kb= 1024;//kilobyte
 		sb.append("Test");
 		sb.append(wordSeparator);
 		sb.append(ldl.last().toString());
-		File tFile=new File(cFolder + sb.toString());
-		if(tFile.exists() && tFile.length()>10){
+		File tFile = new File(cFolder + sb.toString());
+		if (tFile.exists() && tFile.length() > 10) {
 			return tFile;
 		}
-		
+
 		return null;
 	}
 
@@ -359,10 +359,34 @@ private int Kb= 1024;//kilobyte
 
 		File tFile = new File(cFolder + sb.toString());
 		if (tFile.exists())
-			if (tFile.length() > 10)
+			if (tFile.length() > Kb)
 				return true;
 
 		return false;
+	}
+
+	public void testFileDestroyOnCondition(int compId, String compName, String country,
+			LocalDate dat){
+		compName = NameCleaner.replacements(compName);
+		country = NameCleaner.replacements(country);
+		File cFolder = new File(predTestFolder + "/" + country);
+		if (!cFolder.exists()) {
+			return;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separator);
+		sb.append(compName);
+		sb.append(wordSeparator);
+		sb.append(compId);
+		sb.append(wordSeparator);
+		sb.append("Test");
+		sb.append(wordSeparator);
+		sb.append(dat.toString());
+
+		File tFile = new File(cFolder + sb.toString());
+		if (tFile.exists())
+			if (tFile.length() <= Kb)
+				tFile.delete();
 	}
 
 	public int testFileDateDifference(int compId, String compName,
