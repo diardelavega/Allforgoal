@@ -1,15 +1,8 @@
 package api.rest;
 
 import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.URLConnection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,18 +15,13 @@ import javax.ws.rs.PathParam;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 import api.functionality.CompTableHandler;
 import api.functionality.MatchSpecificHandler;
@@ -43,7 +31,7 @@ import api.functionality.obj.MPLPack;
 import api.functionality.obj.MatchSpecificObj;
 import api.functionality.obj.WeekMatchesCSV;
 import basicStruct.CCAllStruct;
-import basicStruct.FullMatchLine;
+import basicStruct.MatchPredictionLine;
 import demo.Demo;
 import extra.ServiceMsg;
 import extra.StandartResponses;
@@ -76,14 +64,14 @@ public class ServTest {
 //		MPLFill mplfill = new MPLFill();
 //		mplfill.fakeFiller();
 		int seri = -1;
-		// matchPredictionLine("2016-10-12", seri);//OK
+		 matchPredictionLine("2016-10-15", seri);//OK
 
 //		String ret = reducedWeeksMatches(112);//OK
 		
 //		compWinDrawLose(112);
 //		oneCompMatchPredictionLine(4);
 //		compTableData(112);
-		matchSpecificData("2016-10-13","Sarpsborg 08","Start",112	);
+//		matchSpecificData("2016-10-13","Sarpsborg 08","Start",112	);
 
 		// String ret = matchPredictionLine("2016-10-12", seri);
 		// log.info("{}",ret);
@@ -111,23 +99,26 @@ public class ServTest {
 			return ("{msg:'" + ServiceMsg.END_OF_DATA + "'}");
 		}
 
-		List<FullMatchLine> list_fml;// = new ArrayList<>();
+		List<MatchPredictionLine> list_fml;// = new ArrayList<>();
 		List<MPLPack> packlist = new ArrayList<>();
 		int allMatchesIn = 0;
+		int compId = 0;
 		do {
 			list_fml = new ArrayList<>();
+			compId = TimeVariations.mapMPL.get(ld).get(keyList.get(nr)).get(0).getComId();
 			list_fml.addAll(TimeVariations.mapMPL.get(ld).get(keyList.get(nr)));
 			allMatchesIn += list_fml.size();
-			// log.info("{}", allMatchesIn);
-			CCAllStruct ccdata = ccalExtract(list_fml.get(0).getComId());
+			 log.info("{}", allMatchesIn);
+			CCAllStruct ccdata = ccalExtract(compId);
 			MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), nr, list_fml);
 			packlist.add(pack);
 			nr++;
 		} while (allMatchesIn < 10 && nr < keyList.size());
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		// new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
+//		 new Gson();
 		String jo = gson.toJson(packlist);
+		log.info("{}",jo);
 		return jo;
 	}
 
@@ -227,7 +218,7 @@ public class ServTest {
 		 * since "STD_DAYS_AGO" and untill how many matches we have recorded in
 		 * the future.(curently one day in the future)
 		 */
-		List<FullMatchLine> list_fml = new ArrayList<>();
+		List<MatchPredictionLine> list_fml = new ArrayList<>();
 		for (LocalDate dat : TimeVariations.mapMPL.keySet()) {
 			if (dat.isAfter(LocalDate.now().minusDays(StandartResponses.STD_DAYS_AGO)))
 				if (TimeVariations.mapMPL.get(dat).containsKey(cid)) {
@@ -350,10 +341,10 @@ public class ServTest {
 
 	private static CCAllStruct ccalExtract(int cid) {
 		// cid+10 for practical purposes not real ones
-		 int ind = CountryCompetition.idToIdx.get(cid );
-		 return CountryCompetition.ccasList.get(ind);
+//		 int ind = CountryCompetition.idToIdx.get(cid );
+//		 return CountryCompetition.ccasList.get(ind);
 		// CCAllStruct ccdata =
-//		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
+		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
 
 	}
 }

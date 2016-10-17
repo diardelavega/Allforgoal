@@ -5,6 +5,7 @@
 -**!) deny the prediction of competitions that are already predicted
 
 
+
 -----------------------------------------------------
 !-)Punter as odder corelation with Scorer. it is proven to be efficient thank to the match team binding (binding the team than can not be corelated)
 	- Work wiht it  remove "[N]" from the matches.  FIXED??  
@@ -13,6 +14,9 @@
 	- avoid duplicate entries in the files
 
 ----------------------------------------------------------------------------------------------------------------------
+!) testing the implemented services.... so far sim to be working weel
+
+
 ---***) PROBlem writin the matchs in db acording to the Scorer format... capital letters (instead of the Punter format AS SHOULD BE)
 Upon insertion, (read new matches) all data is in correct format so the problem must be in the completion phase when the results are updated...
 
@@ -34,7 +38,7 @@ Upon insertion, (read new matches) all data is in correct format so the problem 
 *-!)LEVINSTAIN distance doesnt work very well.....
 	a separation is needed between the team and other kinds of distance.
 	
-	FIXed)!! distance measure adjusted(sims to be working better)
+	!! distance measure adjusted(sims to be working better)
 
 --------------------------------------------------------------------------
 ***) problem when requesting to predict comps without dtf, => a new request for dtf prediction that waits

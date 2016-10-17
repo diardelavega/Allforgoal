@@ -52,12 +52,12 @@ public class MPLFill {
 						htGen(), htGen(), oddGen(), oddGen(), oddGen(), oddGen(), oddGen(), LocalDate.now().plusDays(1), tim);
 				forFlag=false;
 			} else {
-				locd = datGen();
+//				locd = datGen();
 				mobj = new MatchObj(Long.parseLong(n + ""), cIdGen(), strGen(), strGen(), ftGen(), ftGen(), htGen(),
 						htGen(), oddGen(), oddGen(), oddGen(), oddGen(), oddGen(), locd, tim);
 			}
 
-			// log.info("{}", locd);
+//			 log.info("localDate {}", locd);
 			
 			fml = new FullMatchLine(mobj);
 			if (locd.isBefore(LocalDate.now()) || locd.isEqual(LocalDate.now())) {

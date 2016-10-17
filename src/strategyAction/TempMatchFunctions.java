@@ -234,6 +234,7 @@ public class TempMatchFunctions {
 		 */
 		// same comp matches of consecutive compids during search loops
 		// used for test prediction file
+
 		// List<MatchObj> smallPredictionsList = new ArrayList<MatchObj>();
 
 		CorelationAtempt ca = new CorelationAtempt();
@@ -270,6 +271,7 @@ public class TempMatchFunctions {
 			 * matches to account for the remaining ones
 			 */
 			logger.info("--------------: LOOP TO find postponed");
+
 			foundMatches.clear();
 			logger.info("errorNewMatches.size {}", MatchGetter.errorNewMatches.size());
 			finerr = "err";
