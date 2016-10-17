@@ -2,8 +2,11 @@
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
 
+
 -**!) deny the prediction of competitions that are already predicted
 
+-- !! similar problem finishing with ..."[Thread-2] INFO r_dataIO.RHandler - START: 2016-10-17T04:05:40.806"
+		see if it can complete other requests && why doesn't complete this one
 
 
 -----------------------------------------------------
@@ -19,7 +22,7 @@
 
 ---***) PROBlem writin the matchs in db acording to the Scorer format... capital letters (instead of the Punter format AS SHOULD BE)
 Upon insertion, (read new matches) all data is in correct format so the problem must be in the completion phase when the results are updated...
-
+ 	SOLUTION: The capital letters may be because they dont get corelated with any of the punter matches so they dont change and remain the same
 
 ----------------------------------------------------------------------------------------------------------------------
 ***-) Add the finished and errata matches correlation algo in the    Completion methods

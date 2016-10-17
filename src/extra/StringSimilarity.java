@@ -190,8 +190,8 @@ public class StringSimilarity {
 		a = a.replaceAll("\u00A0", "").toLowerCase();
 		b = b.replaceAll("\u00A0", "").toLowerCase();
 
-		String[] aa = a.split("[ /!]");
-		String[] bb = b.split("[ /!]");
+		String[] aa = a.split("[ /!-]");
+		String[] bb = b.split("[ /!-]");
 
 		// to see if the next match will be after i>previ & j >prevj|| meaning
 		// we have the order of the words aswell as the match

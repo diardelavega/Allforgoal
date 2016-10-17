@@ -338,13 +338,9 @@ public class RHandler {
 		};
 
 		// CompletableFuture futureCount = CompletableFuture
-		CompletableFuture
-				.runAsync(r)
+		CompletableFuture .runAsync(r)
 				.thenAccept(
-						(c) -> {
-							log.info(
-									"FINISH :{}  \n succesfull R DTF completion  msg:{}",
-									LocalDateTime.now(), c);
+						(c) -> { log.info( "FINISH :{}  \n succesfull R DTF completion  msg:{}", LocalDateTime.now(), c);
 							if (seri > -1) {
 								ReqScheduler.getInstance().response(seri);
 							}

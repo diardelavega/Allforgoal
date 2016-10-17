@@ -81,9 +81,9 @@ public class TempMatchFunctions {
 		float dist1 = 1000, dist2 = 1000, dist = 0;
 		boolean foundTeamFlag = false;
 
-		for (int key : MatchGetter.schedNewMatches.keySet()) {
-			for (int kk = 0; kk < MatchGetter.schedNewMatches.get(key).size(); kk++) {
-				MatchObj m = MatchGetter.schedNewMatches.get(key).get(kk);
+		for (int cidkey : MatchGetter.schedNewMatches.keySet()) {
+			for (int kk = 0; kk < MatchGetter.schedNewMatches.get(cidkey).size(); kk++) {
+				MatchObj m = MatchGetter.schedNewMatches.get(cidkey).get(kk);
 				logger.info("---Match :{} {}",m.getT1(),m.getT2());
 				dist1 = 1000;
 				dist2 = 1000;
@@ -145,18 +145,18 @@ public class TempMatchFunctions {
 				}
 
 				if (t1 != null && t2 != null) {
-					MatchGetter.schedNewMatches.get(key).get(kk) .setT1(t1);
-					MatchGetter.schedNewMatches.get(key).get(kk) .setT2(t2);
+					MatchGetter.schedNewMatches.get(cidkey).get(kk) .setT1(t1);
+					MatchGetter.schedNewMatches.get(cidkey).get(kk) .setT2(t2);
 					continue;
 				}
 
 				if (dist1 <= StandartResponses.TEAM_DIST && dist2 <= StandartResponses.TEAM_DIST) {
-					MatchGetter.schedNewMatches.get(key).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
-					MatchGetter.schedNewMatches.get(key).get(kk) .setT2(dbTeams.get(chosenDbIdx2));
+					MatchGetter.schedNewMatches.get(cidkey).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
+					MatchGetter.schedNewMatches.get(cidkey).get(kk) .setT2(dbTeams.get(chosenDbIdx2));
 //					if(chosenDbIdx1 > -1)
-//					dbTeams.remove(chosenDbIdx1);
+					dbTeams.remove(chosenDbIdx1);
 //					if(chosenDbIdx2 > -1)
-//					dbTeams.remove(chosenDbIdx2);
+					dbTeams.remove(chosenDbIdx2);
 					continue;
 				}
 
@@ -165,10 +165,10 @@ public class TempMatchFunctions {
 				if (dist1 > StandartResponses.TEAM_DIST && t1 == null) {
 					if (t2 != null) {
 						logger.info(
-								"RELATING t2:{} {}~unilang; & by matchBind t1:{} {}  ", m.getT2(), t2, m.getT1(), dbTeams.get(chosenDbIdx1));
-						MatchGetter.schedNewMatches.get(key).get(kk).setT2(t2);
+								"RELATING t2:{} {}~unilang; & by matchBind t1:{} {} on distance {} ", m.getT2(), t2, m.getT1(), dbTeams.get(chosenDbIdx1),dist1);
+						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT2(t2);
 						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
-						MatchGetter.schedNewMatches.get(key).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
+						MatchGetter.schedNewMatches.get(cidkey).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
 					} else if (dist2 <= StandartResponses.TEAM_DIST) {
 						logger.info(
 								"RELATING t2:{} {}; & by matchBind t1:{} {}  ", m.getT2(), dbTeams.get(chosenDbIdx2), m.getT1(), dbTeams.get(chosenDbIdx1));
