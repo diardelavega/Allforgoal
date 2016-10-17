@@ -20,6 +20,8 @@ public class MainTry {
 		 initCCAllStruct();
 		 Strategy strategy = new Strategy();
 		 strategy.periodic();
+		 
+		 
 
 //		 strategy.task();
 //		 strategy.tryTask();
@@ -30,20 +32,9 @@ public class MainTry {
 		// spo.getDailyOdds(LocalDate.now());
 
 		// strategy.periodic();
-
-		// corelator();
-		// LocalDate ld =LocalDate.now();
-		// log(ld.toString());
-		// Soccerpunter_homePage sch = new Soccerpunter_homePage();
-		// sch.goGetCompetitions();
-		// filer();
-		// System.out.println("Uganda".compareTo("Usa"));
-		//
-
-		// dater();
-		// distancer() ;
-		// odder();
-//		printer();
+		 
+//		 for(key:ul.)
+		 
 	}
 
 	public static void initCCAllStruct() throws SQLException, IOException {

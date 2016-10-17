@@ -223,9 +223,21 @@ public class Unilang {
 
 	public void init() throws JsonSyntaxException, IOException {
 		// init unilang structures
+		logger.info("init unilang structures");
+		
+		
 		readCcasTeamTerms();
+//		for(int key:ccasTeamsMap.keySet()){
+////			for(int i=0;i<ccasMap.get(key))
+//			logger.info("{} - {}",key,ccasTeamsMap.get(key),scoreTeamToCcas() );
+//		}
+		
 		// readCcasTerms();
 		readScoreTeamTerms();
+//		for(String key:scoreTeamsMap.keySet()){
+////			for(int i=0;i<ccasMap.get(key))
+//			logger.info("{} - {}    ...{}",key,scoreTeamsMap.get(key),scoreTeamToCcas(key));
+//		}
 		// readScoreTerms();
 
 	}

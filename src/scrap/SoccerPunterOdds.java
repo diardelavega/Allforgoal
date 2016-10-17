@@ -25,7 +25,7 @@ public class SoccerPunterOdds {
 
 	public static final Logger logger = LoggerFactory
 			.getLogger(SoccerPunterOdds.class);
-	public static Map<String, String> mapPunterToScorerTeams = new HashMap<String, String>();
+//	public static Map<String, String> mapPunterToScorerTeamss = new HashMap<String, String>();
 
 	private String errorStatus = "OK";
 	private CountryCompetition cc = new CountryCompetition();
@@ -194,8 +194,8 @@ public class SoccerPunterOdds {
 		for (int i = 0; i < MatchGetter.schedNewMatches.get(compId).size(); i++) {
 			if (MatchGetter.schedNewMatches.get(compId).get(i).getFt1() != -1) {
 				finishReviewingFlag = false;
-				ult1=ul.scoreToCcas(MatchGetter.schedNewMatches.get(compId).get(i).getT1());
-				ult2=ul.scoreToCcas(MatchGetter.schedNewMatches.get(compId).get(i).getT2());
+				ult1=ul.scoreTeamToCcas(MatchGetter.schedNewMatches.get(compId).get(i).getT1());
+				ult2=ul.scoreTeamToCcas(MatchGetter.schedNewMatches.get(compId).get(i).getT2());
 				
 				if(ult1!=null){
 					if(ult2!=null){
@@ -206,13 +206,13 @@ public class SoccerPunterOdds {
 						d1=0;
 						d2 = StringSimilarity.teamSimilarity( MatchGetter.schedNewMatches.get(compId).get(i).getT2(), t2);
 						if (d2 <= StandartResponses.TEAM_DIST) {
-							mapPunterToScorerTeams.put(t2, MatchGetter.schedNewMatches.get(compId).get(i).getT2());
-							fh.appendPunterToScorerTeams(t2, MatchGetter.schedNewMatches .get(compId).get(i).getT2());
-							try {
-								ul.addTeam(t2, MatchGetter.schedNewMatches.get(compId).get(i).getT2());
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+////							mapPunterToScorerTeams.put(t2, MatchGetter.schedNewMatches.get(compId).get(i).getT2());
+//							fh.appendPunterToScorerTeams(t2, MatchGetter.schedNewMatches .get(compId).get(i).getT2());
+//							try {
+//								ul.addTeam(t2, MatchGetter.schedNewMatches.get(compId).get(i).getT2());
+//							} catch (IOException e) {
+//								e.printStackTrace();
+//							}
 							// set ft1 =-1 to be considered an already evaluated match
 							MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
 							return i;
@@ -222,13 +222,13 @@ public class SoccerPunterOdds {
 					d1 = StringSimilarity.teamSimilarity( MatchGetter.schedNewMatches.get(compId).get(i).getT1(), t1);
 					d2=0;
 					if (d1 <= StandartResponses.TEAM_DIST) {
-						mapPunterToScorerTeams.put(t1, MatchGetter.schedNewMatches.get(compId).get(i).getT1());
-						fh.appendPunterToScorerTeams(t1, MatchGetter.schedNewMatches .get(compId).get(i).getT1());
-						try {
-							ul.addTeam(t1, MatchGetter.schedNewMatches.get(compId).get(i).getT1());
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+////						mapPunterToScorerTeams.put(t1, MatchGetter.schedNewMatches.get(compId).get(i).getT1());
+//						fh.appendPunterToScorerTeams(t1, MatchGetter.schedNewMatches .get(compId).get(i).getT1());
+//						try {
+//							ul.addTeam(t1, MatchGetter.schedNewMatches.get(compId).get(i).getT1());
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
 						MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
 						return i;
 					}
@@ -268,7 +268,7 @@ public class SoccerPunterOdds {
 			} else { //t1 <= team dist && t2 > team dist 
 				// if t2 could not be adequately corelated, use the corelation of the first team as a secure binder and add the second(the
 				// uncorelated team) in the file so that it will be found next time
-				mapPunterToScorerTeams.put(t2, MatchGetter.schedNewMatches.get(compId).get(kk).getT2());
+//				mapPunterToScorerTeams.put(t2, MatchGetter.schedNewMatches.get(compId).get(kk).getT2());
 				fh.appendPunterToScorerTeams(t2, MatchGetter.schedNewMatches .get(compId).get(kk).getT2());
 				try {
 					ul.addTeam(t2, MatchGetter.schedNewMatches.get(compId).get(kk).getT2());
@@ -280,7 +280,8 @@ public class SoccerPunterOdds {
 			}
 		} else if (mind2 <= StandartResponses.TEAM_DIST) {//t2 <= team dist && t1 > team dist
 			// t1 is already proved bigger than team_dist
-			mapPunterToScorerTeams.put(t1, MatchGetter.schedNewMatches.get(compId) .get(kk).getT1());
+//			mapPunterToScorerTeams.put(t1, MatchGetter.schedNewMatches.get(compId) .get(kk).getT1());
+			// TODO check if team combo is already inside the file
 			fh.appendPunterToScorerTeams(t1,MatchGetter.schedNewMatches.get(compId).get(kk).getT1());
 			try {
 				ul.addTeam(t1, MatchGetter.schedNewMatches.get(compId).get(kk).getT1());
