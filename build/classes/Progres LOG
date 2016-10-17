@@ -2,7 +2,13 @@
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
 
+!!+ did a small improvement in the insertion of the future matches in the db on the first run(when start from null)
+  & added uncorrelated teams in the  @correlation Class in a pending map to be examined by admin.
+  
+!!+ to use soccerpunter odds to add the corelation match (using the match bind for the 2 team power)
+***************** TO BE CONSIDERED, this kind of impl ties the lingua franca of the program to the Punter   
 
+------------------------------------------------------------------------------------
 -**!) deny the prediction of competitions that are already predicted
 
 -- !! similar problem finishing with ..."[Thread-2] INFO r_dataIO.RHandler - START: 2016-10-17T04:05:40.806"

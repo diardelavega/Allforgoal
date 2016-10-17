@@ -40,11 +40,13 @@ public class MatchGetter {
 	public static Map<Integer, List<MatchObj>> errorNewMatches = new HashMap<>();
 	// public static List<MatchObj> finNewMatches = new ArrayList<>();
 	// public static List<MatchObj> errorNewMatches = new ArrayList<>();
-
+	public static Map<Integer, List<MatchObj>> pendingMatches = new HashMap<>();
+	
 	// list of comp ids with all odds set. (to be used by odd adder sites)
 	public static List<Integer> reviewedAndEmptyOdds = new ArrayList<Integer>();
 
 	private final String mainUrl = "http://www.xscores.com/soccer/all-games/";
+	public static LocalDate leatestLd =null;
 	// private Unilang ul = new Unilang();
 	private CountryCompetition cc = new CountryCompetition();
 
@@ -367,4 +369,26 @@ public class MatchGetter {
 		 */
 		TimeVariations.todayComps.addAll(MatchGetter.schedNewMatches.keySet());
 	}
+
+//-----------------------------------------
+	public void showPendingMmatches(){
+		for(int keiCid :pendingMatches.keySet()){
+			logger.info("----------:::::::::-------{}",keiCid);
+			for(int i=0;i<pendingMatches.get(keiCid).size();i++){
+				logger.info("{}",pendingMatches.get(keiCid).get(i).printMatch());
+			}
+		}
+	}
+	
+	public static  void printPendingMmatchesSqlInsert(){
+		for(int keiCid :pendingMatches.keySet()){
+//			logger.info("----------:::::::::-------{}",keiCid);
+			for(int i=0;i<pendingMatches.get(keiCid).size();i++){
+				logger.info("INSERT INTO tempmatches "
+						+ "(mId,dat,matchTime,comId,t1,t2,ft1,ft2,ht1,ht2,_1,_2,_x,_o,_u) "
+						+ "values",pendingMatches.get(keiCid).get(i).printMatch());
+			}
+		}
+	}
+	
 }
