@@ -17,11 +17,17 @@ public class DemoTest {
 //		score.getFinishedYesterday();
 //		tmf.completeYesterday();
 		
-		String s="aaaaa bbbbb/ccccc!ddddd#eee";
+		String s="aaaaa [w] bbbbb/ccccc!ddddd#eee";
+		String s1=s.replace("[w]", "~");
+		String s2=s.replace("[w]", "~");
+		String s3=s.replaceFirst("[w] ", "~");
+		System.out.println(s1);
+		System.out.println(s2);
+		System.out.println(s3);
 		
-		String[] sss= s.split("[ /!]");
-		for(String ss:sss)
-		System.out.println(ss);
+//		String[] sss= s.split("[ /!]");
+//		for(String ss:sss)
+//		System.out.println(ss);
 		
 	}
 

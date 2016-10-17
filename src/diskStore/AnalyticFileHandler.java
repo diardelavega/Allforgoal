@@ -451,7 +451,6 @@ public class AnalyticFileHandler {
 	// ///////////Write Results Section
 	public void writeResultsToTestFile() throws SQLException,
 			FileNotFoundException, IOException {
-		// TODO TEST it
 		/* in the test files created write the actual results */
 		/*
 		 * the data in the test file that is about to be writtend doesn't have

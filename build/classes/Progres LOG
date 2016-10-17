@@ -2,13 +2,30 @@
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
 
+-**!) deny the prediction of competitions that are already predicted
+
+
+-----------------------------------------------------
+!-)Punter as odder corelation with Scorer. it is proven to be efficient thank to the match team binding (binding the team than can not be corelated)
+	- Work wiht it  remove "[N]" from the matches.  FIXED??  
+	! Use it to help the corelation in the scheduled matches phase.  DONE
+	- fix the multiple storage of the same teams.		FIXED-- NOT FIxed
+	- avoid duplicate entries in the files
+
+----------------------------------------------------------------------------------------------------------------------
+---***) PROBlem writin the matchs in db acording to the Scorer format... capital letters (instead of the Punter format AS SHOULD BE)
+Upon insertion, (read new matches) all data is in correct format so the problem must be in the completion phase when the results are updated...
+
+
+----------------------------------------------------------------------------------------------------------------------
 ***-) Add the finished and errata matches correlation algo in the    Completion methods
+	DONE
 
 ------------------------------------------
 !) testing the implemented services.... so far sim to be working well
 	DONE- test successful; Remaining the server side testing
 
-*--) TODO add a deletion date for the accumulated old matches in the MPL map & recent db table
+*--) TODO add a deletion date for the accumulated old matches in the MPL map & recent db table, (DELETE older than 2 weeks)
 
 **-) Fix the run problems with the program
 

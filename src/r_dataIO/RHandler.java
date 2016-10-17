@@ -64,8 +64,7 @@ public class RHandler {
 		// add (the image corresponding) train file path in the list
 		File tempFile = afh .getTrainFileName(ccs.getCompId(), compName, country);
 		if (tempFile != null) {
-			File testfile = afh.getTestFileName(ccs.getCompId(), compName,
-					country, ld);
+			File testfile = afh.getTestFileName(ccs.getCompId(), compName, country, ld);
 			if (testfile != null) {
 				predTestPath.add(testfile.getAbsolutePath().replace("\\", "/"));
 				predTrainPath .add(tempFile.getAbsolutePath().replace("\\", "/"));
@@ -139,10 +138,12 @@ public class RHandler {
 			compName = NameCleaner.replacements(ccs.getCompetition());
 			country = NameCleaner.replacements(ccs.getCountry());
 			// check if already has a prediction file of that date
-			if (afh.isPredFile(ccs.getCompId(), compName, country, ld))
+			if (afh.isPredFile(ccs.getCompId(), compName, country, ld)){
+				log.info("is already predFile {}, {}, {}, {} ",ccs.getCompId(), compName, country, ld);
 				continue;
+			}
 			String ret = afh.getImageFolderName(ccs.getCompId(), compName, country);
-			if (ret != null) {
+			if (ret != null) {// if exist dtf oj
 				predListFiller(ccs, ret, ld);
 			} else {
 				un_foundImagesCompIds.add(key);

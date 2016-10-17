@@ -112,12 +112,8 @@ public class MatchGetter {
 					// mobj.setComId(compIdx + 1);
 					// schedNewMatches.add(mobj);
 
-					if (_status.equals(Status.SCHEDULED)
-							&& (status.equals(Status.SCHEDULED) || status
-									.equals(Status.FTR))) {
-						logger.info(
-								"getting SCHEDULED :: country {}  competition {}  compId {}  t1-{}  t2-{}",
-								clasVal[0], clasVal[4], compId, t1, t2);
+					if (_status.equals(Status.SCHEDULED) && (status.equals(Status.SCHEDULED) || status .equals(Status.FTR))) {
+						logger.info("getting SCHEDULED :: country {}  competition {}  compId {}  t1-{}  t2-{}", clasVal[0], clasVal[4], compId, t1, t2);
 						mobj.setDat(Date.valueOf(dat));
 						mobj.setComId(compId);
 						// schedNewMatches.add(mobj);
@@ -128,13 +124,10 @@ public class MatchGetter {
 
 							if (dat.isAfter(LocalDate.now())) {
 								addToTomorrowComps(compId);
-								// add competitions to be interpreted in R
 							}
 						} else {
 							schedNewMatches.get(compId).add(mobj);
-
 							if (dat.isAfter(LocalDate.now())) {
-								// add competitions to be interpreted in R
 								addToTomorrowComps(compId);
 							}
 						}
@@ -142,11 +135,13 @@ public class MatchGetter {
 					}
 
 					if (_status == Status.FINISHED) {
-						if (status.equals(Status.ABANDONED)
-								|| status.equals(Status.CANCELED)
+						if (status.equals(Status.ABANDONED) || status.equals(Status.CANCELED) 
 								|| status.equals(Status.POSTPONED)) {
-
 							// find interrupted matches to delete them
+							mobj.setHt1(-1);
+							mobj.setHt2(-1);
+							mobj.setFt1(-1);
+							mobj.setFt2(-1);							
 							if (errorNewMatches.get(compId) == null) {
 								List<MatchObj> mol = new ArrayList<>();
 								mol.add(mobj);
@@ -156,13 +151,12 @@ public class MatchGetter {
 							}
 							// errorNewMatches.add(mobj); original, list version
 							logger.info("ABANDONED ---  t1-{}  t2-{}", t1, t2);
-						}
+						}// abandoned
 						if (status.equals(Status.FINISHED)) {
 							String[] scores;
 							mobj.setDat(Date.valueOf(dat));
 							mobj.setComId(compId);
-							// logger.info("FINISHED ---  t1-{}  t2-{}", t1,
-							// t2);
+
 							// HT score - @ td_14
 							if (tds.get(13).text().length() >= 3) {// score-score
 								scores = tds.get(13).text().split("-");
@@ -173,7 +167,12 @@ public class MatchGetter {
 									mobj.setHt2(ht2);
 								} catch (NumberFormatException e) {
 									logger.warn(" SOMTHING WHENT WRONG WITH THE HT SCORE");
+									mobj.setHt1(-1);
+									mobj.setHt2(-1);
 								}
+							}else{
+								mobj.setHt1(-1);
+								mobj.setHt2(-1);
 							}
 							if (tds.get(14).text().length() >= 3) {// FT @ td_15
 								scores = tds.get(14).text().split("-");
@@ -184,12 +183,14 @@ public class MatchGetter {
 									mobj.setFt2(ft2);
 								} catch (NumberFormatException e) {
 									logger.warn(" SOMTHING WHENT WRONG WITH THE FT SCORE");
+									mobj.setFt1(-1);
+									mobj.setFt2(-1);
 								}
+							}else{
+								mobj.setFt1(-1);
+								mobj.setFt2(-1);
 							}
-							logger.info(
-									"FINISHED ---  t1-{} vs t2-{} ;; {} , {}  ",
-									t1, t2, tds.get(13).text(), tds.get(14)
-											.text());
+							logger.info( "FINISHED ---  t1-{} vs t2-{} ;; {} , {}  ", t1, t2, tds.get(13).text(), tds.get(14) .text());
 							if (finNewMatches.get(compId) == null) {
 								List<MatchObj> mol = new ArrayList<>();
 								mol.add(mobj);
@@ -197,7 +198,6 @@ public class MatchGetter {
 							} else {
 								finNewMatches.get(compId).add(mobj);
 							}
-//							finNewMatches.add(mobj);
 						}// fin status
 					}
 				}

@@ -84,6 +84,7 @@ public class TempMatchFunctions {
 		for (int key : MatchGetter.schedNewMatches.keySet()) {
 			for (int kk = 0; kk < MatchGetter.schedNewMatches.get(key).size(); kk++) {
 				MatchObj m = MatchGetter.schedNewMatches.get(key).get(kk);
+				logger.info("---Match :{} {}",m.getT1(),m.getT2());
 				dist1 = 1000;
 				dist2 = 1000;
 				chosenDbIdx1 = -1;
@@ -107,7 +108,7 @@ public class TempMatchFunctions {
 				}
 				if (!foundTeamFlag) {
 					for (int i = 0; i < dbTeams.size(); i++) {
-						logger.info("{}   vs   {}", m.getT1(), dbTeams.get(i), dist);
+						logger.info("T1 : {}   vs   {}", m.getT1(), dbTeams.get(i), dist);
 						dist = StringSimilarity.teamSimilarity(m.getT1(), dbTeams.get(i));
 						if (dist1 > dist) {
 							dist1 = dist;
@@ -135,7 +136,7 @@ public class TempMatchFunctions {
 				if (!foundTeamFlag) {
 					for (int i = 0; i < dbTeams.size(); i++) {
 						dist = StringSimilarity.teamSimilarity(m.getT2(), dbTeams.get(i));
-						logger.info("{}   vs   {}", m.getT2(), dbTeams.get(i), dist);
+						logger.info("T2: {}   vs   {}", m.getT2(), dbTeams.get(i), dist);
 						if (dist2 > dist) {
 							dist2 = dist;
 							chosenDbIdx2 = i;
@@ -152,8 +153,10 @@ public class TempMatchFunctions {
 				if (dist1 <= StandartResponses.TEAM_DIST && dist2 <= StandartResponses.TEAM_DIST) {
 					MatchGetter.schedNewMatches.get(key).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
 					MatchGetter.schedNewMatches.get(key).get(kk) .setT2(dbTeams.get(chosenDbIdx2));
-					dbTeams.remove(chosenDbIdx1);
-					dbTeams.remove(chosenDbIdx2);
+//					if(chosenDbIdx1 > -1)
+//					dbTeams.remove(chosenDbIdx1);
+//					if(chosenDbIdx2 > -1)
+//					dbTeams.remove(chosenDbIdx2);
 					continue;
 				}
 
@@ -243,6 +246,14 @@ public class TempMatchFunctions {
 
 		openDBConn();
 		if (foundMatches.size() > 0) {
+			try {
+				logger.info("found matches {} vs {}",foundMatches.get(0).getT1(),foundMatches.get(0).getT2());
+				logger.info("found matches {} vs {}",foundMatches.get(1).getT1(),foundMatches.get(0).getT2());
+				logger.info("found matches {} vs {}",foundMatches.get(2).getT1(),foundMatches.get(0).getT2());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			logger.warn("matches correlated size :{}", foundMatches.size());
 			deleteTempMatches(foundMatches);// delete finished matches from tempdb
 			insertMatches(foundMatches);// in finished matches from tempdb to matchesdb
@@ -691,25 +702,24 @@ public class TempMatchFunctions {
 
 		FullMatchPredLineToSubStructs fmplss = new FullMatchPredLineToSubStructs();
 
-		ReadPrediction rpfile = new ReadPrediction();
-		rpfile.prediction(compsList);// read predictions from the pred files
-		readInitialTeamFromRecentMatches(ld);// read from recent db table
+		ReadPrediction predfile = new ReadPrediction();
+		predfile.prediction(compsList);// read predictions from the pred files
+		readInitialTeamFromRecentMatches(ld);// read from recent db table & fill readRecentMatchesList
 		List<FullMatchLine> smallList = new ArrayList<>();// to update db
 
 		// find the same matches from db table and file
-		for (int cid : rpfile.getMatchLinePred().keySet()) {
-			for (int i = 0; i < rpfile.getMatchLinePred().get(cid).size(); i++) {
+		for (int cid : predfile.getMatchLinePred().keySet()) {
+			for (int i = 0; i < predfile.getMatchLinePred().get(cid).size(); i++) {
 				int ind = binarySearch(
 						fmplss.fullMatchPredLineToMatchObj(readRecentMatchesList),
-						rpfile.getMatchLinePred().get(cid).get(i).getT1());
+						predfile.getMatchLinePred().get(cid).get(i).getT1());
 				if (ind == -1) {
 					// todo dysplay error and
-					logger.info("unfound relation file & db {}", rpfile
-							.getMatchLinePred().get(cid).get(i).liner());
+					logger.info("unfound relation file & db {}", predfile .getMatchLinePred().get(cid).get(i).liner());
 					continue;
 				}
 				// make sure both teams correspond
-				if (rpfile
+				if (predfile
 						.getMatchLinePred()
 						.get(cid)
 						.get(i)
@@ -717,8 +727,7 @@ public class TempMatchFunctions {
 						.equalsIgnoreCase(
 								readRecentMatchesList.get(ind).getT2())) {
 					FullMatchLine temp = readRecentMatchesList.get(ind);
-					temp = fmplss.baseMatchLinePredEnhanceFullLine(temp, rpfile
-							.getMatchLinePred().get(cid).get(i));
+					temp = fmplss.baseMatchLinePredEnhanceFullLine(temp, predfile .getMatchLinePred().get(cid).get(i));
 					smallList.add(temp);
 					// update MPL map with the pred points from
 					enrichMPLmap(ld, cid, temp);

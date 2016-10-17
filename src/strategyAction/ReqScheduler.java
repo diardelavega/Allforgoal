@@ -53,9 +53,7 @@ public class ReqScheduler {
 			serialNumber = que.get(que.size() - 1).getSerialCode() + 1;
 		}
 		log.info("adding req {} {} {}", attKind, ld, serialNumber);
-
-		AsyncRequest ar = new AsyncRequest(type, list, attKind, serialNumber,
-				ld);
+		AsyncRequest ar = new AsyncRequest(type, list, attKind, serialNumber, ld);
 		que.add(ar);
 	}
 

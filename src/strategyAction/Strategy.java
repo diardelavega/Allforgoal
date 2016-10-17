@@ -157,8 +157,7 @@ public class Strategy {
 		logger.info("Empty ... Last Ceck @ {}", LocalTime.now());
 	}
 
-	public void dateChangePartTask() throws SQLException,
-			FileNotFoundException, IOException {
+	public void dateChangePartTask() throws SQLException, FileNotFoundException, IOException {
 		tv.compsDateRotate();
 
 		// if (!ldg.hourlyFileFilledCheck()) {
@@ -231,12 +230,10 @@ public class Strategy {
 		 * not have anything to do. Prediction points are added at the end of
 		 * the exwcution,(after a response from the R functions har returned)
 		 */
-		logger.info("sched pred today  sizeEEEEE: {}",
-				TimeVariations.todayComps.size());
+		logger.info("sched pred today  sizeEEEEE: {}", TimeVariations.todayComps.size());
 		if (TimeVariations.todayComps.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
-			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs,
-					LocalDate.now());
+			rs.addReq(AsyncType.PRED, TimeVariations.todayComps, AttsKind.hs, LocalDate.now());
 			rs.startReq();
 		}
 	}
@@ -253,6 +250,7 @@ public class Strategy {
 	}
 
 	private void scheduleReEvaluation(List<Integer> list) {
+		logger.info("@_ScheduleReEvaluation");
 		if (list.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
 			rs.addReq(AsyncType.RE_EVAL, list, AttsKind.hs, null);
@@ -460,6 +458,7 @@ public class Strategy {
 
 	public void writeResultsToTest() throws FileNotFoundException,
 			SQLException, IOException {
+		logger.info("@writeResultsToTest");
 		AnalyticFileHandler afh = new AnalyticFileHandler();
 		afh.writeResultsToTestFile();
 	}

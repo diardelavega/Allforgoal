@@ -512,8 +512,7 @@ public class FileHandler {
 //=================Punter To scorer============================
 public void appendPunterToScorerTeams(String p,String s){
 	try {
-		BufferedWriter bw = new BufferedWriter(new FileWriter(
-				punterToScorerTeams, true));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(punterToScorerTeams, true));
 		StrStrTuple sst = new StrStrTuple(p, s);
 		bw.write(gson.toJson(sst) + "\n");
 		bw.close();
