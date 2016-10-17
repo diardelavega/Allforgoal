@@ -148,6 +148,7 @@ public class Strategy {
 			ldg.readMatchStructs();
 		}
 
+		//TODO a loop to insert in the db tomorrows matches
 		storeToSmallDBsCondition(lastDatCheck);// store condition
 		score.clearLists();
 
@@ -274,6 +275,21 @@ public class Strategy {
 		if (res.next()) {
 			latestRecDate = res.getDate(1).toLocalDate();
 			if (!latestRecDate.isBefore(checkdat)) {
+				List<MatchObj> mobL =null;
+				
+				//TODO loop and find matches to be played tomorrow || in the future & insert those in the db
+				if(latestRecDate.isBefore(MatchGetter.leatestLd)){
+					mobL= new ArrayList<>();
+					for(int cidkey: MatchGetter.schedNewMatches.keySet())
+						for (int i=0;i<MatchGetter.schedNewMatches.get(cidkey).size();i++){
+							if(MatchGetter.schedNewMatches.get(cidkey).get(i).getLocalDat().isAfter(latestRecDate)){
+								mobL.add(MatchGetter.schedNewMatches.get(cidkey).get(i));
+							}
+						}
+				}
+				if(mobL!=null &&mobL.size()>0 ){
+					storeToFutureDb(mobL);
+				}
 				testPredFileMaker();// test file create
 				conn.close();
 				// return true;
@@ -295,6 +311,22 @@ public class Strategy {
 		}
 		conn.close();
 		// return false;
+	}
+
+	private void storeToFutureDb(List<MatchObj> mobL) {
+		logger.info("storing to temp and recent matches The upcoming matches gathered in the Scheduled");
+		try {
+			tmf.storeToFutureTempMatchesDB(mobL);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			tmf.storeToFutureRecentMatchesDB(mobL);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void storeToSmallDBs() throws SQLException, IOException {

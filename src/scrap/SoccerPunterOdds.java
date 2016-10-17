@@ -215,6 +215,11 @@ public class SoccerPunterOdds {
 //							}
 							// set ft1 =-1 to be considered an already evaluated match
 							MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
+							
+							//--------------------CORELATE FROM HERE-----------------------
+							MatchGetter.schedNewMatches.get(compId).get(i).setT1(ult1);
+							MatchGetter.schedNewMatches.get(compId).get(i).setT2(t2);
+							//-------------------------------------------
 							return i;
 						}
 					}
@@ -230,6 +235,10 @@ public class SoccerPunterOdds {
 //							e.printStackTrace();
 //						}
 						MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
+						//--------------------CORELATE FROM HERE-----------------------
+						MatchGetter.schedNewMatches.get(compId).get(i).setT1(ult1);
+						MatchGetter.schedNewMatches.get(compId).get(i).setT2(t2);
+						//-------------------------------------------
 						return i;
 					}
 				} else{// nor t1 or t2 in unilang
@@ -260,10 +269,14 @@ public class SoccerPunterOdds {
 			 */
 			return StandartResponses.ALL_MATCHES_TAKEN;
 		}
-
+// kk is th index in the scheduled._CompId_list with the minimum combined distance of bothe teams of the match
 		if (mind1 <= StandartResponses.TEAM_DIST) {
 			if (mind2 <= StandartResponses.TEAM_DIST) {
 				MatchGetter.schedNewMatches.get(compId).get(kk).setFt1(-1);
+				//--------------------CORELATE FROM HERE-----------------------
+				MatchGetter.schedNewMatches.get(compId).get(kk).setT1(ult1);
+				MatchGetter.schedNewMatches.get(compId).get(kk).setT2(t2);
+				//-------------------------------------------
 				return kk;
 			} else { //t1 <= team dist && t2 > team dist 
 				// if t2 could not be adequately corelated, use the corelation of the first team as a secure binder and add the second(the
@@ -276,6 +289,10 @@ public class SoccerPunterOdds {
 					e.printStackTrace();
 				}
 				MatchGetter.schedNewMatches.get(compId).get(kk).setFt1(-1);
+				//--------------------CORELATE FROM HERE-----------------------
+				MatchGetter.schedNewMatches.get(compId).get(kk).setT1(ult1);
+				MatchGetter.schedNewMatches.get(compId).get(kk).setT2(t2);
+				//-------------------------------------------
 				return kk;
 			}
 		} else if (mind2 <= StandartResponses.TEAM_DIST) {//t2 <= team dist && t1 > team dist
@@ -289,6 +306,10 @@ public class SoccerPunterOdds {
 				e.printStackTrace();
 			}
 			MatchGetter.schedNewMatches.get(compId).get(kk).setFt1(-1);
+			//--------------------CORELATE FROM HERE-----------------------
+			MatchGetter.schedNewMatches.get(compId).get(kk).setT1(ult1);
+			MatchGetter.schedNewMatches.get(compId).get(kk).setT2(t2);
+			//-------------------------------------------
 			return kk;
 		} else {
 			return -1;
