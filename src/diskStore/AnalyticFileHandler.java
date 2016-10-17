@@ -45,7 +45,8 @@ public class AnalyticFileHandler {
 	// private File csvFile = new File(bastFileFolder + "/matches.csv");
 	// private File mDataFile = new File(bastFileFolder + "/matchData.csv");
 	private String wordSeparator = "__";
-
+private int Kb= 1024;//kilobyte
+	
 	private BufferedWriter bw = null;
 
 	public AnalyticFileHandler() {
@@ -161,7 +162,7 @@ public class AnalyticFileHandler {
 
 		File tFile = new File(cFolder + sb.toString());
 
-		if (tFile.exists() && tFile.length() > 10)
+		if (tFile.exists() && tFile.length() > Kb)
 			return tFile;
 		else
 			return null;

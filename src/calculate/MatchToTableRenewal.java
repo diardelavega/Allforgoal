@@ -116,20 +116,14 @@ public class MatchToTableRenewal {
 		}
 
 		int week = ctt.getWeek()+1;
-		//TODO find a way to get the week of the matches
-		// is used to find the nr max nr of matches (the week)of comp
-//		mobj = ml.get(0);
-//		if (!testTeamDataPositions()) {
-//			return;
-//		}
+		
 
 		// instanciate the pf class attribute
 		try {
 			ctt.tableReader();
 			afh.openTestOutput(comp_Id, compName, country, date);
-			 logger.info("{} {} {} {} week:{}", comp_Id, compName, country, date,week);
-//			int week = Math.max(t1.getMatchesIn() + t1.getMatchesOut() + 1,
-//					t2.getMatchesIn() + t2.getMatchesOut() + 1);
+			 logger.info("---------------creating testPredFile{} {} {} {} week:{}", comp_Id, compName, country, date,week);
+
 			pf = new PredictionFile();
 			afh.appendCsv(pf.csvHeader());
 			for (int i = 0; i < ml.size(); i++) {
@@ -141,6 +135,8 @@ public class MatchToTableRenewal {
 					pf.setMatchTime(mobj.getMatchTime());
 					afh.appendCsv(pf.liner());
 				}
+				logger.info("Table not initiated correctly ...............................\n ");
+				logger.info("could not be found {}",mobj.printMatch());
 			}
 			afh.closeOutput();
 		} catch (Exception e) {

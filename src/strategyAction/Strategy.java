@@ -412,7 +412,8 @@ public class Strategy {
 		List<MatchObj> tomorrowDate = null;//
 
 		MatchToTableRenewal mttr = new MatchToTableRenewal();
-		// Key is the comp id not the index in the data structure!!!
+		
+		// iterate for every competition & try to create test files for today & tomorrow
 		for (int compId : MatchGetter.schedNewMatches.keySet()) {
 			todayDate = new ArrayList<MatchObj>();
 			tomorrowDate = new ArrayList<MatchObj>();
@@ -422,7 +423,8 @@ public class Strategy {
 				} else if (m.getDat().toLocalDate().equals(tom)) {
 					tomorrowDate.add(m);
 				}
-			}// for
+			}// for m
+			
 			if (todayDate != null) {
 				if (todayDate.size() >= 1) {
 					mttr.testPredFileCreate(todayDate, compId, tdy);

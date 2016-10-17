@@ -201,6 +201,11 @@ public class SoccerPunterOdds {
 					if(ult2!=null){
 						logger.info("Found with certainty t1 & t2 compatible!!");
 						MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
+						//--------------------CORELATE FROM HERE-----------------------
+						logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+						MatchGetter.schedNewMatches.get(compId).get(i).setT1(ult1);
+						MatchGetter.schedNewMatches.get(compId).get(i).setT2(ult2);
+						//-------------------------------------------
 						return i;
 					} else{// ult1 Yes -&- ult2 NO
 						d1=0;
@@ -217,7 +222,8 @@ public class SoccerPunterOdds {
 							MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
 							
 							//--------------------CORELATE FROM HERE-----------------------
-							MatchGetter.schedNewMatches.get(compId).get(i).setT1(ult1);
+							logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+							MatchGetter.schedNewMatches.get(compId).get(i).setT1(t1);
 							MatchGetter.schedNewMatches.get(compId).get(i).setT2(t2);
 							//-------------------------------------------
 							return i;
@@ -236,7 +242,8 @@ public class SoccerPunterOdds {
 //						}
 						MatchGetter.schedNewMatches.get(compId).get(i).setFt1(-1);
 						//--------------------CORELATE FROM HERE-----------------------
-						MatchGetter.schedNewMatches.get(compId).get(i).setT1(ult1);
+						logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+						MatchGetter.schedNewMatches.get(compId).get(i).setT1(t1);
 						MatchGetter.schedNewMatches.get(compId).get(i).setT2(t2);
 						//-------------------------------------------
 						return i;
@@ -274,7 +281,8 @@ public class SoccerPunterOdds {
 			if (mind2 <= StandartResponses.TEAM_DIST) {
 				MatchGetter.schedNewMatches.get(compId).get(kk).setFt1(-1);
 				//--------------------CORELATE FROM HERE-----------------------
-				MatchGetter.schedNewMatches.get(compId).get(kk).setT1(ult1);
+				logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+				MatchGetter.schedNewMatches.get(compId).get(kk).setT1(t1);
 				MatchGetter.schedNewMatches.get(compId).get(kk).setT2(t2);
 				//-------------------------------------------
 				return kk;
@@ -290,7 +298,8 @@ public class SoccerPunterOdds {
 				}
 				MatchGetter.schedNewMatches.get(compId).get(kk).setFt1(-1);
 				//--------------------CORELATE FROM HERE-----------------------
-				MatchGetter.schedNewMatches.get(compId).get(kk).setT1(ult1);
+				logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+				MatchGetter.schedNewMatches.get(compId).get(kk).setT1(t1);
 				MatchGetter.schedNewMatches.get(compId).get(kk).setT2(t2);
 				//-------------------------------------------
 				return kk;
@@ -307,7 +316,8 @@ public class SoccerPunterOdds {
 			}
 			MatchGetter.schedNewMatches.get(compId).get(kk).setFt1(-1);
 			//--------------------CORELATE FROM HERE-----------------------
-			MatchGetter.schedNewMatches.get(compId).get(kk).setT1(ult1);
+			logger.info("changing t1 {}, t2 {}/ alternative ul {} - {}",t1,t2,ult1,ult2);
+			MatchGetter.schedNewMatches.get(compId).get(kk).setT1(t1);
 			MatchGetter.schedNewMatches.get(compId).get(kk).setT2(t2);
 			//-------------------------------------------
 			return kk;

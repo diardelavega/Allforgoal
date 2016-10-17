@@ -85,6 +85,9 @@ public class TempMatchFunctions {
 			for (int kk = 0; kk < MatchGetter.schedNewMatches.get(cidkey).size(); kk++) {
 				MatchObj m = MatchGetter.schedNewMatches.get(cidkey).get(kk);
 				logger.info("---Match :{} - {}",m.getT1(),m.getT2());
+				if(m.getFt1()==-1){
+					continue;//because it has been handeled on odds of punter
+				}
 
 				dist1 = 1000;
 				dist2 = 1000;
@@ -109,7 +112,7 @@ public class TempMatchFunctions {
 				}
 				if (!foundTeamFlag) {
 					for (int i = 0; i < dbTeams.size(); i++) {
-						logger.info("T1 : {}   vs   {}", m.getT1(), dbTeams.get(i), dist);
+						logger.info("T1 : {}   vs   {}  dist_{}", m.getT1(), dbTeams.get(i), dist);
 						dist = StringSimilarity.teamSimilarity(m.getT1(), dbTeams.get(i));
 						if (dist1 > dist) {
 							dist1 = dist;
@@ -154,71 +157,34 @@ public class TempMatchFunctions {
 				if (dist1 <= StandartResponses.TEAM_DIST && dist2 <= StandartResponses.TEAM_DIST) {
 					MatchGetter.schedNewMatches.get(cidkey).get(kk).setT1(dbTeams.get(chosenDbIdx1));
 					MatchGetter.schedNewMatches.get(cidkey).get(kk).setT2(dbTeams.get(chosenDbIdx2));
-					// if(chosenDbIdx1 > -1)
 					dbTeams.remove(chosenDbIdx1);
-					// if(chosenDbIdx2 > -1)
 					dbTeams.remove(chosenDbIdx2);
 					continue;
 				}
 				
-				
-				if(t1!=null || dist1<StandartResponses.TEAM_DIST ){//t1 found
-					if( dist2<StandartResponses.TEAM_DIST ){//t2 found,  (no check for t2!=null because if checked before)
-						if(t1==null){
-							MatchGetter.schedNewMatches.get(cidkey).get(kk).setT1(t2);
-						}else{// meaning dist1 <teamdist
-							MatchGetter.schedNewMatches.get(cidkey).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
-						}
-						MatchGetter.schedNewMatches.get(cidkey).get(kk) .setT1(dbTeams.get(chosenDbIdx1));
+//				String newT1 = null;
+//				String newT2 = null;
+				if(t1!=null || dist1<=StandartResponses.TEAM_DIST ){//t1 found
+					if(t1!=null){
+						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT1(t1);
+					}else{// meaning dist1 <teamdist
+						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT1(dbTeams.get(chosenDbIdx1));
+						logger.info("RELATING t1:{} - {} on dist:{} ; ", m.getT1(), dbTeams.get(chosenDbIdx1),dist1);
+						dbTeams.remove(chosenDbIdx1);
 					}
-					else{//t2 not found
-						
+				}
+				if(t2!=null || dist2<=StandartResponses.TEAM_DIST ){//t1 found
+					if(t2!=null){
+						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT2(t2);
+					}else{// meaning dist1 <teamdist
+						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT2(dbTeams.get(chosenDbIdx2));
+						logger.info("RELATING t2:{} - {} on dist:{} ; ", m.getT2(), dbTeams.get(chosenDbIdx2),dist2);
+						dbTeams.remove(chosenDbIdx2);
 					}
 				}
 				
-				
-
-				// last chance of corelating the teams; based on the distance of
-				// the other team
-				if (dist1 > StandartResponses.TEAM_DIST && t1 == null) {
-					if (t2 != null) {
-						logger.info("RELATING t2:{} {}~unilang; & by matchBind t1:{} {} on distance {} ", m.getT2(), t2,
-								m.getT1(), dbTeams.get(chosenDbIdx1), dist1);
-						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT2(t2);
-						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
-						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT1(dbTeams.get(chosenDbIdx1));
-						dbTeams.remove(chosenDbIdx1);
-					} else if (dist2 <= StandartResponses.TEAM_DIST) {
-
-						logger.info("RELATING t2:{} {}; & by matchBind t1:{} {}  ", m.getT2(),
-								dbTeams.get(chosenDbIdx2), m.getT1(), dbTeams.get(chosenDbIdx1));
-						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT2(dbTeams.get(chosenDbIdx2));
-						ul.addTeam(dbTeams.get(chosenDbIdx1), m.getT1());
-						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT1(dbTeams.get(chosenDbIdx1));
-						dbTeams.remove(chosenDbIdx1);
-						dbTeams.remove(chosenDbIdx2);
-					}
-				} else if (dist2 > StandartResponses.TEAM_DIST && t2 == null) {
-					if (t1 != null) {
-
-						logger.info("RELATING t1:{} {}~unilang; & by matchBind t2:{} {}  ", m.getT1(), t1, m.getT2(),
-								dbTeams.get(chosenDbIdx2));
-						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT1(t1);
-						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
-						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT2(dbTeams.get(chosenDbIdx2));
-						dbTeams.remove(chosenDbIdx2);
-					} else if (dist1 < StandartResponses.TEAM_DIST) {
-						logger.info("RELATING t1:{} {}; & by matchBind t2:{} {}  ", m.getT1(),
-								dbTeams.get(chosenDbIdx1), m.getT2(), dbTeams.get(chosenDbIdx2));
-						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT1(dbTeams.get(chosenDbIdx1));
-						ul.addTeam(dbTeams.get(chosenDbIdx2), m.getT2());
-						MatchGetter.schedNewMatches.get(cidkey).get(kk).setT2(dbTeams.get(chosenDbIdx2));
-						dbTeams.remove(chosenDbIdx1);
-						dbTeams.remove(chosenDbIdx2);
-					}
-				} else {// dist1 & dist2 >teamDist
-					// MatchObj m =
-					// MatchGetter.schedNewMatches.get(cidkey).get(kk);
+				if((t1==null && dist1>StandartResponses.TEAM_DIST )&& (t2==null && dist2>StandartResponses.TEAM_DIST )){
+					//so nothing is found,  add match to pending list
 					if (MatchGetter.pendingMatches.containsKey(cidkey)) {
 						MatchGetter.pendingMatches.get(cidkey).add(m);
 					} else {
@@ -228,12 +194,16 @@ public class TempMatchFunctions {
 					}
 					MatchGetter.schedNewMatches.get(cidkey).remove(kk);
 				}
+				
+				
 			} // for kk
-				// Remove from scheduled the matches entered in pending(so that
-				// not to insert them into the db)
-			MatchGetter.printPendingMmatchesSqlInsert();
 			try {
-				MatchGetter.schedNewMatches.get(cidkey).removeAll(MatchGetter.pendingMatches.get(cidkey));
+				if(MatchGetter.pendingMatches.containsKey(cidkey)){
+					//print sql inser
+					MatchGetter.printPendingMmatchesSqlInsert();
+					//Remove from scheduled the matches entered in pending(so that not to insert them into the db eith Capital letters/ Scorer Format)
+					MatchGetter.schedNewMatches.get(cidkey).removeAll(MatchGetter.pendingMatches.get(cidkey));
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
