@@ -145,7 +145,7 @@ public class CorelationAtempt {
 					if (dist <= StandartResponses.TEAM_DIST) {
 						log.info("#Similarity Distance Confirm T1 punter:{}, scorer:{}",m.getT1(), scrapmap .get(cid).get(chosenDbIdx2).getT1());
 						chosenDbIdx1 = chosenDbIdx2;
-					} else if (dist2 < StandartResponses.RELATIVE_TEAM_DIST(scrapmap.get(cid).get(chosenDbIdx1).getT2())) {
+					} else if (dist2 < StandartResponses.RELATIVE_TEAM_DIST(scrapmap.get(cid).get(chosenDbIdx2).getT2())) {
 						chosenDbIdx1 = chosenDbIdx2;
 						log.info( "-t2 found -> RELATIVE Similarity T1 punter:{}, scorer:{}",m.getT1(), scrapmap .get(cid).get(chosenDbIdx2).getT1());
 						log.info("Adding them to unilang");
