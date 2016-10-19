@@ -505,7 +505,6 @@ log.info("test file length {}",tFile.length());
 		workingIds.removeAll(TempMatchFunctions.skipDayCompIds);
 		
 		TempMatchFunctions tmf = new TempMatchFunctions();
-
 		// read yesterdays matches from the db
 		FullMatchPredLineToSubStructs fmpss = new FullMatchPredLineToSubStructs();
 		List<MatchObj> recentmatches = fmpss.fullMatchPredLineToMatchObj(tmf .readInitialTeamFromRecentMatches(yesterDat));
@@ -519,6 +518,7 @@ log.info("test file length {}",tFile.length());
 			File file = getTestFileName(cid, cc.getCompetition(), cc.getCountry(), yesterDat);
 			if (file == null)
 				continue;
+			log.debug("");
 			List<StrStrTuple> teamsList = readTestFileTeamsContent(file); //read t1,t2 list from predpoint_file
 			if (teamsList == null)
 				continue;

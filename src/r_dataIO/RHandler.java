@@ -217,7 +217,7 @@ public class RHandler {
 			}
 		}
 		if (un_foundImagesCompIds.size() > 0) {
-			log.info(" un_foundImagesCompIds  require DTF : {}",
+			log.info(" un_foundImagesCompIds  on ReEvaluation atempt require DTF : {}",
 					un_foundImagesCompIds);
 		}
 		if (foundImagePath.size() > 0) {

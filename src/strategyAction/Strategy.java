@@ -254,7 +254,7 @@ public class Strategy {
 		logger.info("@_ScheduleReEvaluation");
 		if (list.size() > 0) {
 			ReqScheduler rs = ReqScheduler.getInstance();
-			rs.addReq(AsyncType.RE_EVAL, list, AttsKind.hs, null);
+			rs.addReq(AsyncType.RE_EVAL, list, AttsKind.hs, LocalDate.now().minusDays(1));
 			rs.startReq();
 		}
 
