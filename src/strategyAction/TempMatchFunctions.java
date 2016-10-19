@@ -218,9 +218,9 @@ public class TempMatchFunctions {
 		// in case of comparison; without going through unilang conversion// ??
 		// ??maybe they are kep in punter format for the oddsadders
 
-		// find which of the db matches is actually finished acording to scorer.
-		// when found the matches are updated with the scores and restored in
-		// the apropriate db table
+		 /*find which of the db matches is actually finished acording to scorer.
+		 when found the matches are updated with the scores and restored in
+		 the apropriate db table*/
 		logger.info("--------------: COMPLETE");
 		int tempMatchesSize = 0;
 		// fill from db the readTempMatchesList List<>, order by compid
@@ -261,10 +261,9 @@ public class TempMatchFunctions {
 		if (foundMatches.size() > 0) {
 			try {
 				logger.info("found matches {} vs {}", foundMatches.get(0).getT1(), foundMatches.get(0).getT2());
-				logger.info("found matches {} vs {}", foundMatches.get(1).getT1(), foundMatches.get(0).getT2());
-				logger.info("found matches {} vs {}", foundMatches.get(2).getT1(), foundMatches.get(0).getT2());
+//				logger.info("found matches {} vs {}", foundMatches.get(1).getT1(), foundMatches.get(0).getT2());
+//				logger.info("found matches {} vs {}", foundMatches.get(2).getT1(), foundMatches.get(0).getT2());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			logger.warn("matches correlated size :{}", foundMatches.size());
@@ -618,12 +617,19 @@ public class TempMatchFunctions {
 
 		Date date = Date.valueOf(LocalDate.now().minusDays(1));
 		openDBConn();
-		ResultSet rs = conn.getConn().createStatement()
-				.executeQuery("SELECT compid FROM tempmatches WHERE dat = '" + date + "'");
+		ResultSet	rs = conn.getConn().createStatement()
+				.executeQuery("SELECT compid FROM recentmatches WHERE dat = '" + date + "' group by compid");
+		while (rs.next()) {
+			TimeVariations.yesterdayComps.add(rs.getInt(1));
+		}
+//		TimeVariations.yesterdayComps=skipDayCompIds;
+		
+//		skipDayCompIds.clear();
+		 rs = conn.getConn().createStatement()
+				.executeQuery("SELECT compid FROM tempmatches WHERE dat = '" + date + "'  group by compid");
 		while (rs.next()) {
 			skipDayCompIds.add(rs.getInt(1));
 		}
-
 		closeDBConn();
 	}
 
