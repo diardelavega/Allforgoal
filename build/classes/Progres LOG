@@ -2,8 +2,12 @@
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
 
+-------------------------------------------------------------------------
+***!!) During RE-EVALUATION at leas the teams (with wierd chars)in the File can be different from the ones in the database
+
 
 **--CORELATION PRIBLEMS finding the same time multiple times with different matches
+	FIED!! ... suposedly
 -------------------------------------------------------------
 !!+ did a small improvement in the insertion of the future matches in the db on the first run(when start from null)
   & added uncorrelated teams in the  @correlation Class in a pending map to be examined by admin. 
@@ -15,6 +19,7 @@
 
 ------------------------------------------------------------------------------------
 -**!) deny the prediction of competitions that are already predicted
+		FIXED!! ... i think
 
 -- !! similar problem finishing with ..."[Thread-2] INFO r_dataIO.RHandler - START: 2016-10-17T04:05:40.806"
 		see if it can complete other requests && why doesn't complete this one

@@ -2,10 +2,16 @@ package diskStore;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import strategyAction.TempMatchFunctions;
 import structures.CountryCompetition;
+import structures.PredictionFile;
 import structures.ReducedPredictionTestFile;
 import structures.TimeVariations;
 import api.functionality.obj.StrStrTuple;
@@ -31,7 +38,10 @@ import basicStruct.CCAllStruct;
 import basicStruct.FullMatchPredLineToSubStructs;
 import basicStruct.MatchObj;
 import calculate.OutcomeCalculator;
+import dbtry.Conn;
 import extra.NameCleaner;
+import extra.ServiceMsg;
+import extra.StandartResponses;
 
 public class AnalyticFileHandler {
 	public static Logger log = LoggerFactory
@@ -46,6 +56,7 @@ public class AnalyticFileHandler {
 	// private File mDataFile = new File(bastFileFolder + "/matchData.csv");
 	private String wordSeparator = "__";
 	private int Kb = 1024;// kilobyte
+	private int soneData = 100;// kilobyte
 
 	private BufferedWriter bw = null;
 
@@ -70,7 +81,8 @@ public class AnalyticFileHandler {
 		if (f == null) {
 			log.warn("Train Pred file not found for {} {}", compName, country);
 		} else {
-			bw = new BufferedWriter(new FileWriter(f, true));
+			bw=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f),StandardCharsets.UTF_8));
+//			bw = new BufferedWriter(new FileWriter(f, true));
 		}
 
 	}
@@ -90,7 +102,8 @@ public class AnalyticFileHandler {
 				log.warn("Test Pred file not found for {} {}", compName,
 						country);
 			} else {
-				bw = new BufferedWriter(new FileWriter(f, true));
+				bw=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f),StandardCharsets.UTF_8));
+//				bw = new BufferedWriter(new FileWriter(f, true));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -99,7 +112,8 @@ public class AnalyticFileHandler {
 
 	public void openTestOutput(File file) {
 		try {
-			bw = new BufferedWriter(new FileWriter(file, true));
+			bw=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),StandardCharsets.UTF_8));
+//			bw = new BufferedWriter(new FileWriter(file, true));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -161,7 +175,7 @@ public class AnalyticFileHandler {
 		sb.append(dat.toString());
 
 		File tFile = new File(cFolder + sb.toString());
-
+log.info("test file length {}",tFile.length());
 		if (tFile.exists() && tFile.length() > Kb)
 			return tFile;
 		else
@@ -474,8 +488,7 @@ public class AnalyticFileHandler {
 	}
 
 	// ///////////Write Results Section
-	public void writeResultsToTestFile() throws SQLException,
-			FileNotFoundException, IOException {
+	public void writeResultsToTestFile() throws SQLException, FileNotFoundException, IOException {
 		/* in the test files created write the actual results */
 		/*
 		 * the data in the test file that is about to be writtend doesn't have
@@ -486,51 +499,57 @@ public class AnalyticFileHandler {
 		// the writing will be done at the yesterday comps
 		// get all the tets files from yesterdayComps - the unfinished matches
 		// of skipsday
-		List<Integer> workingIds = TimeVariations.yesterdayComps;
-		workingIds.removeAll(TempMatchFunctions.skipDayCompIds);
 		LocalDate yesterDat = LocalDate.now().minusDays(1);
+//		List<Integer> workingIds =compIdOfDate(yesterDat); 
+		List<Integer> workingIds =TimeVariations.yesterdayComps;
+		workingIds.removeAll(TempMatchFunctions.skipDayCompIds);
+		
 		TempMatchFunctions tmf = new TempMatchFunctions();
 
 		// read yesterdays matches from the db
 		FullMatchPredLineToSubStructs fmpss = new FullMatchPredLineToSubStructs();
-		List<MatchObj> recentmatches = fmpss.fullMatchPredLineToMatchObj(tmf
-				.readInitialTeamFromRecentMatches(yesterDat));
-
+		List<MatchObj> recentmatches = fmpss.fullMatchPredLineToMatchObj(tmf .readInitialTeamFromRecentMatches(yesterDat));
+		if(recentmatches .size()==0) {
+			log.info("No matches in recent db tab;.... EXITING");
+			return;
+		}
+		
 		for (int cid : workingIds) {
-			CCAllStruct cc = CountryCompetition.ccasList
-					.get(CountryCompetition.idToIdx.get(cid));
-			File file = getTestFileName(cid, cc.getCompetition(),
-					cc.getCountry(), yesterDat);
+			CCAllStruct cc = CountryCompetition.ccasList .get(CountryCompetition.idToIdx.get(cid));
+			File file = getTestFileName(cid, cc.getCompetition(), cc.getCountry(), yesterDat);
 			if (file == null)
 				continue;
-			List<StrStrTuple> teamsList = readTestFileContent(file);
+			List<StrStrTuple> teamsList = readTestFileTeamsContent(file); //read t1,t2 list from predpoint_file
 			if (teamsList == null)
 				continue;
-
-			List<ReducedPredictionTestFile> outcomesList = addOutcomes(
-					teamsList, recentmatches);
+			if(recentmatches .size()==0) {
+				log.info("No matches in Test File. THIS SHULD NOT HAPPEN "+ServiceMsg.ERROR_ERROR);
+				continue;
+			}
+// 
+			List<ReducedPredictionTestFile> outcomesList = addOutcomes( teamsList, recentmatches);
 
 			rewriteTestFile(file, outcomesList);
 		}
 	}
 
-	public void rewriteTestFile(File file,
-			List<ReducedPredictionTestFile> outcomesList) throws IOException {
+	public void rewriteTestFile(File file, List<ReducedPredictionTestFile> outcomesList) throws IOException {
 		/*
 		 * write to the test file the results needed for the reevaluation on the
 		 * prediction points by the R system. The original predictionFile dat
 		 * (73 attributes ...) will be wiped out
 		 */
-		FileWriter fwrite = new FileWriter(file);
+//		FileWriter fwrite = new FileWriter(file);
+		BufferedWriter	bw=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),StandardCharsets.UTF_8));
 		CSVFormat format = CSVFormat.RFC4180;
-		// .withHeader(outcomesList.get(0) .csvHeader());
-		CSVPrinter csvFilePrinter = new CSVPrinter(fwrite, format);
+//				.withHeader(outcomesList.get(0) .csvHeader());
+		CSVPrinter csvFilePrinter = new CSVPrinter(bw, format);
 		List<String> matchRecord = null;
-		fwrite.write(outcomesList.get(0).csvHeader() + "\n");
+		bw.write(outcomesList.get(0).csvHeader() + "\n");
 		for (ReducedPredictionTestFile rf : outcomesList) {
 			matchRecord = new ArrayList<>();
-			matchRecord.add(String.valueOf(rf.getT2()));
 			matchRecord.add(String.valueOf(rf.getT1()));
+			matchRecord.add(String.valueOf(rf.getT2()));
 			matchRecord.add(String.valueOf(rf.getHeadOutcome()));
 			matchRecord.add(String.valueOf(rf.getScoreOutcome()));
 			matchRecord.add(String.valueOf(rf.getHt1pOutcome()));
@@ -542,8 +561,8 @@ public class AnalyticFileHandler {
 
 		System.out.println("CSV file was created successfully !!!");
 		try {
-			fwrite.flush();
-			fwrite.close();
+			bw.flush();
+			bw.close();
 			csvFilePrinter.close();
 		} catch (IOException e) {
 			System.out
@@ -552,46 +571,47 @@ public class AnalyticFileHandler {
 		}
 	}
 
-	private List<ReducedPredictionTestFile> addOutcomes(
-			List<StrStrTuple> teamsList, List<MatchObj> recentmatches) {
+	private List<ReducedPredictionTestFile> addOutcomes(List<StrStrTuple> teamsList, List<MatchObj> recentmatches) {
 		OutcomeCalculator oc = new OutcomeCalculator();
 		List<ReducedPredictionTestFile> redpfList = new ArrayList<ReducedPredictionTestFile>();
-
+		log.info("SIZE = teamsList: {}  recent:{}",teamsList.size(),recentmatches.size());
+		
 		for (int i = 0; i < teamsList.size(); i++) {
+//			log.info("tuple :{}",teamsList.get(i).printTuple(););
+			teamsList.get(i).printTuple();
 			String team = teamsList.get(i).getT1();
-			int teamIdx = binarySearchRecent(recentmatches, team);
+			int teamIdx = binarySearchRecent(recentmatches, team); // find t1 in recentmatches list
 			if (teamIdx > -1) {
-				if (teamsList.get(i).getT2()
-						.equalsIgnoreCase(recentmatches.get(teamIdx).getT2())) {
-
-					ReducedPredictionTestFile redpf = oc
-							.outcomeAsignment(recentmatches.get(teamIdx));
+				if (teamsList.get(i).getT2() .equalsIgnoreCase(recentmatches.get(teamIdx).getT2())) {
+					ReducedPredictionTestFile redpf = oc.outcomeAsignment(recentmatches.get(teamIdx));
 					redpfList.add(redpf);
-
 				} else {
-					log.warn("T2 is not the expected one {} - {}", team,
-							recentmatches.get(teamIdx).getT2());
+					log.warn("T2 is not the expected one {} - {};  SKIPING THIS ONE", team, recentmatches.get(teamIdx).getT2());
 				}
 			} // if -1
+			else{
+				log.info("tuple not found");
+			}
 		} // for
 		return redpfList;
 
 	}
 
-	private List<StrStrTuple> readTestFileContent(File file)
-			throws FileNotFoundException, IOException {
+	private List<StrStrTuple> readTestFileTeamsContent(File file) throws FileNotFoundException, IOException {
 		/* read t1 and t2 that the test file contains */
 		if (file == null)
 			return null;
-		CSVFormat format = CSVFormat.RFC4180;
+//		PredictionFile pf = new PredictionFile();
+		CSVFormat format = CSVFormat.RFC4180.withHeader();
 		List<StrStrTuple> tuples = new ArrayList<StrStrTuple>();
-		CSVParser parser = new CSVParser(new FileReader(file), format);
+		CSVParser parser = new CSVParser(new InputStreamReader(new   FileInputStream(file),StandardCharsets.UTF_8), format);
 		for (CSVRecord record : parser) {
 			StrStrTuple sst = new StrStrTuple();
 			sst.setT1(record.get("t1"));
 			sst.setT2(record.get("t2"));
 			tuples.add(sst);
 		}
+		parser.close();
 		return tuples;
 	}
 
@@ -599,8 +619,9 @@ public class AnalyticFileHandler {
 		int min = 0;
 		int max = list.size() - 1;
 
-		for (; min < max;) {
+		for (; min <= max;) {
 			int mid = (max + min) / 2;
+			log.info("team {}  -  T1 {}",team,list.get(mid).getT1());
 			if (list.get(mid).getT1().equals(team)) {
 				return mid;
 			} else if (list.get(mid).getT1().compareTo(team) > 0) {
@@ -612,4 +633,23 @@ public class AnalyticFileHandler {
 		return -1;
 	}
 
+	
+	////////////////////
+	private List<Integer> compIdOfDate(LocalDate ld) throws SQLException{
+		List<Integer> ret =new ArrayList<Integer>();
+		
+//		String query="Select compId from recentmatches whre dat ='" + ld + " ';";
+		Conn conn = new Conn();
+		conn.open();
+		ResultSet rs = null;
+		 rs = conn.getConn().createStatement()
+				.executeQuery("SELECT compid FROM recentmatches WHERE dat = '" + ld + "' group by compid ;");
+		while (rs.next()) {
+			ret.add(rs.getInt(1));
+		}
+		rs.close();
+		conn.close();
+		
+		return ret;
+	}
 }

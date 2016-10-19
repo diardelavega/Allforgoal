@@ -1,8 +1,11 @@
 package api.functionality;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +15,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 //import api.functionality.obj.MatchSpecificDescriptionData;
 import basicStruct.StrStrTuple;
@@ -92,7 +96,8 @@ public class TestPredFile implements CsvFileHandler {
 		try {
 			File f = afh.getTestFileName(compId, compName, country, ld);
 			if (f != null)
-				parser = new CSVParser(new FileReader(f), format);
+				parser = new CSVParser(new InputStreamReader(new   FileInputStream(f),StandardCharsets.UTF_8), format);
+//				parser = new CSVParser(new FileReader(f), format);
 			log.info("file {} {} not found", compName, country);
 		} catch (IOException e) {
 			log.warn("Parsing exception");
@@ -111,7 +116,8 @@ public class TestPredFile implements CsvFileHandler {
 		try {
 			File f = afh.getLeatestTestFileName(compId, compName, country);
 			if (f != null)
-				parser = new CSVParser(new FileReader(f), format);
+				parser = new CSVParser(new InputStreamReader(new   FileInputStream(f),StandardCharsets.UTF_8), format);
+//				parser = new CSVParser(new FileReader(f), format);
 			log.info("file {} {} not found", compName, country);
 		} catch (IOException e) {
 			log.warn("Parsing exception");

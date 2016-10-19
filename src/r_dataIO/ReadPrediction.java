@@ -1,8 +1,11 @@
 package r_dataIO;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -212,7 +215,8 @@ public class ReadPrediction {
 				format = CSVFormat.RFC4180;
 				File f = afh.getLeatestRPredictionFileName(compId, compName, country);
 				if (f != null) {
-					parser = new CSVParser(new FileReader(f), format);
+					 parser = new CSVParser(new InputStreamReader(new   FileInputStream(f),StandardCharsets.UTF_8), format);
+//					parser = new CSVParser(new FileReader(f), format);
 				}else{
 				log.warn("NO PREDICTION FILE  for {}, {}, {}", compId, compName, country);
 				parser = null;
@@ -222,7 +226,8 @@ public class ReadPrediction {
 				format = CSVFormat.RFC4180.withHeader();
 				 f = afh.getLeatestTestFileName(compId, compName, country);
 				if (f != null) {
-					parser = new CSVParser(new FileReader(f), format);
+					 parser = new CSVParser(new InputStreamReader(new   FileInputStream(f),StandardCharsets.UTF_8), format);
+//					parser = new CSVParser(new FileReader(f), format);
 				}else{
 				log.warn("NO PREDICTION FILE  for {}, {}, {}", compId, compName, country);
 				parser = null;

@@ -26,4 +26,7 @@ public class StrStrTuple {
 		this.t2 = t2;
 	}
 
+	public void printTuple(){
+		System.out.println(t1+ " - "+t2);
+	}
 }

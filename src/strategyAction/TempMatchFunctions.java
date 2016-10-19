@@ -618,7 +618,6 @@ public class TempMatchFunctions {
 
 		Date date = Date.valueOf(LocalDate.now().minusDays(1));
 		openDBConn();
-		conn.open();
 		ResultSet rs = conn.getConn().createStatement()
 				.executeQuery("SELECT compid FROM tempmatches WHERE dat = '" + date + "'");
 		while (rs.next()) {
@@ -736,7 +735,7 @@ public class TempMatchFunctions {
 		logger.info("adding prediction points ...");
 		/*
 		 * add the prediction points, as generated and stored in files by R,
-		 * from file to recent table
+		 * from file to recent table.
 		 */
 		if (ld == null) {
 			ld = LocalDate.now();

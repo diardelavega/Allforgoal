@@ -1,8 +1,11 @@
 package r_dataIO;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,7 +43,8 @@ public class RDemo {
 
 		CSVParser parser = null;
 		try {
-			parser = new CSVParser(new FileReader(file), format);
+			 parser = new CSVParser(new InputStreamReader(new   FileInputStream(file),StandardCharsets.UTF_8), format);
+//			parser = new CSVParser(new FileReader(file), format);
 
 			// System.out.println(parser .getCurrentLineNumber());
 			// System.out.println(parser .getRecordNumber());

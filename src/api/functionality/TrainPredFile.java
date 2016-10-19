@@ -1,8 +1,11 @@
 package api.functionality;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 import org.apache.commons.csv.CSVFormat;
@@ -89,6 +92,7 @@ public class TrainPredFile implements CsvFileHandler {
 
 	@Override
 	public String reducedCsv(int compId, String compName, String country) {
+		
 		CSVParser parser = parser(compId, compName, country);
 		if (parser == null)
 			return null;
@@ -120,7 +124,8 @@ public class TrainPredFile implements CsvFileHandler {
 		try {
 			File f = afh.getTrainFileName(compId, compName, country);
 			if (f != null)
-				parser = new CSVParser(new FileReader(f), format);
+				parser = new CSVParser(new InputStreamReader(new   FileInputStream(f),StandardCharsets.UTF_8), format);
+//				parser = new CSVParser(new FileReader(f), format);
 			else log.info("file {} {} not found", compName, country);
 		} catch (IOException e) {
 			e.printStackTrace();

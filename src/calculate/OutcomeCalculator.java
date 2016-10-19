@@ -2,6 +2,7 @@ package calculate;
 
 import structures.ReducedPredictionTestFile;
 import basicStruct.MatchObj;
+import basicStruct.MatchPredictionLine;
 import extra.MatchOutcome;
 import extra.Status;
 
@@ -9,7 +10,9 @@ public class OutcomeCalculator {
 
 	public ReducedPredictionTestFile outcomeAsignment(MatchObj mobj) {
 		ReducedPredictionTestFile redPf = new ReducedPredictionTestFile();
-		if (!mobj.getMatchTime().equals(Status.ERROR)) {
+		redPf.setT1(mobj.getT1());
+		redPf.setT2(mobj.getT2());
+		if (!mobj.getMatchTime().equals(Status.ERROR)) {// correctly finished
 			// head outcome 1X2
 			if (mobj.getFt1() > mobj.getFt2()) {
 				redPf.setHeadOutcome(MatchOutcome.home);
@@ -31,13 +34,13 @@ public class OutcomeCalculator {
 			redPf.setTotFtScore((mobj.getFt1() + mobj.getFt2()) + "");
 
 			try {// half time
-				if (mobj.getHt1() + mobj.getHt2() >= 2) {
+				if (mobj.getHt1() + mobj.getHt2() >= 1) {
 					redPf.setHt1pOutcome(MatchOutcome.yes);
-					redPf.setHt2pOutcome(MatchOutcome.yes);
-				} else if (mobj.getHt1() + mobj.getHt2() < 2
-						&& mobj.getHt1() + mobj.getHt2() >= 1) {
-					redPf.setHt1pOutcome(MatchOutcome.yes);
-					redPf.setHt2pOutcome(MatchOutcome.no);
+					if (mobj.getHt1() + mobj.getHt2() >= 2) {
+						redPf.setHt2pOutcome(MatchOutcome.yes);
+					} else {
+						redPf.setHt2pOutcome(MatchOutcome.no);
+					}
 				} else {
 					redPf.setHt1pOutcome(MatchOutcome.no);
 					redPf.setHt2pOutcome(MatchOutcome.no);
@@ -56,6 +59,7 @@ public class OutcomeCalculator {
 			redPf.setTotFtScore(MatchOutcome.missing);
 
 		}
+	System.out.println( redPf.printRedPredLine());
 		return redPf;
 	}
 }

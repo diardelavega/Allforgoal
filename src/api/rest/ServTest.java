@@ -1,8 +1,11 @@
 package api.rest;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -123,7 +126,7 @@ public class ServTest {
 		return jo;
 	}
 
-	public static String reducedWeeksMatches(@PathParam("compid") int compId) throws SQLException {
+	public static String reducedWeeksMatches(@PathParam("compid") int compId) throws SQLException, IOException {
 		/*
 		 * get the weekly data for a competition, including
 		 * form,atack,score,defence,etc.
@@ -149,8 +152,10 @@ public class ServTest {
 		log.info("{}", jjo.get("csvTxt"));
 		CSVFormat format = CSVFormat.RFC4180.withIgnoreHeaderCase();
 		Reader red = new StringReader(jjo.get("csvTxt").getAsString());
+//		Reader red = new InputStreamReader(new Inp)
 		CSVParser parser = null;
 		try {
+//			 parser = new CSVParser(new InputStreamReader(red,StandardCharsets.UTF_8), format);
 			parser = new CSVParser(red, format);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -162,7 +167,7 @@ public class ServTest {
 
 		}
 		// -------------------------------
-
+		parser.close();
 		return jo;
 	}
 

@@ -109,4 +109,24 @@ public class ReducedPredictionTestFile {
 		sb.append("totFtScore");
 		return sb.toString();
 	}
+	
+	public String printRedPredLine() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(t1);
+		sb.append(", ");
+		sb.append(t2);
+		sb.append(", ");
+		sb.append(headOutcome);
+		sb.append(", ");
+		sb.append(scoreOutcome);
+		sb.append(", ");
+		sb.append(ht1pOutcome);
+		sb.append(", ");
+		sb.append(ht2pOutcome);
+		sb.append(", ");
+		sb.append(totHtScore);
+		sb.append(", ");
+		sb.append(totFtScore);
+		return sb.toString();
+	}
 }

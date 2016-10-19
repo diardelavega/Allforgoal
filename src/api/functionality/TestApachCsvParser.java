@@ -1,8 +1,11 @@
 package api.functionality;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -79,8 +82,8 @@ public class TestApachCsvParser {
 		CSVFormat format = CSVFormat.RFC4180.withHeader();
 
 		AnalyticFileHandler afh = new AnalyticFileHandler();
-		CSVParser parser = new CSVParser(new FileReader(afh.getTrainFileName(
-				89, "J2_League", "Japan")), format);
+		CSVParser  parser = new CSVParser(new InputStreamReader(new   FileInputStream(afh.getTrainFileName( 89, "J2_League", "Japan")),StandardCharsets.UTF_8), format);
+//		CSVParser parser = new CSVParser(new FileReader(afh.getTrainFileName( 89, "J2_League", "Japan")), format);
 
 		// List<PredictionFile> emps = new ArrayList<PredictionFile>();
 		StringBuilder sb = new StringBuilder();
