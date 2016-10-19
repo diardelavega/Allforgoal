@@ -96,7 +96,7 @@ function matchPredLineTrBuilder(resp){
 	console.log("tr builder");
 	var tdTxt;
 	for(var i=0;i<resp.obj.length;i++)	{
-		var idval=compId*100+i;
+		var idval=compId*1000+i;
 		tdTxt="<tr data-toggle='collapse' data-target='#collapsePanel"+idval+"' id='rowmld"+idval+"' onclick= 'clickCatch("+idval+");' >"+
 					"<td><span class='glyphicon glyphicon-triangle-bottom' data-toggle='collapse' data-target='#collapsePanel"+idval+"'> </td>"+
 					"<td></td>  <td></td> <td></td> <td></td>  <td></td>"+

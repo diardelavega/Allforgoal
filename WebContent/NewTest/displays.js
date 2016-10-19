@@ -125,16 +125,25 @@ function mplBoxCreate() {
 	var tdTxt;
 	for(var i=0;i<mplResp.lfml.length;i++)	{
 		var idval=compId*1000+i;
-		tdTxt="<tr  data-toggle='collapse' data-target='#collapsePanel"+idval+"' id='rowmld"+idval+"' onclick= 'clickCatch("+idval+");' >"
+		tdTxt="<tr  data-toggle='collapse' data-target='#collapsePanel"+idval+"' id='rowmld"+idval+"' onclick='chevrinCchange("+idval+"); clickCatch("+idval+"); ' >"
 		+ "<td ><span   class='indicator glyphicon glyphicon-chevron-right  pull-left' >"
 		+ "</td>"+ "<td>"+mplResp.lfml[i].t1+"</td>  <td>"+mplResp.lfml[i].ft1+"</td> <td>"+mplResp.lfml[i].ht1+"</td> <td>"+mplResp.lfml[i].ht2+"</td>  <td>"+mplResp.lfml[i].ft2+"</td> <td>"+mplResp.lfml[i].t2+"</td>"+  "<td> "+mplResp.lfml[i].h1+" </td>  <td>"+mplResp.lfml[i].hx+"</td> <td>"+mplResp.lfml[i].h2+"</td> <td>"+mplResp.lfml[i].so+"</td>  <td>"+mplResp.lfml[i].su+"</td></tr>";
 
 		$(tbod).append(tdTxt);
+		//console.log("idval "+idval);
 		$(tbod).append(collapsablePannelCreator(idval));
 	}
 	$("#div1").append(tab);
 }
 
+
+/*change the chervon orienation*/
+function chevrinCchange(id){
+	var targ=$('#rowmld'+id+' td .indicator');
+	targ.toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
+}
+
+/** create the extra data colapsable pannel for the mpl*/
 function collapsablePannelCreator(line_i){
 	//build the colapsable pannel for the graphical and statistical data
 
