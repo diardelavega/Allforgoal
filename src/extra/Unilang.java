@@ -234,10 +234,10 @@ public class Unilang {
 		
 		// readCcasTerms();
 		readScoreTeamTerms();
-		for(String key:scoreTeamsMap.keySet()){
-//			for(int i=0;i<ccasMap.get(key))
-			logger.info("score: {} - {} :puter",key,scoreTeamToCcas(key));
-		}
+//		for(String key:scoreTeamsMap.keySet()){
+////			for(int i=0;i<ccasMap.get(key))
+//			logger.info("score: {} - {} :puter",key,scoreTeamToCcas(key));
+//		}
 		// readScoreTerms();
 
 	}

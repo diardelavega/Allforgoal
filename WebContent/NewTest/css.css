@@ -1,0 +1,14 @@
+@CHARSET "ISO-8859-1";
+
+.panel-heading .chevron:after {
+    content: "\f078";   
+}
+.panel-heading.collapsed .chevron:after {
+    content: "\f054"; 
+}  
+
+td {
+	padding-left: 10px;
+	padding-right: 10px;
+	align-content: center;
+}

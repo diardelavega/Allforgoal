@@ -31,6 +31,7 @@ import api.functionality.obj.MPLPack;
 import api.functionality.obj.MatchSpecificObj;
 import api.functionality.obj.WeekMatchesCSV;
 import basicStruct.CCAllStruct;
+import basicStruct.FullMatchPredLineToSubStructs;
 import basicStruct.MatchPredictionLine;
 import demo.Demo;
 import extra.ServiceMsg;
@@ -64,7 +65,7 @@ public class ServTest {
 //		MPLFill mplfill = new MPLFill();
 //		mplfill.fakeFiller();
 		int seri = -1;
-		 matchPredictionLine("2016-10-15", seri);//OK
+		 matchPredictionLine("2016-10-19", seri);//OK
 
 //		String ret = reducedWeeksMatches(112);//OK
 		
@@ -98,7 +99,7 @@ public class ServTest {
 		if (nr >= keyList.size()) {
 			return ("{msg:'" + ServiceMsg.END_OF_DATA + "'}");
 		}
-
+		FullMatchPredLineToSubStructs fmpts=new FullMatchPredLineToSubStructs();
 		List<MatchPredictionLine> list_fml;// = new ArrayList<>();
 		List<MPLPack> packlist = new ArrayList<>();
 		int allMatchesIn = 0;
@@ -106,7 +107,7 @@ public class ServTest {
 		do {
 			list_fml = new ArrayList<>();
 			compId = TimeVariations.mapMPL.get(ld).get(keyList.get(nr)).get(0).getComId();
-			list_fml.addAll(TimeVariations.mapMPL.get(ld).get(keyList.get(nr)));
+			list_fml.addAll(fmpts.reduceFullMAtchLine(TimeVariations.mapMPL.get(ld).get(keyList.get(nr))));
 			allMatchesIn += list_fml.size();
 			 log.info("{}", allMatchesIn);
 			CCAllStruct ccdata = ccalExtract(compId);
