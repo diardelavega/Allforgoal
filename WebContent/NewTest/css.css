@@ -1,14 +1,39 @@
 @CHARSET "ISO-8859-1";
 
-.panel-heading .chevron:after {
+/*.panel-heading .chevron:after {
     content: "\f078";   
 }
 .panel-heading.collapsed .chevron:after {
     content: "\f054"; 
-}  
+} */ 
+
+table{
+	
+}
 
 td {
 	padding-left: 10px;
 	padding-right: 10px;
 	align-content: center;
+}
+
+.mplBox{
+background: #d0dc8f;
+/*background: url('../../../../../Pictures/backgroungPictures/_s_a46b46c1EAd1EAe0f0g64h020004FFFFD9E7E7D6iB9j1Ek32l1F4m1F4.png')
+*/	
+}
+
+.mplBox > thead {
+	border-bottom-color: #151bea;
+}
+
+.mplBox  > thead td{
+	font-weight: bold;
+	font-family: "verdana";
+	background-color:#da8d25;
+	height: 20pt;
+}
+
+#div1 > table{
+	border:0;
 }
