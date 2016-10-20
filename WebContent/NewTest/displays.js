@@ -279,12 +279,231 @@ function collapsablePannelCreator(line_i){
 
 
 //-----------wdl data disply
-/** retrieve the data from json obj*/
+/** retrieve the data from json obj and dysplay it in the appropriate match prediction line*/
 function wdlExtrapolate(wdlData, compId){
-	var mplBox = $('#mplBox_'+compId);
-		//retrieve the data from rhe json obj
+	wdlData={
+  "Haugesund": "7;4;4;3;1;5",
+  "Sogndal": "4;3;6;4;2;5",
+  "Start": "0;0;4;5;8;7",
+  "Brann": "8;4;3;2;0;7",
+  "Strømsgodset": "8;2;3;2;1;8",
+  "Aalesund": "4;3;4;1;4;8",
+  "Bodø / Glimt": "4;3;3;3;6;5",
+  "Odd": "6;6;3;2;4;3",
+  "Valerenga": "5;3;3;3;4;6",
+  "Tromsø": "5;3;3;3;4;6",
+  "Viking": "4;6;4;2;4;4",
+  "Rosenborg": "12;6;0;5;0;1",
+  "Sarpsborg 08": "6;4;3;3;3;5",
+  "Stabæk": "3;3;1;5;7;5",
+  "Molde": "7;4;3;2;2;6",
+  "Lillestrøm": "4;1;3;5;5;6"
+}
 	
+	
+	//var mplBox = $('#mplBox_'+compId);
+	var mplBox = $('#mplBox_'+0);
+		//retrieve the data from rhe json obj
+	var boxTrs = $(mplBox).find('>tbody >tr:odd');
+	//var boxTrs = $(mplBox).children('tbody').find('[data-toggle]');//find('>tbody >tr:odd');
+	for(var i=0;i<boxTrs.length;i++){
+		//console.log(boxTrs[i]);
+		var tempTeam=$(boxTrs.get(i)).children('td').get(1);
+		var t1= $(tempTeam).text();
+		tempTeam=$(boxTrs.get(i)).children('td').get(6);
+		var t2= $(tempTeam).text();
+		 
+		console.log(t1);
+		console.log(wdlData[t1]); 
+		console.log(t2);
+		console.log(wdlData[t2]);
+	}
 	//loop the matches & get the teams in & out
 	//loop the newly gotten wdl array
 	//when teams are found write data to html table
+}
+
+function fillWDLTr(t1, t2, j){
+	 var t1obj={name:obj.t1, winIn:obj.t1wIn, winOut:obj.t1wOut, drawIn:obj.t1dIn, drawOut:obj.t1dOut, loseIn:obj.t1lIn, loseOut:obj.t1lOut};
+		var t2={name:obj.t2, winIn:obj.t2wIn, winOut:obj.t2wOut, drawIn:obj.t2dIn, drawOut:obj.t2dOut, loseIn:obj.t2lIn, loseOut:obj.t2lOut};
+		
+	
+	
+	var tab=$('#wdl_tot'+j);
+	var tds=$(tab).find('td');
+	
+	tds[0].innerHTML=t1.name;	
+	
+	
+		$(tds[0]).css('text-decoration', 'underline')
+		tds[1].innerHTML=t2.name;
+		$(tds[1]).css('text-decoration', 'underline')
+	
+		tds[3].innerHTML=t1.winIn + t1.winOut;
+		$(tds[3]).css("font-weight","Bold");
+		tds[4].innerHTML=t2.winIn + t2.winOut;
+		$(tds[4]).css("font-weight","Bold");
+	
+		tds[7].innerHTML=t1.drawIn + t1.drawOut;
+		$(tds[7]).css("font-weight","Bold");
+		tds[8].innerHTML=t2.drawIn + t2.drawOut;
+		$(tds[8]).css("font-weight","Bold");
+		tds[11].innerHTML=t1.loseIn + t1.loseOut;
+		$(tds[11]).css("font-weight","Bold");
+		tds[12].innerHTML=t2.loseIn + t2.loseOut;
+		$(tds[12]).css("font-weight","Bold");
+	
+		var tr0=document.createElement('tr');
+		var td0=document.createElement('td');
+		$(td0).attr('colspan','5');
+		td0.innerHTML='Total Results';
+		$(td0).css({
+			fontSize: "14pt"
+			//color: "red"
+		});
+		$(td0).css("font-weight","Bold");
+		$(tr0).append(td0);
+		var f_td =$(tab).find('tr')[0];
+		$(tr0).insertBefore(f_td);
+		
+		$(tab).height(300);
+		$(tab).width(300);
+		$(tab).css("background-color", "#d7dde5");
+		//$(tab).css({'border-right':'2px solid red'});	
+		$(tab).find('tr').css({'border-bottom':'2pt solid white'});
+		$(tab).find('tr:last').css({'border-bottom':'none'});
+			
+	
+	
+		tab=$('#wdl_op'+j);
+		tds=$(tab).find('td');
+	
+		tds[0].innerHTML=t1.name;	
+		$(tds[0]).css('text-decoration', 'underline')
+		tds[1].innerHTML=t2.name;
+		$(tds[1]).css('text-decoration', 'underline')
+	
+		tds[3].innerHTML=t1.winIn ;
+		$(tds[3]).css("font-weight","Bold");
+		tds[4].innerHTML= t2.winOut;
+		$(tds[4]).css("font-weight","Bold");
+	
+		tds[7].innerHTML=t1.drawIn ;
+		$(tds[7]).css("font-weight","Bold");
+		tds[8].innerHTML= t2.drawOut;
+		$(tds[8]).css("font-weight","Bold");
+		tds[11].innerHTML=t1.loseIn;
+		$(tds[11]).css("font-weight","Bold");
+		tds[12].innerHTML= t2.loseOut;
+		$(tds[12]).css("font-weight","Bold");
+	
+		var tr0=document.createElement('tr');
+		var td0=document.createElement('td');
+		$(td0).attr('colspan','5');
+		td0.innerHTML='Home Team In vs Away Team Out';
+		$(td0).css({
+			fontSize: "14pt"
+			//color: "red"
+		});
+		$(td0).css("font-weight","Bold");
+		$(tr0).append(td0);
+		var f_td =$(tab).find('tr')[0];
+		$(tr0).insertBefore(f_td);
+		$(tab).height(300);
+		$(tab).width(300);
+		$(tab).css("background-color", "#d7dde5");
+		
+		$(tab).find('tr').css({'border-bottom':'2pt solid white'});
+		$(tab).find('tr:last').css({'border-bottom':'none'});
+		$(tab).css({'border-left' :'2px solid white'});
+		$(tab).css({'border-right':'2px solid white'});	
+		//$(tab).css({'border':'2px solid white'});	
+	
+		
+		
+		tab=$('#wdl_all'+j);
+		tds=$(tab).find('td');
+	
+		tds[0].innerHTML=t1.name;	
+		$(tds[0]).css('text-decoration', 'underline')
+		tds[1].innerHTML=t2.name;
+		$(tds[1]).css('text-decoration', 'underline')
+	
+		tds[3].innerHTML=t1.winIn ;
+		$(tds[3]).css("font-weight","Bold");
+		tds[4].innerHTML=t2.winIn ;
+		$(tds[4]).css("font-weight","Bold");
+	
+		tds[7].innerHTML= t1.winOut;
+		$(tds[7]).css("font-weight","Bold");
+		tds[8].innerHTML= t2.winOut;
+		$(tds[8]).css("font-weight","Bold");
+	
+		tds[11].innerHTML=t1.drawIn ;
+		$(tds[11]).css("font-weight","Bold");
+		tds[12].innerHTML=t2.drawIn ;
+		$(tds[12]).css("font-weight","Bold");
+	
+		tds[15].innerHTML= t1.drawOut;
+		$(tds[15]).css("font-weight","Bold");
+		tds[16].innerHTML= t2.drawOut;
+		$(tds[16]).css("font-weight","Bold");
+	
+	
+		tds[19].innerHTML=t1.loseIn;
+		$(tds[19]).css("font-weight","Bold");
+		tds[20].innerHTML=t2.loseIn;
+		$(tds[20]).css("font-weight","Bold");
+	
+		tds[23].innerHTML= t1.loseOut;
+		$(tds[23]).css("font-weight","Bold");
+		tds[24].innerHTML= t2.loseOut;
+		$(tds[24]).css("font-weight","Bold");
+	
+	
+		
+		var tr0=document.createElement('tr');
+		var td0=document.createElement('td');
+		$(td0).attr('colspan','5');
+		td0.innerHTML='Teams In & Out results';
+		$(td0).css({
+			fontSize: "15pt"
+			//color: "red"
+		});
+		$(tr0).append(td0);
+		var f_td =$(tab).find('tr')[0];
+		$(tr0).insertBefore(f_td);
+		$(tab).height(300);
+		$(tab).width(400);
+		$(tab).css("background-color", "#d7dde5");
+		//$(tab).css({'border-left':'2px solid red'});
+		$(tab).find('tr').css({'border-bottom':'2pt solid white'});
+		$(tab).find('tr:last').css({'border-bottom':'none'});
+}
+
+
+function matchHeaderFiller(){
+	var trs= $(".matchLineHeader");
+	for (var i = 0; i < trs.length; i++) {
+		var tds = trs[i].children;
+		//for (var j = 0; j < tds.length; j++) {
+			//tds[j].innerHTML=matchLHrData[j];
+		tds[1].innerHTML= "home team";
+		tds[2].innerHTML= " ";
+		tds[3].innerHTML= "  ";
+		tds[4].innerHTML= " ";
+		tds[5].innerHTML= "guest team ";
+		tds[6].innerHTML= "home win";
+		tds[7].innerHTML= "draw";
+		tds[8].innerHTML= "away win";
+		tds[9].innerHTML= "over";
+		tds[10].innerHTML= "under";
+		tds[11].innerHTML= "HT: 1 < tot. Score";
+		tds[12].innerHTML= "HT: 1 > tot. Score";
+		tds[13].innerHTML= "HT: 2 < tot. Score";
+		tds[14].innerHTML= "HT: 2 > tot. Score";
+		tds[15].innerHTML= "tot. HT Score";
+		tds[16].innerHTML= "tot. FT Score";
+		//}
+	}	
 }

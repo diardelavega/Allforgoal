@@ -7,6 +7,10 @@
     content: "\f054"; 
 } */ 
 
+table{
+	
+}
+
 td {
 	padding-left: 10px;
 	padding-right: 10px;
@@ -14,7 +18,9 @@ td {
 }
 
 .mplBox{
-	background: #d0dc8f;
+background: #d0dc8f;
+/*background: url('../../../../../Pictures/backgroungPictures/_s_a46b46c1EAd1EAe0f0g64h020004FFFFD9E7E7D6iB9j1Ek32l1F4m1F4.png')
+*/	
 }
 
 .mplBox > thead {
