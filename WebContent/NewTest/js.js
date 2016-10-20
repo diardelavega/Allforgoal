@@ -17,11 +17,7 @@ var jj=0;
  * mpl call calls all the service untill it returns a exit msg.
  */
 function mlpCall(datstamp, seri) {
-	console.log(seri,+" : "+jj);
-	jj++;
-	if(jj >10){
-		console.log("f it "+jj);
-	}
+	
 	$.ajax({
 		url : httpurl + "/Bast/rest/services/mpl/" + datstamp + "/" + seri,
 //		beforeSend : function(request) {
@@ -38,7 +34,7 @@ function mlpCall(datstamp, seri) {
 				console.log(response.msg);
 				return;
 			}
-			console.log("in AAAAAAAAA");
+			/*
 			var i = 0;
 			for (; i < response.length; i++) {
 				$("#div1").append("coump: " + response[i].competition + " ");
@@ -52,11 +48,12 @@ function mlpCall(datstamp, seri) {
 					$("#div1").append(JSON.stringify(response[i].lfml[k]));
 					$("#div1").append("</br>");
 				}
-			}
-			$("#div1").append("</br>");
+			}*/
+			mplBoxCreate(response);
+			/*$("#div1").append("</br>");
 			i--;
 			console.log("serinr-i :" + response[i].competition);
-			seri = response[i].serinr;
+			seri = response[i].serinr;*/
 			mlpCall(datstamp, seri);
 			// matchPredLineTrBuilder(response);
 			// matchPredLineShow(response);
@@ -73,17 +70,11 @@ function mlpCall(datstamp, seri) {
 };
 
 
-
-/**
- * Call the service API that returns all the matches done so far in that specific competition 
- */
-function compWeeksDataCall(cid) {
-	console.log(seri)
-	$.ajax({
-		url : httpurl + "/Bast/rest/services/reducedweeksmatches/" + cid,
-//		beforeSend : function(request) {
-//			request.setRequestHeader("Authorization", "Negotiate");
-//		},
+/** call for the win draw lose data of the specific competition*/
+function wdlCall(cid){
+	compId=cid/1000;
+$.ajax({
+		url : httpurl + "/Bast/rest/services/compWinDrawLose/" + compId,
 		type : 'GET',
 		crossDomain : true,
 		dataType : 'json',
@@ -94,20 +85,40 @@ function compWeeksDataCall(cid) {
 				console.log(response.msg);
 				return;
 			}
-//			var i = 0;
-//			for (; i < response.length; i++) {
-				$("#div1").append("comp: " + response.competition + " ");
-				$("#div1").append("country: " + response.country + " ");
-				$("#div1").append("compId: " + response.compId + " ");
-				$("#div1").append("lines: " + response.size + " ");
-				$("#div1").append("</br>");
-					$("#div1").append("csv: "+ response.csvTxt + " ");
-//			}
-			$("#div1").append("</br>");
-//			mlpCall(datstamp, seri);
-			// matchPredLineTrBuilder(response);
-			// matchPredLineShow(response);
-			// wdlTableFiller(response);
+			
+			wdlExtrapolate(response,compId);
+		},
+		error : function(error, stat, cod) {
+			console.log(error);
+			console.log(error.responseText);
+			console.log(error.length);
+			console.log(stat);
+			console.log(cod);
+		}
+	});
+}
+
+
+
+/**
+ * Call the service API that returns all the matches done so far in that specific competition 
+ */
+function compWeeksDataCall(cid) {
+	console.log(seri)
+	$.ajax({
+		url : httpurl + "/Bast/rest/services/reducedweeksmatches/" + cid,
+		type : 'GET',
+		crossDomain : true,
+		dataType : 'json',
+		success : function(response) {
+			console.log("in success");
+			if (response.hasOwnProperty('msg')) {
+				console.log("exit msg");
+				console.log(response.msg);
+				return;
+			}
+			
+			
 		},
 		error : function(error, stat, cod) {
 			console.log(error);

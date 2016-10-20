@@ -50,7 +50,7 @@ public class Service {
 	public static final Logger log = LoggerFactory.getLogger(Service.class);
 	private static boolean flag = false;
 	private CountryCompetition cc = new CountryCompetition();
-	private	Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
+	private Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
 	{
 		/*
 		 * @GET
@@ -146,14 +146,14 @@ public class Service {
 		int allMatchesIn = 0;
 		LocalDate ld;
 		List<Integer> keyList;
-		List<MatchPredictionLine> list_fml; //RedMPL
+		List<MatchPredictionLine> list_fml; // RedMPL
 		List<MPLPack> packlist;
 		FullMatchPredLineToSubStructs fmpts;
- 
+
 		//
 		try {
-			log.info("received dat : {}",datstamp);
-//			datstamp = "2016-10-14";
+			log.info("received dat : {}", datstamp);
+			// datstamp = "2016-10-14";
 			ld = LocalDate.parse(datstamp);
 		} catch (Exception e) {
 			log.info(" received date string was not parsed correctly");
@@ -215,8 +215,8 @@ public class Service {
 		String csv = wmh.redWeekMatches_TodTom(compId, ccal.getCompetition(), ccal.getCountry());
 		int linesRead = wmh.getLinesRead();
 		WeekMatchesCSV wmcsv = new WeekMatchesCSV(ccal.getCountry(), ccal.getCompetition(), compId, linesRead, csv);
-		Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create(); 
-//				new Gson();
+		Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
+		// new Gson();
 		String jo = gson.toJson(wmcsv);
 		return jo;
 	}
@@ -238,8 +238,9 @@ public class Service {
 		}
 		WinDrawLoseHandler wdlh = new WinDrawLoseHandler();
 		try {
-//			Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
-//			Gson gson = new Gson();
+			// Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat("
+			// EEE, dd/MM/yyyy ").create();
+			// Gson gson = new Gson();
 			String jo = gson.toJson(wdlh.windrawloseDbGet(ccal.getCompetition(), ccal.getCountry()));
 			return jo;
 		} catch (SQLException e) {
@@ -290,7 +291,8 @@ public class Service {
 
 		WinDrawLoseHandler wdlh = new WinDrawLoseHandler();
 		try {
-//			Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat(" EEE, dd/MM/yyyy ").create();
+			// Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat("
+			// EEE, dd/MM/yyyy ").create();
 			Map<String, String> teamMap = wdlh.windrawloseDbGet(teams, ccal.getCompetition(), ccal.getCountry());
 			if (teamMap == null) {
 				return msgWriter(ServiceMsg.RETR_ERROR_DB);
@@ -431,19 +433,21 @@ public class Service {
 	// ------------------------------------END OF NEW---------
 	private CCAllStruct simCcalExtract(int cid) {
 		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
-//		 int ind = CountryCompetition.idToIdx.get(cid);
-//		 return CountryCompetition.ccasList.get(ind);
+		// int ind = CountryCompetition.idToIdx.get(cid);
+		// return CountryCompetition.ccasList.get(ind);
 	}
 
 	private CCAllStruct realCcalExtract(int cid) {
-//		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
-		 int ind = CountryCompetition.idToIdx.get(cid);
-		 return CountryCompetition.ccasList.get(ind);
+		// return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid,
+		// "link/code/ciu/pp3", 1, -1);
+		int ind = CountryCompetition.idToIdx.get(cid);
+		return CountryCompetition.ccasList.get(ind);
 	}
+
 	private String msgWriter(String sub) {
 		String jo = gson.toJson(new Msg(sub));
 		return jo;
-//		("{msg:'" + sub + "'}");
+		// ("{msg:'" + sub + "'}");
 	}
 
 }

@@ -68,11 +68,11 @@ public class ServTest {
 //		MPLFill mplfill = new MPLFill();
 //		mplfill.fakeFiller();
 		int seri = -1;
-		 matchPredictionLine("2016-10-19", seri);//OK
+//		 matchPredictionLine("2016-10-19", seri);//OK
 
 //		String ret = reducedWeeksMatches(112);//OK
 		
-//		compWinDrawLose(112);
+		compWinDrawLose(112);
 //		oneCompMatchPredictionLine(4);
 //		compTableData(112);
 //		matchSpecificData("2016-10-13","Sarpsborg 08","Start",112	);
@@ -113,7 +113,7 @@ public class ServTest {
 			list_fml.addAll(fmpts.reduceFullMAtchLine(TimeVariations.mapMPL.get(ld).get(keyList.get(nr))));
 			allMatchesIn += list_fml.size();
 			 log.info("{}", allMatchesIn);
-			CCAllStruct ccdata = ccalExtract(compId);
+			CCAllStruct ccdata = simCcalExtract(compId);
 			MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), nr, list_fml);
 			packlist.add(pack);
 			nr++;
@@ -182,7 +182,7 @@ public class ServTest {
 		// return wdl for all the teams of the competition regardless of who is
 		// playing today
 
-		CCAllStruct ccal = ccalExtract(cid);
+		CCAllStruct ccal =realCcalExtract(cid);
 		if (ccal == null) {
 			log.info("no matches @ that Competition Id");
 			return msgWriter(ServiceMsg.UNFOUND_ID);
@@ -193,10 +193,11 @@ public class ServTest {
 			String jo = gson.toJson(wdlh.windrawloseDbGet(ccal.getCompetition(), ccal.getCountry()));
 			
 			//---------------------------------
-			JsonParser jp = new JsonParser();
-			JsonObject jjo = (JsonObject) jp.parse(jo);
-			log.info("{}", jjo.get("csvTxt"));
+//			JsonParser jp = new JsonParser();
+//			JsonObject jjo = (JsonObject) jp.parse(jo);
+//			log.info("{}", jjo.get("csvTxt"));
 			//------------------------------------
+			log.info("{}", jo);
 			return jo;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -236,7 +237,7 @@ public class ServTest {
 			return msgWriter(ServiceMsg.END_OF_DATA);
 		}
 
-		CCAllStruct ccal = ccalExtract(cid);
+		CCAllStruct ccal =   simCcalExtract(cid);
 		if (ccal == null) {
 			log.info("no matches @ that Competition Id");
 			return msgWriter(ServiceMsg.UNFOUND_ID);
@@ -260,7 +261,7 @@ public class ServTest {
 	@GET
 	@Path("/compTableData/{cid}")
 	public static String compTableData(@PathParam("cid") int cid) {
-		CCAllStruct ccal = ccalExtract(cid);
+		CCAllStruct ccal = realCcalExtract(cid);
 		if (ccal == null) {
 			log.info("no matches @ that Competition Id");
 			return msgWriter(ServiceMsg.UNFOUND_ID);
@@ -345,12 +346,17 @@ public class ServTest {
 		return ("{msg:'" + sub + "'}");
 	}
 
-	private static CCAllStruct ccalExtract(int cid) {
-		// cid+10 for practical purposes not real ones
-//		 int ind = CountryCompetition.idToIdx.get(cid );
-//		 return CountryCompetition.ccasList.get(ind);
-		// CCAllStruct ccdata =
+	private static CCAllStruct simCcalExtract(int cid) {
 		return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid, "link/code/ciu/pp3", 1, -1);
-
+		// int ind = CountryCompetition.idToIdx.get(cid);
+		// return CountryCompetition.ccasList.get(ind);
 	}
+
+	private static CCAllStruct realCcalExtract(int cid) {
+		// return new CCAllStruct("Casiopea_" + cid, "TerraMAlgon_" + cid, cid,
+		// "link/code/ciu/pp3", 1, -1);
+		int ind = CountryCompetition.idToIdx.get(cid);
+		return CountryCompetition.ccasList.get(ind);
+	}
+
 }

@@ -108,10 +108,14 @@ function mplBoxCreate() {
 	
 	var tab= document.createElement("table");
 	$(tab).attr("border",1);
-	var thed= document.createElement("thead");
+	$(tab).attr("class","mplBox");
+	$(tab).attr("id","mplBox_"+compId);
 	
+	var thed= document.createElement("thead");
 	var hedTxt="<tr><td style='padding-left:40px'></td><td colspan='5'>"+compName+"</td> <td colspan='10' style='padding-right:20px'>"+country+"</td></tr>";
 	$(thed).css("background-color", "#cbcdef")
+	$(thed).css("fontsize", "14pt")
+	$(thed).css("fontcolor", "#224488")
 	$(thed).append(hedTxt);
 	
 	var tbodRow1="<tr id='rowmld"+i+"' class='mplheadrow' >"+"<td><span      class='chevron fa fa-fw'  > </td>"+  "<td>Home</td>  <td>FT</td> <td>HT</td> <td>HT</td>  <td>FT</td> <td>Away</td>"+ "<td> 1 </td>  <td>X</td> <td>2</td> <td>Over</td>  <td>Under</td></tr>"
@@ -126,8 +130,8 @@ function mplBoxCreate() {
 	for(var i=0;i<mplResp.lfml.length;i++)	{
 		var idval=compId*1000+i;
 		tdTxt="<tr  data-toggle='collapse' data-target='#collapsePanel"+idval+"' id='rowmld"+idval+"' onclick='chevrinCchange("+idval+"); clickCatch("+idval+"); ' >"
-		+ "<td ><span   class='indicator glyphicon glyphicon-chevron-right  pull-left' >"
-		+ "</td>"+ "<td>"+mplResp.lfml[i].t1+"</td>  <td>"+mplResp.lfml[i].ft1+"</td> <td>"+mplResp.lfml[i].ht1+"</td> <td>"+mplResp.lfml[i].ht2+"</td>  <td>"+mplResp.lfml[i].ft2+"</td> <td>"+mplResp.lfml[i].t2+"</td>"+  "<td> "+mplResp.lfml[i].h1+" </td>  <td>"+mplResp.lfml[i].hx+"</td> <td>"+mplResp.lfml[i].h2+"</td> <td>"+mplResp.lfml[i].so+"</td>  <td>"+mplResp.lfml[i].su+"</td></tr>";
+		+ "<td ><span   class='indicator glyphicon glyphicon-chevron-right  pull-left' > </td>"
+		+ "<td>"+mplResp.lfml[i].t1+"</td>  <td>"+mplResp.lfml[i].ft1+"</td> <td>"+mplResp.lfml[i].ht1+"</td> <td>"+mplResp.lfml[i].ht2+"</td>  <td>"+mplResp.lfml[i].ft2+"</td> <td>"+mplResp.lfml[i].t2+"</td>"+  "<td> "+mplResp.lfml[i].h1+" </td>  <td>"+mplResp.lfml[i].hx+"</td> <td>"+mplResp.lfml[i].h2+"</td> <td>"+mplResp.lfml[i].so+"</td>  <td>"+mplResp.lfml[i].su+"</td></tr>";
 
 		$(tbod).append(tdTxt);
 		//console.log("idval "+idval);
@@ -136,8 +140,7 @@ function mplBoxCreate() {
 	$("#div1").append(tab);
 }
 
-
-/*change the chervon orienation*/
+/**change the chervon orienation*/
 function chevrinCchange(id){
 	var targ=$('#rowmld'+id+' td .indicator');
 	targ.toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
@@ -273,4 +276,15 @@ function collapsablePannelCreator(line_i){
 
 	return collapsablePanelTr;
 }
+
+
+//-----------wdl data disply
+/** retrieve the data from json obj*/
+function wdlExtrapolate(wdlData, compId){
+	var mplBox = $('#mplBox_'+compId);
+		//retrieve the data from rhe json obj
 	
+	//loop the matches & get the teams in & out
+	//loop the newly gotten wdl array
+	//when teams are found write data to html table
+}
