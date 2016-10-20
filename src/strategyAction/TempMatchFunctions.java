@@ -617,15 +617,13 @@ public class TempMatchFunctions {
 
 		Date date = Date.valueOf(LocalDate.now().minusDays(1));
 		openDBConn();
-		ResultSet	rs = conn.getConn().createStatement()
-				.executeQuery("SELECT compid FROM recentmatches WHERE dat = '" + date + "' group by compid");
-		while (rs.next()) {
-			TimeVariations.yesterdayComps.add(rs.getInt(1));
-		}
-//		TimeVariations.yesterdayComps=skipDayCompIds;
+//		ResultSet	rs = conn.getConn().createStatement()
+//				.executeQuery("SELECT compid FROM recentmatches WHERE dat = '" + date + "' group by compid");
+//		while (rs.next()) {
+//			TimeVariations.yesterdayComps.add(rs.getInt(1));
+//		}
 		
-//		skipDayCompIds.clear();
-		 rs = conn.getConn().createStatement()
+		ResultSet rs = conn.getConn().createStatement()
 				.executeQuery("SELECT compid FROM tempmatches WHERE dat = '" + date + "'  group by compid");
 		while (rs.next()) {
 			skipDayCompIds.add(rs.getInt(1));
