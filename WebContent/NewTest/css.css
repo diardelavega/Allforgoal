@@ -6,6 +6,13 @@
 .panel-heading.collapsed .chevron:after {
     content: "\f054"; 
 } */ 
+.outer_wdl_tab >tbody tr  {
+	/*align-content: left;*/
+	text-align: left;
+	/*margin-left: 20px;*/
+	/*padding-left: 20px;*/
+}
+
 
 .inner_wdl_tab{
 	padding-left: 10px;
@@ -13,6 +20,7 @@
 	text-align: center;
 	background-color:#da8d25;
 	border-style: 
+	align-content: center;
 }
 
 .inner_wdl_tab >tr {
@@ -31,6 +39,7 @@ border-bottom-width: 2;*/
 	font-size: 14pt;
 	font-style: italic;
 	font-weight: 500;
+	text-align: center;
 }
 .inner_wdl_tab >tbody tr:nth-child(2){
 	background-color:lightblue;
@@ -63,4 +72,13 @@ background: #d0dc8f;
 
 #div1 > table{
 	border:0;
+}
+
+hr {
+	margin: 0;
+	margin-bottom: 10pt;
+	border-style: solid;
+	border-width: 1px;
+	color: lightgrey;
+
 }

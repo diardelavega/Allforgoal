@@ -1,6 +1,6 @@
 
 wdl_tot_txt='Total Results';//
-wdl_op_txt='Home Team In vs Away Team Out';
+wdl_op_txt='Home In vs Away Out';
 wdl_all_txt='In & Out';
 
 /**
@@ -197,14 +197,14 @@ function collapsablePannelCreator(line_i){
 								  	"<input id='wdl_checkTable"+line_i+"' type='checkbox' checked='true' onclick='wdltgswitch("+line_i+")'/>"+
 									"<label for='wdl_checkTable"+line_i+"' >  tables</label>&emsp;"+
 									"<input id='wdl_checkGraph"+line_i+"' type='checkbox'  onclick='wdltgswitch("+line_i+")'/>"+
-									"<label for='wdl_checkGraph"+line_i+"' >  graphic</label>"+
+									"<label for='wdl_checkGraph"+line_i+"' >  graphic</label> <hr>"+
 									 "</td>"+
 								   "</tr>"+
-								   "<tr id='wdl_gra_tr"+line_i+"'>"+
-								   "<input type='hidden' value='NO'>"+// indicate wether the wdl is drawn or not
-									  "<td><div id='totBar"+line_i+"' style='border: 1px solid #ccc'></div></td>"+
-									  "<td><div id='operativeBar"+line_i+"' style='border: 1px solid #ccc'></div></td>"+
-									  "<td><div id='allBar"+line_i+"' style='border: 1px solid #ccc'></div></td>"+
+								   "<tr class='wdl_graph' id='wdl_gra_tr"+line_i+"'>"+
+								   	  "<input type='hidden' value='NO'>"+// indicate wether the wdl is drawn or not
+									  "<td><div id='totBar"+line_i+"' ></div></td>"+
+									  "<td><div id='operativeBar"+line_i+"' ></div></td>"+
+									  "<td><div id='allBar"+line_i+"' ></div></td>"+
 								 " </tr>"+
 								  "<tr id='wdl_tab_tr"+line_i+"'>"+
 									  "<td>"+
@@ -374,8 +374,8 @@ function fillWDLTr(t1, t2,compId, i){
 	var f_td =$(tab).find('tr')[0];
 	$(tr0).insertBefore(f_td);
 	
-	$(tab).height(300);
-	$(tab).width(300);
+	// $(tab).height(300);
+	// $(tab).width(300);
 	// $(tab).css("background-color", "#d7dde5");
 	// $(tab).css({'border-right':'2px solid red'});	
 	// $(tab).find('tr').css({'border-bottom':'2pt solid white'});
@@ -413,8 +413,8 @@ function fillWDLTr(t1, t2,compId, i){
 	$(tr0).append(td0);
 	var f_td =$(tab).find('tr')[0];
 	$(tr0).insertBefore(f_td);
-	$(tab).height(300);
-	$(tab).width(300);
+	// $(tab).height(300);
+	// $(tab).width(300);
 	// $(tab).css("background-color", "#d7dde5");
 	
 	// $(tab).find('tr').css({'border-bottom':'2pt solid white'});
@@ -474,8 +474,8 @@ function fillWDLTr(t1, t2,compId, i){
 	$(tr0).append(td0);
 	var f_td =$(tab).find('tr')[0];
 	$(tr0).insertBefore(f_td);
-	$(tab).height(300);
-	$(tab).width(400);
+	// $(tab).height(300);
+	// $(tab).width(400);
 	// $(tab).css("background-color", "#d7dde5");
 	//$(tab).css({'border-left':'2px solid red'});
 	// $(tab).find('tr').css({'border-bottom':'2pt solid white'});
@@ -507,7 +507,8 @@ function  wdltgswitch(idx){
 		else if(isDrawn==="NO"){
 			$('#wdl_gra_tr'+idx).show();	
 			$('#wdl_gra_tr'+idx).find('input').attr('value','YES');
-			drawWinDrawLose(idx);
+			console.log(idx);
+			drawColumnChart(idx);
 		}
 		else if(isDrawn===undefined){
 			console.log("this tr should not be opened");
