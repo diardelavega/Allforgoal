@@ -7,8 +7,35 @@
     content: "\f054"; 
 } */ 
 
-table{
-	
+.inner_wdl_tab{
+	padding-left: 10px;
+	padding-right: 10px;
+	text-align: center;
+	background-color:#da8d25;
+	border-style: 
+}
+
+.inner_wdl_tab >tr {
+	border-color: #aaaaaa;
+	border-width: 2;
+/*border-top: thin;
+border-bottom: thin;
+border-top-width: 2;
+border-color: red;
+border-bottom-width: 2;*/
+}
+
+.inner_wdl_tab >tbody tr:nth-child(1){
+	background-color:#429387;
+	font-family: monospace;
+	font-size: 14pt;
+	font-style: italic;
+	font-weight: 500;
+}
+.inner_wdl_tab >tbody tr:nth-child(2){
+	background-color:lightblue;
+	font-size: 16pt;
+	font-weight: 100;
 }
 
 td {

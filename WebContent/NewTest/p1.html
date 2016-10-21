@@ -9,7 +9,7 @@
 <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="../css/bootstrap-theme.min.css">
 <link rel="stylesheet" type="text/css" href="./css.css">
-
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>  
 <script type="text/javascript">
 	
 	var d = new Date();
@@ -24,14 +24,6 @@
 	//d.getFullYear+" "+d.getMonth()+" "+d.getDate();
 	var seri = -1;
 
-	function jsondisply() {
-		if (o > 10)
-			return;
-		$("#div1").append(o);
-		o++;
-		jsondisply(o);
-	}
-
 	function onloadfunc() {
 		datFormat();
 		console.log(datstamp, seri);
@@ -43,6 +35,7 @@
 		/* $("#div1").append(datstamp); */
 		//compWeeksDataCall(89);
 		mplBoxCreate();
+		// wdlExtrapolate(0,0);
 	}
 </script>
 </head>
@@ -73,9 +66,13 @@
 
 
 
-	<!-- <script src="./js.js"></script> -->
+	<script src="./js.js"></script>
+	<script src="./charting.js"></script>
 	<script src="./displays.js"></script>
+	 <!-- <script src="./googleChartLoader.js"></script> -->
 
+
+	
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="../jquery-1.11.0/jquery.min.js"></script>
 
