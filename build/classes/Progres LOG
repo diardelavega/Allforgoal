@@ -2,9 +2,14 @@
 (*) -> bug ||  (-) -> not opimal solution  ||  (!) -> statement
 ----------------------------------------------------------------------------
 
+
+-------------------------------------------------------------------------
+!!!) add the discart of older than 2 weeks drom everywhere recet, temp MPLmap etc
+
+
 -------------------------------------------------------------------------
 ***!!) During RE-EVALUATION at leas the teams (with wierd chars)in the File can be different from the ones in the database
-
+		FIXED with read and write utf-8
 
 **--CORELATION PRIBLEMS finding the same time multiple times with different matches
 	FIED!! ... suposedly

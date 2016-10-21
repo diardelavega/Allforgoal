@@ -900,7 +900,9 @@ public class TempMatchFunctions {
 		for (int i = 0; i < tempMatches.size(); i++) {
 			int cid = tempMatches.get(i).getComId();
 			long mid = tempMatches.get(i).getmId();
-
+			if (TimeVariations.mapMPL.get(ld).containsKey(cid)) {
+				continue;
+			}
 			for (int j = 0; j < TimeVariations.mapMPL.get(ld).get(cid).size(); j++) {
 				if (TimeVariations.mapMPL.get(ld).get(cid).get(j).getmId() == mid) {
 					if (updKind.equals("score")) {
