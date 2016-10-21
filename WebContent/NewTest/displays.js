@@ -152,8 +152,6 @@ function mplBoxCreate() {
 function chevrinCchange(id){
 	var targ=$('#rowmld'+id+' td .indicator');
 	targ.toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
-
-	// wdlExtrapolate(id);
 }
 
 /** create the extra data colapsable pannel for the mpl*/
@@ -176,13 +174,15 @@ function collapsablePannelCreator(line_i){
 	var contentDiv = document.createElement('div');
 	$(contentDiv).attr("class","tab-content");
 
-
 	// pannel pilars
 	var panHeadTxt= "<div> <ul class='nav nav-pills'>"+
 						"<li class='active'><a data-toggle='pill' href='#wdl"+line_i+"'>Win/Draw/Lose</a></li>"+
 					  	"<li ><a data-toggle='pill' href='#commonAdv"+line_i+"'>CommonAdv</a></li>"+
 						"<li><a data-toggle='pill' href='#formMenu"+line_i+"'>FORM</a></li>"+
 						"<li><a data-toggle='pill' href='#progress"+line_i+"'>Progres</a></li>"+
+						"<li><a data-toggle='pill' href='#progress"+line_i+"'>Progres</a></li>"+
+						"<li><a>            </a></li>"+
+						"<li><a  href='#' data-toggle='pill'  class='indicator glyphicon glyphicon-chevron-up  pull-left' onclick=closeCollapse("+line_i+")> Close</a></li>"+
 						"</ul> </div>"
 	$(panelDiv).append(panHeadTxt);
 
@@ -483,40 +483,78 @@ function fillWDLTr(t1, t2,compId, i){
 }
 
 
-function  wdltgswitch(idx){
+function  wdltgswitch(ind){
 	//show hide the win draw lose table graph 
-	console.log("wdltgswitch");
 
-	if( $('#wdl_checkTable'+idx).is(':checked')){
-		//$('#form_check'+idx).prop('checked',false);
-		$('#wdl_tab_tr'+idx).show();	
+	if( $('#wdl_checkTable'+ind).is(':checked')){
+	//scroll for wdl data to be shown
+	    scrollForChecked(ind);
+
+		//$('#form_check'+ind).prop('checked',false);
+		$('#wdl_tab_tr'+ind).show();	
 	}
 	else{
-		//$('#form_check'+idx).prop('checked',true);
-		$('#wdl_tab_tr'+idx).hide();
+		//$('#form_check'+ind).prop('checked',true);
+		$('#wdl_tab_tr'+ind).hide();
 	}
 
 
 
-	if( $('#wdl_checkGraph'+idx).is(':checked')){
-		var isDrawn = $('#wdl_gra_tr'+idx).find('input').attr('value');
+	if( $('#wdl_checkGraph'+ind).is(':checked')){
+		var isDrawn = $('#wdl_gra_tr'+ind).find('input').attr('value');
  
 		if(isDrawn==="YES"){
-			$('#wdl_gra_tr'+idx).show();	
+			$('#wdl_gra_tr'+ind).show();	
+			//scroll for wdl data to be shown
+		    scrollForChecked(ind);
 		}
 		else if(isDrawn==="NO"){
-			$('#wdl_gra_tr'+idx).show();	
-			$('#wdl_gra_tr'+idx).find('input').attr('value','YES');
-			console.log(idx);
-			drawColumnChart(idx);
+			//scroll for wdl data to be shown
+		    scrollForChecked(ind);
+			$('#wdl_gra_tr'+ind).show();	
+			$('#wdl_gra_tr'+ind).find('input').attr('value','YES');
+			drawColumnChart(ind);
 		}
 		else if(isDrawn===undefined){
-			console.log("this tr should not be opened");
+			//console.log("this tr should not be opened");
 		}
 	}
 	else{
-		console.log("chart @ idx: "+idx+" id "+isDrawn);
-		$('#wdl_gra_tr'+idx).hide();
+		//console.log("chart @ ind: "+ind+" id "+isDrawn);
+		$('#wdl_gra_tr'+ind).hide();
 	}
+
+	
 }
 
+/*executes the series of data required to be displayed in the collapsable pannel after the extra data pannel is opened */
+function clickCatch(ind){
+	// auto scroll on new opened panel
+	scrollCollapse(ind);
+}
+
+/* to scroll so that the collapsable panel is shown on the main part of the screen*/
+function scrollCollapse(ind){
+	$('#collapsePanel'+ind).on('shown.bs.collapse', function (e) {
+        var offset = $('#collapsePanel'+ind).offset().top;
+         if(offset) {
+            $('html,body').animate({
+                scrollTop:offset-40
+            }, 500); 
+        }
+    }); 
+}
+
+/* scroll so that the selected item put on the main part of the screen*/
+function scrollForChecked(ind){
+	var position =$('#wdl'+ind).offset().top;
+		 $("html, body").animate({
+	 	 scrollTop: position-120
+	}, 500);
+}
+
+/* for convinience. to close the colapsable pannel from within the pannel*/
+function closeCollapse(ind){
+	$('#collapsePanel'+ind).collapse('hide');
+    chevrinCchange(ind);
+}
