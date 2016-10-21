@@ -50,11 +50,11 @@ public class ServTest {
 		// TimeVariations tv = new TimeVariations();
 		// tv.initMPL();
 		// log.info("{}",matchPredictionLine("2016-10-03",0));
-		try {
-			Demo.initCCAllStruct();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			Demo.initCCAllStruct();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		// TimeVariations tv = new TimeVariations();
 		// tv.initMPL();
 		// log.info("{}",matchPredictionLine("2016-10-03",0));
@@ -68,7 +68,7 @@ public class ServTest {
 //		MPLFill mplfill = new MPLFill();
 //		mplfill.fakeFiller();
 		int seri = -1;
-//		 matchPredictionLine("2016-10-19", seri);//OK
+//		 matchPredictionLine("2016-10-20", seri);//OK
 
 //		String ret = reducedWeeksMatches(112);//OK
 		
@@ -102,6 +102,7 @@ public class ServTest {
 		if (nr >= keyList.size()) {
 			return ("{msg:'" + ServiceMsg.END_OF_DATA + "'}");
 		}
+		WinDrawLoseHandler wdlh = new WinDrawLoseHandler();
 		FullMatchPredLineToSubStructs fmpts=new FullMatchPredLineToSubStructs();
 		List<MatchPredictionLine> list_fml;// = new ArrayList<>();
 		List<MPLPack> packlist = new ArrayList<>();
@@ -115,6 +116,7 @@ public class ServTest {
 			 log.info("{}", allMatchesIn);
 			CCAllStruct ccdata = simCcalExtract(compId);
 			MPLPack pack = new MPLPack(ccdata.getCountry(), ccdata.getCompetition(), ccdata.getCompId(), nr, list_fml);
+			pack.setWdlAtach(wdlh.windrawloseDbGet(ccdata.getCompetition(), ccdata.getCountry()));
 			packlist.add(pack);
 			nr++;
 		} while (allMatchesIn < 10 && nr < keyList.size());

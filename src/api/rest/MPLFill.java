@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.glassfish.jersey.server.internal.scanning.AnnotationAcceptingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,7 @@ public class MPLFill {
 	// public List<FullMatchLine> fl = new ArrayList<>();
 	// public List<MatchObj> ml= new ArrayList<>();
 
+	private int[] cids= new int[]{4,10,44,46,112,157,164};//,93,89};
 	private String[] silable = new String[] { "Aalesund", "Bodø / Glimt", "Brann", "Haugesund", "Lillestrøm", "Molde",
 			"Odd", "Rosenborg", "Sarpsborg 08", "Sogndal", "Stabæk", "Start", "Strømsgodset", "Tromsø", "Valerenga",
 			"Viking", };
@@ -46,16 +48,19 @@ public class MPLFill {
 			// fml = null;
 			String tim = timGen();
 			LocalDate locd = datGen();
-			if (forFlag) {
-				locd = LocalDate.now().plusDays(1);
-				mobj = new MatchObj(Long.parseLong(n + ""), 112, "Sarpsborg 08", "Start", ftGen(), ftGen(),
-						htGen(), htGen(), oddGen(), oddGen(), oddGen(), oddGen(), oddGen(), LocalDate.now().plusDays(1), tim);
-				forFlag=false;
-			} else {
+//			if (forFlag) {
+//				locd = LocalDate.now().plusDays(1);
+//				mobj = new MatchObj(Long.parseLong(n + ""), 112, "Sarpsborg 08", "Start", ftGen(), ftGen(),
+//						htGen(), htGen(), oddGen(), oddGen(), oddGen(), oddGen(), oddGen(), LocalDate.now().plusDays(1), tim);
+//				forFlag=false;
+//			} else {
 //				locd = datGen();
+			
+			
+			
 				mobj = new MatchObj(Long.parseLong(n + ""), cIdGen(), strGen(), strGen(), ftGen(), ftGen(), htGen(),
 						htGen(), oddGen(), oddGen(), oddGen(), oddGen(), oddGen(), locd, tim);
-			}
+//			}
 
 //			 log.info("localDate {}", locd);
 			
@@ -94,6 +99,11 @@ public class MPLFill {
 		}
 	}
 
+	public void testReader(){
+//		AnnotationAcceptingListener
+	}
+	
+	
 	public void spiller() {
 		// show what time mpl var has in it
 		for (LocalDate datkey : TimeVariations.mapMPL.keySet()) {

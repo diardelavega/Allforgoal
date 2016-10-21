@@ -1,6 +1,7 @@
 package api.functionality.obj;
 
 import java.util.List;
+import java.util.Map;
 
 import basicStruct.FullMatchLine;
 import basicStruct.MatchPredictionLine;
@@ -17,6 +18,7 @@ public class MPLPack {
 	private int compId;
 	private int serinr;
 	private List< MatchPredictionLine> lfml;
+	private Map<String,String> wdlAtach; 
 
 	public MPLPack(String country, String competition, int compId, int serinr, List< MatchPredictionLine> lfml) {
 		super();
@@ -70,6 +72,14 @@ public class MPLPack {
 
 	public void setLfml(List<MatchPredictionLine> lfml) {
 		this.lfml = lfml;
+	}
+
+	public Map<String, String> getWdlAtach() {
+		return wdlAtach;
+	}
+
+	public void setWdlAtach(Map<String, String> wdlAtach) {
+		this.wdlAtach = wdlAtach;
 	}
 
 	
